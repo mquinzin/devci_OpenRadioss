@@ -70,7 +70,7 @@ jobs:
   #           os: linux64 
   #           binary: engine
 
-  #   steps:
+    steps:
 
   #     # Set the working dir suffixed with branch name
   #     - uses: haya14busa/action-cond@v1
