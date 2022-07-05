@@ -1,11 +1,8 @@
 name: Update Headers CI
 
 on:
-  
-  # Will be directly in mainline in production
-  push:
-    branches:
-      - upd_headers**
+  schedule:
+    - cron: "*/5 * * * *"
 
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
@@ -46,6 +43,7 @@ jobs:
           # Clean temporary files (if any) 
           # git clean -f
 
+          git branch
           echo "Salut" > newfile
           git add newfile
 

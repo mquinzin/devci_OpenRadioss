@@ -4,7 +4,7 @@ on:
 
   push:
     branches:
-      - upd_headers**
+      - main
 env:
   CLOSE_BRANCH: 0
   TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}
