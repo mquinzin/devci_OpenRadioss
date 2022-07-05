@@ -2,7 +2,7 @@ name: Update Headers CI
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 3 * * *'
 
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
@@ -39,13 +39,14 @@ jobs:
 
       - name: Running the update header script
         run: |
-          # /__w/_tool/or_header_mod_auto.pl update_headers
+          /__w/_tool/or_header_mod_auto.pl update_headers
           # Clean temporary files (if any) 
-          # git clean -f
+          git clean -f
+          git add .
 
           git branch
-          echo "Salut" > newfile
-          git add newfile
+          # echo "Salut" > newfile
+          # git add newfile
 
           # Check if new files
           if [[ -n $(git status --porcelain) ]]
@@ -56,7 +57,7 @@ jobs:
               git config --global user.email "$GIT_SERVBOT_EMAIL"
               git commit -m "Update Headers at $THEDATE"  
               # Push
-              # git push
+              git push
           fi
 
   #     - name: Running build
