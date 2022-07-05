@@ -2,10 +2,14 @@ name: Update Headers CI
 
 on:
   
+  # Will be directly in mainline in production
   push:
     branches:
       - upd_headers**
 
+env:
+  GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
+  GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}
 jobs:
 
 
@@ -25,6 +29,12 @@ jobs:
 
     steps:
 
+      - name: Test
+        run: |
+          echo "Running permge CI at"
+          date
+          echo "Using commit ${{github.sha}}"
+
       # Get last git modifications, WS is not persistent here
       - uses: actions/checkout@v2
         with:
@@ -32,7 +42,24 @@ jobs:
 
       - name: Running the update header script
         run: |
-          /__w/_tool/or_header_mod_auto.pl update_headers
+          # /__w/_tool/or_header_mod_auto.pl update_headers
+          # Clean temporary files (if any) 
+          # git clean -f
+
+          echo "Salut" > newfile
+          git add newfile
+
+          # Check if new files
+          if [[ -n $(git status --porcelain) ]]
+          then
+              # Commit
+              export THEDATE=`date`
+              git config --global user.name "$GIT_SERVBOT_USER"
+              git config --global user.email "$GIT_SERVBOT_EMAIL"
+              git commit -m "Update Headers at $THEDATE"  
+              # Push
+              # git push
+          fi
 
   #     - name: Running build
   #       run: |

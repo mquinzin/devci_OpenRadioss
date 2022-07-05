@@ -57,28 +57,32 @@ chdir($current_dir);
 if ($i_error) { 
   die "Error(s) : some files wo comments are differents before and after header replacement, no submit"; }
 else {
-  $myp4cmd="p4 submit -d \"Headers update\"";
-  print $myp4cmd."\n";
-  # my $status=system($myp4cmd);
-  my $output = `$myp4cmd 2>&1`;
-  chomp $output;
-  my $status = $?;
 
-  print "RES is $status\n";
-  print "OUTPUT is $output\n";
+  print "Submiting modified files\n";
 
-  # If submit is OK or if there is no files to submit
-  if ($status == 0 or (defined $output and $output eq 'No files to submit from the default changelist.')) {
-    if (not -d "logs") { system("mkdir logs");}
-    system("touch logs/dummy_headers");
-  }
-  else {
-    print "Submit failed. Reverting updates :\n";
-    $myp4cmd="p4 revert ./...";
-    print $myp4cmd."\n";
-    system($myp4cmd);
-    exit 2;
-  }
+
+  # $myp4cmd="p4 submit -d \"Headers update\"";
+  # print $myp4cmd."\n";
+  # # my $status=system($myp4cmd);
+  # my $output = `$myp4cmd 2>&1`;
+  # chomp $output;
+  # my $status = $?;
+
+  # print "RES is $status\n";
+  # print "OUTPUT is $output\n";
+
+  # # If submit is OK or if there is no files to submit
+  # if ($status == 0 or (defined $output and $output eq 'No files to submit from the default changelist.')) {
+  #   if (not -d "logs") { system("mkdir logs");}
+  #   system("touch logs/dummy_headers");
+  # }
+  # else {
+  #   print "Submit failed. Reverting updates :\n";
+  #   $myp4cmd="p4 revert ./...";
+  #   print $myp4cmd."\n";
+  #   system($myp4cmd);
+  #   exit 2;
+  # }
 }
 
 sub init () {
@@ -993,8 +997,10 @@ sub Wanted_replace
 #      my $answer=<STDIN>;
         my $curdir=qx(pwd);
         chomp($curdir);
-        &Run_Command("p4 -d $curdir edit $file_name","P4 :");
+        # &Run_Command("p4 -d $curdir edit $file_name","P4 :");
         &Run_Command("mv $file_name"."__ $file_name","MV :");
+        &Run_Command("git add $file_name","GIT ADD :");
+
         print "$File::Find::name done.\n";
       }
     }
