@@ -4,7 +4,7 @@ on:
   
   push:
     branches:
-      - upd_headers/**
+      - upd_headers**
 
 jobs:
 
