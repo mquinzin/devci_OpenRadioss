@@ -63,6 +63,9 @@ jobs:
               git config --global user.email "$GIT_SERVBOT_EMAIL"
               git commit -m "Update Headers at $THEDATE"  
               echo "GO_PUSH=1" >> $GITHUB_ENV
+              git remote show origin
+              git remote set-url origin https://${{ env.GIT_PUSH_SERVBOT_PAT }}@github.com/OpenRadioss/devci_OpenRadioss.git
+              git remote show origin 
               git push
           else
             echo "No files to submit"
