@@ -1,9 +1,9 @@
 name: Update Headers CI
 
 on:
-  # push:
-  schedule:
-    - cron: '*/5 * * * *'
+  push:
+  # schedule:
+  #   - cron: '*/5 * * * *'
 
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
@@ -33,14 +33,15 @@ jobs:
         run: |
           echo "Running permge CI at"
           date
-          echo "Using commit ${{github.sha}}"
+          echo "Using commit ${{github.sha}} with token ${{ env.GIT_PUSH_SERVBOT_PAT }}"
 
       # Get last git modifications, WS is not persistent here
       - uses: actions/checkout@v2
         with:
           lfs: 'true'
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+          token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
+          # persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+          # fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
 
       - name: Running the update header script
         run: |
