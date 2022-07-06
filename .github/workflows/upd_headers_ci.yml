@@ -8,9 +8,9 @@ on:
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
   GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}
-  SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-jobs:
+  GO_PUSH: 0
 
+jobs:
 
   upd_headers:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
@@ -60,14 +60,14 @@ jobs:
               git config --global user.name "$GIT_SERVBOT_USER"
               git config --global user.email "$GIT_SERVBOT_EMAIL"
               git commit -m "Update Headers at $THEDATE"  
-              # Push
-              git push
+              echo "GO_PUSH=1" >> $GITHUB_ENV
           else
             echo "No files to submit"
           fi
 
       - name: Push changes
         uses: ad-m/github-push-action@master
+        if: ${{ env.GO_PUSH == 1 }} 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}      
