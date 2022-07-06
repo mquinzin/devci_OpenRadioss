@@ -8,7 +8,7 @@ on:
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
   GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}
-  SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  GIT_PUSH_SERVBOT_PAT: ${{ secrets.GIT_PUSH_SERVBOT_PAT }}
   GO_PUSH: 0
 
 jobs:
@@ -70,7 +70,7 @@ jobs:
         uses: ad-m/github-push-action@master
         if: ${{ env.GO_PUSH == 1 }} 
         with:
-          github_token: ${{ env.SERVBOT_PAT }}
+          github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
           branch: ${{ github.ref }}      
 
   #     - name: Running build
