@@ -63,16 +63,17 @@ jobs:
               git config --global user.email "$GIT_SERVBOT_EMAIL"
               git commit -m "Update Headers at $THEDATE"  
               echo "GO_PUSH=1" >> $GITHUB_ENV
+              git push
           else
             echo "No files to submit"
           fi
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        if: ${{ env.GO_PUSH == 1 }} 
-        with:
-          github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
-          branch: ${{ github.ref }}      
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   if: ${{ env.GO_PUSH == 1 }} 
+      #   with:
+      #     github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
+      #     branch: ${{ github.ref }}      
 
   #     - name: Running build
   #       run: |
