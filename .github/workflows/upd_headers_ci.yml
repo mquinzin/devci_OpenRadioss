@@ -44,7 +44,7 @@ jobs:
           echo "Running script"
           # Clean temporary files (if any) 
           git clean -f
-          echo "uuu" > newfile
+          echo "uuu" >> newfile
           git add newfile
 
       - name: Submiting files if any
