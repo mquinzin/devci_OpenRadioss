@@ -8,6 +8,7 @@ on:
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
   GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}
+  SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 jobs:
 
 
@@ -37,6 +38,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: 'true'
+          token: ${{ env.SERVBOT_PAT }}
 
       - name: Running the update header script
         run: |
