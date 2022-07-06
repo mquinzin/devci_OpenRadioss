@@ -3,7 +3,7 @@ name: Update Headers CI
 on:
   # push:
   schedule:
-    - cron: '* */1 * * *'
+    - cron: '* * * * *'
 
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
