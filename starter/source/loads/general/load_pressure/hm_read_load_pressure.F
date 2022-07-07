@@ -28,7 +28,6 @@ Chd|-- calls ---------------
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        HM_GET_FLOATV                 source/devtools/hm_reader/hm_get_floatv.F
 Chd|        HM_GET_FLOATV_DIM             source/devtools/hm_reader/hm_get_floatv_dim.F
-Chd|        HM_GET_FLOAT_ARRAY_INDEX      source/devtools/hm_reader/hm_get_float_array_index.F
 Chd|        HM_GET_INTV                   source/devtools/hm_reader/hm_get_intv.F
 Chd|        HM_GET_INT_ARRAY_INDEX        source/devtools/hm_reader/hm_get_int_array_index.F
 Chd|        HM_GET_STRING                 source/devtools/hm_reader/hm_get_string.F
@@ -388,12 +387,13 @@ C--------------
          WRITE (IOUT,2003)
          J = 0
          DO I=1,(NINTERP/10)
-            WRITE (IOUT,'(10I10)')ID_INTER(INTERLOADP(NINTLOADP+1:NINTLOADP+10)) 
-            WRITE (IOUT,'(10I10)')INTERLOADP(NINTLOADP+1:NINTLOADP+10) 
+            WRITE (IOUT,'(10(10X,I10))')ID_INTER(INTERLOADP(NINTLOADP+1:NINTLOADP+10)) 
+            WRITE (IOUT,'(1P10G20.13)')DGAPLOADINT(NINTLOADP+1:NINTLOADP+10) 
             J = J +10
          ENDDO
          IF(MODULO(NINTERP,10) > 0) THEN
-            WRITE (IOUT,'(10I10)')ID_INTER(INTERLOADP(NINTLOADP+J+1:NINTLOADP+NINTERP)) 
+            WRITE (IOUT,'(10(10X,I10))')ID_INTER(INTERLOADP(NINTLOADP+J+1:NINTLOADP+NINTERP)) 
+            WRITE (IOUT,'(1P10G20.13)')DGAPLOADINT(NINTLOADP+J+1:NINTLOADP+NINTERP)
          ENDIF
          ENDIF
          NUMLOADP = NUMLOADP + 4*NN

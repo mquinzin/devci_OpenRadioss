@@ -69,10 +69,9 @@ C-----------------------------------------------
        LENBT = LEN_TRIM(BTAG)
        LENCPUNAM=LEN_TRIM(CPUNAM)
        LENARCHTIT=LEN_TRIM(ARCH_TIT)
-
-       WRITE(COPYRIGHTLINE,'(A,A,A)') 'COPYRIGHT (C) 1986-',
-     *                 YEARSTRING(1:LENYS),
-     *          " Altair Engineering, Inc.                "
+       
+       YEARSTRING(1:4)=BDATE(8:11)
+       WRITE(COPYRIGHTLINE,'(A,A,A)') 'COPYRIGHT (C) 1986-'//YEARSTRING(1:4)//' Altair Engineering, Inc.'
 
        CALL PRINTCENTER(" ",0,IOUT,1)
        CALL PRINTCENTER(" ",0,IOUT,0)
@@ -116,6 +115,7 @@ Chd|  PRINTCENTER                   source/engine/radioss_title.F
 Chd|-- called by -----------
 Chd|        RADIOSS2                      source/engine/radioss2.F      
 Chd|        RADIOSS_TITLE                 source/engine/radioss_title.F 
+Chd|        RADIOSS_TITLE_C               com/engine/radioss_title_c.F  
 Chd|-- calls ---------------
 Chd|====================================================================
       SUBROUTINE PRINTCENTER(ARRAY,ARRLEN,LINOUT,FLAG)

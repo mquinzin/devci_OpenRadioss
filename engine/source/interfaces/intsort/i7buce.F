@@ -24,7 +24,6 @@ Chd|====================================================================
 Chd|  I7BUCE                        source/interfaces/intsort/i7buce.F
 Chd|-- called by -----------
 Chd|        I7MAIN_TRI                    source/interfaces/intsort/i7main_tri.F
-Chd|        INTER_SORT_07                 source/interfaces/int07/inter_sort_07.F
 Chd|-- calls ---------------
 Chd|        I7TRI                         source/interfaces/intsort/i7tri.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
@@ -186,7 +185,6 @@ Chd|====================================================================
 Chd|  I7BUCE_VOX                    source/interfaces/intsort/i7buce.F
 Chd|-- called by -----------
 Chd|        I7MAIN_TRI                    source/interfaces/intsort/i7main_tri.F
-Chd|        INTER_SORT_07                 source/interfaces/int07/inter_sort_07.F
 Chd|-- calls ---------------
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        ARRET                         source/system/arret.F         
@@ -427,7 +425,7 @@ C     I_MEM = 3 ==> TROP NIVEAUX PILE
 C taille de boite non diminuee
 C        MINBOX= THREE_OVER_4*MINBOX
 C        MAXBOX= THREE_OVER_4*MAXBOX
-        IF( TZINF.LE.MAX(GAP,DRAD)  ) THEN
+        IF( TZINF.LE.MAX(GAP+DGAPLOAD,DRAD)  ) THEN
           CALL ANCMSG(MSGID=98,ANMODE=ANINFO,
      .            I1=NOINT,C1='(I7BUCE)')
           CALL ARRET(2)

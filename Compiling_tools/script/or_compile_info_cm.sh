@@ -3,8 +3,8 @@
 cd ..
 
 echo "       CHARACTER VERS*32, BDATE*32, BTIME*32,BTAG*80, MSGO*68,BNAME*32"
-echo "       CHARACTER YEARSTRING*10"
-echo "       INTEGER LEN_VERS, LEN_BDATE, LEN_BTIME, PMSG,LEN_MSG,LENYS"
+echo "       CHARACTER YEARSTRING*11"
+echo "       INTEGER LEN_VERS, LEN_BDATE, LEN_BTIME, PMSG,LEN_MSG"
 echo "       INTEGER LENBNAM"
 echo " "
 echo "       DATA VERS/\"OpenRadioss\"/"

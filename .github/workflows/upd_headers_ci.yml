@@ -3,7 +3,7 @@ name: Update Headers CI
 on:
   # push:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '35 11 * * *'
 
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
@@ -29,28 +29,18 @@ jobs:
 
     steps:
 
-      - name: Test
-        run: |
-          echo "Running permge CI at"
-          date
-          echo "Using commit ${{github.sha}} with token ${{ env.GIT_PUSH_SERVBOT_PAT }}"
-
       # Get last git modifications, WS is not persistent here
       - uses: actions/checkout@v2
         with:
           lfs: 'true'
+          # Use a PAT else the push won't trigger the next workflow
           token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
-          # persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          # fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
 
       - name: Running the update header script
         run: |
-          # /__w/_tool/or_header_mod_auto.pl update_headers
-          echo "Running script"
+          Compiling_tools/script/or_header_mod_auto.pl update_headers
           # Clean temporary files (if any) 
           git clean -f
-          echo "uuu" >> newfile
-          git add newfile
 
       - name: Submiting files if any
         run: |
@@ -63,10 +53,6 @@ jobs:
               git config --global user.email "$GIT_SERVBOT_EMAIL"
               git commit -m "Update Headers at $THEDATE"  
               echo "GO_PUSH=1" >> $GITHUB_ENV
-              # git remote show origin
-              # git remote set-url origin https://${{ env.GIT_PUSH_SERVBOT_PAT }}@github.com/OpenRadioss/devci_OpenRadioss.git
-              # git remote show origin 
-              # git push
           else
             echo "No files to submit"
           fi
@@ -77,131 +63,3 @@ jobs:
         with:
           github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
           branch: ${{ github.ref }}      
-
-  #     - name: Running build
-  #       run: |
-  #         mpi_opts=''
-  #         if [ ! -z ${{ matrix.mpi }} ]
-  #         then
-  #           mpi_opts="-mpi=${{ matrix.mpi }}"
-  #         fi
-
-  #         cmd="./build_script.sh -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
-  #         echo "========================================="
-  #         echo "--  BUILD ${{ matrix.build }} --"   
-  #         echo "--  $cmd --"   
-  #         echo "========================================="
-  #         source /home/adminqa/.bashrc
-  #         chmod 755 Compiling_tools/script/*
-  #         chmod 755 ${{ matrix.binary }}/build_script.sh
-
-  #         # USED for development only (avoid using lfs)
-  #         test ! -e extlib && ln -s /__w/_tool/extlib .
-
-  #         md5sum exec/* || echo "Nothing in exec/" 
-  #         mkdir exec
-  #         cd ${{ matrix.binary }}
-
-  #         eval $cmd
-
-  #         cd ..
-  #         md5sum exec/* || exit 1
-
-  #     # Upload artifact 
-  #     - name: Upload built artifacts
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}
-  #         path: exec
-
-  # qa:
-  #   needs: build
-  #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
-  #   runs-on: ["qa_${{ matrix.os }}","developer_ci"]
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:ompi411
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
-
-  #   env:
-  #     hm_reader_extlib: ../../extlib/hm_reader
-  #     hm_reader_cfgfiles: ../../hm_cfg_files
-  #     homeuser: /home/adminqa
-  #     mpi: ompi
-
-  #   strategy:
-  #     # If one job fails othere are canceled
-  #     fail-fast: false
-  #     matrix:
-  #       os: [linux64]
-  #       # precision: [dp,sp]
-  #       precision: [dp]
-
-  #   steps:
-
-  #     # Get git related to the commit
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         lfs: 'true'
-
-  #     - name: Clean local exe dir
-  #       run: |
-  #         rm -rf exec
-
-  #     # Download artifacts
-  #     - uses: actions/download-artifact@v2
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}
-  #         path: exec
-
-  #     - name: Running qa
-  #       run: |
-
-  #         # USED for development only (avoid using lfs)
-  #         test ! -e extlib && ln -s /__w/_tool/extlib .
-
-  #         md5sum exec/* || echo "Nothing in exec/" 
-  #         if [ "${{ matrix.precision }}" = "dp" ]
-  #         then
-  #           precision_ext=""
-  #         else
-  #           precision_ext="_${{ matrix.precision }}"
-  #         fi
-
-  #         chmod 755 exec/*
-  #         cd qa-tests/scripts
-  #         chmod 755 or_qa_script or_radioss.pl 
-
-  #         source ${{ env.homeuser }}/.bashrc
-  #         export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
-
-
-  #         cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np 4' --env:OMP_NUM_THREADS=2 --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
-  #         echo "========================================="
-  #         echo "--  QA ${{ matrix.os }}_${{ matrix.precision }} --"   
-  #         echo "--  $cmd --"   
-  #         echo "========================================="
-  #         eval $cmd 
-
-  #         # Getting failed test
-  #         nbtestsfailed=$(grep "# Runs Failed\s*:" QA.summary | tail -n 1 | awk -F' ' '{print $5}')
-  #         # Checking if no test has run at all (maybe exec errors)
-  #         nbtestsok=$(grep "# Runs Successful\s*:" QA.summary | tail -n 1 | awk -F' ' '{print $5}')
-
-  #         if [ $nbtestsfailed -gt 0 ] || [ $nbtestsok = 0 ]
-  #         then 
-  #           # If at least one test is failed we mark the CI as failed
-  #           echo "All tests are not OK, CI is failed"
-  #           exit 1
-  #         fi 
-
-  #     # Delete the artifacts
-  #     # In private repo we are limited to 2Gb so we decided not to keep developer ci artifacts for the moment
-  #     - uses: joutvhu/delete-artifact@v1
-  #       with:
-  #         name: |
-  #           bins-${{ matrix.os }}-${{ matrix.precision }}   
-  #           bins-${{ matrix.os }}-sp

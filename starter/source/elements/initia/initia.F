@@ -66,7 +66,6 @@ Chd|        LASER10                       source/loads/laser/laser10.F
 Chd|        LGMINI_RBY                    source/tools/lagmul/lgmini_rby.F
 Chd|        MODBUFEL                      source/constraints/fxbody/modbufel.F
 Chd|        MODDEPL                       source/constraints/fxbody/moddepl.F
-Chd|        MULTIFLUID_GLOBAL_TDET        source/multifluid/multifluid_global_tdet.F
 Chd|        MULTIFLUID_INIT2              source/multifluid/multifluid_init2.F
 Chd|        MULTIFLUID_INIT2T             source/multifluid/multifluid_init2t.F
 Chd|        MULTIFLUID_INIT3              source/multifluid/multifluid_init3.F

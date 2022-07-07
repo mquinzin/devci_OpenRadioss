@@ -283,9 +283,10 @@ C
 
 
 Chd|====================================================================
-Chd|  UPGRADE_REMNODE_EDG2          source/interfaces/interf1/upgrade_remnode.F
+Chd|  UPGRADE_REMNODE_EDG2           source/interfaces/interf1/upgrade_remnode.F
 Chd|-- called by -----------
-Chd|        REMN_I2OP_EDG25               source/interfaces/int25/i25remlin.F
+Chd|        ININT3                        source/interfaces/inter3d1/inint3.F
+Chd|        ININTR                        source/interfaces/interf1/inintr.F
 Chd|-- calls ---------------
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        INTBUFMOD                     share/modules1/restart_mod.F  
@@ -358,7 +359,8 @@ C
 Chd|====================================================================
 Chd|  UPGRADE_REMNODE_E2S           source/interfaces/interf1/upgrade_remnode.F
 Chd|-- called by -----------
-Chd|        REMN_I2OP_EDG25               source/interfaces/int25/i25remlin.F
+Chd|        ININT3                        source/interfaces/inter3d1/inint3.F
+Chd|        ININTR                        source/interfaces/interf1/inintr.F
 Chd|-- calls ---------------
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        INTBUFMOD                     share/modules1/restart_mod.F  

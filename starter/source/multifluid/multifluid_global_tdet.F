@@ -21,10 +21,11 @@ Copyright>        As an alternative to this open-source version, Altair also off
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
 Chd|====================================================================
-Chd|  MULTIFLUID_GLOBAL_TDET        source/multifluid/multifluid_global_tdet.F
+Chd|  INIVOL_SET                    source/initial_conditions/inivol/inivol_set.F
 Chd|-- called by -----------
 Chd|        INITIA                        source/elements/initia/initia.F
 Chd|-- calls ---------------
+Chd|        ANCMSG                        source/output/message/message.F
 Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
@@ -107,9 +108,7 @@ C-----------------------------------------------
                     IS_JWL = .FALSE.
                     !Number of layers ( = number of material in law 151)
                     IF (NLAY > 1) THEN
-                       IF (GBUF%G_TB > ZERO) THEN
-                          GBUF%TB(LFT:LLT) = -EP20
-                       ENDIF     
+                       GBUF%TB(LFT:LLT) = -EP37
                        DO ILAY = 1, NLAY
                           !SUBMATLAW = IPM(2, IPM(20 + ILAY, MTN))
                           SUBMATLAW = ELBUF_TAB(NG)%BUFLY(ILAY)%ILAW  
@@ -130,7 +129,7 @@ C-----------------------------------------------
                          ENDDO   
                        ELSE
                          DO II = LFT, LLT
-                           IF(GBUF%TB(II) == -EP20)THEN
+                           IF(GBUF%TB(II) == -EP37)THEN
                              GBUF%TB(II) = ZERO
                            ENDIF
                          ENDDO                                        

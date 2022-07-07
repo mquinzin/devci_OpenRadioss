@@ -37,7 +37,6 @@ Chd|        SCDERI3                       source/elements/thickshell/solidec/scd
 Chd|        SCMORTH3                      source/elements/thickshell/solidec/scmorth3.F
 Chd|        SCZERO3                       source/elements/thickshell/solidec/scinit3.F
 Chd|        SDLEN3                        source/elements/solid/solide/sdlen3.F
-Chd|        SDLENSH                       source/elements/thickshell/solidec/scinit3.F
 Chd|        SIGIN20B                      source/elements/solid/solide20/s20mass3.F
 Chd|        SMASS3                        source/elements/solid/solide/smass3.F
 Chd|        SVALUE0                       source/elements/thickshell/solidec/scinit3.F
@@ -552,12 +551,10 @@ C
       RETURN
       END
 Chd|====================================================================
-Chd|  SDLENSH                       source/elements/thickshell/solidec/scinit3.F
+Chd|  SDLENSH                      
 Chd|-- called by -----------
-Chd|        S8CINIT3                      source/elements/thickshell/solide8c/s8cinit3.F
-Chd|        SCINIT3                       source/elements/thickshell/solidec/scinit3.F
 Chd|-- calls ---------------
-Chd|        CLSYS3                        source/elements/thickshell/solidec/scinit3.F
+Chd|        CLSYS3                        
 Chd|====================================================================
       SUBROUTINE SDLENSH(VOLN,LLSH,
      .   X1, X2, X3, X4, X5, X6, X7, X8,
@@ -706,9 +703,8 @@ C
       RETURN
       END SUBROUTINE SDLENSH
 Chd|====================================================================
-Chd|  CLSYS3                        source/elements/thickshell/solidec/scinit3.F
+Chd|  CLSYS3                        
 Chd|-- called by -----------
-Chd|        SDLENSH                       source/elements/thickshell/solidec/scinit3.F
 Chd|-- calls ---------------
 Chd|====================================================================
       SUBROUTINE CLSYS3(RX, RY, RZ, SX, SY, SZ, VQ, DET,NEL)
