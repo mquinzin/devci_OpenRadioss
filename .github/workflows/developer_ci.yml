@@ -34,12 +34,12 @@ jobs:
 
     steps:
 
-      - name: Clean local exe dir
+      - name: Run dev
         run: |
+          echo "Running the basis workflow"
           echo "Running using COMMIT ${{ github.sha }}"
-          echo "Running using BRANCH ${{ github.base_ref }}"
-          echo "File content: "
-          cat myspyfile
+          echo "Running using BASE_REF ${{ github.base_ref }}"
+          echo "Running using REF_NAME ${{ github.ref_name }}"
 
   # build:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
