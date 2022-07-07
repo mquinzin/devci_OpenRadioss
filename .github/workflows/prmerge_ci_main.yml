@@ -45,8 +45,9 @@ jobs:
           echo "Running using COMMIT ${{ github.sha }}"
           echo "Running using BASE_REF ${{ github.base_ref }}"
           echo "Running using REF_NAME ${{ github.ref_name }}"
+          echo "------"
           tail -n 2 myspyfile
-
+          echo "------"
 
   # build:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
