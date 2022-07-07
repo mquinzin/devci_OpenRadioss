@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: 'true'
-          # token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
+          token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
           # persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
           # fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
 
@@ -63,20 +63,20 @@ jobs:
               git config --global user.email "$GIT_SERVBOT_EMAIL"
               git commit -m "Update Headers at $THEDATE"  
               echo "GO_PUSH=1" >> $GITHUB_ENV
-              git remote show origin
-              git remote set-url origin https://${{ env.GIT_PUSH_SERVBOT_PAT }}@github.com/OpenRadioss/devci_OpenRadioss.git
-              git remote show origin 
-              git push
+              # git remote show origin
+              # git remote set-url origin https://${{ env.GIT_PUSH_SERVBOT_PAT }}@github.com/OpenRadioss/devci_OpenRadioss.git
+              # git remote show origin 
+              # git push
           else
             echo "No files to submit"
           fi
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   if: ${{ env.GO_PUSH == 1 }} 
-      #   with:
-      #     github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
-      #     branch: ${{ github.ref }}      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        if: ${{ env.GO_PUSH == 1 }} 
+        with:
+          github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
+          branch: ${{ github.ref }}      
 
   #     - name: Running build
   #       run: |
