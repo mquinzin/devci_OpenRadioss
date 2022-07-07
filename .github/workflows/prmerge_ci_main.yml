@@ -5,33 +5,46 @@ on:
   push:
     branches:
       - main
-env:
-  CLOSE_BRANCH: 0
-  TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}
-  FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-  TO_EMAIL: ${{ secrets.TO_EMAIL }}
-  QA_TIMEOUT_PER_TEST: 150
+
+# env:
+#   CLOSE_BRANCH: 0
+#   TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}
+#   FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+#   TO_EMAIL: ${{ secrets.TO_EMAIL }}
+#   QA_TIMEOUT_PER_TEST: 150
 
 jobs:
 
-
-  build:
+  prmerge_main_ci:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
-    # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
-    runs-on: ubuntu-latest
-    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
-    # container: 
-    #   image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
-    #   credentials: 
-    #     username: ${{secrets.DOCKER_REGISTRY_USER}}
-    #     password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-    #   volumes: 
-    #     - /etc/localtime:/etc/localtime:ro
+    runs-on: ubuntu:latest
 
-    # env:
-    #   BUILD_NB_THREAD: 2
-    #   STATUS_BUILD: 0
-    #   SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+    steps:
+
+      - name: Clean local exe dir
+        run: |
+          echo "Running using COMMIT ${{ github.sha }}"
+          echo "Running using BRANCH ${{ github.base_ref }}"
+          echo "File content: "
+          cat myspyfile
+
+
+  # build:
+  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
+  #   # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
+  #   runs-on: ["${{ matrix.build }}","prmerge_ci"]
+  #   container: 
+  #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
+  #     credentials: 
+  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
+  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+  #     volumes: 
+  #       - /etc/localtime:/etc/localtime:ro
+
+  #   env:
+  #     BUILD_NB_THREAD: 2
+  #     STATUS_BUILD: 0
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
   #   strategy:
   #     # If one job fails othere are canceled
@@ -70,7 +83,7 @@ jobs:
   #           os: linux64 
   #           binary: engine
 
-    steps:
+  #   steps:
 
   #     # Set the working dir suffixed with branch name
   #     - uses: haya14busa/action-cond@v1
@@ -83,13 +96,6 @@ jobs:
   #     - name: Create branch oriented WS directory & integration WS
   #       run: |
   #         mkdir -p ${{ steps.set_workdir.outputs.value }}
-        
-        - name: Test
-          run: |
-            echo "Running permge CI at"
-            date
-            echo "Using commit ${{github.sha}}"
-
 
   #     - name: Clean local exe dir
   #       working-directory: ${{ steps.set_workdir.outputs.value }}
