@@ -17,7 +17,21 @@ jobs:
 
   prmerge_main_ci:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
-    runs-on: ubuntu:latest
+    # concurrency: 
+    #   group: ${{ github.ref_name }}
+    #   cancel-in-progress: true
+
+    # DEV ONLY # runs-on: ["build","dev_devci"]
+    runs-on: ["build","dev_devci"]
+    # runs-on: ["build","developer_ci"]
+    container: 
+      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
+
 
     steps:
 
