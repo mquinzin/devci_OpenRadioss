@@ -3,7 +3,8 @@ name: Update Headers CI
 on:
   # push:
   schedule:
-    - cron: '35 11 * * *'
+    - cron: '00 13 * * *'
+  workflow_dispatch:
 
 env:
   GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}
