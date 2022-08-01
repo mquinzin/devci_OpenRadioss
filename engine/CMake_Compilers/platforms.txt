@@ -1,3 +1,0 @@
-
-         -arch=linux64_gf               (SMP executable / Gfortran compiler)
-         -arch=linux64_gf -mpi=ompi     (OpenMPI executable / Gfortran compiler)
