@@ -104,9 +104,9 @@ jobs:
 
       - name: Get commit owner to set it in perforce perforce description
         run: |
-          echo "github.event.commits[0].author.name : {{ github.event.commits[0].author.name }}"
-          echo "github.event.head.user.login : {{ github.event.head.user.login }}"
-          echo "github.event.base.user.login : {{ github.event.base.user.login }}"
+          echo "github.event.commits[0].author.name : ${{ github.event.commits[0].author.name }}"
+          echo "github.event.head.user.login : ${{ github.event.head.user.login }}"
+          echo "github.event.base.user.login : ${{ github.event.base.user.login }}"
 
 
       # Create a WS to sync git changes on a temporary repo (sync_git_perforce)
