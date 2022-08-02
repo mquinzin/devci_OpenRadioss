@@ -175,7 +175,7 @@ jobs:
       # so if this specific case fails, think to delete perforce client before re-running
       - name: Get all unsynced commit since last good one
         run: |
-          sync_git_2_perforce.py \
+          /__w/_tool/sync_git_2_perforce.py \
             --git_api_url ${{ github.api_url }} \
             --git_repo ${{ github.repository }} \
             --git_user $SERVBOT_USER \
