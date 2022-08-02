@@ -32,6 +32,8 @@ on:
         required: true
       TO_EMAIL:
         required: true
+      DATE_MIN_CHECK_COMMITS:
+        required: true
 
 # When pushing in main or merging pull request in main
 #  ${{github.base_ref}} : <empty>
@@ -180,7 +182,7 @@ jobs:
             --git_repo ${{ github.repository }} \
             --git_user $SERVBOT_USER \
             --git_token $SERVBOT_PAT \
-            --interval_check "${{ secrets.DATE_MIN_CHECK_COMMITS }}" \
+            --interval_check "${{ env.DATE_MIN_CHECK_COMMITS }}" \
             --output_file ${{ env.COMMIT_LIST_FILE }} \
             ${{ steps.perforce.outputs.sync_option }} \
             --current_commit ${{github.sha}} 
