@@ -180,7 +180,7 @@ jobs:
             --git_repo ${{ github.repository }} \
             --git_user $SERVBOT_USER \
             --git_token $SERVBOT_PAT \
-            --interval_check "${{ env.DATE_MIN_CHECK_COMMITS }}" \
+            --interval_check "8 days ago" \
             --output_file ${{ env.COMMIT_LIST_FILE }} \
             ${{ steps.perforce.outputs.sync_option }} \
             --current_commit ${{github.sha}} 
