@@ -466,14 +466,6 @@ jobs:
       with:
         route: GET /repos/${{ github.repository }}/commits/${{ github.sha }}
 
-    - uses: octokit/request-action@v2.x
-      id: get_commit_author
-      env:
-        GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-        REQUEST_BODY: "['${{ github.sha }}']"
-      with:
-        route: GET /repos/${{ github.repository }}/commits/${{ github.sha }}
-
     - name: Release the new binaries
       uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
       with:
@@ -490,14 +482,6 @@ jobs:
         files: |
           todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
         clear_attachments: true    
-
-    - uses: octokit/request-action@v2.x
-      id: get_commit_author
-      env:
-        GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-        REQUEST_BODY: "['${{ github.sha }}']"
-      with:
-        route: GET /repos/${{ github.repository }}/commits/${{ github.sha }}
 
     - name: Release the new binaries
       uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
