@@ -429,13 +429,13 @@ jobs:
       with:
         path: exec_tmp
 
-    # - name: Copy all artifact complex structure into flat files in exec
-    #   run: |
-    #     mkdir -p exec
-    #     for file in `find exec_tmp -type f`
-    #     do
-    #       cp -p $file exec/
-    #     done
+    - name: Copy all artifact complex structure into flat files in exec
+      run: |
+        mkdir -p exec
+        for file in `find exec_tmp -type f`
+        do
+          cp -p $file exec/
+        done
         
     # - name: Provide ALL binaries
     #   run: |
