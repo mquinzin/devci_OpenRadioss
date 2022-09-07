@@ -436,10 +436,10 @@ jobs:
         do
           cp -p $file exec/
         done
-        
+
     - name: Provide ALL binaries
       run: |
-        mkdir -p todeliver 
+        mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}
         cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/bin
         
     # #     # Prepare tree architecture
