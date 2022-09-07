@@ -449,8 +449,8 @@ jobs:
         # cp -a extlib/license/* todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
         # cp -a COPYRIGHT.md todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-        # export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${{ matrix.os }}.zip"
-        # echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
+        export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${{ matrix.os }}.zip"
+        echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
         cd todeliver
         zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
         cd ..
