@@ -418,11 +418,11 @@ jobs:
         echo "DATEOFTHEDAY=`date +'%Y%m%d'`" >> $GITHUB_ENV
         rm -rf exec todeliver
 
-    # Get last git modifications, don't clean before (way to go faster)
-    - uses: actions/checkout@v2
-      with:
-        clean: 'false'
-        lfs: 'true'
+    # # Get last git modifications, don't clean before (way to go faster)
+    # - uses: actions/checkout@v2
+    #   with:
+    #     clean: 'false'
+    #     lfs: 'true'
 
     # Download ALL artifacts
     - uses: actions/download-artifact@v3
