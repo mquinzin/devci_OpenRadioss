@@ -42,15 +42,15 @@ jobs:
           # Get download count file from bin server
 
           # USED for development only
-          test ! -e /usr/local/bin/github_download_count.py && ln -s /__w/_tool/github_download_count.py /usr/local/bin/github_download_count.py        
+          test ! -e /usr/local/bin/github_download_count.py && ln -s /tmp/github_download_count.py        
 
-          github_download_count.py --help
+          /tmp/github_download_count.py --help
 
       # - name: Download Count - Update entries
       #   run: |
       #     # github_download_count.py --help
 
-          
+
 
   # build:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
