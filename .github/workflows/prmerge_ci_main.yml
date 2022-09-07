@@ -418,29 +418,29 @@ jobs:
         echo "DATEOFTHEDAY=`date +'%Y%m%d'`" >> $GITHUB_ENV
         rm -rf exec todeliver
 
-    # # Get last git modifications, don't clean before (way to go faster)
-    # - uses: actions/checkout@v2
-    #   with:
-    #     clean: 'false'
-    #     lfs: 'true'
+    # Get last git modifications, don't clean before (way to go faster)
+    - uses: actions/checkout@v2
+      with:
+        clean: 'false'
+        lfs: 'true'
 
     # Download ALL artifacts
     - uses: actions/download-artifact@v3
       with:
-        # path: exec_tmp
-        path: todeliver
+        path: exec_tmp
 
-    # - name: Copy all artifact complex structure into flat files in exec
-    #   run: |
-    #     mkdir -p exec
-    #     for file in `find exec_tmp -type f`
-    #     do
-    #       cp -p $file exec/
-    #     done
+    - name: Copy all artifact complex structure into flat files in exec
+      run: |
+        mkdir -p exec
+        for file in `find exec_tmp -type f`
+        do
+          cp -p $file exec/
+        done
         
     - name: Provide ALL binaries
       run: |
-        rm -f .git/hooks/pre-push
+        mkdir -p todeliver
+        cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/bin
         
     #     # Prepare tree architecture
     #     mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/lib todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
@@ -453,11 +453,11 @@ jobs:
     #     export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${{ matrix.os }}.zip"
     #     echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
     #     cd todeliver
-    #     zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
     #     cd ..
 
-    #     # Removed lfs hook (not supported in next action, not neeeded)
-    #     rm -f .git/hooks/pre-push
+        # Removed lfs hook (not supported in next action, not neeeded)
+        rm -f .git/hooks/pre-push
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
