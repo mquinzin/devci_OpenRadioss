@@ -397,6 +397,7 @@ jobs:
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       volumes: 
          - /etc/localtime:/etc/localtime:ro
+         - /github_download_counter:/github_download_counter
 
     env:
       SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
@@ -502,12 +503,13 @@ jobs:
 
     - name: Counter Download - Update values
       run: |
+          cd /__w/github_download_counter
           /__w/_tool/github_download_count.py \
             --git_api_url ${{ github.api_url }} \
             --git_repo ${{ github.repository }} \
             --git_user $SERVBOT_USER \
             --git_token $SERVBOT_PAT \
-            --action=updatevalues
+            --action=update_values
 
     - name: Release the new binaries
       uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
