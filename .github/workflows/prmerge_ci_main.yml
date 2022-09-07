@@ -424,11 +424,11 @@ jobs:
         clean: 'false'
         lfs: 'true'
 
-    # # Download ALL artifacts
-    # - uses: actions/download-artifact@v3
-    #   with:
-    #     # path: exec_tmp
-    #     path: todeliver
+    # Download ALL artifacts
+    - uses: actions/download-artifact@v3
+      with:
+        # path: exec_tmp
+        path: todeliver
 
     # - name: Copy all artifact complex structure into flat files in exec
     #   run: |
@@ -441,8 +441,6 @@ jobs:
     - name: Provide ALL binaries
       run: |
         rm -f .git/hooks/pre-push
-        mkdir -p todeliver
-        cp -a exec/* todeliver/
         
     #     # Prepare tree architecture
     #     mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/lib todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
