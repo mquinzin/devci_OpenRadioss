@@ -16,90 +16,97 @@ env:
 jobs:
 
 
-  # build:
-  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
-  #   # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
-  #   runs-on: ["${{ matrix.build }}","prmerge_ci"]
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
+  build:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
+    runs-on: ["${{ matrix.build }}","dev_pmci"]
+    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
+    container: 
+      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
 
-  #   env:
-  #     BUILD_NB_THREAD: 2
-  #     STATUS_BUILD: 0
-  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+    env:
+      BUILD_NB_THREAD: 2
+      STATUS_BUILD: 0
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
-  #   strategy:
-  #     # If one job fails othere are canceled
-  #     fail-fast: true
-  #     matrix:
-  #       include:
-  #         - build: starter_linux64_gf
-  #           precision: dp
-  #           os: linux64
-  #           binary: starter
+    strategy:
+      # If one job fails othere are canceled
+      fail-fast: true
+      matrix:
+        include:
+          - build: starter_linux64_gf
+            precision: dp
+            os: linux64
+            binary: starter
 
-  #         - build: starter_linux64_gf_sp
-  #           precision: sp
-  #           os: linux64
-  #           binary: starter
+          - build: starter_linux64_gf_sp
+            precision: sp
+            os: linux64
+            binary: starter
 
-  #         - build: engine_linux64_gf_ompi
-  #           precision: dp
-  #           os: linux64
-  #           binary: engine
-  #           mpi: ompi
+          - build: engine_linux64_gf_ompi
+            precision: dp
+            os: linux64
+            binary: engine
+            mpi: ompi
 
-  #         - build: engine_linux64_gf_ompi_sp
-  #           precision: sp
-  #           os: linux64
-  #           binary: engine
-  #           mpi: ompi
+          - build: engine_linux64_gf_ompi_sp
+            precision: sp
+            os: linux64
+            binary: engine
+            mpi: ompi
 
-  #         - build: engine_linux64_gf
-  #           precision: dp
-  #           os: linux64
-  #           binary: engine
+          - build: engine_linux64_gf
+            precision: dp
+            os: linux64
+            binary: engine
 
-  #         - build: engine_linux64_gf_sp
-  #           precision: sp
-  #           os: linux64 
-  #           binary: engine
+          - build: engine_linux64_gf_sp
+            precision: sp
+            os: linux64 
+            binary: engine
 
-  #   steps:
+    steps:
 
-  #     # Set the working dir suffixed with branch name
-  #     - uses: haya14busa/action-cond@v1
-  #       id: set_workdir
-  #       with:
-  #         cond: ${{ github.base_ref == '' }}
-  #         if_true: ${{github.ref_name}}
-  #         if_false: ${{github.base_ref}}
+      # Set the working dir suffixed with branch name
+      - uses: haya14busa/action-cond@v1
+        id: set_workdir
+        with:
+          cond: ${{ github.base_ref == '' }}
+          if_true: ${{github.ref_name}}
+          if_false: ${{github.base_ref}}
 
-  #     - name: Create branch oriented WS directory & integration WS
-  #       run: |
-  #         mkdir -p ${{ steps.set_workdir.outputs.value }}
+      - name: Create branch oriented WS directory & integration WS
+        run: |
+          mkdir -p ${{ steps.set_workdir.outputs.value }}
 
-  #     - name: Clean local exe dir
-  #       working-directory: ${{ steps.set_workdir.outputs.value }}
-  #       run: |
-  #         rm -rf exec
-  #         md5sum exec/* || echo "Nothing in exec/" 
+      - name: Clean local exe dir
+        working-directory: ${{ steps.set_workdir.outputs.value }}
+        run: |
+          rm -rf exec
+          md5sum exec/* || echo "Nothing in exec/" 
 
-  #     # Get last git modifications, don't clean before (way to keep persistent obj files)
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         path: ${{ steps.set_workdir.outputs.value }}
-  #         clean: 'false'
-  #         lfs: 'true'
+      # Get last git modifications, don't clean before (way to keep persistent obj files)
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ steps.set_workdir.outputs.value }}
+          clean: 'false'
+          lfs: 'true'
 
-  #     - name: Running build
-  #       working-directory: ${{ steps.set_workdir.outputs.value }}
-  #       run: |
+      - name: Running build
+        working-directory: ${{ steps.set_workdir.outputs.value }}
+        run: |
+          echo "========================================="
+          echo "--  BUILD ${{ matrix.build }} --"   
+          echo "========================================="
+          mkdir exec
+          touch exec/myfakeexe_${{ matrix.build }}
+
   #         mpi_opts=''
   #         if [ ! -z ${{ matrix.mpi }} ]
   #         then
@@ -162,12 +169,12 @@ jobs:
   #           echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
   #         fi
 
-  #     # Upload artifact
-  #     - name: Upload built artifacts
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}
-  #         path: ${{ steps.set_workdir.outputs.value }}/exec
+      # Upload artifact
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}
+          path: ${{ steps.set_workdir.outputs.value }}/exec
   #       if: ${{ env.CLOSE_BRANCH == 0 }} 
 
   #     # Close the branch (= restrict push to team devopsadmins) if needed
@@ -358,24 +365,24 @@ jobs:
 
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
 
-  # Call the sync CI if build and qa are OK 
-  # Secrets variables must be passed
-  call-workflow-sync-git2perforce:
-    # needs: qa
-    uses: ./.github/workflows/prmerge_ci_sync.yml
-    secrets: 
-      DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
-      DOCKER_REGISTRY_PASSWD: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-      P4PORT: ${{secrets.P4PORT}}
-      P4USER: ${{secrets.P4USER}}
-      P4PASSWD: ${{secrets.P4PASSWD}}
-      RUN_FIRST_TIME: ${{secrets.RUN_FIRST_TIME}}
-      TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}      
-      FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-      TO_EMAIL: ${{ secrets.TO_EMAIL }} 
-      DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
+  # # Call the sync CI if build and qa are OK 
+  # # Secrets variables must be passed
+  # call-workflow-sync-git2perforce:
+  #   # needs: qa
+  #   uses: ./.github/workflows/prmerge_ci_sync.yml
+  #   secrets: 
+  #     DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
+  #     DOCKER_REGISTRY_PASSWD: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+  #     SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  #     P4PORT: ${{secrets.P4PORT}}
+  #     P4USER: ${{secrets.P4USER}}
+  #     P4PASSWD: ${{secrets.P4PASSWD}}
+  #     RUN_FIRST_TIME: ${{secrets.RUN_FIRST_TIME}}
+  #     TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}      
+  #     FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+  #     TO_EMAIL: ${{ secrets.TO_EMAIL }} 
+  #     DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
 
   # delivery:
   #   needs: qa
