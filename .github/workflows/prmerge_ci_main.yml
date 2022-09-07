@@ -451,12 +451,12 @@ jobs:
 
         # export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${{ matrix.os }}.zip"
         # echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
-        # cd todeliver
-        # zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
-        # cd ..
+        cd todeliver
+        zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        cd ..
 
         # Removed lfs hook (not supported in next action, not neeeded)
-        # rm -f .git/hooks/pre-push
+        rm -f .git/hooks/pre-push
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
