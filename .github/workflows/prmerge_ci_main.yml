@@ -42,9 +42,9 @@ jobs:
           # Get download count file from bin server
 
           # USED for development only
-          # test ! -e /usr/local/bin/github_download_count.py && ln -s /__w/_tool/github_download_count.py        
+          # test ! -e /usr/local/bin/github_download_count.py && ln -s /__w/_tool/github_download_count.py /usr/loca/bin/       
 
-          # /tmp/github_download_count.py --help
+          github_download_count.py --help
 
       # - name: Download Count - Update entries
       #   run: |
