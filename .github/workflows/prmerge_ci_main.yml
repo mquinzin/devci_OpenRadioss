@@ -437,10 +437,10 @@ jobs:
           cp -p $file exec/
         done
         
-    # - name: Provide ALL binaries
-    #   run: |
-    #     mkdir -p todeliver 
-    #     cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/bin
+    - name: Provide ALL binaries
+      run: |
+        mkdir -p todeliver 
+        cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/bin
         
     # #     # Prepare tree architecture
     # #     mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/lib todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
