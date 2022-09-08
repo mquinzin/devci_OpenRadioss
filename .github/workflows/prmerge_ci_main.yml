@@ -577,14 +577,14 @@ jobs:
             --action update \
             --tag_date ${{ env.DATEOFTHEDAY }}
 
-    - name: Clean old github release/tag if needed + clean Counter Download
-      run: |
-          /__w/_tool/clean_github_release.py \
-            --git_api_url ${{ github.api_url }} \
-            --git_repo ${{ github.repository }} \
-            --git_user $SERVBOT_USER \
-            --git_token $SERVBOT_PAT \
-            --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
-            --counter_file_dir /github_download_counter \
-            --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }}
-            
+    # - name: Clean old github release/tag if needed + clean Counter Download
+    #   run: |
+    #       /__w/_tool/clean_github_release.py \
+    #         --git_api_url ${{ github.api_url }} \
+    #         --git_repo ${{ github.repository }} \
+    #         --git_user $SERVBOT_USER \
+    #         --git_token $SERVBOT_PAT \
+    #         --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
+    #         --counter_file_dir /github_download_counter \
+    #         --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }}
+    #         
