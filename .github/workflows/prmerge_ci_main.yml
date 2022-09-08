@@ -459,13 +459,13 @@ jobs:
         # Removed lfs hook (not supported in next action, not neeeded)
         rm -f .git/hooks/pre-push
 
-    # - uses: octokit/request-action@v2.x
-    #   id: get_commit_author
-    #   env:
-    #     GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-    #     REQUEST_BODY: "['${{ github.sha }}']"
-    #   with:
-    #     route: GET /repos/${{ github.repository }}/commits/${{ github.sha }}
+    - uses: octokit/request-action@v2.x
+      id: get_commit_author
+      env:
+        GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+        REQUEST_BODY: "['${{ github.sha }}']"
+      with:
+        route: GET /repos/${{ github.repository }}/commits/${{ github.sha }}
 
     # - name: Release the new binaries
     #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
@@ -501,15 +501,15 @@ jobs:
     #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
     #     clear_attachments: true    
 
-    # - name: Counter Download - Update values
-    #   run: |
-    #       cd /github_download_counter
-    #       /__w/_tool/github_download_count.py \
-    #         --git_api_url ${{ github.api_url }} \
-    #         --git_repo ${{ github.repository }} \
-    #         --git_user $SERVBOT_USER \
-    #         --git_token $SERVBOT_PAT \
-    #         --action=update_values
+    - name: Counter Download - Update values
+      run: |
+          cd /github_download_counter
+          /__w/_tool/github_download_count.py \
+            --git_api_url ${{ github.api_url }} \
+            --git_repo ${{ github.repository }} \
+            --git_user $SERVBOT_USER \
+            --git_token $SERVBOT_PAT \
+            --action=update_values
 
     - name: Release the new binaries
       uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
