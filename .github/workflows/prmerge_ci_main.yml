@@ -501,39 +501,39 @@ jobs:
     #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
     #     clear_attachments: true    
 
-    - name: Release the new binaries
-      uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        release: "${{ env.DELIVERY_TAG_PREFIX }}20220831"
-        tag: "${{ env.DELIVERY_TAG_PREFIX }}20220831"
-        name: "Last build on 20220831"  
-        body: |
-          This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-          [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+    # - name: Release the new binaries
+    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
+    #   with:
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     release: "${{ env.DELIVERY_TAG_PREFIX }}20220831"
+    #     tag: "${{ env.DELIVERY_TAG_PREFIX }}20220831"
+    #     name: "Last build on 20220831"  
+    #     body: |
+    #       This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
+    #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-          Commit message:
-          ${{ github.event.commits[0].message }}
-        files: |
-          todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
-        clear_attachments: true    
+    #       Commit message:
+    #       ${{ github.event.commits[0].message }}
+    #     files: |
+    #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
+    #     clear_attachments: true    
 
-    - name: Release the new binaries
-      uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        release: "${{ env.DELIVERY_TAG_PREFIX }}20220830"
-        tag: "${{ env.DELIVERY_TAG_PREFIX }}20220830"
-        name: "Last build on 20220830"  
-        body: |
-          This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-          [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+    # - name: Release the new binaries
+    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
+    #   with:
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     release: "${{ env.DELIVERY_TAG_PREFIX }}20220830"
+    #     tag: "${{ env.DELIVERY_TAG_PREFIX }}20220830"
+    #     name: "Last build on 20220830"  
+    #     body: |
+    #       This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
+    #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-          Commit message:
-          ${{ github.event.commits[0].message }}
-        files: |
-          todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
-        clear_attachments: true    
+    #       Commit message:
+    #       ${{ github.event.commits[0].message }}
+    #     files: |
+    #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
+    #     clear_attachments: true    
 
     - name: Counter Download - Update values
       run: |
@@ -577,14 +577,14 @@ jobs:
             --action update \
             --tag_date ${{ env.DATEOFTHEDAY }}
 
-    # - name: Clean old github release/tag if needed + clean Counter Download
-    #   run: |
-    #       /__w/_tool/clean_github_release.py \
-    #         --git_api_url ${{ github.api_url }} \
-    #         --git_repo ${{ github.repository }} \
-    #         --git_user $SERVBOT_USER \
-    #         --git_token $SERVBOT_PAT \
-    #         --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
-    #         --counter_file_dir /github_download_counter \
-    #         --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }}
-    #         
+    - name: Clean old github release/tag if needed + clean Counter Download
+      run: |
+          /__w/_tool/clean_github_release.py \
+            --git_api_url ${{ github.api_url }} \
+            --git_repo ${{ github.repository }} \
+            --git_user $SERVBOT_USER \
+            --git_token $SERVBOT_PAT \
+            --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
+            --counter_file_dir /github_download_counter \
+            --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }}
+            
