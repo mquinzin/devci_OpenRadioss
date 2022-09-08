@@ -585,6 +585,6 @@ jobs:
             --git_user $SERVBOT_USER \
             --git_token $SERVBOT_PAT \
             --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
-            --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} \ 
-            --counter_file_dir /github_download_counter
-
+            --counter_file_dir /github_download_counter \
+            --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }}
+            
