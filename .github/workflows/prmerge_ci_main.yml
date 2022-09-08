@@ -540,7 +540,7 @@ jobs:
           cd /github_download_counter
 
           # Do some before using some lock and retry stuff
-
+          cp download_count.json download_count.json-sav-${{ env.DATEOFTHEDAY }}
 
           github_download_count.py \
             --git_api_url ${{ github.api_url }} \
