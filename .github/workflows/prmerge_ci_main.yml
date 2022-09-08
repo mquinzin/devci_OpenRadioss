@@ -537,7 +537,7 @@ jobs:
             --git_user $SERVBOT_USER \
             --git_token $SERVBOT_PAT \
             --action update \
-            --tag_date } ${{ env.DATEOFTHEDAY }}
+            --tag_date ${{ env.DATEOFTHEDAY }}
 
     # - name: Clean old github release/tag if needed
     #   run: |
