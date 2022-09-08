@@ -397,7 +397,7 @@ jobs:
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       volumes: 
          - /etc/localtime:/etc/localtime:ro
-         - /github_download_counter:/github_download_counter
+         - /github_download_counter_dev:/github_download_counter
 
     env:
       SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
