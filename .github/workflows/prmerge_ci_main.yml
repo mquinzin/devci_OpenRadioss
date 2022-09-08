@@ -501,15 +501,15 @@ jobs:
     #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
     #     clear_attachments: true    
 
-    - name: Counter Download - Update values
-      run: |
-          cd /github_download_counter
-          /__w/_tool/github_download_count.py \
-            --git_api_url ${{ github.api_url }} \
-            --git_repo ${{ github.repository }} \
-            --git_user $SERVBOT_USER \
-            --git_token $SERVBOT_PAT \
-            --action=update_values
+    # - name: Counter Download - Update values
+    #   run: |
+    #       cd /github_download_counter
+    #       /__w/_tool/github_download_count.py \
+    #         --git_api_url ${{ github.api_url }} \
+    #         --git_repo ${{ github.repository }} \
+    #         --git_user $SERVBOT_USER \
+    #         --git_token $SERVBOT_PAT \
+    #         --action=update_values
 
     - name: Release the new binaries
       uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
