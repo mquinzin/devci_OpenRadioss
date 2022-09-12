@@ -501,7 +501,7 @@ jobs:
         clear_attachments: true    
 
     # - name: Release the new binaries
-    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
+    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2 
     #   with:
     #     token: ${{ secrets.GITHUB_TOKEN }}
     #     release: "${{ env.DELIVERY_TAG_PREFIX }}20220901"
