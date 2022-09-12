@@ -454,7 +454,7 @@ jobs:
         #########################################################################################
         mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/linux64 todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader
         cp -a extlib/h3d/lib/linux64/libh3dwriter.so todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/linux64/
-        cp -a extlib/hm_reader todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+        cp -a extlib/hm_reader todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/
 
         cp -a hm_cfg_files todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
