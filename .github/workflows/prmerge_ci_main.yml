@@ -106,6 +106,8 @@ jobs:
           echo "========================================="
           mkdir exec
           echo "My fake exe" > exec/myfakeexe_${{ matrix.build }}
+          chmod 755 exec/myfakeexe_${{ matrix.build }}
+          ls -l exec/myfakeexe_${{ matrix.build }}
 
   #         mpi_opts=''
   #         if [ ! -z ${{ matrix.mpi }} ]
