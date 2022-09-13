@@ -439,6 +439,7 @@ jobs:
         do
           cp -p $file exec/
         done
+        chmod 755 exec/*
 
     - name: Provide ALL binaries
       run: |
