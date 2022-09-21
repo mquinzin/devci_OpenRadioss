@@ -28,6 +28,10 @@ jobs:
       volumes: 
         - /etc/localtime:/etc/localtime:ro
  
+     env:
+      STATUS_BUILD: 0
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+
     strategy:
       # If one job fails others continue (tools build & delivery is not blocking no blocker)
       fail-fast: false
@@ -85,6 +89,36 @@ jobs:
 
           cd ../../th_to_csv/${{ matrix.os }}
           eval $cmd
+
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_BUILD=1" >> $GITHUB_ENV
+
+      - name: Managing step execution
+        if: ${{ always() }}
+        run: |
+
+          MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
+          echo -e "\n#### STATUS_STEP_BUILD ${{ matrix.os }} ###"
+          if [ "$STATUS_BUILD" = 0 ]
+          then
+            echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+            MAILMSG="The build tools ${{ matrix.os }} has failed \n"
+
+            # Send email 
+
+            # Setting SMTP server (docker host)
+            DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+            echo "set smtp=smtp://${DOCKER_HOST}:25" >> /etc/mail.rc 
+
+            # Print message in log 
+            echo -e $MAILMSG
+
+            # Send email
+            echo -e "$MAILMSG" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} (${{github.sha}})" $TO_EMAIL
+
+          else
+            echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+          fi
 
       # Upload artifact
       - name: Upload built artifacts
