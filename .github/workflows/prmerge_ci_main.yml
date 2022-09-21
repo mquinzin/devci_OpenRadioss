@@ -20,6 +20,7 @@ jobs:
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
     runs-on: ["${{ matrix.os }}","dev_pmci"]
     # runs-on: ["${{ matrix.os }}","prmerge_ci"]
+    continue-on-error: true
     container: 
       image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
       credentials: 
