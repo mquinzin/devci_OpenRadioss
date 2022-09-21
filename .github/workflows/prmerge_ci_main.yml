@@ -28,7 +28,7 @@ jobs:
       volumes: 
         - /etc/localtime:/etc/localtime:ro
  
-     env:
+    env:
       STATUS_BUILD: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
