@@ -273,9 +273,9 @@ jobs:
             precision_ext="_${{ matrix.precision }}"
           fi
 
-          chmod 755 exec/*
-          cd qa-tests/scripts
-          chmod 755 or_qa_script or_radioss.pl 
+          # chmod 755 exec/*
+          # cd qa-tests/scripts
+          # chmod 755 or_qa_script or_radioss.pl 
 
           source ${{ env.homeuser }}/.bashrc
           export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
