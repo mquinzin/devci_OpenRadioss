@@ -39,7 +39,7 @@ jobs:
       matrix:
         include:
           - os: linux64
-
+          - os: win64
     steps:
 
       # Set the working dir suffixed with branch name
@@ -82,7 +82,7 @@ jobs:
           cd tools/anim_to_vtk/${{ matrix.os }}
           eval $cmd
 
-          cmd="./build.bashx"
+          cmd="./build.bash"
           echo "========================================="
           echo "--  BUILD tools for anim_to_vtk (${{ matrix.os }}) --"   
           echo "--  $cmd --"   
