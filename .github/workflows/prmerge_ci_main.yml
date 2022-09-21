@@ -66,10 +66,7 @@ jobs:
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
           mkdir exec
-          which gcc 
-          which g++
-          gcc --version
-          g++ --version
+          source /home/adminqa/.bashrc
 
           cmd="./build.bash"
           echo "========================================="
