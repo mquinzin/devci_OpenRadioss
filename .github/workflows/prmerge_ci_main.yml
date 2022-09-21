@@ -28,8 +28,6 @@ jobs:
       volumes: 
         - /etc/localtime:/etc/localtime:ro
 
-    env:
-
     strategy:
       # If one job fails others continue (tools build & delivery is not blocking no blocker)
       fail-fast: false
