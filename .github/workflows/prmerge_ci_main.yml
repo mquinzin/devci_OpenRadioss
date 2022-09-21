@@ -214,78 +214,78 @@ jobs:
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
 
-  # qa:
-  #   needs: build
-  #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
-  #   runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:ompi411
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
+  qa:
+    needs: build
+    # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
+    runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
+    container: 
+      image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:ompi411
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
 
-  #   env:
-  #     hm_reader_extlib: ../../extlib/hm_reader
-  #     hm_reader_cfgfiles: ../../hm_cfg_files
-  #     homeuser: /home/adminqa
-  #     mpi: ompi
-  #     STATUS_QA: 0
+    env:
+      hm_reader_extlib: ../../extlib/hm_reader
+      hm_reader_cfgfiles: ../../hm_cfg_files
+      homeuser: /home/adminqa
+      mpi: ompi
+      STATUS_QA: 0
 
-  #   strategy:
-  #     # If one job fails othere are canceled
-  #     fail-fast: false
-  #     matrix:
-  #       os: [linux64]
-  #       # precision: [dp,sp]
-  #       precision: [dp]
+    strategy:
+      # If one job fails othere are canceled
+      fail-fast: false
+      matrix:
+        os: [linux64]
+        # precision: [dp,sp]
+        precision: [dp]
         
-  #   steps:
+    steps:
 
-  #     # Get git related to the commit
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         lfs: 'true'
+      # Get git related to the commit
+      - uses: actions/checkout@v2
+        with:
+          lfs: 'true'
 
-  #     - name: Clean local exe dir
-  #       working-directory: ${{ steps.set_workdir.outputs.value }}
-  #       run: |
-  #         rm -rf exec
+      - name: Clean local exe dir
+        working-directory: ${{ steps.set_workdir.outputs.value }}
+        run: |
+          rm -rf exec
 
-  #     # Download artifacts
-  #     - uses: actions/download-artifact@v2
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}
-  #         path: exec
+      # Download artifacts
+      - uses: actions/download-artifact@v2
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}
+          path: exec
 
-  #     - name: Running qa
-  #       run: |
+      - name: Running qa
+        run: |
 
-  #         # USED for development only (avoid using lfs)
-  #         test ! -e extlib && ln -s /__w/_tool/extlib .
+          # USED for development only (avoid using lfs)
+          test ! -e extlib && ln -s /__w/_tool/extlib .
 
-  #         md5sum exec/* || echo "Nothing in exec/" 
-  #         if [ "${{ matrix.precision }}" = "dp" ]
-  #         then
-  #           precision_ext=""
-  #         else
-  #           precision_ext="_${{ matrix.precision }}"
-  #         fi
+          md5sum exec/* || echo "Nothing in exec/" 
+          if [ "${{ matrix.precision }}" = "dp" ]
+          then
+            precision_ext=""
+          else
+            precision_ext="_${{ matrix.precision }}"
+          fi
 
-  #         chmod 755 exec/*
-  #         cd qa-tests/scripts
-  #         chmod 755 or_qa_script or_radioss.pl 
+          chmod 755 exec/*
+          cd qa-tests/scripts
+          chmod 755 or_qa_script or_radioss.pl 
 
-  #         source ${{ env.homeuser }}/.bashrc
-  #         export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
+          source ${{ env.homeuser }}/.bashrc
+          export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
 
 
-  #         cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np 4' --env:OMP_NUM_THREADS=2 --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
-  #         echo "========================================="
-  #         echo "--  QA ${{ matrix.os }}_${{ matrix.precision }} --"   
-  #         echo "--  $cmd --"   
-  #         echo "========================================="
+          cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np 4' --env:OMP_NUM_THREADS=2 --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
+          echo "========================================="
+          echo "--  QA ${{ matrix.os }}_${{ matrix.precision }} --"   
+          echo "--  $cmd --"   
+          echo "========================================="
   #         eval $cmd 
 
   #         # Getting failed test
@@ -367,28 +367,28 @@ jobs:
 
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
 
-  # # Call the sync CI if build and qa are OK 
-  # # Secrets variables must be passed
-  # call-workflow-sync-git2perforce:
-  #   # needs: qa
-  #   uses: ./.github/workflows/prmerge_ci_sync.yml
-  #   secrets: 
-  #     DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
-  #     DOCKER_REGISTRY_PASSWD: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
-  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-  #     P4PORT: ${{secrets.P4PORT}}
-  #     P4USER: ${{secrets.P4USER}}
-  #     P4PASSWD: ${{secrets.P4PASSWD}}
-  #     RUN_FIRST_TIME: ${{secrets.RUN_FIRST_TIME}}
-  #     TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}      
-  #     FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-  #     TO_EMAIL: ${{ secrets.TO_EMAIL }} 
-  #     DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
+  # Call the sync CI if build and qa are OK 
+  # Secrets variables must be passed
+  call-workflow-sync-git2perforce:
+    # needs: qa
+    uses: ./.github/workflows/prmerge_ci_sync.yml
+    secrets: 
+      DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
+      DOCKER_REGISTRY_PASSWD: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+      P4PORT: ${{secrets.P4PORT}}
+      P4USER: ${{secrets.P4USER}}
+      P4PASSWD: ${{secrets.P4PASSWD}}
+      RUN_FIRST_TIME: ${{secrets.RUN_FIRST_TIME}}
+      TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}      
+      FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+      TO_EMAIL: ${{ secrets.TO_EMAIL }} 
+      DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
 
   delivery:
-    # needs: qa
-    needs: build
+    needs: qa
+    # needs: build
     # DEV ONLY # runs-on: dev_delivery
     runs-on: dev_delivery
     # runs-on: delivery
@@ -399,6 +399,7 @@ jobs:
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       volumes: 
          - /etc/localtime:/etc/localtime:ro
+         # - /github_download_counter:/github_download_counter
          - /github_download_counter_dev:/github_download_counter
 
     env:
@@ -443,18 +444,7 @@ jobs:
 
     - name: Provide ALL binaries
       run: |
-        # mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}
-        # cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/bin
-        # # Prepare tree architecture
-        # mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/lib todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-        # cp -a extlib/h3d/lib/linux64/libh3dwriter.so extlib/hm_reader/linux64/libhm_reader_linux64.so todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/lib/
-        # cp -a hm_cfg_files todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/cfg
-        # cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/bin
-        # cp -a extlib/license/* todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
-        # cp -a COPYRIGHT.md todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-
-
-        #########################################################################################
+        # Prepare tree architecture
         mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/linux64 todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader
         cp -a extlib/h3d/lib/linux64/libh3dwriter.so todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/linux64/
         cp -a extlib/hm_reader todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/
@@ -467,7 +457,6 @@ jobs:
         cp -a extlib/license/* todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
 
         cp -a COPYRIGHT.md todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-        #########################################################################################
 
         export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${{ matrix.os }}.zip"
         echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
@@ -485,74 +474,6 @@ jobs:
         REQUEST_BODY: "['${{ github.sha }}']"
       with:
         route: GET /repos/${{ github.repository }}/commits/${{ github.sha }}
-
-    - name: Release the new binaries
-      uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        release: "${{ env.DELIVERY_TAG_PREFIX }}20220902"
-        tag: "${{ env.DELIVERY_TAG_PREFIX }}20220902"
-        name: "Last build on 20220902"  
-        body: |
-          This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-          [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-          Commit message:
-          ${{ github.event.commits[0].message }}
-        files: |
-          todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
-        clear_attachments: true    
-
-    # - name: Release the new binaries
-    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2 
-    #   with:
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     release: "${{ env.DELIVERY_TAG_PREFIX }}20220901"
-    #     tag: "${{ env.DELIVERY_TAG_PREFIX }}20220901"
-    #     name: "Last build on 20220901"  
-    #     body: |
-    #       This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-    #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-    #       Commit message:
-    #       ${{ github.event.commits[0].message }}
-    #     files: |
-    #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
-    #     clear_attachments: true    
-
-    # - name: Release the new binaries
-    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
-    #   with:
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     release: "${{ env.DELIVERY_TAG_PREFIX }}20220831"
-    #     tag: "${{ env.DELIVERY_TAG_PREFIX }}20220831"
-    #     name: "Last build on 20220831"  
-    #     body: |
-    #       This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-    #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-    #       Commit message:
-    #       ${{ github.event.commits[0].message }}
-    #     files: |
-    #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
-    #     clear_attachments: true    
-
-    # - name: Release the new binaries
-    #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.1.2
-    #   with:
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     release: "${{ env.DELIVERY_TAG_PREFIX }}20220830"
-    #     tag: "${{ env.DELIVERY_TAG_PREFIX }}20220830"
-    #     name: "Last build on 20220830"  
-    #     body: |
-    #       This automatic release is built from commit ${{ github.sha }} and was triggered by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-    #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-    #       Commit message:
-    #       ${{ github.event.commits[0].message }}
-    #     files: |
-    #       todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
-    #     clear_attachments: true    
 
     - name: Counter Download - Update values
       run: |
