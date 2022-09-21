@@ -465,7 +465,7 @@ jobs:
       DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
 
   delivery:
-    needs: ['qa','build_tools']
+    needs: [qa,build_tools]
     # needs: build
     # DEV ONLY # runs-on: dev_delivery
     runs-on: dev_delivery
