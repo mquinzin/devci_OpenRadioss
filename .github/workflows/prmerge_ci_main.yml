@@ -77,7 +77,7 @@ jobs:
           cd tools/anim_to_vtk/${{ matrix.os }}
           eval $cmd
 
-          cmd="./build.bash"
+          cmd="./build.bashx"
           echo "========================================="
           echo "--  BUILD tools for anim_to_vtk (${{ matrix.os }}) --"   
           echo "--  $cmd --"   
