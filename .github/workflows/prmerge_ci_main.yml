@@ -18,7 +18,8 @@ jobs:
   build_tools:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    runs-on: ["${{ matrix.os }}","dev_pmci"]
+    # runs-on: ["${{ matrix.os }}","dev_pmci"]
+    runs-on: ["linux64","dev_pmci"]
     # runs-on: ["${{ matrix.os }}","prmerge_ci"]
     continue-on-error: true
     container: 
