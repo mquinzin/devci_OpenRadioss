@@ -546,6 +546,7 @@ jobs:
 
     - name: Copy all artifact complex structure into flat files in exec
       run: |
+        find exec_tmp -type f
         mkdir -p exec
         for file in `find exec_tmp -type f`
         do
