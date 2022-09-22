@@ -18,8 +18,7 @@ jobs:
   build_tools:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    runs-on: ["linux64","dev_pmci"]
+    runs-on: ["${{ matrix.os }}","dev_pmci"]
     # runs-on: ["${{ matrix.os }}","prmerge_ci"]
     continue-on-error: true
     container: 
@@ -40,7 +39,6 @@ jobs:
       matrix:
         include:
           - os: linux64
-          - os: win64
     steps:
 
       # Set the working dir suffixed with branch name
