@@ -55,6 +55,10 @@ jobs:
       - name: Clean local exe dir
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
+          wsl
+          echo $SHELL
+          pwd
+          ls -l
           rm -rf exec
           md5sum exec/* || echo "Nothing in exec/"           
           touch toto
