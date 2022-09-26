@@ -50,5 +50,11 @@ jobs:
 
       - name: Create branch oriented WS directory & integration WS
         run: |
-          ls 
-          pwd
+          mkdir -p ${{ steps.set_workdir.outputs.value }}
+
+      - name: Clean local exe dir
+        working-directory: ${{ steps.set_workdir.outputs.value }}
+        run: |
+          rm -rf exec
+          md5sum exec/* || echo "Nothing in exec/"           
+          touch toto
