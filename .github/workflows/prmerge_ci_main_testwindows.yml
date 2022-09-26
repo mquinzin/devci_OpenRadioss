@@ -1,0 +1,60 @@
+name: PR Merge CI MAIN
+
+on:
+
+  push:
+    branches:
+      - main
+
+env:
+  CLOSE_BRANCH: 0
+  TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}
+  FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+  TO_EMAIL: ${{ secrets.TO_EMAIL }}
+  QA_TIMEOUT_PER_TEST: 150
+
+jobs:
+
+    build_tools:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
+    runs-on: ["${{ matrix.os }}","build"]
+    # runs-on: ["${{ matrix.os }}","prmerge_ci"]
+    continue-on-error: true
+    container: 
+      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
+ 
+    env:
+      STATUS_BUILD: 0
+
+    strategy:
+      # If one job fails others continue (tools build & delivery is not blocking no blocker)
+      fail-fast: false
+      matrix:
+        include:
+          - os: win64
+    steps:
+
+      # Set the working dir suffixed with branch name
+      - uses: haya14busa/action-cond@v1
+        id: set_workdir
+        with:
+          cond: ${{ github.base_ref == '' }}
+          if_true: ${{github.ref_name}}
+          if_false: ${{github.base_ref}}
+
+      - name: Create branch oriented WS directory & integration WS
+        run: |
+          mkdir -p ${{ steps.set_workdir.outputs.value }}
+
+      - name: Clean local exe dir
+        working-directory: ${{ steps.set_workdir.outputs.value }}
+        run: |
+          rm -rf exec
+          md5sum exec/* || echo "Nothing in exec/"           
+          touch toto
