@@ -57,11 +57,11 @@ jobs:
       - name: Clean local exe dir
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: >
-         bash -c "rm -rf exec 
-         && md5sum exec/* || echo 'Nothing in exec/'"
-
-# ; rm -rf exec; cd ..; pwd; mkdir a/b/c; touch toto; md5sum exec/* || echo 'Nothing in exec/'"
-
-        # cat /etc/os-release
-        # wsl echo '$SHELL' `&`& pwd `&`& ls -l `&`& rm -rf exec `&`&  cd .. `&`& pwd `&`& touch toto
-        # md5sum exec/* || echo "Nothing in exec/" `&`&
+         bash -c "rm -rf exec"
+         
+      # Get last git modifications, don't clean before (way to keep persistent obj files)
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ steps.set_workdir.outputs.value }}
+          clean: 'false'
+          lfs: 'true'
