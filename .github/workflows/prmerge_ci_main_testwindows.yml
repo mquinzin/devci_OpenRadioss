@@ -50,15 +50,23 @@ jobs:
 
       - name: Create branch oriented WS directory & integration WS
         run: |
-          mkdir -p ${{ steps.set_workdir.outputs.value }}
+          # mkdir -p ne fonctionne pas en powersehell en non administrateur !!!
+          if (${{ matrix.os }} -eq 'win64') {
+            echo "Runing on win64"
+            md -Force ${{ steps.set_workdir.outputs.value }}
+          }
+          else {
+            echo "Runing on linux64"
+            mkdir -p ${{ steps.set_workdir.outputs.value }}
+          }
 
-      - name: Clean local exe dir
-        working-directory: ${{ steps.set_workdir.outputs.value }}
-        run: |
-          wsl
-          echo $SHELL
-          pwd
-          ls -l
-          rm -rf exec
-          md5sum exec/* || echo "Nothing in exec/"           
-          touch toto
+      # - name: Clean local exe dir
+      #   working-directory: ${{ steps.set_workdir.outputs.value }}
+      #   run: |
+      #     wsl
+      #     echo $SHELL
+      #     pwd
+      #     ls -l
+      #     rm -rf exec
+      #     md5sum exec/* || echo "Nothing in exec/"           
+      #     touch toto
