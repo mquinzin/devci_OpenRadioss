@@ -54,6 +54,7 @@ jobs:
           # mkdir -p ne fonctionne pas en powersehell en non administrateur !!!
           echo "Running on win64"
           md -Force ${{ steps.set_workdir.outputs.value }}
+          wsl -l -v
 
       - name: Clean local exe dir
         if: ${{ matrix.os == 'win64' }} 
