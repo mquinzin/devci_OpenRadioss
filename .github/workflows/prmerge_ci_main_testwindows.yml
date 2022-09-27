@@ -18,9 +18,9 @@ jobs:
   build_tools:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    runs-on: ["${{ matrix.os }}","build"]
+    runs-on: ["${{ matrix.os }}","dev_pmci"]
     # runs-on: ["${{ matrix.os }}","prmerge_ci"]
-    continue-on-error: true
+    # continue-on-error: true
     # container: 
     #   image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
     #   credentials: 
@@ -38,6 +38,7 @@ jobs:
       matrix:
         include:
           - os: win64
+          - os: linux64
     steps:
 
       # Set the working dir suffixed with branch name
@@ -52,11 +53,11 @@ jobs:
         run: |
           # mkdir -p ne fonctionne pas en powersehell en non administrateur !!!
           if ("${{ matrix.os }}" -eq 'win64') {
-            echo "Runing on win64"
+            echo "Running on win64"
             md -Force ${{ steps.set_workdir.outputs.value }}
           }
           else {
-            echo "Runing on linux64"
+            echo "Running on linux64"
             mkdir -p ${{ steps.set_workdir.outputs.value }}
           }
 
