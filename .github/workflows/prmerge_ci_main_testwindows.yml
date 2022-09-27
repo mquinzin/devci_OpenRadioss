@@ -49,17 +49,18 @@ jobs:
           if_true: ${{github.ref_name}}
           if_false: ${{github.base_ref}}
 
-      - name: Create branch oriented WS directory & integration WS
+      - name: Create branch oriented WS directory & integration WS (WIN64)
+        if: ${{ matrix.os == 'win64' }} 
         run: |
           # mkdir -p ne fonctionne pas en powersehell en non administrateur !!!
-          if ("${{ matrix.os }}" -eq 'win64') {
-            echo "Running on win64"
-            md -Force ${{ steps.set_workdir.outputs.value }}
-          }
-          else {
-            echo "Running on linux64"
-            mkdir -p ${{ steps.set_workdir.outputs.value }}
-          }
+          echo "Running on win64"
+          md -Force ${{ steps.set_workdir.outputs.value }}
+
+      - name: Create branch oriented WS directory & integration WS (LINUX64)
+        if: ${{ matrix.os == 'linux64' }}
+        run: |
+          echo "Running on linux64"
+          mkdir -p ${{ steps.set_workdir.outputs.value }}
 
       # - name: Clean local exe dir
       #   working-directory: ${{ steps.set_workdir.outputs.value }}
