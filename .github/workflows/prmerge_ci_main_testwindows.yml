@@ -60,6 +60,7 @@ jobs:
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
           wsl --status 
+          wsl -l -v
           # cat /etc/os-release
           # wsl echo '$SHELL' `&`& pwd `&`& ls -l `&`& rm -rf exec `&`&  cd .. `&`& pwd `&`& touch toto
           # md5sum exec/* || echo "Nothing in exec/" `&`&
