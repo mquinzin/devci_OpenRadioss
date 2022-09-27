@@ -49,18 +49,16 @@ jobs:
           if_false: ${{github.base_ref}}
 
       - name: Create branch oriented WS directory & integration WS (WIN64)
-        if: ${{ matrix.os == 'win64' }} 
+        # if: ${{ matrix.os == 'win64' }} 
         run: |
           # mkdir -p ne fonctionne pas en powersehell en non administrateur !!!
-          echo "Running on win64"
           md -Force ${{ steps.set_workdir.outputs.value }}
 
       - name: Clean local exe dir
-        if: ${{ matrix.os == 'win64' }} 
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: >
-         bash -c "cat /etc/os-rlease && 
-         pwd"
+         bash -c "rm -rf exec 
+         && md5sum exec/* || echo 'Nothing in exec/'"
 
 # ; rm -rf exec; cd ..; pwd; mkdir a/b/c; touch toto; md5sum exec/* || echo 'Nothing in exec/'"
 
