@@ -51,7 +51,7 @@ jobs:
       - name: Create branch oriented WS directory & integration WS
         run: |
           # mkdir -p ne fonctionne pas en powersehell en non administrateur !!!
-          if (${{ matrix.os }} -eq 'win64') {
+          if ("${{ matrix.os }}" -eq 'win64') {
             echo "Runing on win64"
             md -Force ${{ steps.set_workdir.outputs.value }}
           }
