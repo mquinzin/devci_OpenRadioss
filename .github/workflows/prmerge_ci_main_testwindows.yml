@@ -59,4 +59,4 @@ jobs:
         if: ${{ matrix.os == 'win64' }} 
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          bash -c "pwd"
+          C:\WINDOWS\system32\bash.exe -c "pwd"
