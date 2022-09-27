@@ -59,11 +59,4 @@ jobs:
         if: ${{ matrix.os == 'win64' }} 
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          bash -c "echo $SHELL; 
-            pwd; 
-            ls -l; 
-            rm -rf exec; 
-            md5sum exec/* || echo 'Nothing in exec/'; 
-            cd ..; 
-            pwd; 
-            touch toto"
+          bash -c "pwd"
