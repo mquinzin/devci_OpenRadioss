@@ -59,7 +59,7 @@ jobs:
         if: ${{ matrix.os == 'win64' }} 
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          wsl -e "cat /etc/os-release; pwd"
+          wsl -- cat /etc/os-release; pwd
 
         # cat /etc/os-release
         # wsl echo '$SHELL' `&`& pwd `&`& ls -l `&`& rm -rf exec `&`&  cd .. `&`& pwd `&`& touch toto
