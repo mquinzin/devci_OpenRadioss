@@ -59,7 +59,14 @@ jobs:
         if: ${{ matrix.os == 'win64' }} 
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          bash -c "cat /etc/os-release; pwd"
+          bash -c "cat /etc/os-release; 
+          pwd;
+          ls -l;
+          rm -rf exec;
+          cd ..;
+          pwd;
+          touch toto;
+          md5sum exec/* || echo 'Nothing in exec/'"
 
         # cat /etc/os-release
         # wsl echo '$SHELL' `&`& pwd `&`& ls -l `&`& rm -rf exec `&`&  cd .. `&`& pwd `&`& touch toto
