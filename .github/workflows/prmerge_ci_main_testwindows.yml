@@ -70,12 +70,17 @@ jobs:
 
       - name: Running builds
         working-directory: ${{ steps.set_workdir.outputs.value }}
-        run: >
-          cmd.exe "/K" 'set curpath=%cd:\=/% && "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" && C:\cygwin64\bin\bash --login -i -c "
-          cd \"%curpath%\";
-          pwd;
-          date;
-          ifort --version;
-          ls -l;
-          "'
+        run: |
+          cmd.exe "/K" 'set curpath=%cd:\=/% && "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"'
+          dir
+          echo "path is %curpath%"
+
+
+          # cmd.exe "/K" 'set curpath=%cd:\=/% && "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" && C:\cygwin64\bin\bash --login -i -c "
+          # cd \"%curpath%\";
+          # pwd;
+          # date;
+          # ifort --version;
+          # ls -l;
+          # "'
 
