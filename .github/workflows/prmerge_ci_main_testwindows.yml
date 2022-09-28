@@ -57,7 +57,7 @@ jobs:
       - name: Clean local exe dir
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          if (test-path) {
+          if (test-path exec) {
             rm exec -r -force
           }
 
