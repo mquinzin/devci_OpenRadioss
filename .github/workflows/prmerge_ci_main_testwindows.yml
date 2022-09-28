@@ -72,10 +72,10 @@ jobs:
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: >
           cmd.exe "/K" 'set curpath=%cd:\=/% && "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" && C:\cygwin64\bin\bash --login -i -c "
-          cd \"%curpath%\"
+          cd \"%curpath%\";
           pwd;
           date;
-          ifort --version
-          ls -l
+          ifort --version;
+          ls -l;
           "'
 
