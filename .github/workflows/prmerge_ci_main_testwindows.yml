@@ -70,7 +70,7 @@ jobs:
 
       - name: Running builds
         working-directory: ${{ steps.set_workdir.outputs.value }}
-        run: |
+        run: >
           cmd.exe "/K" '"C:\Program Files (x86)\Intel\oneAPI\setvars.bat" && C:\cygwin64\bin\bash --login -i'
           ifort --version
 
