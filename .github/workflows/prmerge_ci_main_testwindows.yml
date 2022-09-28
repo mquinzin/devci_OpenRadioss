@@ -57,7 +57,9 @@ jobs:
       - name: Clean local exe dir
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          rm exec -r -force
+          if (test-path) {
+            rm exec -r -force
+          }
 
       # Get last git modifications, don't clean before (way to keep persistent obj files)
       - uses: actions/checkout@v2
