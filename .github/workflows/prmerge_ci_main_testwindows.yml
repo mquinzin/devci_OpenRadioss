@@ -42,7 +42,10 @@ jobs:
             precision: dp
             os: win64
             binary: starter
-
+          - build: engine_win64_impi
+            precision: dp
+            os: win64
+            binary: engine
     steps:
 
       # Set the working dir suffixed with branch name
@@ -62,8 +65,8 @@ jobs:
       - name: Clean local exe dir
         working-directory: ${{ steps.set_workdir.outputs.value }}
         run: |
-          if (test-path exec) {
-            rm exec -r -force
+          if (test-path OpenRadioss/exec) {
+            rm OpenRadioss/exec -r -force
           }
 
       # Working with Olivier's fork for the testing
