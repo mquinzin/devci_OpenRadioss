@@ -82,11 +82,11 @@ jobs:
           cd OpenRadioss;
           pwd;
           git pull;
-          cmd=\"./build_script.sh -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }}\"
-          echo \"=========================================\"
-          echo \"--  BUILD ${{ matrix.build }} --\"   
-          echo \"--  $cmd --\"   
-          echo \"=========================================\"          
+          cmd=\"./build_script.sh -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }}\";
+          echo \"=========================================\";
+          echo \"--  BUILD ${{ matrix.build }} --\";
+          echo \"--  $cmd --\";
+          echo \"=========================================\";        
           mkdir exec;
           cd ${{ matrix.binary }};
           "
