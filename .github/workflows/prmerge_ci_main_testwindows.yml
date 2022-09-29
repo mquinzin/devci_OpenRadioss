@@ -73,9 +73,8 @@ jobs:
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          echo '----'; 
-          pwd; 
+          
+          # Relocating in correct directory
           cd %cd:\=/%; 
           pwd; 
-          ls -l; 
-          ifort toot"
+          ls -l;"
