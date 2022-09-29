@@ -65,6 +65,7 @@ jobs:
             rm exec -r -force
           }
 
+      # Working with Olivier's fork for the testing
       # Get last git modifications, don't clean before (way to keep persistent obj files)
       # - uses: actions/checkout@v2
       #   with:
@@ -78,7 +79,7 @@ jobs:
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
             cd %cd:\=/%;
-            cd OpenRadioss
+            cd OpenRadioss;
             pwd; 
             git pull;
 
