@@ -72,8 +72,7 @@ jobs:
         working-directory: ${{ steps.set_workdir.outputs.value }}
         shell: cmd
         run: |
-          echo "path is %PATH%"
-          echo "cd is %cd%"
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
           set curpath=%cd:\=/%
           echo "curpath is %curpath%"
 
