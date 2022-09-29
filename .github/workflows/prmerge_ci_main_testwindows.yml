@@ -76,3 +76,7 @@ jobs:
           set curpath=%cd:\=/%
           echo "curpath is %curpath%"
 
+          chdir C:\cygwin64\bin
+          bash --login -i 
+          pwd
+          ls -l
