@@ -30,6 +30,7 @@ jobs:
     #     - /etc/localtime:/etc/localtime:ro
  
     env:
+      BUILD_NB_THREAD: 2
       STATUS_BUILD: 0
 
     strategy:
@@ -82,7 +83,7 @@ jobs:
           cd OpenRadioss;
           pwd;
           git pull;
-          cmd=\"./build_script.sh -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }}\";
+          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }}\";
           echo \"=========================================\";
           echo \"--  BUILD ${{ matrix.build }} --\";
           echo \"--  $cmd --\";
