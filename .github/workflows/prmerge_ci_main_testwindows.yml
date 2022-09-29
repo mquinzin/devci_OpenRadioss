@@ -18,8 +18,8 @@ jobs:
   build:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    runs-on: ["${{ matrix.build }}","prmerge_ci"]
-    # runs-on: ["${{ matrix.os }}","prmerge_ci"]
+    runs-on: ["${{ matrix.build }}","dev_pmci"]
+    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
     # continue-on-error: true
     # container: 
     #   image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411
