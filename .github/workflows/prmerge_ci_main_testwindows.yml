@@ -81,4 +81,5 @@ jobs:
           cd %cd:\=/%;
           cd OpenRadioss;
           pwd;
+          git pull;
           "
