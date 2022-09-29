@@ -18,7 +18,7 @@ jobs:
   build:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    runs-on: ["${{ matrix.os }}","dev_pmci"]
+    runs-on: ["${{ matrix.build }}","prmerge_ci"]
     # runs-on: ["${{ matrix.os }}","prmerge_ci"]
     # continue-on-error: true
     # container: 
@@ -38,14 +38,38 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - build: starter_win64_impi
+          - build: starter_win64
             precision: dp
             os: win64
             binary: starter
-          - build: engine_win64_impi
+
+          - build: starter_win64_sp
+            precision: sp
+            os: win64
+            binary: starter
+
+          # - build: engine_win64_impi
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
+
+          # - build: engine_win64_impi_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
+
+          - build: engine_win64
             precision: dp
             os: win64
             binary: engine
+
+          - build: engine_win64_sp
+            precision: sp
+            os: win64
+            binary: engine
+
     steps:
 
       # Set the working dir suffixed with branch name
