@@ -90,4 +90,7 @@ jobs:
           echo \"=========================================\";        
           mkdir exec;
           cd ${{ matrix.binary }};
+          eval $cmd;
+          cd ..;
+          md5sum exec/* || exit 1;
           "
