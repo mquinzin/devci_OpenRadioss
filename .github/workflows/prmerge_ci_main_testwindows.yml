@@ -15,7 +15,7 @@ env:
 
 jobs:
 
-  build_tools:
+  build:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
     runs-on: ["${{ matrix.os }}","dev_pmci"]
@@ -33,11 +33,15 @@ jobs:
       STATUS_BUILD: 0
 
     strategy:
-      # If one job fails others continue (tools build & delivery is not blocking no blocker)
-      fail-fast: false
+      # If one job fails others are canceled
+      fail-fast: true
       matrix:
         include:
-          - os: win64
+          - build: starter_win64_gf
+            precision: dp
+            os: win64
+            binary: starter
+
     steps:
 
       # Set the working dir suffixed with branch name
@@ -73,8 +77,12 @@ jobs:
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          
-          # Relocating in correct directory
-          cd %cd:\=/%; 
-          pwd; 
-          ls -l;"
+            cd %cd:\=/%;
+            cd OpenRadioss
+            pwd; 
+            git pull;
+
+
+
+
+          "
