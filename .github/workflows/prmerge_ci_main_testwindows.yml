@@ -74,4 +74,4 @@ jobs:
         run: |
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 
 
-          C:\cygwin64\bin\bash --login -i -c "cd %cd:\=/%; pwd; echo '----'; pwd; ifort --version"
+          C:\cygwin64\bin\bash --login -i -c "echo '----'; pwd; cd %cd:\=/%; pwd; ls -l"
