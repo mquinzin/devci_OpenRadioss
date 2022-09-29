@@ -77,4 +77,6 @@ jobs:
           echo "curpath is %curpath%"
 
           chdir C:\cygwin64\bin
-          bash --login -i -c "echo '---';pwd;ls -l"
+          bash --login -i -c "echo '---'; \ 
+          pwd; \ 
+          ls -l"
