@@ -110,7 +110,9 @@ jobs:
           cd OpenRadioss;
           pwd;
           git pull;
-          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }}\";
+          mpi_opts='';
+          if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
+          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
           echo \"=========================================\";
           echo \"--  BUILD ${{ matrix.build }} --\";
           echo \"--  $cmd --\";
