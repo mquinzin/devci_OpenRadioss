@@ -93,14 +93,30 @@ jobs:
       #     clean: 'false'
       #     lfs: 'true'
 
-      - name: Running builds
-        working-directory: ${{ steps.set_workdir.outputs.value }}
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
-          "
+      # - name: Running builds
+      #   working-directory: ${{ steps.set_workdir.outputs.value }}
+      #   # Running cygwin from powershell or cmd => neither identation nor comment !
+      #   shell: cmd
+      #   run: >
+      #     call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
+      #     cd %cd:\=/%;
+      #     cd OpenRadioss;
+      #     pwd;
+      #     git pull;
+      #     mpi_opts='';
+      #     if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
+      #     cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
+      #     echo \"=========================================\";
+      #     echo \"--  BUILD ${{ matrix.build }} --\";
+      #     echo \"--  $cmd --\";
+      #     echo \"=========================================\";        
+      #     mkdir exec;
+      #     cd ${{ matrix.binary }};
+      #     eval $cmd;
+      #     cd ..;
+      #     md5sum exec/* || exit 1;
+      #     echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
+      #     "
 
       - name: Managing step execution
         if: ${{ always() }}
@@ -122,8 +138,8 @@ jobs:
           else
           echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
           fi;   
-          "
-      # Upload artifact
+      #     "
+      # # Upload artifact
       # - name: Upload built artifacts
       #   uses: actions/upload-artifact@v3
       #   with:
