@@ -97,7 +97,7 @@ jobs:
         working-directory: ${{ steps.set_workdir.outputs.value }}
         shell: cmd
         run: >
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
           echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
           "
 
@@ -126,7 +126,7 @@ jobs:
         # Running cygwin from powershell or cmd => neither identation nor comment !
         shell: cmd
         run: >
-          call C:\cygwin64\bin\bash --login -i -c "
+          call C:\cygwin64\bin\bash --login -c "
           MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
           echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
           echo \"STATUS_BUILD : ${{ env.STATUS_BUILD }}\";
