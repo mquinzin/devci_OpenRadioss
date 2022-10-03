@@ -124,7 +124,7 @@ jobs:
         if: ${{ always() }}
         run: >
 
-          C:\cygwin64\bin\bash --login -c ""
+          C:\cygwin64\bin\bash --login -c "
 
             MAILMSG='Some error(s) has(ve) been raised during workflow execution:\n\n'; \
             echo -e '\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###'; \
