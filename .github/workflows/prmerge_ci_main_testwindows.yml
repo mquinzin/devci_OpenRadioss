@@ -128,6 +128,6 @@ jobs:
           echo -e '\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###';
           if [ '${{ env.STATUS_BUILD }}' = 0 ];
           then
-            echo -e 'Status';
+          echo -e 'Status';
           fi;
           "     
