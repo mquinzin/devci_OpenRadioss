@@ -129,6 +129,7 @@ jobs:
           call C:\cygwin64\bin\bash --login -i -c "
           MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
           echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
+          echo "STATUS_BUILD : ${{ env.STATUS_BUILD }}";
           if [ \"${{ env.STATUS_BUILD }}\" = 0 ];
           then
           echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
