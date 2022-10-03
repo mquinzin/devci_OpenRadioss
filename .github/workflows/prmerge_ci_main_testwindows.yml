@@ -122,7 +122,7 @@ jobs:
 
       - name: Managing step execution
         if: ${{ always() }}
-        run:  |
+        run: >
 
           C:\cygwin64\bin\bash --login -c "
 
