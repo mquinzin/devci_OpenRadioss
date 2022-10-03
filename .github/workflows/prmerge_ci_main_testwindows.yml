@@ -123,16 +123,20 @@ jobs:
       - name: Managing step execution
         if: ${{ always() }}
         # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
         run: >
-          C:\cygwin64\bin\bash --login -i -c "
-          MAILMSG='Some error(s) has(ve) been raised during workflow execution:\n\n';
-          echo -e '\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###';
-          if [ '${{ env.STATUS_BUILD }}' = 0 ];
+          call C:\cygwin64\bin\bash --login -i -c "
+          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+          echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
+          if [ \"${{ env.STATUS_BUILD }}\" = 0 ];
           then
-          echo -e 'Status';
-          MAVAR=2;
-          echo \"MAVAR $MAVAR\";
+          echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
+          MAILMSG+=\"The build ${{ matrix.build }} has failed \n\";
+          echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
+          echo -e $MAILMSG;
+          echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
+          exit 1;
           else
-          echo -e 'Status 2';
-          fi;
+          echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
+          fi;   
           "     
