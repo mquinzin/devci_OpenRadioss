@@ -126,5 +126,5 @@ jobs:
         # Running cygwin from powershell or cmd => neither identation nor comment !
         run: >
           C:\cygwin64\bin\bash --login -i -c "
-          echo "STATUS_BUILD : ${{ env.STATUS_BUILD }}"; 
+          echo \"STATUS_BUILD : ${{ env.STATUS_BUILD }}\"; 
           "     
