@@ -95,6 +95,7 @@ jobs:
 
       - name: Running builds
         working-directory: ${{ steps.set_workdir.outputs.value }}
+        # Running cygwin from powershell or cmd => neither identation nor comment !
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
@@ -161,6 +162,8 @@ jobs:
 
       # If the closing went wrong we send an email
       - name: "Check result of closing branch and warn if it fails"
+        # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
         run: >
           call C:\cygwin64\bin\bash --login -c "
           MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
