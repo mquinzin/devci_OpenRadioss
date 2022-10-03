@@ -97,27 +97,31 @@ jobs:
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          cd %cd:\=/%;
-          cd OpenRadioss;
-          pwd;
-          git pull;
-          mpi_opts='';
-          if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
-          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
-          echo \"=========================================\";
-          echo \"--  BUILD ${{ matrix.build }} --\";
-          echo \"--  $cmd --\";
-          echo \"=========================================\";        
-          mkdir exec;
-          cd ${{ matrix.binary }};
-          eval $cmd;
-          cd ..;
-          md5sum exec/* || exit 1;
           echo "STATUS_BUILD=145" >> $GITHUB_ENV;
           "
+
+        # call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
+        # cd %cd:\=/%;
+        # cd OpenRadioss;
+        # pwd;
+        # git pull;
+        # mpi_opts='';
+        # if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
+        # cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
+        # echo \"=========================================\";
+        # echo \"--  BUILD ${{ matrix.build }} --\";
+        # echo \"--  $cmd --\";
+        # echo \"=========================================\";        
+        # mkdir exec;
+        # cd ${{ matrix.binary }};
+        # eval $cmd;
+        # cd ..;
+        # md5sum exec/* || exit 1;
+        # echo "STATUS_BUILD=145" >> $GITHUB_ENV;
+        # "
 
       - name: Managing step execution
         if: ${{ always() }}
         run: |
 
-          echo "STATUS : $STATUS_BUILD"
+          echo "STATUS : ${{ env.STATUS_BUILD }}"
