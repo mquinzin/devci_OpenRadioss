@@ -98,7 +98,7 @@ jobs:
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          echo "STATUS_BUILD=0" >> $GITHUB_ENV;
+          echo \"STATUS_BUILD=0\" >> $GITHUB_ENV;
           "
 
         # call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
@@ -118,7 +118,7 @@ jobs:
         # eval $cmd;
         # cd ..;
         # md5sum exec/* || exit 1;
-        # echo "STATUS_BUILD=145" >> $GITHUB_ENV;
+        # echo \"STATUS_BUILD=145\" >> $GITHUB_ENV;
         # "
 
       - name: Managing step execution
