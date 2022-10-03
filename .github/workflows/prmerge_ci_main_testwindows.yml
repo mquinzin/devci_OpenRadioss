@@ -124,5 +124,5 @@ jobs:
         if: ${{ always() }}
         run: >
           C:\cygwin64\bin\bash --login -c "
-            echo 'Salut1'; echo 'Salut2';
+          echo 'Salut1'; echo 'Salut2';
           "     
