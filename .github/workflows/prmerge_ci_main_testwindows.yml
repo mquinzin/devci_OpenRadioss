@@ -130,9 +130,8 @@ jobs:
           if [ '${{ env.STATUS_BUILD }}' = 0 ];
           then
           echo -e 'Status';
-          MAILMSG='The build ${{ matrix.build }} has failed \n';
-          echo -e '$MAILMSG';
-          echo -e 'Status 1';
+          MAVAR=2
+          echo 'MAVAR $MAVAR';
           else
           echo -e 'Status 2';
           fi;
