@@ -136,7 +136,7 @@ jobs:
             # Print message in log 
             echo -e $MAILMSG;
             # Send email
-            echo -e '$MAILMSG\nThe branch is closed' | Eail -f $FROM_EMAIL -s 'Error in Github CI repo ${{ github.repository }} (${{github.sha}})' -r $MAIL_RELAY $TO_EMAIL;
+            echo -e '$MAILMSG\nThe branch is closed' | Email -f $FROM_EMAIL -s 'Error in Github CI repo ${{ github.repository }} (${{github.sha}})' -r $MAIL_RELAY $TO_EMAIL;
             # Exit fail to see it as a failure
             exit 1;
           else
