@@ -131,7 +131,7 @@ jobs:
           then
           echo -e 'Status';
           MAILMSG='The build ${{ matrix.build }} has failed \n';
-          echo -e $MAILMSG;
+          echo -e '$MAILMSG';
           echo -e 'Status 1';
           else
           echo -e 'Status 2';
