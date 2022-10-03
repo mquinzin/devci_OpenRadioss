@@ -55,9 +55,9 @@ jobs:
           #   mpi: impi
 
           - build: engine_win64
-            precision: xxx
+            precision: dp
             os: win64
-            binary: enginexx
+            binary: engine
 
           # - build: engine_win64_sp
           #   precision: sp
@@ -158,3 +158,18 @@ jobs:
           route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
           data: ${{ env.REQUEST_BODY }}
         if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
+
+      # If the closing went wrong we send an email
+      - name: "Check result of closing branch and warn if it fails"
+        run: >
+          call C:\cygwin64\bin\bash --login -c "
+          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+          MAILMSG+=\"A branch closing is needed but has failed\n\n\";
+          MAILMSG+=\"Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n\";
+          MAILMSG+=\"Check more detailed datas in CI logs\n\";
+          echo -e $MAILMSG;
+          echo -e \"\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}\";
+          echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
+          exit 1;
+          "
+        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
