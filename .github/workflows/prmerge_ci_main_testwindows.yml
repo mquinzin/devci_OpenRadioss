@@ -123,5 +123,6 @@ jobs:
       - name: Managing step execution
         if: ${{ always() }}
         run: >
-          C:\cygwin64\bin\bash --login -c "echo 'Salut1'; echo 'Salut2';
+          C:\cygwin64\bin\bash --login -c "
+            echo 'Salut1'; echo 'Salut2';
           "     
