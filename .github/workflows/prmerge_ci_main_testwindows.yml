@@ -143,7 +143,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bins-${{ matrix.os }}-${{ matrix.precision }}
-          path: ${{ steps.set_workdir.outputs.value }}/exec
+          # path: ${{ steps.set_workdir.outputs.value }}/exec
+           path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
         if: ${{ env.CLOSE_BRANCH == 0 }}           
 
       # Close the branch (= restrict push to team devopsadmins) if needed
