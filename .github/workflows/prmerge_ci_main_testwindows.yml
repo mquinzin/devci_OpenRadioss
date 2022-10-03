@@ -55,9 +55,9 @@ jobs:
           #   mpi: impi
 
           - build: engine_win64
-            precision: dpx
+            precision: xxx
             os: win64
-            binary: engine
+            binary: enginexx
 
           # - build: engine_win64_sp
           #   precision: sp
