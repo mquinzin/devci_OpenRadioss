@@ -123,7 +123,4 @@ jobs:
       - name: Managing step execution
         if: ${{ always() }}
         run: >
-          C:\cygwin64\bin\bash --login -c "
-            echo -e '#### STATUS_STEP_BUILD ${{ matrix.build }} ###';
-            echo '2e ligne';
-          "     
+          C:\cygwin64\bin\bash --login -c "echo 'Salut1'; echo 'Salut2';"     
