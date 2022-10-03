@@ -93,13 +93,13 @@ jobs:
       #     clean: 'false'
       #     lfs: 'true'
 
-      - name: Running builds
-        working-directory: ${{ steps.set_workdir.outputs.value }}
-        shell: cmd
-        run: >
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
-          echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
-          "
+      # - name: Running builds
+      #   working-directory: ${{ steps.set_workdir.outputs.value }}
+      #   shell: cmd
+      #   run: >
+      #     call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
+      #     echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
+      #     "
 
         # call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
         # cd %cd:\=/%;
