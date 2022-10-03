@@ -130,6 +130,10 @@ jobs:
           if [ '${{ env.STATUS_BUILD }}' = 0 ];
           then
           echo -e 'Status';
+          MAILMSG='The build ${{ matrix.build }} has failed \n';
+          echo 'CLOSE_BRANCH=1' >> $GITHUB_ENV;
+          echo -e $MAILMSG;
+          exit 1;
           else
           echo -e 'Status 2';
           fi;
