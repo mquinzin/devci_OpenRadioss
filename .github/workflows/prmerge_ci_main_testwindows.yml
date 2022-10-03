@@ -124,7 +124,8 @@ jobs:
       - name: Managing step execution
         if: ${{ always() }}
         # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
         run: >
-          C:\cygwin64\bin\bash --login -i -c "
+          call C:\cygwin64\bin\bash --login -i -c "
           echo \"STATUS_BUILD : ${{ env.STATUS_BUILD }}\"; 
           "     
