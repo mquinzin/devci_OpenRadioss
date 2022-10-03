@@ -99,22 +99,6 @@ jobs:
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          cd %cd:\=/%;
-          cd OpenRadioss;
-          pwd;
-          git pull;
-          mpi_opts='';
-          if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
-          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
-          echo \"=========================================\";
-          echo \"--  BUILD ${{ matrix.build }} --\";
-          echo \"--  $cmd --\";
-          echo \"=========================================\";        
-          mkdir exec;
-          cd ${{ matrix.binary }};
-          eval $cmd;
-          cd ..;
-          md5sum exec/* || exit 1;
           echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
           "
 
@@ -140,13 +124,13 @@ jobs:
           fi;   
           "
       # Upload artifact
-      - name: Upload built artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: bins-${{ matrix.os }}-${{ matrix.precision }}
-          # path: ${{ steps.set_workdir.outputs.value }}/exec
-          path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
-        if: ${{ env.CLOSE_BRANCH == 0 }}           
+      # - name: Upload built artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
+      #     # path: ${{ steps.set_workdir.outputs.value }}/exec
+      #     path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
+      #   if: ${{ env.CLOSE_BRANCH == 0 }}           
 
       # Close the branch (= restrict push to team devopsadmins) if needed
       # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
@@ -156,7 +140,7 @@ jobs:
           GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
           REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
         with:
-          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+          route: PUT /repos/${{ github.repository }}/branches/man/protection/restrictions/teams
           data: ${{ env.REQUEST_BODY }}
         if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
