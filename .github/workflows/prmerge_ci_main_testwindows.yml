@@ -132,7 +132,7 @@ jobs:
           then
           echo -e 'Status';
           MAVAR=2
-          echo 'MAVAR $MAVAR';
+          echo \"MAVAR $MAVAR\";
           else
           echo -e 'Status 2';
           fi;
