@@ -130,11 +130,6 @@ jobs:
           if [ '${{ env.STATUS_BUILD }}' = 0 ];
           then
           echo -e 'Status';
-          MAILMSG='The build ${{ matrix.build }} has failed \n';
-          echo 'CLOSE_BRANCH=1' >> $GITHUB_ENV;
-          echo -e $MAILMSG;
-          echo -e '$MAILMSG\nThe branch is closed' | Email -f $FROM_EMAIL -s 'Error in Github CI repo ${{ github.repository }} (${{github.sha}})' -r $MAIL_RELAY $TO_EMAIL;
-          exit 1;
           else
           echo -e 'Status 2';
           fi;
