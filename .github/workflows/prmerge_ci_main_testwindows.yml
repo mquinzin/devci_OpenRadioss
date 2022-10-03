@@ -123,16 +123,15 @@ jobs:
       - name: Managing step execution
         if: ${{ always() }}
         # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
         run: >
-          call C:\cygwin64\bin\bash --login -i -c "
+          C:\cygwin64\bin\bash --login -i -c "
           MAILMSG='Some error(s) has(ve) been raised during workflow execution:\n\n';
           echo -e '\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###';
           if [ '${{ env.STATUS_BUILD }}' = 0 ];
           then
           echo -e 'Status';
-          MAVAR=2
-          echo \"MAVAR $MAVAR\";
+          MAVAR=2;
+          echo 'MAVAR $MAVAR';
           else
           echo -e 'Status 2';
           fi;
