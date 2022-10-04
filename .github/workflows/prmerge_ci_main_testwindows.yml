@@ -179,7 +179,7 @@ jobs:
 
   qa_windows_no_container:
 
-    # needs: build_windows_no_container
+    needs: build_windows_no_container
     # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
     runs-on: ["qa_${{ matrix.os }}","dev"]
     # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
