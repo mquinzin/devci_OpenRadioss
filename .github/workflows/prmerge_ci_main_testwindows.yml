@@ -213,13 +213,20 @@ jobs:
             rm exec -r -force
           }
 
+      # Download artifacts
+      - uses: actions/download-artifact@v2
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}
+          path: exec
+
       - name: Clean local exe dir
         # Running cygwin from powershell or cmd => neither identation nor comment !
         shell: cmd
         run: >
-          cd %cd:\=/%;
           call C:\cygwin64\bin\bash --login -c "
+          cd %cd:\=/%;
           pwd;
           ls -l *;
+          ls -l exec/*;
           "
 
