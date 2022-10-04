@@ -222,7 +222,7 @@ jobs:
         # Running cygwin from powershell or cmd => neither identation nor comment !
         shell: cmd
         run: >
-          call C:\cygwin64\bin\bash --login -c "
+          call C:\cygwin64\bin\bash --login -i -c "
           cd %cd:\=/%;
           md5sum exec/* || echo \"Nothing in exec/\";
           if [ \"${{ matrix.precision }}\" = \"dp\" ];
