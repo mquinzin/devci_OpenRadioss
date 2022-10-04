@@ -16,7 +16,7 @@ env:
 
 jobs:
 
-  build:
+  build_windows_no_container:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
     runs-on: ["${{ matrix.build }}","dev_pmci"]
@@ -42,11 +42,11 @@ jobs:
           #   os: win64
           #   binary: starter
 
-          # - build: engine_win64_impi
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
-          #   mpi: impi
+          - build: engine_win64_impi
+            precision: dp
+            os: win64
+            binary: engine
+            mpi: impi
 
           # - build: engine_win64_impi_sp
           #   precision: sp
@@ -54,10 +54,10 @@ jobs:
           #   binary: engine
           #   mpi: impi
 
-          - build: engine_win64
-            precision: dp
-            os: win64
-            binary: engine
+          # - build: engine_win64
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
 
           # - build: engine_win64_sp
           #   precision: sp
@@ -93,30 +93,30 @@ jobs:
       #     clean: 'false'
       #     lfs: 'true'
 
-      # - name: Running builds
-      #   working-directory: ${{ steps.set_workdir.outputs.value }}
-      #   # Running cygwin from powershell or cmd => neither identation nor comment !
-      #   shell: cmd
-      #   run: >
-      #     call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-      #     cd %cd:\=/%;
-      #     cd OpenRadioss;
-      #     pwd;
-      #     git pull;
-      #     mpi_opts='';
-      #     if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
-      #     cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
-      #     echo \"=========================================\";
-      #     echo \"--  BUILD ${{ matrix.build }} --\";
-      #     echo \"--  $cmd --\";
-      #     echo \"=========================================\";        
-      #     mkdir exec;
-      #     cd ${{ matrix.binary }};
-      #     eval $cmd;
-      #     cd ..;
-      #     md5sum exec/* || exit 1;
-      #     echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
-      #     "
+      - name: Running builds
+        working-directory: ${{ steps.set_workdir.outputs.value }}
+        # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
+        run: >
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
+          cd %cd:\=/%;
+          cd OpenRadioss;
+          pwd;
+          git pull;
+          mpi_opts='';
+          if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
+          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
+          echo \"=========================================\";
+          echo \"--  BUILD ${{ matrix.build }} --\";
+          echo \"--  $cmd --\";
+          echo \"=========================================\";        
+          mkdir exec;
+          cd ${{ matrix.binary }};
+          eval $cmd;
+          cd ..;
+          md5sum exec/* || exit 1;
+          echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
+          "
 
       - name: Managing step execution
         if: ${{ always() }}
@@ -138,15 +138,15 @@ jobs:
           else
           echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
           fi;   
-      #     "
-      # # Upload artifact
-      # - name: Upload built artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
-      #     # path: ${{ steps.set_workdir.outputs.value }}/exec
-      #     path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
-      #   if: ${{ env.CLOSE_BRANCH == 0 }}           
+          "
+      # Upload artifact
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}
+          # path: ${{ steps.set_workdir.outputs.value }}/exec
+          path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
+        if: ${{ env.CLOSE_BRANCH == 0 }}           
 
       # Close the branch (= restrict push to team devopsadmins) if needed
       # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
@@ -176,3 +176,43 @@ jobs:
           exit 1;
           "
         if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
+
+  qa_windows_no_container:
+
+    needs: build_windows_no_container
+    # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
+    runs-on: ["qa_${{ matrix.os }}","dev"]
+    # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
+
+    env:
+      hm_reader_extlib: ../../extlib/hm_reader
+      hm_reader_cfgfiles: ../../hm_cfg_files
+      homeuser: /home/adminqa
+      mpi: impi
+      STATUS_QA: 0
+
+    strategy:
+      # If one job fails others continue
+      fail-fast: false
+      matrix:
+        os: [linux64]
+        # precision: [dp,sp]
+        precision: [dp]
+        
+    steps:
+
+      # Working with Olivier's fork for the testing
+      # Get git related to the commit
+      # - uses: actions/checkout@v2
+      #   with:
+      #     lfs: 'true'
+
+      - name: Clean local exe dir
+        # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
+        run: >
+          call C:\cygwin64\bin\bash --login -c "
+          pwd;
+          ls -l exec/*;
+          "
+
