@@ -195,7 +195,7 @@ jobs:
       # If one job fails others continue
       fail-fast: false
       matrix:
-        os: [linux64]
+        os: [win64]
         # precision: [dp,sp]
         precision: [dp]
         
