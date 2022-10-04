@@ -227,14 +227,14 @@ jobs:
           md5sum exec/* || echo \"Nothing in exec/\";
           if [ \"${{ matrix.precision }}\" = \"dp\" ];
           then
-            precision_ext='';
+          precision_ext='';
           else
-            precision_ext=\"_${{ matrix.precision }}\";
+          precision_ext=\"_${{ matrix.precision }}\";
           fi;
           cd qa-tests/scripts;
           cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.1 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np 4' --env:OMP_NUM_THREADS=2 --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'\";
           echo \"=========================================\";
-          echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"  ; 
+          echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"; 
           echo \"--  $cmd --\";   
           echo \"=========================================\";
           eval $cmd; 
@@ -242,7 +242,7 @@ jobs:
           nbtestsok=$(grep \"# Runs Successful\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
           if [ $nbtestsfailed = 0 ] || [ $nbtestsok -gt 0 ];
           then 
-            echo \"STATUS_QA=1\" >> $GITHUB_ENV;
+          echo \"STATUS_QA=1\" >> $GITHUB_ENV;
           fi;   
           "
 
