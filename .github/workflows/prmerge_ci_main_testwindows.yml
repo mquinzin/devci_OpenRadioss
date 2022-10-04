@@ -178,6 +178,7 @@ jobs:
         if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
   qa_windows_no_container:
+
     needs: build_windows_no_container
     # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
     runs-on: ["qa_${{ matrix.os }}","dev"]
@@ -206,14 +207,14 @@ jobs:
       #   with:
       #     lfs: 'true'
 
-      # - name: Clean local exe dir
+      - name: Clean local exe dir
         run: |
           if (test-path exec) {
             rm exec -r -force
           }
 
       # Download artifacts
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v2
         with:
           name: bins-${{ matrix.os }}-${{ matrix.precision }}
           path: exec
@@ -227,5 +228,4 @@ jobs:
           pwd;
           ls -l;
           ls -l exec/;
-          "
 
