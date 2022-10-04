@@ -126,7 +126,6 @@ jobs:
   #         call C:\cygwin64\bin\bash --login -c "
   #         MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
   #         echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
-  #         echo \"STATUS_BUILD : ${{ env.STATUS_BUILD }}\";
   #         if [ ${{ env.STATUS_BUILD }} = 0 ];
   #         then
   #         echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
@@ -256,3 +255,54 @@ jobs:
           call C:\cygwin64\bin\bash --login -c "
           echo \"STATUS_QA : ${{ env.STATUS_QA}}\";
           "
+
+      - name: Managing step execution
+        if: ${{ always() }}
+        # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
+        run: >
+          call C:\cygwin64\bin\bash --login -c "
+          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+          echo -e \"\n#### STATUS_STEP_QA ${{ matrix.build }} ###\";
+          if [ ${{ env.STATUS_QA }} = 0 ];
+          then
+          echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
+          MAILMSG+=\"The QA ${{ matrix.os }}-${{ matrix.precision }} has failed \n\";
+          echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
+          echo -e $MAILMSG;
+          echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
+          exit 1;
+          else
+          echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
+          fi;   
+          "
+
+      # Close the branch (= restrict push to team devopsadmins) if needed
+      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+      - uses: octokit/request-action@v2.x
+        id: close_branch_qa
+        env:
+          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
+        with:
+          route: PUT /repos/${{ github.repository }}/branches/man/protection/restrictions/teams
+          data: ${{ env.REQUEST_BODY }}
+        if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
+
+      # If the closing went wrong we send an email
+      - name: "Check result of closing branch and warn if it fails"
+        # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
+        run: >
+          call C:\cygwin64\bin\bash --login -c "
+          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+          MAILMSG+=\"A branch closing is needed but has failed\n\n\";
+          MAILMSG+=\"Return status API is : ${{ steps.close_branch_qa.outputs.status }}\n\n\";
+          MAILMSG+=\"Check more detailed datas in CI logs\n\";
+          echo -e $MAILMSG;
+          echo -e \"\nClose return data API is : ${{ steps.close_branch_qa.outputs.data }}\";
+          echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
+          exit 1;
+          "
+        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
+          
