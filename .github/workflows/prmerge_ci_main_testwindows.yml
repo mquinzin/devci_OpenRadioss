@@ -16,170 +16,170 @@ env:
 
 jobs:
 
-  build_windows_no_container:
-    if: ${{ github.repository_owner == 'OpenRadioss' }}
-    # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    runs-on: ["${{ matrix.build }}","dev_pmci"]
-    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
+  # build_windows_no_container:
+  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
+  #   # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
+  #   runs-on: ["${{ matrix.build }}","dev_pmci"]
+  #   # runs-on: ["${{ matrix.build }}","prmerge_ci"]
  
-    env:
-      BUILD_NB_THREAD: 2
-      STATUS_BUILD: 0
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  #   env:
+  #     BUILD_NB_THREAD: 2
+  #     STATUS_BUILD: 0
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
-    strategy:
-      # If one job fails others are canceled
-      fail-fast: true
-      matrix:
-        include:
-          - build: starter_win64
-            precision: dp
-            os: win64
-            binary: starter
+  #   strategy:
+  #     # If one job fails others are canceled
+  #     fail-fast: true
+  #     matrix:
+  #       include:
+  #         - build: starter_win64
+  #           precision: dp
+  #           os: win64
+  #           binary: starter
 
-          # - build: starter_win64_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: starter
+  #         # - build: starter_win64_sp
+  #         #   precision: sp
+  #         #   os: win64
+  #         #   binary: starter
 
-          - build: engine_win64_impi
-            precision: dp
-            os: win64
-            binary: engine
-            mpi: impi
+  #         - build: engine_win64_impi
+  #           precision: dp
+  #           os: win64
+  #           binary: engine
+  #           mpi: impi
 
-          # - build: engine_win64_impi_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: engine
-          #   mpi: impi
+  #         # - build: engine_win64_impi_sp
+  #         #   precision: sp
+  #         #   os: win64
+  #         #   binary: engine
+  #         #   mpi: impi
 
-          # - build: engine_win64
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
+  #         # - build: engine_win64
+  #         #   precision: dp
+  #         #   os: win64
+  #         #   binary: engine
 
-          # - build: engine_win64_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: engine
+  #         # - build: engine_win64_sp
+  #         #   precision: sp
+  #         #   os: win64
+  #         #   binary: engine
 
-    steps:
+  #   steps:
 
-      # Set the working dir suffixed with branch name
-      - uses: haya14busa/action-cond@v1
-        id: set_workdir
-        with:
-          cond: ${{ github.base_ref == '' }}
-          if_true: ${{github.ref_name}}
-          if_false: ${{github.base_ref}}
+  #     # Set the working dir suffixed with branch name
+  #     - uses: haya14busa/action-cond@v1
+  #       id: set_workdir
+  #       with:
+  #         cond: ${{ github.base_ref == '' }}
+  #         if_true: ${{github.ref_name}}
+  #         if_false: ${{github.base_ref}}
 
-      - name: Create branch oriented WS directory & integration WS (WIN64)
-        run: |
-          md -Force ${{ steps.set_workdir.outputs.value }}
+  #     - name: Create branch oriented WS directory & integration WS (WIN64)
+  #       run: |
+  #         md -Force ${{ steps.set_workdir.outputs.value }}
 
-      - name: Clean local exe dir
-        working-directory: ${{ steps.set_workdir.outputs.value }}
-        run: |
-          if (test-path OpenRadioss/exec) {
-            rm OpenRadioss/exec -r -force
-          }
+  #     - name: Clean local exe dir
+  #       working-directory: ${{ steps.set_workdir.outputs.value }}
+  #       run: |
+  #         if (test-path OpenRadioss/exec) {
+  #           rm OpenRadioss/exec -r -force
+  #         }
 
-      # Working with Olivier's fork for the testing
-      # Get last git modifications, don't clean before (way to keep persistent obj files)
-      # - uses: actions/checkout@v2
-      #   with:
-      #     path: ${{ steps.set_workdir.outputs.value }}
-      #     clean: 'false'
-      #     lfs: 'true'
+  #     # Working with Olivier's fork for the testing
+  #     # Get last git modifications, don't clean before (way to keep persistent obj files)
+  #     # - uses: actions/checkout@v2
+  #     #   with:
+  #     #     path: ${{ steps.set_workdir.outputs.value }}
+  #     #     clean: 'false'
+  #     #     lfs: 'true'
 
-      - name: Running builds
-        working-directory: ${{ steps.set_workdir.outputs.value }}
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
-          cd %cd:\=/%;
-          cd OpenRadioss;
-          pwd;
-          git pull;
-          mpi_opts='';
-          if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
-          cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
-          echo \"=========================================\";
-          echo \"--  BUILD ${{ matrix.build }} --\";
-          echo \"--  $cmd --\";
-          echo \"=========================================\";        
-          mkdir exec;
-          cd ${{ matrix.binary }};
-          eval $cmd;
-          cd ..;
-          md5sum exec/* || exit 1;
-          echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
-          "
+  #     - name: Running builds
+  #       working-directory: ${{ steps.set_workdir.outputs.value }}
+  #       # Running cygwin from powershell or cmd => neither identation nor comment !
+  #       shell: cmd
+  #       run: >
+  #         call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -i -c "
+  #         cd %cd:\=/%;
+  #         cd OpenRadioss;
+  #         pwd;
+  #         git pull;
+  #         mpi_opts='';
+  #         if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
+  #         cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
+  #         echo \"=========================================\";
+  #         echo \"--  BUILD ${{ matrix.build }} --\";
+  #         echo \"--  $cmd --\";
+  #         echo \"=========================================\";        
+  #         mkdir exec;
+  #         cd ${{ matrix.binary }};
+  #         eval $cmd;
+  #         cd ..;
+  #         md5sum exec/* || exit 1;
+  #         echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
+  #         "
 
-      - name: Managing step execution
-        if: ${{ always() }}
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call C:\cygwin64\bin\bash --login -c "
-          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
-          echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
-          echo \"STATUS_BUILD : ${{ env.STATUS_BUILD }}\";
-          if [ ${{ env.STATUS_BUILD }} = 0 ];
-          then
-          echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
-          MAILMSG+=\"The build ${{ matrix.build }} has failed \n\";
-          echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
-          echo -e $MAILMSG;
-          echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
-          exit 1;
-          else
-          echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
-          fi;   
-          "
-      # Upload artifact
-      - name: Upload built artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: bins-${{ matrix.os }}-${{ matrix.precision }}
-          # path: ${{ steps.set_workdir.outputs.value }}/exec
-          path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
-        if: ${{ env.CLOSE_BRANCH == 0 }}           
+  #     - name: Managing step execution
+  #       if: ${{ always() }}
+  #       # Running cygwin from powershell or cmd => neither identation nor comment !
+  #       shell: cmd
+  #       run: >
+  #         call C:\cygwin64\bin\bash --login -c "
+  #         MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+  #         echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
+  #         echo \"STATUS_BUILD : ${{ env.STATUS_BUILD }}\";
+  #         if [ ${{ env.STATUS_BUILD }} = 0 ];
+  #         then
+  #         echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
+  #         MAILMSG+=\"The build ${{ matrix.build }} has failed \n\";
+  #         echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
+  #         echo -e $MAILMSG;
+  #         echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
+  #         exit 1;
+  #         else
+  #         echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
+  #         fi;   
+  #         "
+  #     # Upload artifact
+  #     - name: Upload built artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}
+  #         # path: ${{ steps.set_workdir.outputs.value }}/exec
+  #         path: ${{ steps.set_workdir.outputs.value }}/OpenRadioss/exec
+  #       if: ${{ env.CLOSE_BRANCH == 0 }}           
 
-      # Close the branch (= restrict push to team devopsadmins) if needed
-      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-      - uses: octokit/request-action@v2.x
-        id: close_branch_build
-        env:
-          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
-        with:
-          route: PUT /repos/${{ github.repository }}/branches/man/protection/restrictions/teams
-          data: ${{ env.REQUEST_BODY }}
-        if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
+  #     # Close the branch (= restrict push to team devopsadmins) if needed
+  #     # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+  #     - uses: octokit/request-action@v2.x
+  #       id: close_branch_build
+  #       env:
+  #         GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+  #         REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
+  #       with:
+  #         route: PUT /repos/${{ github.repository }}/branches/man/protection/restrictions/teams
+  #         data: ${{ env.REQUEST_BODY }}
+  #       if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
-      # If the closing went wrong we send an email
-      - name: "Check result of closing branch and warn if it fails"
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call C:\cygwin64\bin\bash --login -c "
-          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
-          MAILMSG+=\"A branch closing is needed but has failed\n\n\";
-          MAILMSG+=\"Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n\";
-          MAILMSG+=\"Check more detailed datas in CI logs\n\";
-          echo -e $MAILMSG;
-          echo -e \"\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}\";
-          echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
-          exit 1;
-          "
-        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
+  #     # If the closing went wrong we send an email
+  #     - name: "Check result of closing branch and warn if it fails"
+  #       # Running cygwin from powershell or cmd => neither identation nor comment !
+  #       shell: cmd
+  #       run: >
+  #         call C:\cygwin64\bin\bash --login -c "
+  #         MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+  #         MAILMSG+=\"A branch closing is needed but has failed\n\n\";
+  #         MAILMSG+=\"Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n\";
+  #         MAILMSG+=\"Check more detailed datas in CI logs\n\";
+  #         echo -e $MAILMSG;
+  #         echo -e \"\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}\";
+  #         echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
+  #         exit 1;
+  #         "
+  #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
   qa_windows_no_container:
 
-    needs: build_windows_no_container
+    # needs: build_windows_no_container
     # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
     runs-on: ["qa_${{ matrix.os }}","dev"]
     # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
@@ -213,11 +213,11 @@ jobs:
             rm exec -r -force
           }
 
-      # Download artifacts
-      - uses: actions/download-artifact@v2
-        with:
-          name: bins-${{ matrix.os }}-${{ matrix.precision }}
-          path: exec
+      # # Download artifacts
+      # - uses: actions/download-artifact@v2
+      #   with:
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
+      #     path: exec
 
       - name: Running qa
         # Running cygwin from powershell or cmd => neither identation nor comment !
@@ -228,4 +228,16 @@ jobs:
           pwd;
           ls -l;
           ls -l exec/;
-
+          echo 'hhh' > qa1;
+          "
+      - name: Running qa2
+        # Running cygwin from powershell or cmd => neither identation nor comment !
+        shell: cmd
+        run: >
+          call C:\cygwin64\bin\bash --login -i -c "
+          cd %cd:\=/%;
+          pwd;
+          echo 'jjj' > qa2;
+          ls -l;
+          ls -l exec/;
+          "
