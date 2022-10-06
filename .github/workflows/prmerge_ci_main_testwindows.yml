@@ -155,7 +155,7 @@ jobs:
   #         GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
   #         REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
   #       with:
-  #         route: PUT /repos/${{ github.repository }}/branches/man/protection/restrictions/teams
+  #         route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
   #         data: ${{ env.REQUEST_BODY }}
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
@@ -188,7 +188,6 @@ jobs:
       hm_reader_cfgfiles: ../../hm_cfg_files
       mpi: impi
       STATUS_QA: 0
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
     strategy:
       # If one job fails others continue
@@ -280,7 +279,7 @@ jobs:
           GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
           REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
         with:
-          route: PUT /repos/${{ github.repository }}/branches/man/protection/restrictions/teams
+          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
           data: ${{ env.REQUEST_BODY }}
         if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
