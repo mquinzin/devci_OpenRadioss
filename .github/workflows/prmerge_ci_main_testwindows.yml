@@ -188,6 +188,7 @@ jobs:
       hm_reader_cfgfiles: ../../hm_cfg_files
       mpi: impi
       STATUS_QA: 0
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
     strategy:
       # If one job fails others continue
