@@ -238,8 +238,10 @@ jobs:
           echo \"--  $cmd --\";   
           echo \"=========================================\";
           eval $cmd; 
+          res=$?
           nbtestsfailed=$(grep \"# Runs Failed\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
           nbtestsok=$(grep \"# Runs Successful\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
+          echo \"TRACE res : $res\";
           echo \"TRACE nbtestsfailed : $nbtestsfailed\";
           echo \"TRACE nbtestsok : $nbtestsok\";
           if [ $nbtestsfailed = 0 ] || [ $nbtestsok -gt 0 ];
