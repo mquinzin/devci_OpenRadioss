@@ -32,37 +32,37 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - build: starter_win64
-            precision: dp
-            os: win64
-            binary: starter
-
-          # - build: starter_win64_sp
-          #   precision: sp
+          # - build: starter_win64
+          #   precision: dp
           #   os: win64
           #   binary: starter
 
-          - build: engine_win64_impi
-            precision: dp
+          - build: starter_win64_sp
+            precision: sp
             os: win64
-            binary: engine
-            mpi: impi
+            binary: starter
 
-          # - build: engine_win64_impi_sp
-          #   precision: sp
+          # - build: engine_win64_impi
+          #   precision: dp
           #   os: win64
           #   binary: engine
           #   mpi: impi
 
-          # - build: engine_win64
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
+          - build: engine_win64_impi_sp
+            precision: sp
+            os: win64
+            binary: engine
+            mpi: impi
 
-          # - build: engine_win64_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: engine
+          - build: engine_win64
+            precision: dp
+            os: win64
+            binary: engine
+
+          - build: engine_win64_sp
+            precision: sp
+            os: win64
+            binary: engine
 
     steps:
 
@@ -96,6 +96,7 @@ jobs:
       - name: Running builds
         working-directory: ${{ steps.set_workdir.outputs.value }}
         # Running cygwin from powershell or cmd => neither identation nor comment !
+        # Not using wsl because of cmake issue with linux/win pathes conversion
         shell: cmd
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
@@ -177,125 +178,125 @@ jobs:
           "
         if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
-  qa_windows_no_container:
+  # qa_windows_no_container:
 
-    needs: build_windows_no_container
-    # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
-    runs-on: ["qa_${{ matrix.os }}","dev"]
-    # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
+  #   needs: build_windows_no_container
+  #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
+  #   runs-on: ["qa_${{ matrix.os }}","dev"]
+  #   # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
 
-    env:
-      hm_reader_extlib: ../../extlib/hm_reader
-      hm_reader_cfgfiles: ../../hm_cfg_files
-      mpi: impi
-      STATUS_QA: 0
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  #   env:
+  #     hm_reader_extlib: ../../extlib/hm_reader
+  #     hm_reader_cfgfiles: ../../hm_cfg_files
+  #     mpi: impi
+  #     STATUS_QA: 0
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
-    strategy:
-      # If one job fails others continue
-      fail-fast: false
-      matrix:
-        os: [win64]
-        # precision: [dp,sp]
-        precision: [dp]
+  #   strategy:
+  #     # If one job fails others continue
+  #     fail-fast: false
+  #     matrix:
+  #       os: [win64]
+  #       # precision: [dp,sp]
+  #       precision: [dp]
         
-    steps:
+  #   steps:
 
-      # Working with Olivier's fork for the testing
-      # Get git related to the commit
-      # - uses: actions/checkout@v2
-      #   with:
-      #     lfs: 'true'
+  #     # Working with Olivier's fork for the testing
+  #     # Get git related to the commit
+  #     # - uses: actions/checkout@v2
+  #     #   with:
+  #     #     lfs: 'true'
 
-      # - name: Clean local exe dir
-      #   run: |
-      #     if (test-path exec) {
-      #       rm exec -r -force
-      #     }
+  #     # - name: Clean local exe dir
+  #     #   run: |
+  #     #     if (test-path exec) {
+  #     #       rm exec -r -force
+  #     #     }
 
-      # # Download artifacts
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
-      #     path: exec
+  #     # # Download artifacts
+  #     # - uses: actions/download-artifact@v3
+  #     #   with:
+  #     #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
+  #     #     path: exec
 
-      - name: Running qa
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
-          cd %cd:\=/%;
-          md5sum exec/* || echo \"Nothing in exec/\";
-          if [ \"${{ matrix.precision }}\" = \"dp\" ];
-          then
-          precision_ext='';
-          else
-          precision_ext=\"_${{ matrix.precision }}\";
-          fi;
-          cd qa-tests/scripts;
-          rm -f QA.summary;
-          export PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$PATH;
-          cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np 4' --env:OMP_NUM_THREADS=2 --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'\";
-          echo \"=========================================\";
-          echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"; 
-          echo \"--  $cmd --\";   
-          echo \"=========================================\";
-          eval $cmd; 
-          res=$?;
-          nbtestsfailed=$(grep \"# Runs Failed\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
-          nbtestsok=$(grep \"# Runs Successful\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
-          if [ $res = 0 ] && [ $nbtestsfailed = 0 ] && [ $nbtestsok -gt 0 ];
-          then 
-          echo \"STATUS_QA=1\" >> $GITHUB_ENV;
-          fi;   
-          "
+  #     - name: Running qa
+  #       # Running cygwin from powershell or cmd => neither identation nor comment !
+  #       shell: cmd
+  #       run: >
+  #         call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
+  #         cd %cd:\=/%;
+  #         md5sum exec/* || echo \"Nothing in exec/\";
+  #         if [ \"${{ matrix.precision }}\" = \"dp\" ];
+  #         then
+  #         precision_ext='';
+  #         else
+  #         precision_ext=\"_${{ matrix.precision }}\";
+  #         fi;
+  #         cd qa-tests/scripts;
+  #         rm -f QA.summary;
+  #         export PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$PATH;
+  #         cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np 4' --env:OMP_NUM_THREADS=2 --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'\";
+  #         echo \"=========================================\";
+  #         echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"; 
+  #         echo \"--  $cmd --\";   
+  #         echo \"=========================================\";
+  #         eval $cmd; 
+  #         res=$?;
+  #         nbtestsfailed=$(grep \"# Runs Failed\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
+  #         nbtestsok=$(grep \"# Runs Successful\s*:\" QA.summary | tail -n 1 | awk -F' ' '{print $5}');
+  #         if [ $res = 0 ] && [ $nbtestsfailed = 0 ] && [ $nbtestsok -gt 0 ];
+  #         then 
+  #         echo \"STATUS_QA=1\" >> $GITHUB_ENV;
+  #         fi;   
+  #         "
 
-      - name: Managing step execution
-        if: ${{ always() }}
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call C:\cygwin64\bin\bash --login -c "
-          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
-          echo -e \"\n#### STATUS_STEP_QA ${{ matrix.build }} ###\";
-          if [ ${{ env.STATUS_QA }} = 0 ];
-          then
-          echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
-          MAILMSG+=\"The QA ${{ matrix.os }}-${{ matrix.precision }} has failed \n\";
-          echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
-          echo -e $MAILMSG;
-          echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
-          exit 1;
-          else
-          echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
-          fi;   
-          "
+  #     - name: Managing step execution
+  #       if: ${{ always() }}
+  #       # Running cygwin from powershell or cmd => neither identation nor comment !
+  #       shell: cmd
+  #       run: >
+  #         call C:\cygwin64\bin\bash --login -c "
+  #         MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+  #         echo -e \"\n#### STATUS_STEP_QA ${{ matrix.build }} ###\";
+  #         if [ ${{ env.STATUS_QA }} = 0 ];
+  #         then
+  #         echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
+  #         MAILMSG+=\"The QA ${{ matrix.os }}-${{ matrix.precision }} has failed \n\";
+  #         echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
+  #         echo -e $MAILMSG;
+  #         echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
+  #         exit 1;
+  #         else
+  #         echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
+  #         fi;   
+  #         "
 
-      # Close the branch (= restrict push to team devopsadmins) if needed
-      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-      - uses: octokit/request-action@v2.x
-        id: close_branch_qa
-        env:
-          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
-        with:
-          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
-          data: ${{ env.REQUEST_BODY }}
-        if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
+  #     # Close the branch (= restrict push to team devopsadmins) if needed
+  #     # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+  #     - uses: octokit/request-action@v2.x
+  #       id: close_branch_qa
+  #       env:
+  #         GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+  #         REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
+  #       with:
+  #         route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+  #         data: ${{ env.REQUEST_BODY }}
+  #       if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
-      # If the closing went wrong we send an email
-      - name: "Check result of closing branch and warn if it fails"
-        # Running cygwin from powershell or cmd => neither identation nor comment !
-        shell: cmd
-        run: >
-          call C:\cygwin64\bin\bash --login -c "
-          MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
-          MAILMSG+=\"A branch closing is needed but has failed\n\n\";
-          MAILMSG+=\"Return status API is : ${{ steps.close_branch_qa.outputs.status }}\n\n\";
-          MAILMSG+=\"Check more detailed datas in CI logs\n\";
-          echo -e $MAILMSG;
-          echo -e \"\nClose return data API is : ${{ steps.close_branch_qa.outputs.data }}\";
-          echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
-          exit 1;
-          "
-        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
+  #     # If the closing went wrong we send an email
+  #     - name: "Check result of closing branch and warn if it fails"
+  #       # Running cygwin from powershell or cmd => neither identation nor comment !
+  #       shell: cmd
+  #       run: >
+  #         call C:\cygwin64\bin\bash --login -c "
+  #         MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+  #         MAILMSG+=\"A branch closing is needed but has failed\n\n\";
+  #         MAILMSG+=\"Return status API is : ${{ steps.close_branch_qa.outputs.status }}\n\n\";
+  #         MAILMSG+=\"Check more detailed datas in CI logs\n\";
+  #         echo -e $MAILMSG;
+  #         echo -e \"\nClose return data API is : ${{ steps.close_branch_qa.outputs.data }}\";
+  #         echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
+  #         exit 1;
+  #         "
+  #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
