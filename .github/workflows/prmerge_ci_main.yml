@@ -153,7 +153,7 @@ jobs:
             precision: dp
             os: linux64
             binary: starter
-            cont_image: 'fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411'
+            cont_image: 'fr-qafactorydev.europe.altair.com/qa-linux64_gf:latest'
 
           - build: starter_win64
             precision: dp
@@ -195,12 +195,12 @@ jobs:
       # #   password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       # volumes: 
       #   - /etc/localtime:/etc/localtime:ro
-        
+
     steps:
 
       - name: Test environment
         run: |
-          uname -a
+          pwd
 
 
 
