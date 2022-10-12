@@ -12,6 +12,8 @@ env:
   FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
   TO_EMAIL: ${{ secrets.TO_EMAIL }}
   QA_TIMEOUT_PER_TEST: 150
+  DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
+  DOCKER_REGISTRY_PASSWD: ${{secrets.DOCKER_REGISTRY_PASSWD}}
 
 jobs:
 
@@ -159,9 +161,9 @@ jobs:
               volumes: 
                 - /etc/localtime:/etc/localtime:ro
               credentials: 
-                username: ${{secrets.DOCKER_REGISTRY_USER}}
-                password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-                
+                username: ${{env.DOCKER_REGISTRY_USER}}
+                password: ${{env.DOCKER_REGISTRY_PASSWD}}
+
           - build: starter_win64
             precision: dp
             os: win64
