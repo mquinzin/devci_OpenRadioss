@@ -139,6 +139,8 @@ jobs:
     #   volumes: 
     #     - /etc/localtime:/etc/localtime:ro
 
+    container: ${{ matrix.cont_image }}
+
     env:
       BUILD_NB_THREAD: 2
       STATUS_BUILD: 0
@@ -154,6 +156,7 @@ jobs:
             os: linux64
             binary: starter
             cont_image: 'fr-qafactorydev.europe.altair.com/common_adminqa-linux64:latest'
+            ${{ build.container.credentials.username }}: 'servbotaltr'
 
           - build: starter_win64
             precision: dp
@@ -188,13 +191,13 @@ jobs:
           #   os: linux64 
           #   binary: engine
 
-    container: ${{ matrix.cont_image }}
+    # container: ${{ matrix.cont_image }}
       # image: 
-      credentials: 
-        username: ${{secrets.DOCKER_REGISTRY_USER}}
-        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      volumes: 
-        - /etc/localtime:/etc/localtime:ro
+      # credentials: 
+      #   username: ${{secrets.DOCKER_REGISTRY_USER}}
+      #   password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      # volumes: 
+      #   - /etc/localtime:/etc/localtime:ro
 
     steps:
 
