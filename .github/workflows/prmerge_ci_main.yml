@@ -153,7 +153,7 @@ jobs:
             precision: dp
             os: linux64
             binary: starter
-            cont_image: 'fr-qafactorydev.europe.altair.com/qa-linux64_gf:latest'
+            cont_image: 'fr-qafactorydev.europe.altair.com/common_adminqa-linux64:latest'
 
           - build: starter_win64
             precision: dp
