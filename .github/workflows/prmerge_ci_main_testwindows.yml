@@ -4,7 +4,7 @@ on:
 
   push:
     branches:
-      - main
+      - mainXX
 
 env:
   CLOSE_BRANCH: 0
