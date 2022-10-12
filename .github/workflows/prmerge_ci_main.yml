@@ -188,8 +188,6 @@ jobs:
           #   os: linux64 
           #   binary: engine
 
-    steps:
-
     container: 
       image: ${{ matrix.cont_image }}
       credentials: 
@@ -197,6 +195,8 @@ jobs:
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       volumes: 
         - /etc/localtime:/etc/localtime:ro
+        
+    steps:
 
       - name: Test environment
         run: |
