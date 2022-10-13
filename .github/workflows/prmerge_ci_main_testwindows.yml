@@ -90,7 +90,7 @@ jobs:
       - name: Test output value 2
         run : >
           C:\cygwin64\bin\bash --login -c "
-          echo ${{ env.myvar }};
+          echo $myvar;
           "
 
       # - name: Test output value
