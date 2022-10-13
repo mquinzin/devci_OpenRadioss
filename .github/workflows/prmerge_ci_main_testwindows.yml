@@ -84,7 +84,7 @@ jobs:
         run : >
           C:\cygwin64\bin\bash --login -c "
           uname -a;
-          echo 'myvar=valueofmyvar' >> $env:GITHUB_ENV
+          echo 'myvar=valueofmyvar' >> $GITHUB_ENV
           "
 
       - name: Test output value 2
