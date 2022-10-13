@@ -85,7 +85,7 @@ jobs:
         run : >
           wsl
           uname -a;
-          echo "myvar=valueofmyvar222" >> $env:GITHUB_ENV;
+          echo "myvar=valueofmyvar222" >> $GITHUB_ENV;
           
 
       - name: Test output value 2
