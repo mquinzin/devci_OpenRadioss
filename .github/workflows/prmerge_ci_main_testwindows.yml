@@ -19,8 +19,7 @@ jobs:
   build_windows_no_container:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-    # runs-on: ["${{ matrix.build }}","dev_pmci"]
-    runs-on: ["linux64","dev_pmci"]
+    runs-on: ["${{ matrix.build }}","dev_pmci"]
     # runs-on: ["${{ matrix.build }}","prmerge_ci"]
  
     env:
@@ -29,20 +28,20 @@ jobs:
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
       CLOSE_BRANCH: 0
 
-    # strategy:
-    #   # If one job fails others are canceled
-    #   fail-fast: true
-    #   matrix:
-    #     include:
-    #       - build: starter_win64
-    #         precision: dp
-    #         os: win64
-    #         binary: starter
+    strategy:
+      # If one job fails others are canceled
+      fail-fast: true
+      matrix:
+        include:
+          - build: starter_win64
+            precision: dp
+            os: win64
+            binary: starter
 
-  #         # - build: starter_win64_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: starter
+          # - build: starter_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: starter
 
   #         - build: engine_win64_impi
   #           precision: dp
@@ -81,20 +80,18 @@ jobs:
       #   run: |
       #     echo "output is ${{ steps.set_workdir.outputs.value }}"
 
-      # Test output value
       - name: Test output value
-        # id: perforce
-        run: |
-          echo "Testing"
-          # echo "::set-output name=sync_option::myoption"
-          echo "sync_option2=myoption2" >> $GITHUB_ENV
-          echo "CLOSE_BRANCH=1" >> $GITHUB_ENV
+        run : >
+          bash -c "
+          uname -a;
+          echo "myvar=valueofmyvar" >> $GITHUB_ENV
+          "
 
       - name: Test output value 2
-        run: |
-          # echo "Testing sync_option : ${{ steps.perforce.outputs.sync_option }}"
-          echo "Testing sync_option2 : $sync_option2"
-          echo "CLOSE_BRANCH is ${{ env.CLOSE_BRANCH }}"
+        run : >
+          bash -c "
+          echo "myvar is $valueofmyvar" 
+          "
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
