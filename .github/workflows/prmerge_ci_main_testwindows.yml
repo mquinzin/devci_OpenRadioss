@@ -80,18 +80,26 @@ jobs:
       #   run: |
       #     echo "output is ${{ steps.set_workdir.outputs.value }}"
 
+      # - name: Test output value
+      #   run : >
+      #     bash -c "
+      #     uname -a;
+      #     echo 'myvar=valueofmyvar' >> $env:GITHUB_ENV
+      #     "
+
+      # - name: Test output value 2
+      #   run : >
+      #     bash -c "
+      #     echo ${{ env.valueofmyvar }};
+      #     "
+
       - name: Test output value
-        run : >
-          bash -c "
-          uname -a;
+        run : |
           echo 'myvar=valueofmyvar' >> $env:GITHUB_ENV
-          "
 
       - name: Test output value 2
-        run : >
-          bash -c "
-          echo ${{ env.valueofmyvar }};
-          "
+        run : |
+          echo "Value is $valueofmyvar";
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
