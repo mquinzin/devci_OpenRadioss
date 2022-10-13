@@ -83,7 +83,11 @@ jobs:
       - name: Test output value
         run: |
           echo "Testing"
+          echo "::set-output name=sync_option::myoption"
 
+      - name: Test output value 2
+        run: |
+          echo "Testing sync_option : ${{ steps.perforce.outputs.sync_option }}"
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
