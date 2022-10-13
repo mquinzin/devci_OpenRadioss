@@ -81,6 +81,7 @@ jobs:
 
       # Test output value
       - name: Test output value
+        id: perforce
         run: |
           echo "Testing"
           echo "::set-output name=sync_option::myoption"
