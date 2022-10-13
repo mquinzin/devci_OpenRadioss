@@ -89,6 +89,7 @@ jobs:
           "
 
       - name: Test output value 2
+        shell: cmd
         run : >
           C:\cygwin64\bin\bash --login -c "
           echo \"Value is $myvar\";
