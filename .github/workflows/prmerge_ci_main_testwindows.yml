@@ -81,16 +81,16 @@ jobs:
 
       # Test output value
       - name: Test output value
-        id: perforce
+        # id: perforce
         run: |
           echo "Testing"
-          echo "::set-output name=sync_option::myoption"
+          # echo "::set-output name=sync_option::myoption"
           echo "sync_option2=myoption2" >> $GITHUB_ENV
           echo "CLOSE_BRANCH=1" >> $GITHUB_ENV
 
       - name: Test output value 2
         run: |
-          echo "Testing sync_option : ${{ steps.perforce.outputs.sync_option }}"
+          # echo "Testing sync_option : ${{ steps.perforce.outputs.sync_option }}"
           echo "Testing sync_option2 : $sync_option2"
           echo "CLOSE_BRANCH is $CLOSE_BRANCH"
 
