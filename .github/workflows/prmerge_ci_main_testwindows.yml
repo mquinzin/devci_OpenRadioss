@@ -99,7 +99,7 @@ jobs:
 
       - name: Test output value 2
         run : |
-          echo "Value is $valueofmyvar";
+          echo "Value is $myvar";
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
