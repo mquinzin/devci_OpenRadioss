@@ -84,7 +84,7 @@ jobs:
         run : >
           bash -c "
           uname -a;
-          echo 'myvar=valueofmyvar' >> $GITHUB_ENV
+          echo 'myvar=valueofmyvar' >> \$GITHUB_ENV
           "
 
       - name: Test output value 2
