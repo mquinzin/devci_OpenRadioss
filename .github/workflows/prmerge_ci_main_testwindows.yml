@@ -13,7 +13,6 @@ env:
   TO_EMAIL: ${{ secrets.TO_EMAIL }}
   MAIL_RELAY: ${{ secrets.MAIL_RELAY }}
   QA_TIMEOUT_PER_TEST: 150
-  CLOSE_BRANCH: 0
 
 jobs:
 
@@ -28,6 +27,7 @@ jobs:
       BUILD_NB_THREAD: 2
       STATUS_BUILD: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+      CLOSE_BRANCH: 0
 
     # strategy:
     #   # If one job fails others are canceled
