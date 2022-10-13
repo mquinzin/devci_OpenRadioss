@@ -16,16 +16,16 @@ env:
 
 jobs:
 
-  # build_windows_no_container:
-  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
-  #   # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-  #   runs-on: ["${{ matrix.build }}","dev_pmci"]
-  #   # runs-on: ["${{ matrix.build }}","prmerge_ci"]
+  build_windows_no_container:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
+    runs-on: ["${{ matrix.build }}","dev_pmci"]
+    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
  
-  #   env:
-  #     BUILD_NB_THREAD: 2
-  #     STATUS_BUILD: 0
-  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+    env:
+      BUILD_NB_THREAD: 2
+      STATUS_BUILD: 0
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
   #   strategy:
   #     # If one job fails others are canceled
@@ -64,15 +64,20 @@ jobs:
   #         #   os: win64
   #         #   binary: engine
 
-  #   steps:
+    steps:
 
-  #     # Set the working dir suffixed with branch name
-  #     - uses: haya14busa/action-cond@v1
-  #       id: set_workdir
-  #       with:
-  #         cond: ${{ github.base_ref == '' }}
-  #         if_true: ${{github.ref_name}}
-  #         if_false: ${{github.base_ref}}
+      # Set the working dir suffixed with branch name
+      - uses: haya14busa/action-cond@v1
+        id: set_workdir
+        with:
+          cond: ${{ github.base_ref == '' }}
+          if_true: ${{github.ref_name}}
+          if_false: ${{github.base_ref}}
+
+      # Test output value
+      - name: Test output value
+        run: |
+          echo "output is ${{ steps.set_workdir.outputs.value }}"
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
@@ -178,29 +183,29 @@ jobs:
   #         "
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
-  qa_windows_no_container:
+  # qa_windows_no_container:
 
-    # needs: build_windows_no_container
-    # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
-    runs-on: ["qa_${{ matrix.os }}","dev"]
-    # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
+  #   # needs: build_windows_no_container
+  #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
+  #   runs-on: ["qa_${{ matrix.os }}","dev"]
+  #   # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
 
-    env:
-      hm_reader_extlib: ../../extlib/hm_reader
-      hm_reader_cfgfiles: ../../hm_cfg_files
-      mpi: impi
-      STATUS_QA: 0
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  #   env:
+  #     hm_reader_extlib: ../../extlib/hm_reader
+  #     hm_reader_cfgfiles: ../../hm_cfg_files
+  #     mpi: impi
+  #     STATUS_QA: 0
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
-    strategy:
-      # If one job fails others continue
-      fail-fast: false
-      matrix:
-        os: [win64]
-        # precision: [dp,sp]
-        precision: [dp]
+  #   strategy:
+  #     # If one job fails others continue
+  #     fail-fast: false
+  #     matrix:
+  #       os: [win64]
+  #       # precision: [dp,sp]
+  #       precision: [dp]
         
-    steps:
+  #   steps:
 
       # Working with Olivier's fork for the testing
       # Get git related to the commit
@@ -220,13 +225,13 @@ jobs:
       #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
       #     path: exec
 
-      - name: Running builds
-        run : >
-          bash -c "
-          uname -a;
-          ls -l;
-          mpiexec.exe -version;
-          "
+      # - name: Running builds
+      #   run : >
+      #     bash -c "
+      #     uname -a;
+      #     ls -l;
+      #     mpiexec.exe -version;
+      #     "
 
   #     - name: Running qa
   #       # Running cygwin from powershell or cmd => neither identation nor comment !
