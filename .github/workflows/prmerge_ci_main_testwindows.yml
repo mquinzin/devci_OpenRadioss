@@ -90,7 +90,7 @@ jobs:
       - name: Test output value 2
         run : >
           bash -c "
-          echo $myvar;
+          echo ${{ env.myvar }};
           "
 
       # - name: Test output value
