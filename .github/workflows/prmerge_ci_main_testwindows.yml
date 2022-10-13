@@ -27,15 +27,15 @@ jobs:
       STATUS_BUILD: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
 
-  #   strategy:
-  #     # If one job fails others are canceled
-  #     fail-fast: true
-  #     matrix:
-  #       include:
-  #         - build: starter_win64
-  #           precision: dp
-  #           os: win64
-  #           binary: starter
+    strategy:
+      # If one job fails others are canceled
+      fail-fast: true
+      matrix:
+        include:
+          - build: starter_win64
+            precision: dp
+            os: win64
+            binary: starter
 
   #         # - build: starter_win64_sp
   #         #   precision: sp
