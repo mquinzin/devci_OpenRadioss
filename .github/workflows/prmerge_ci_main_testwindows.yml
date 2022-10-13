@@ -85,15 +85,16 @@ jobs:
         run : >
           bash --login -c "
           uname -a;
-          echo \"myvar=valueofmyvar222\" >> $GITHUB_ENV;
+          echo 'myvar=valueofmyvar222' >> $GITHUB_ENV;
           "
           
 
       - name: Test output value 2
         shell: cmd
         run : >
-          wsl
-          echo "Value is $myvar";
+          bash --login -c "
+          echo Value is $myvar;
+          "
 
       # - name: Test output value
       #   run : |
