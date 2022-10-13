@@ -84,13 +84,13 @@ jobs:
         run : >
           bash -c "
           uname -a;
-          echo "myvar=valueofmyvar" >> $GITHUB_ENV
+          echo 'myvar=valueofmyvar' >> $GITHUB_ENV
           "
 
       - name: Test output value 2
         run : >
           bash -c "
-          echo \"myvar is $valueofmyvar\";"
+          echo 'myvar is $valueofmyvar';"
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
