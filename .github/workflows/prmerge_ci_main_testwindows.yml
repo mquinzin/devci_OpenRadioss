@@ -81,10 +81,11 @@ jobs:
       #     echo "output is ${{ steps.set_workdir.outputs.value }}"
 
       - name: Test output value
+        shell: cmd
         run : >
           C:\cygwin64\bin\bash --login -c "
           uname -a;
-          echo \"myvar=valueofmyvar\" >> $GITHUB_ENV
+          echo \"myvar=valueofmyvar\" >> $GITHUB_ENV;
           "
 
       - name: Test output value 2
