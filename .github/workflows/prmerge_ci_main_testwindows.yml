@@ -94,7 +94,7 @@ jobs:
         run: |
           # echo "Testing sync_option : ${{ steps.perforce.outputs.sync_option }}"
           echo "Testing sync_option2 : $sync_option2"
-          echo "CLOSE_BRANCH is $CLOSE_BRANCH"
+          echo "CLOSE_BRANCH is ${{ env.CLOSE_BRANCH }}"
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
