@@ -66,18 +66,24 @@ jobs:
 
     steps:
 
-      # Set the working dir suffixed with branch name
-      - uses: haya14busa/action-cond@v1
-        id: set_workdir
-        with:
-          cond: ${{ github.base_ref == '' }}
-          if_true: ${{github.ref_name}}
-          if_false: ${{github.base_ref}}
+      # # Set the working dir suffixed with branch name
+      # - uses: haya14busa/action-cond@v1
+      #   id: set_workdir
+      #   with:
+      #     cond: ${{ github.base_ref == '' }}
+      #     if_true: ${{github.ref_name}}
+      #     if_false: ${{github.base_ref}}
+
+      # # Test output value
+      # - name: Test output value
+      #   run: |
+      #     echo "output is ${{ steps.set_workdir.outputs.value }}"
 
       # Test output value
       - name: Test output value
         run: |
-          echo "output is ${{ steps.set_workdir.outputs.value }}"
+          echo "Testing"
+
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
