@@ -88,7 +88,7 @@ jobs:
       # - uses: Vampire/setup-wsl@v1
 
       - name: Running builds
-        shell: wsl -u adminqa {0}
+        shell: wsl
         run : |
           uname -a
           ls -l
