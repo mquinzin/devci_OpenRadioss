@@ -85,6 +85,8 @@ jobs:
             rm OpenRadioss/exec -r -force
           }
 
+      - uses: Vampire/setup-wsl@v1
+
       - name: Running builds
         shell: wsl-bash {0}
         run : |
