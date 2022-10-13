@@ -95,7 +95,7 @@ jobs:
 
       - name: Test output value
         run : |
-          echo 'myvar=valueofmyvar' >> $env:GITHUB_ENV
+          echo "myvar=valueofmyvar" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Test output value 2
         run : |
