@@ -90,8 +90,7 @@ jobs:
       - name: Test output value 2
         run : >
           bash -c "
-          echo \"myvar is $valueofmyvar\";
-          "
+          echo \"myvar is $valueofmyvar\";"
 
   #     - name: Create branch oriented WS directory & integration WS (WIN64)
   #       run: |
