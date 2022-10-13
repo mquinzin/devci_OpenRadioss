@@ -82,14 +82,14 @@ jobs:
 
       - name: Test output value
         run : >
-          bash -c "
+          C:\cygwin64\bin\bash -c "
           uname -a;
           echo 'myvar=valueofmyvar' >> $env:GITHUB_ENV
           "
 
       - name: Test output value 2
         run : >
-          bash -c "
+          C:\cygwin64\bin\bash -c "
           echo ${{ env.myvar }};
           "
 
