@@ -20,7 +20,7 @@ jobs:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
     # runs-on: ["${{ matrix.build }}","dev_pmci"]
-    runs-on: ["win64","dev_pmci"]
+    runs-on: ["linux64","dev_pmci"]
     # runs-on: ["${{ matrix.build }}","prmerge_ci"]
  
     env:
