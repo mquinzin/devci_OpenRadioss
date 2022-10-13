@@ -83,16 +83,17 @@ jobs:
       - name: Test output value
         shell: cmd
         run : >
-          wsl
+          bash --login -c "
           uname -a;
-          echo "myvar=valueofmyvar222" >> $GITHUB_ENV;
+          echo \"myvar=valueofmyvar222\" >> $GITHUB_ENV;
+          "
           
 
       - name: Test output value 2
         shell: cmd
         run : >
           wsl
-          echo "Value is ${{ env.myvar }}";
+          echo "Value is $myvar";
 
       # - name: Test output value
       #   run : |
