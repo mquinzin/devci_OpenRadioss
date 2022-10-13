@@ -13,6 +13,7 @@ env:
   TO_EMAIL: ${{ secrets.TO_EMAIL }}
   MAIL_RELAY: ${{ secrets.MAIL_RELAY }}
   QA_TIMEOUT_PER_TEST: 150
+  CLOSE_BRANCH: 0
 
 jobs:
 
