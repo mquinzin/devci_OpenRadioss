@@ -89,9 +89,8 @@ jobs:
       - name: Test output value 2
         shell: cmd
         run : >
-          bash --login -c "
-          echo Value is $myvar;
-          "
+          bash --login -c 'echo "Value is $myvar"';
+          
 
       # - name: Test output value
       #   run : |
