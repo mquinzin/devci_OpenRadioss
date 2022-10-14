@@ -675,9 +675,9 @@ jobs:
 
       # Working with Olivier's fork for the testing
       # Get git related to the commit
-      - uses: actions/checkout@v3
-        with:
-          lfs: 'true'
+      # - uses: actions/checkout@v3
+      #   with:
+      #     lfs: 'true'
 
       - name: Clean local exe dir
         run: |
@@ -685,12 +685,11 @@ jobs:
             rm exec -r -force
           }
 
-      # Working with Olivier's fork for the testing
-      # # Download artifacts
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
-      #     path: exec
+      # Download artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}
+          path: exec
 
       - name: Running qa
         # Running cygwin from powershell or cmd => neither identation nor comment !
