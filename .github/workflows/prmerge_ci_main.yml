@@ -673,9 +673,9 @@ jobs:
         
     steps:
 
-      Working with Olivier's fork for the testing
-      Get git related to the commit
-      - uses: actions/checkout@v2
+      # Working with Olivier's fork for the testing
+      # Get git related to the commit
+      - uses: actions/checkout@v3
         with:
           lfs: 'true'
 
