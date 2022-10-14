@@ -685,7 +685,7 @@ jobs:
             rm exec -r -force
           }
 
-      Download artifacts
+      # Download artifacts
       - uses: actions/download-artifact@v3
         with:
           name: bins-${{ matrix.os }}-${{ matrix.precision }}
