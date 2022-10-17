@@ -47,7 +47,7 @@ jobs:
       # Set the working dir suffixed with branch name
       - name: Set workdir 
         run: |
-          if [ "${{ github.base_ref }}" == "" ]
+          if [ "${{ github.base_ref }}" = "" ]
           then
             echo "WORKDIR=${{github.ref_name}}" >> $GITHUB_ENV
           else
@@ -212,7 +212,7 @@ jobs:
       # Set the working dir suffixed with branch name
       - name: Set workdir 
         run: |
-          if [ "${{ github.base_ref }}" == "" ]
+          if [ "${{ github.base_ref }}" = "" ]
           then
             echo "WORKDIR=${{github.ref_name}}" >> $GITHUB_ENV
           else
@@ -514,56 +514,75 @@ jobs:
 
         if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
 
-  # build_windows_no_container:
-  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
-  #   # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
-  #   runs-on: ["${{ matrix.build }}","dev_pmci"]
-  #   # runs-on: ["${{ matrix.build }}","prmerge_ci"]
+  build_windows_no_container:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # DEV ONLY # runs-on: ["${{ matrix.os }}","dev_pmci"]
+    runs-on: ["${{ matrix.build }}","dev_pmci"]
+    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
  
-  #   env:
-  #     BUILD_NB_THREAD: 2
-  #     STATUS_BUILD: 0
-  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-  #     CLOSE_BRANCH: 0
+    env:
+      BUILD_NB_THREAD: 2
+      STATUS_BUILD: 0
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+      CLOSE_BRANCH: 0
 
-  #   strategy:
-  #     # If one job fails others are canceled
-  #     fail-fast: true
-  #     matrix:
-  #       include:
-  #         - build: starter_win64
-  #           precision: dp
-  #           os: win64
-  #           binary: starter
+    strategy:
+      # If one job fails others are canceled
+      fail-fast: true
+      matrix:
+        include:
+          - build: starter_win64
+            precision: dp
+            os: win64
+            binary: starter
 
-  #         # - build: starter_win64_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: starter
+          # - build: starter_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: starter
 
-  #         - build: engine_win64_impi
-  #           precision: dp
-  #           os: win64
-  #           binary: engine
-  #           mpi: impi
+          - build: engine_win64_impi
+            precision: dp
+            os: win64
+            binary: engine
+            mpi: impi
 
-  #         # - build: engine_win64_impi_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: engine
-  #         #   mpi: impi
+          # - build: engine_win64_impi_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
 
-  #         # - build: engine_win64
-  #         #   precision: dp
-  #         #   os: win64
-  #         #   binary: engine
+          # - build: engine_win64
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
 
-  #         # - build: engine_win64_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: engine
+          # - build: engine_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
 
-  #   steps:
+    steps:
+
+      # Set the working dir suffixed with branch name
+      - name: Set workdir 
+        shell: cmd
+        run: >
+          call C:\cygwin64\bin\bash --login -c "
+          if [ \"${{ github.base_ref }}\" = \"\" ] 
+          then 
+          echo \"WORKDIR=${{github.ref_name}}\" >> $GITHUB_ENV;
+          else
+          echo \"WORKDIR=${{github.base_ref}}\" >> $GITHUB_ENV;
+          fi;  
+          "
+      - name: Print workdir 
+        shell: cmd
+        run: >
+          call C:\cygwin64\bin\bash --login -c "
+          echo \"Workdir is ${{ env.WORKDIR }}\"
+          "
 
   #     # Set the working dir suffixed with branch name
   #     - uses: haya14busa/action-cond@v1
