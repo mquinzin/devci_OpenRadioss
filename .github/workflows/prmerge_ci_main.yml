@@ -56,18 +56,18 @@ jobs:
         run: |
           if [ "${{ github.base_ref }}" == "" ]
           then
-            echo "WORKDIR=base_ref_is_empty" >> $GITHUB_ENV
+            echo "WORKDIR=${{github.ref_name}}" >> $GITHUB_ENV
           else
-            echo "WORKDIR=base_ref_not_empty" >> $GITHUB_ENV
+            echo "WORKDIR=${{github.base_ref}}" >> $GITHUB_ENV
           fi
 
       - name: Test
-        # working-directory: $WORKDIR
+        working-directory: $WORKDIR
         run: |
           echo "The dir is $WORKDIR"
           pwd
-          echo "ref_name : ${{github.ref_name}}"
-          echo "base_ref : ${{github.base_ref}}"
+          # echo "ref_name : ${{github.ref_name}}"
+          # echo "base_ref : ${{github.base_ref}}"
 
       # # Set the working dir suffixed with branch name
       # - uses: haya14busa/action-cond@v1
