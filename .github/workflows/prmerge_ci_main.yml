@@ -51,13 +51,13 @@ jobs:
       #     if_false: "base_ref_not_empty"
 
       - name: Set workdir 
-          run: |
-            if [ "${{ github.base_ref }}" == "" ]
-            then
-              echo "WORKDIR=base_ref_is_empty" >> $GITHUB_ENV
-            else
-              echo "WORKDIR=base_ref_not_empty" >> $GITHUB_ENV
-            fi
+        run: |
+          if [ "${{ github.base_ref }}" == "" ]
+          then
+            echo "WORKDIR=base_ref_is_empty" >> $GITHUB_ENV
+          else
+            echo "WORKDIR=base_ref_not_empty" >> $GITHUB_ENV
+          fi
 
       - name: Test
         working-directory: $WORKDIR
