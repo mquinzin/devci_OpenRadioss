@@ -60,7 +60,7 @@ jobs:
           fi
 
       - name: Test
-        working-directory: $WORKDIR
+        working-directory: ${{ env.WORKDIR }}
         run: |
           echo "The dir is $WORKDIR"
           pwd
