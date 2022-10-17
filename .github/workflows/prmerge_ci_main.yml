@@ -43,16 +43,27 @@ jobs:
     steps:
 
       # Set the working dir suffixed with branch name
-      - uses: haya14busa/action-cond@v1
-        id: set_workdir
-        with:
-          cond: ${{ github.base_ref == '' }}
-          if_true: "base_ref_is_empty"
-          if_false: "base_ref_not_empty"
+      # - uses: haya14busa/action-cond@v1
+      #   id: set_workdir
+      #   with:
+      #     cond: ${{ github.base_ref == '' }}
+      #     if_true: "base_ref_is_empty"
+      #     if_false: "base_ref_not_empty"
+
+      - name: Set workdir 
+          run: |
+            if [ "${{ github.base_ref }}" == "" ]
+            then
+              echo "WORKDIR=base_ref_is_empty" >> $GITHUB_ENV
+            else
+              echo "WORKDIR=base_ref_not_empty" >> $GITHUB_ENV
 
       - name: Test
+        working-directory: $WORKDIR
         run: |
-          echo "The dir is ${{ steps.set_workdir.outputs.value }}"
+          echo "The dir is $WORKDIR"
+          pwd
+          # echo "The dir is ${{ steps.set_workdir.outputs.value }}"
 
       # # Set the working dir suffixed with branch name
       # - uses: haya14busa/action-cond@v1
