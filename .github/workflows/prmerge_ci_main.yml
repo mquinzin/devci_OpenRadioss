@@ -570,7 +570,7 @@ jobs:
         shell: cmd
         run: >
           call C:\cygwin64\bin\bash --login -c "
-          if [ \"${{ github.base_ref }}\" = \"\" ] 
+          if [ \"${{ github.base_ref }}\" = \"\" ]; 
           then 
           echo \"WORKDIR=${{github.ref_name}}\" >> $GITHUB_ENV;
           else
