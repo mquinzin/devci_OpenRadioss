@@ -57,6 +57,7 @@ jobs:
               echo "WORKDIR=base_ref_is_empty" >> $GITHUB_ENV
             else
               echo "WORKDIR=base_ref_not_empty" >> $GITHUB_ENV
+            fi
 
       - name: Test
         working-directory: $WORKDIR
