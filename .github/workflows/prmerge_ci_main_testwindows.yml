@@ -203,8 +203,8 @@ jobs:
         
     steps:
 
-      Working with Olivier's fork for the testing
-      Get git related to the commit
+      # Working with Olivier's fork for the testing
+      # Get git related to the commit
       - uses: actions/checkout@v2
         with:
           lfs: 'true'
@@ -215,7 +215,7 @@ jobs:
             rm exec -r -force
           }
 
-      Download artifacts
+      # Download artifacts
       - uses: actions/download-artifact@v3
         with:
           name: bins-${{ matrix.os }}-${{ matrix.precision }}
