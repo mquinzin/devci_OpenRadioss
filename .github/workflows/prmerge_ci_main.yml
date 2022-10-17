@@ -64,7 +64,8 @@ jobs:
         run: |
           echo "The dir is $WORKDIR"
           pwd
-          # echo "The dir is ${{ steps.set_workdir.outputs.value }}"
+          echo "ref_name : ${{github.ref_name}}"
+          echo "base_ref : ${{github.base_ref}}"
 
       # # Set the working dir suffixed with branch name
       # - uses: haya14busa/action-cond@v1
