@@ -62,7 +62,7 @@ jobs:
       - name: Test
         working-directory: ${{ env.WORKDIR }}
         run: |
-          echo "The dir is $WORKDIR"
+          echo "The dir is $WOR${{ env.WORKDIR }}"
           pwd
           # echo "The dir is ${{ steps.set_workdir.outputs.value }}"
 
