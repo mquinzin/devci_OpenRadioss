@@ -884,9 +884,6 @@ jobs:
 
           cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-          ## ADDED##
-          # mkdir -p todeliver
-
           cp -a exec/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
           mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
@@ -902,8 +899,13 @@ jobs:
           rm -rf ${os}
         done 
 
-        pwd 
-        find . -type f
+        # Test with fake linux64
+        mkdir -p linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        echo "ddf" > linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}/myfile
+        cd linux64
+        zip -r ../${{ env.OPENRADIOSS_MAINDIR_NAME }}_linux64.zip ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        cd ..
+        rm -rf linux64
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
