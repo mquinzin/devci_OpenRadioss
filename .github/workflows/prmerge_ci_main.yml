@@ -853,14 +853,21 @@ jobs:
 
     - name: Copy all artifact complex structure into flat files in exec
       run: |
-        echo "List : "
+        echo "List exec_tmp : "
         find exec_tmp -type f
-        mkdir -p exec
-        for file in `find exec_tmp -type f`
+
+        for os in linux64 win64 
         do
-          cp -p $file exec/
+          mkdir -p exec/${os}
+          for file in `find exec_tmp/*${os}*/ -type f`
+          do
+            cp -p $file exec/${os}/
+          done
+          chmod 755 exec/${os}/*
         done
-        chmod 755 exec/*
+
+        echo "List exec : "
+        find exec -type f
 
     - name: Provide ALL binaries
       run: |
