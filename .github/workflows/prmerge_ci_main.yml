@@ -897,8 +897,13 @@ jobs:
           export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
           # echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
           cd todeliver/${os}
-          zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+          zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+          cd ..
+          rm -rf ${os}
         done 
+
+        pwd 
+        find . -type f
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
