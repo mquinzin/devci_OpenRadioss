@@ -870,6 +870,9 @@ jobs:
 
     - name: Provide ALL binaries
       run: |
+        # Removed lfs hook (not supported in next action, not neeeded)
+        rm -f .git/hooks/pre-push
+
         # Prepare tree architecture
 
         # for os in linux64 win64 
@@ -877,7 +880,7 @@ jobs:
         do      
           mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader
           cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
-          cp extlib/hm_reader/*.txt extlib/hm_reader/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+          cp -a extlib/hm_reader/*.txt extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
           cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
@@ -896,10 +899,6 @@ jobs:
           cd todeliver/${os}
           zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
         done 
-
-        cd 
-        # Removed lfs hook (not supported in next action, not neeeded)
-        rm -f .git/hooks/pre-push
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
