@@ -830,6 +830,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [linux64]
+        # os: [win64]
 
     steps:
 
@@ -848,6 +849,7 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         path: exec_tmp
+        name: "*${{ matrix.os }}*"
 
     - name: Copy all artifact complex structure into flat files in exec
       run: |
@@ -869,7 +871,9 @@ jobs:
 
         # cp -a hm_cfg_files todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
+        ## ADDED##
         mkdir -p todeliver
+
         cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
         # mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
