@@ -825,13 +825,6 @@ jobs:
       DELIVERY_TAG_PREFIX: 'latest-'
       OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
 
-    strategy:
-      # If one job fails othere continue
-      fail-fast: false
-      matrix:
-        os: [linux64]
-        # os: [win64]
-
     steps:
 
     - name: Set the release name & clean previous exec
