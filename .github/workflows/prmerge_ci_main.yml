@@ -855,6 +855,7 @@ jobs:
         rm -f .git/hooks/pre-push
 
         # Prepare tree architecture
+        rm -rf todeliver
 
         # for os in linux64 win64 
         for os in linux64 win64 
@@ -880,8 +881,6 @@ jobs:
           rm -rf ${os}
           cd ..
         done 
-
-        rm -rf todeliver
 
         # # Test with fake linux64
         # mkdir -p linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}
