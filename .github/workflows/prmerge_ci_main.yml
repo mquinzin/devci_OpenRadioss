@@ -878,7 +878,10 @@ jobs:
           zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
           cd ..
           rm -rf ${os}
+          cd ..
         done 
+
+        rm -rf todeliver
 
         # # Test with fake linux64
         # mkdir -p linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}
