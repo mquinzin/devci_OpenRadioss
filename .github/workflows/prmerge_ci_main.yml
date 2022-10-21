@@ -813,12 +813,6 @@ jobs:
       DELIVERY_TAG_PREFIX: 'latest-'
       OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
 
-    strategy:
-      # If one job fails othere continue
-      fail-fast: false
-      matrix:
-        os: [linux64]
-
     steps:
 
     - name: Set the release name & clean previous exec
@@ -839,37 +833,60 @@ jobs:
 
     - name: Copy all artifact complex structure into flat files in exec
       run: |
-        mkdir -p exec
-        for file in `find exec_tmp -type f`
+        echo "List exec_tmp : "
+        find exec_tmp -type f
+
+        for os in linux64 win64 
         do
-          cp -p $file exec/
+          mkdir -p exec/${os}
+          for file in `find exec_tmp/*${os}*/ -type f`
+          do
+            cp -p $file exec/${os}/
+          done
+          chmod 755 exec/${os}/*
         done
-        chmod 755 exec/*
+
+        echo "List exec : "
+        find exec -type f
 
     - name: Provide ALL binaries
       run: |
-        # Prepare tree architecture
-        mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/linux64 todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader
-        cp -a extlib/h3d/lib/linux64/libh3dwriter.so todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/linux64/
-        cp -a extlib/hm_reader todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/
-
-        cp -a hm_cfg_files todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-
-        cp -a exec todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-
-        mkdir -p todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-        cp -a extlib/license/* todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
-
-        cp -a COPYRIGHT.md todeliver/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-
-        export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${{ matrix.os }}.zip"
-        echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
-        cd todeliver
-        zip -r $OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
-        cd ..
-
         # Removed lfs hook (not supported in next action, not neeeded)
         rm -f .git/hooks/pre-push
+
+        # Prepare tree architecture
+
+        # for os in linux64 win64 
+        for os in win64 
+        do      
+          mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader
+          cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
+          cp -a extlib/hm_reader/*.txt extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+
+          cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+
+          cp -a exec/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+
+          mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
+          cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
+
+          cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+
+          export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
+          # echo "OPENRADIOSS_BIN_ARCHIVE=$OPENRADIOSS_BIN_ARCHIVE" >> $GITHUB_ENV
+          cd todeliver/${os}
+          zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+          cd ..
+          rm -rf ${os}
+        done 
+
+        # Test with fake linux64
+        mkdir -p linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        echo "ddf" > linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}/myfile
+        cd linux64
+        zip -r ../${{ env.OPENRADIOSS_MAINDIR_NAME }}_linux64.zip ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        cd ..
+        rm -rf linux64
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
@@ -907,7 +924,7 @@ jobs:
           Commit message:
           ${{ github.event.commits[0].message }}
         files: |
-          todeliver/${{ env.OPENRADIOSS_BIN_ARCHIVE }}
+          todeliver/*
         clear_attachments: true     
 
     - name: Counter Download - Update/Add entries
