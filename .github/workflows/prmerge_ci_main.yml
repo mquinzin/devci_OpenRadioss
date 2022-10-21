@@ -857,7 +857,7 @@ jobs:
         # Prepare tree architecture
 
         # for os in linux64 win64 
-        for os in win64 
+        for os in linux64 win64 
         do      
           mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader
           cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
@@ -880,13 +880,13 @@ jobs:
           rm -rf ${os}
         done 
 
-        # Test with fake linux64
-        mkdir -p linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}
-        echo "ddf" > linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}/myfile
-        cd linux64
-        zip -r ../${{ env.OPENRADIOSS_MAINDIR_NAME }}_linux64.zip ${{ env.OPENRADIOSS_MAINDIR_NAME }}
-        cd ..
-        rm -rf linux64
+        # # Test with fake linux64
+        # mkdir -p linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        # echo "ddf" > linux64/${{ env.OPENRADIOSS_MAINDIR_NAME }}/myfile
+        # cd linux64
+        # zip -r ../${{ env.OPENRADIOSS_MAINDIR_NAME }}_linux64.zip ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+        # cd ..
+        # rm -rf linux64
 
     - uses: octokit/request-action@v2.x
       id: get_commit_author
