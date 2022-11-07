@@ -63,6 +63,7 @@ Chd|        COPY_TO_MONVOL                share/modules1/monvol_struct_mod.F
 Chd|        COPY_TO_VOLMON                share/modules1/monvol_struct_mod.F
 Chd|        CREATE_MAP_TABLES             source/model/sets/map_tables.F
 Chd|        CREATE_SEATBELT               source/tools/seatbelts/create_seatbelt.F
+Chd|        DAMPDTNODA                    source/general_controls/damping/dampdtnoda.F
 Chd|        DDPRINT                       source/spmd/domdec2.F         
 Chd|        DDSPLIT                       source/restart/ddsplit/ddsplit.F
 Chd|        DEALLOCATE_DETONATORS         share/modules1/detonators_mod.F
@@ -2027,46 +2028,6 @@ c
 c
       CALL TITRE3
 C--------------------------------------------
-C     STOCKAGE DYNAMIQUE (A.L.E.) ENTIER
-C--------------------------------------------
-      SNALE  = MAX(IALE,IEULER,IALELAG)*NUMNOD
-      SIELVS = 6*NUMELS+MAX(IALE,ITHERM,IEULER,IALELAG)* (4 * NUMELQ + 3 * NUMELTG)
-      SIFILL = NMULT*NUMNOD
-      SIMS   = NMULT*NUMNOD
-C---
-      ALLOCATE (IFILL(SIFILL),STAT=stat)
-      IF (STAT /= 0) CALL ANCMSG(MSGID   = 268,
-     .                           ANMODE  = ANINFO,
-     .                           MSGTYPE = MSGERROR,
-     .                           C1      = 'IFILL')
-
-      ALLOCATE (IMS(SIMS),STAT=stat)
-      IF (STAT /= 0) CALL ANCMSG(MSGID   = 268,
-     .                           ANMODE  = ANINFO,
-     .                           MSGTYPE = MSGERROR,
-     .                           C1      = 'IMS')
-
-
-      IF (SIFILL > 0) IFILL = 0
-      IF (SIMS   > 0) IMS   = 0
-
-      ALLOCATE (DFLOW(3*NUMNOD*IALELAG)      ,STAT=stat)
-      ALLOCATE (VFLOW(3*NUMNOD*IALELAG)      ,STAT=stat)
-      ALLOCATE (WFLOW(3*NUMNOD*IALELAG)      ,STAT=stat)
-
-      IF(IALELAG > 0) THEN
-       DFLOW = ZERO
-       VFLOW = ZERO
-       WFLOW = ZERO
-      ENDIF
-
-      IF(IALEFVM > 0)THEN
-        ALLOCATE (FCELL(6,NUMELS)   ,STAT=stat)
-        FCELL(:,:) = ZERO
-      ENDIF
-
-C----------------------------------
-C--------------------------------------------
 C     INITIALISATION DES POINTEURS UTILISATEUR
 C--------------------------------------------
         CALL SAV_BUF_POINT(PM     ,1)
@@ -2288,6 +2249,46 @@ C
 
       CALL TRACE_OUT1()
       
+C--------------------------------------------
+C     STOCKAGE DYNAMIQUE (A.L.E.) ENTIER
+C--------------------------------------------
+      SNALE  = MAX(IALE,IEULER,IALELAG)*NUMNOD
+      SIELVS = 6*NUMELS+MAX(IALE,ITHERM,IEULER,IALELAG)* (4 * NUMELQ + 3 * NUMELTG)
+      SIFILL = NMULT*NUMNOD
+      SIMS   = NMULT*NUMNOD
+C---
+      ALLOCATE (IFILL(SIFILL),STAT=stat)
+      IF (STAT /= 0) CALL ANCMSG(MSGID   = 268,
+     .                           ANMODE  = ANINFO,
+     .                           MSGTYPE = MSGERROR,
+     .                           C1      = 'IFILL')
+
+      ALLOCATE (IMS(SIMS),STAT=stat)
+      IF (STAT /= 0) CALL ANCMSG(MSGID   = 268,
+     .                           ANMODE  = ANINFO,
+     .                           MSGTYPE = MSGERROR,
+     .                           C1      = 'IMS')
+
+
+      IF (SIFILL > 0) IFILL = 0
+      IF (SIMS   > 0) IMS   = 0
+
+      ALLOCATE (DFLOW(3*NUMNOD*IALELAG)      ,STAT=stat)
+      ALLOCATE (VFLOW(3*NUMNOD*IALELAG)      ,STAT=stat)
+      ALLOCATE (WFLOW(3*NUMNOD*IALELAG)      ,STAT=stat)
+
+      IF(IALELAG > 0) THEN
+       DFLOW = ZERO
+       VFLOW = ZERO
+       WFLOW = ZERO
+      ENDIF
+
+      IF(IALEFVM > 0)THEN
+        ALLOCATE (FCELL(6,NUMELS)   ,STAT=stat)
+        FCELL(:,:) = ZERO
+      ENDIF
+
+C----------------------------------      
 C--------------------------------------------
 C     MULTIDOMAINS
 C--------------------------------------------
@@ -8897,20 +8898,17 @@ c
 
             L0 = 0
             IF(SEATBELT_CONVERTED_ELEMENTS(2,I) /= 0) THEN
-              J = SET_USRTOS(SEATBELT_CONVERTED_ELEMENTS(1,I),MAP_TABLES%ISH4NM,NUMELC)
-              L0 = MAP_TABLES%ISH4NM(J,2)
+              L0 = SET_USRTOS(SEATBELT_CONVERTED_ELEMENTS(1,I),MAP_TABLES%ISH4NM,NUMELC)
             ENDIF
 
             L1 = 0
             IF(SEATBELT_CONVERTED_ELEMENTS(2,I) /= 0) THEN
-              J = SET_USRTOS(SEATBELT_CONVERTED_ELEMENTS(2,I),MAP_TABLES%ISPRINGM,NUMELR)
-              L1 = MAP_TABLES%ISPRINGM(J,2)
+              L1 = SET_USRTOS(SEATBELT_CONVERTED_ELEMENTS(2,I),MAP_TABLES%ISPRINGM,NUMELR)
             ENDIF
 
             L2 = 0
             IF(SEATBELT_CONVERTED_ELEMENTS(3,I) /= 0) THEN
-              J = SET_USRTOS(SEATBELT_CONVERTED_ELEMENTS(3,I),MAP_TABLES%ISPRINGM,NUMELR)
-              L2 = MAP_TABLES%ISPRINGM(J,2)
+              L2 = SET_USRTOS(SEATBELT_CONVERTED_ELEMENTS(3,I),MAP_TABLES%ISPRINGM,NUMELR)
             ENDIF
 
             IF(L0 /= 0) THEN
@@ -9856,6 +9854,8 @@ C---------------------------------------------
 C     Update of STIFFN for TETRA10 for time step estimation
 C--------------------------------------------
       IF (NS10E>0.AND.N2D==0) CALL STIFN1_ND(ICNDS10,STIFFN)
+      IF (NDAMP>0) CALL DAMPDTNODA(MS_B,IN_B,STIFFN,STIFFN(NUMNOD+1),
+     1                            IGRNOD,DAMPR )
 C--------------------------------------------
 C     TRI ET IMPRESSION DES DT ELEM
 C--------------------------------------------

@@ -181,16 +181,10 @@ Chd|        FIND_DT1BRICK_ENGINE          source/starter/contrl.F
 Chd|        FIND_YIELD_ENGINE             source/general_controls/computation/hm_read_sms.F
 Chd|        FIXMODIF_ND                   source/elements/solid/solide10/dim_s10edg.F
 Chd|        FREDEC0                       source/starter/freform.F      
-Chd|        FREDEC3                       source/starter/freform.F      
 Chd|        FREDEC5                       source/starter/freform.F      
-Chd|        FREDEC_2KEY_2ID               source/starter/freform.F      
-Chd|        FREDEC_2KEY_2ID_T             source/starter/freform.F      
-Chd|        FREDEC_2KEY_3ID_T             source/starter/freform.F      
 Chd|        FREDEC_2KEY_4ID               source/starter/freform.F      
 Chd|        FREDEC_2KEY_4ID_T             source/starter/freform.F      
 Chd|        FREDEC_2KEY_ID_OR_KEY_ID      source/starter/freform.F      
-Chd|        FREDEC_3KEY_2ID_T             source/starter/freform.F      
-Chd|        FREDEC_KEY_2ID_T              source/starter/freform.F      
 Chd|        FREDEC_KEY_3ID_T              source/starter/freform.F      
 Chd|        FREERR                        source/starter/freform.F      
 Chd|        FREFORM                       source/starter/freform.F      
@@ -229,6 +223,7 @@ Chd|        HM_ELNGRR                     source/groups/hm_elngrr.F
 Chd|        HM_ELNGRS                     source/groups/hm_elngr.F      
 Chd|        HM_ENTITY_REFERENCE_NUMBER    source/devtools/hm_reader/hm_entity_reference_number.F
 Chd|        HM_GET_BOOLV                  source/devtools/hm_reader/hm_get_boolv.F
+Chd|        HM_GET_CURRENT_OPTION         source/devtools/hm_reader/hm_get_current_option.F
 Chd|        HM_GET_FLOATV                 source/devtools/hm_reader/hm_get_floatv.F
 Chd|        HM_GET_FLOATV_DIM             source/devtools/hm_reader/hm_get_floatv_dim.F
 Chd|        HM_GET_FLOATV_WITHOUT_UID     source/devtools/hm_reader/hm_get_floatv_without_uid.F
@@ -350,6 +345,7 @@ Chd|        HM_READ_FAIL_GENE1            source/materials/fail/gene1/hm_read_fa
 Chd|        HM_READ_FAIL_GURSON           source/materials/fail/gurson/hm_read_fail_gurson.F
 Chd|        HM_READ_FAIL_HASHIN           source/materials/fail/hashin/hm_read_fail_hashin.F
 Chd|        HM_READ_FAIL_HC_DSSE          source/materials/fail/hc_dsse/hm_read_fail_hc_dsse.F
+Chd|        HM_READ_FAIL_INIEVO           source/materials/fail/inievo/hm_read_fail_inievo.F
 Chd|        HM_READ_FAIL_JOHNSON          source/materials/fail/johnson_cook/hm_read_fail_johnson.F
 Chd|        HM_READ_FAIL_LADEVEZE         source/materials/fail/ladeveze/hm_read_fail_ladeveze.F
 Chd|        HM_READ_FAIL_NXT              source/materials/fail/nxt/hm_read_fail_nxt.F
@@ -360,6 +356,7 @@ Chd|        HM_READ_FAIL_RTCL             source/materials/fail/rtcl/hm_read_fai
 Chd|        HM_READ_FAIL_SAHRAEI          source/materials/fail/sahraei/hm_read_fail_sahraei.F
 Chd|        HM_READ_FAIL_SNCONNECT        source/materials/fail/snconnect/hm_read_fail_snconnect.F
 Chd|        HM_READ_FAIL_SPALLING         source/materials/fail/spalling/hm_read_fail_spalling.F
+Chd|        HM_READ_FAIL_SYAZWAN          source/materials/fail/syazwan/hm_read_fail_syazwan.F
 Chd|        HM_READ_FAIL_TAB1             source/materials/fail/tabulated/hm_read_fail_tab1.F
 Chd|        HM_READ_FAIL_TAB2             source/materials/fail/tabulated/hm_read_fail_tab2.F
 Chd|        HM_READ_FAIL_TAB_OLD          source/materials/fail/tabulated/hm_read_fail_tab_old.F
@@ -842,6 +839,7 @@ Chd|        LAW119_UPD                    source/materials/mat/mat119/law119_upd
 Chd|        LAW36_UPD                     source/materials/mat/mat036/law36_upd.F
 Chd|        LAW42_UPD                     source/materials/mat/mat042/law42_upd.F
 Chd|        LAW58_UPD                     source/materials/mat/mat058/law58_upd.F
+Chd|        LAW62_UPD                     source/materials/mat/mat062/law62_upd.F
 Chd|        LAW69_NLSQF                   source/materials/tools/nlsqf.F
 Chd|        LAW69_UPD                     source/materials/mat/mat069/law69_upd.F
 Chd|        LAW76_UPD                     source/materials/mat/mat076/law76_upd.F
@@ -975,6 +973,7 @@ Chd|        READ_DFS_DETPOINT             source/initial_conditions/detonation/r
 Chd|        READ_DFS_WAVE_SHAPER          source/initial_conditions/detonation/read_dfs_wave_shaper.F
 Chd|        READ_EBCS                     source/boundary_conditions/ebcs/read_ebcs.F
 Chd|        READ_ENGINE_DRIVER            source/general_controls/engine/read_engine_driver.F
+Chd|        READ_ENGINE_DTMIN             source/general_controls/damping/read_engine_dtmin.F
 Chd|        READ_EULER_MAT                source/materials/ale/read_euler_mat.F
 Chd|        READ_H3DTMAX_KEY              source/starter/contrl.F       
 Chd|        READ_IMPDISP                  source/constraints/general/impvel/read_impdisp.F
@@ -1159,6 +1158,7 @@ Chd|        GET_U_PNU                     source/user_interface/uaccess.F
 Chd|        GRFIND                        source/starter/freform.F      
 Chd|        HM_THVARC                     source/output/th/hm_read_thvarc.F
 Chd|        NBOXLST                       source/model/box/nboxlist.F   
+Chd|        NGR2USR                       source/system/nintrr.F        
 Chd|        NGR2USRN                      source/system/nintrr.F        
 Chd|        NINTLST                       source/system/nintrr.F        
 Chd|        NINTLST2                      source/system/nintrr.F        

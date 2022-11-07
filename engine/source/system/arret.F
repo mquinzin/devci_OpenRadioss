@@ -76,19 +76,6 @@ Chd|        C_FREEMEM                     stub/superlu_stub.F
 Chd|        C_TRICALL                     stub/fvmbags_stub.F           
 Chd|        DAASOLV                       source/fluid/daasolv.F        
 Chd|        DIM_INT7                      source/implicit/ind_glob_k.F  
-Chd|        DSACTI1                       source/implicit/dsolve/dsacti.F
-Chd|        DSBUCK                        source/implicit/dsolve/dsbuck.F
-Chd|        DSBUCKP                       source/implicit/dsolve/dsbuckp.F
-Chd|        DSCOND                        source/implicit/dsolve/dscond.F
-Chd|        DSEIG                         source/implicit/dsolve/dseig.F
-Chd|        DSEIGP                        source/implicit/dsolve/dseigp.F
-Chd|        DSGRI7                        source/implicit/dsolve/dsgri7.F
-Chd|        DSRENUM                       source/implicit/dsolve/dsrenum.F
-Chd|        DSRESOL                       source/implicit/dsolve/dsresol.F
-Chd|        DSRESOLP                      source/implicit/dsolve/dsresolp.F
-Chd|        DSRESOLP_BUCK                 source/implicit/dsolve/dsresolp.F
-Chd|        DSRESOL_BUCK                  source/implicit/dsolve/dsresol.F
-Chd|        DSRESOL_ITER                  source/implicit/dsolve/dsresol.F
 Chd|        DTNODA                        source/time_step/dtnoda.F     
 Chd|        DTNODAMS                      source/time_step/dtnodams.F   
 Chd|        DYNA_INA                      source/implicit/imp_dyna.F    
@@ -222,6 +209,8 @@ Chd|        I8LLL                         source/interfaces/int16/i8lagm.F
 Chd|        I9AVEL                        source/interfaces/int09/i9avel.F
 Chd|        IG3DUFORC3                    source/elements/ige3d/ig3duforc3.F
 Chd|        IMP_BUCK                      source/implicit/imp_buck.F    
+Chd|        IMP_DSOLV                     source/implicit/imp_dsolv.F   
+Chd|        IMP_DSOLV_ITER                source/implicit/imp_dsolv.F   
 Chd|        IMP_FSA_INV2                  source/implicit/imp_fsa_inv.F 
 Chd|        IMP_FSA_INVH                  source/implicit/imp_fsa_inv.F 
 Chd|        IMP_FSA_INVH2                 source/implicit/imp_fsa_inv.F 
@@ -425,10 +414,10 @@ Chd|        GET_U_FUNC_Y                  source/user_interface/ufunc.F
 Chd|-- calls ---------------
 Chd|        CUR_FIL_C                     source/output/tools/sortie_c.c
 Chd|        DELETE_TMPFILE                source/output/tools/sortie_c.c
+Chd|        DELETE_USER_FILE              source/user_interface/dyn_userlib.c
 Chd|        ENGINE_USER_FINALIZE          source/user_interface/dyn_userlib.c
 Chd|        MY_EXIT                       source/system/my_exit.c       
 Chd|        PRINT_RUNTIME                 source/system/timer.F         
-Chd|        RELEASE_ABFPIPE               source/output/abf/abfpipe.c   
 Chd|        REPORT                        source/output/report/report.F 
 Chd|        SEND_IBUF_C                   source/coupling/rad2rad/rad2rad_c.c
 Chd|        SORTIE_MVW                    source/output/report/sortie_mvw.F
@@ -436,12 +425,14 @@ Chd|        SPMD_KILL                     source/mpi/init/spmd_kill.F
 Chd|        DYNLIB_MOD                    share/modules/dynlib_mod.F    
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        INOUTFILE_MOD                 ../common_source/modules/inoutfile_mod.F
+Chd|        SCRATCHFILE_MOD               share/modules/scratchfiles_mod.F
 Chd|====================================================================
       SUBROUTINE ARRET (N)  
       USE H3D_MOD
       USE INOUTFILE_MOD
       USE QA_OUT_MOD
       USE DYNLIB_MOD
+      USE SCRATCHFILE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -601,6 +592,25 @@ C -----------------------------------------------
         CALL MDS_ENGINE_USER_FINALIZE( ISPMD_USER )
       ENDIF
 #endif
+
+      ! ------------------------------------------
+      ! Delete Temp. scratchfiles before exiting.
+      ! ------------------------------------------
+      IF(USE_IFXM == 1)THEN
+        ClOSE(UNIT=IFXM)
+        CALL DELETE_USER_FILE(IFXM_FN,LEN_IFXM_FN)
+      ENDIF
+      
+      IF(USE_IFXS == 1)THEN
+        CLOSE(UNIT=IFXS)
+        CALL DELETE_USER_FILE(IFXS_FN,LEN_IFXS_FN)
+      ENDIF
+      
+      IF (USE_IEIGM==1)THEN
+        CLOSE(IEIGM)
+        CALL DELETE_USER_FILE(IEIGM_FN,LEN_IEIGM_FN)
+      ENDIF
+
 C -----------------------------------------------
       IF (ISPMD == 0) THEN
        CALL QACLOSE()
@@ -627,6 +637,10 @@ C
               ENDIF
 
               CLOSE(UNIT=IOUT)
+              IF(ISPMD /=0) THEN
+                 CALL DELETE_USER_FILE(IUSC4_FNAM,LEN_IUSC4_FNAM)
+              ENDIF
+
               CLOSE(UNIT=IUHIS)
               CALL MY_EXIT(0)
  
@@ -660,6 +674,10 @@ C
               ENDIF
 
               CLOSE(UNIT=IOUT)
+              IF(ISPMD /=0) THEN
+                 CALL DELETE_USER_FILE(IUSC4_FNAM,LEN_IUSC4_FNAM)
+              ENDIF
+
               CLOSE(UNIT=IUHIS)
 
               CALL MY_EXIT(0)

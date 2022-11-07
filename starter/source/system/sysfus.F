@@ -409,7 +409,6 @@ Chd|====================================================================
 Chd|  ULIST2S                       source/system/sysfus.F        
 Chd|-- called by -----------
 Chd|        HM_LECGRN                     source/groups/hm_lecgrn.F     
-Chd|        NODREAD                       source/starter/freform.F      
 Chd|-- calls ---------------
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        MY_ORDERS                     ../common_source/tools/sort/my_orders.c
@@ -709,7 +708,7 @@ C
       DO I=2,NLIST
           IDM=ID
           ID=INDEX(INDEX(I,1),3)
-          IF(ID==IDM)THEN
+          IF(ID==IDM .AND. ID/=0)THEN
              CALL ANCMSG(MSGID=79,
      .                   MSGTYPE=MSGERROR,
      .                   ANMODE=ANINFO,
@@ -972,7 +971,7 @@ C
       DO I=2,NLIST
           IDM=ID
           ID=INDEX(INDEX(I,1),3)
-          IF(ID==IDM)THEN
+          IF(ID==IDM .AND. ID/=0)THEN
              CALL ANCMSG(MSGID=79,
      .                   MSGTYPE=MSGERROR,
      .                   ANMODE=ANINFO,
@@ -1415,7 +1414,7 @@ C
       DO I=2,NLIST
           IDM=ID
           ID=INDEX(INDEX(I,1),3)
-          IF(ID==IDM)THEN
+          IF(ID==IDM .AND. ID/=0)THEN
              CALL ANCMSG(MSGID=79,
      .                   MSGTYPE=MSGERROR,
      .                   ANMODE=ANINFO,

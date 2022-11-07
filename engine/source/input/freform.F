@@ -28,6 +28,7 @@ Chd|-- calls ---------------
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        ARRET                         source/system/arret.F         
 Chd|        CONNECTION_SOCK_INIT_C        source/coupling/rad2rad/rad2rad_c.c
+Chd|        DELETE_USER_FILE              source/user_interface/dyn_userlib.c
 Chd|        ERRMSG                        source/input/errmsg.F         
 Chd|        FRALEONOFF                    source/input/fraleonoff.F     
 Chd|        FRALNK                        source/input/fralnk.F         
@@ -59,6 +60,7 @@ Chd|        FREUPWIND                     source/input/freupwind.F
 Chd|        FREUPWM                       source/input/freupwm.F        
 Chd|        H3D_INI                       source/output/h3d/h3d_build_fortran/h3d_ini.F
 Chd|        H3D_READ                      source/output/h3d/h3d_build_fortran/h3d_read.F
+Chd|        MY_GETPID                     source/system/pid.c           
 Chd|        RDELE                         source/input/rdele.F          
 Chd|        REDKEY0                       source/input/redkey0.F        
 Chd|        REDKEY1                       source/input/redkey1.F        
@@ -181,6 +183,13 @@ C-----------------------------------------------
       INTEGER :: NUM_ALE_KEY2, INUM
       LOGICAL :: lFOUND
 C-----------------------------------------------
+      INTEGER MY_PID,LEN_IUSC1_FN,LEN_IUSC2_FN,LEN_IUSCTMP_FN
+      CHARACTER(LEN=10) :: CPID
+      CHARACTER(LEN=6) :: CISPMD
+      CHARACTER(LEN=256) :: IUSC1_FN,IUSC2_FN,IUSCTMP_FN
+      
+
+C-----------------------------------------------
 C   E x t e r n a l   F u n c t i o n s
 C-----------------------------------------------
       INTEGER NVAR,INTDT
@@ -239,12 +248,23 @@ C------------------------------------------------------------------
       KEY2=" "
       KEY3=" "
       KEY4=" "
+      
+      CALL MY_GETPID(MY_PID)
+      WRITE(CPID,'(I10.10)') MY_PID
+      WRITE(CISPMD,'(I6.6)') ISPMD
 
-      OPEN(UNIT=IUSC1,FORM='FORMATTED',ACCESS='DIRECT',RECL=120,STATUS='SCRATCH')
-      OPEN(UNIT=IUSC2,FORM='FORMATTED',STATUS='SCRATCH')
+      IUSC1_FN='9_'//ROOTN(1:LENROOTN)//'_'//CPID//'_'//CISPMD//'.tmp'
+      IUSC2_FN='30_'//ROOTN(1:LENROOTN)//'_'//CPID//'_'//CISPMD//'.tmp'
+      IUSCTMP_FN='60_'//ROOTN(1:LENROOTN)//'_'//CPID//'_'//CISPMD//'.tmp'
+      LEN_IUSC1_FN=LEN_TRIM(IUSC1_FN)
+      LEN_IUSC2_FN=LEN_TRIM(IUSC2_FN)
+      LEN_IUSCTMP_FN=LEN_TRIM(IUSCTMP_FN)
+      OPEN(UNIT=IUSC1,FORM='FORMATTED',ACCESS='DIRECT',RECL=120,FILE=TRIM(IUSC1_FN))
+      OPEN(UNIT=IUSC2,FORM='FORMATTED',FILE=TRIM(IUSC2_FN))
+
 C attention IBM/MPI ne supporte pas de REWIND sur STDIN !
       IUSC_TMP=60
-      OPEN(UNIT=IUSC_TMP,FORM='FORMATTED',STATUS='SCRATCH')
+      OPEN(UNIT=IUSC_TMP,FORM='FORMATTED',FILE=TRIM(IUSCTMP_FN))
 C
       ROOTNAM=' '
       ROOTLEN = 0
@@ -452,6 +472,7 @@ C
       ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7--
         CLOSE(UNIT=IUSC_TMP)
+        CALL DELETE_USER_FILE(IUSCTMP_FN,LEN_IUSCTMP_FN)
         ISTDI = 5
        IF (GOT_INPUT==1) THEN
         ISTDI=80
@@ -2619,8 +2640,11 @@ c autoselect of files format
       ENDDO
 C========================================================================
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7--
-      CLOSE (UNIT=IUSC1)
-      CLOSE (UNIT=IUSC2)
+      CLOSE(UNIT=IUSC1)
+      CLOSE(UNIT=IUSC2)
+      CALL DELETE_USER_FILE(IUSC1_FN,LEN_IUSC1_FN)
+      CALL DELETE_USER_FILE(IUSC2_FN,LEN_IUSC2_FN)
+
       IF(IERR==0) RETURN
       CALL ARRET(0)
 C
@@ -2738,7 +2762,6 @@ C
 Chd|====================================================================
 Chd|  FRETITL2                      source/input/freform.F        
 Chd|-- called by -----------
-Chd|        ABFHIST1                      source/output/abf/abfhist1.F  
 Chd|        ALLOC_GROUP_STR               source/groups/alloc_group_str.F
 Chd|        ALLOC_LINE_STR                source/groups/alloc_line_str.F
 Chd|        ALLOC_SUBSET_STR              source/groups/alloc_subset_str.F

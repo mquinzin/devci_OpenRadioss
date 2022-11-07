@@ -40,6 +40,7 @@ Chd|        LAW120_UPD                    source/materials/mat/mat120/law120_upd
 Chd|        LAW36_UPD                     source/materials/mat/mat036/law36_upd.F
 Chd|        LAW42_UPD                     source/materials/mat/mat042/law42_upd.F
 Chd|        LAW58_UPD                     source/materials/mat/mat058/law58_upd.F
+Chd|        LAW62_UPD                     source/materials/mat/mat062/law62_upd.F
 Chd|        LAW69_UPD                     source/materials/mat/mat069/law69_upd.F
 Chd|        LAW76_UPD                     source/materials/mat/mat076/law76_upd.F
 Chd|        LAW87_UPD                     source/materials/mat/mat087/law87_upd.F
@@ -133,7 +134,7 @@ c-----------------------------------------------------------------------
               MTAG%G_DMG = 1
             ELSE IF (IRUP == 28) THEN  ! Alter
               MTAG%G_DMG = 2
-            ELSE IF (IRUP == 41) THEN  ! Tab2 
+            ELSE IF (IRUP == 41 .OR. IRUP == 42) THEN  ! Tab2 
               MTAG%L_DMGSCL = 1
             ENDIF
           ENDDO
@@ -197,6 +198,10 @@ c
             CALL LAW58_UPD(IOUT,TITR,UPARAM,NPC,PLD,
      .                     NFUNC,NFUNCL,IFUNC,MAT_ID,FUNC_ID,
      .                     PM(1,IMAT),NPARAM,LSENSOR)
+c-------------------------
+          CASE (62) 
+c------------------
+            CALL LAW62_UPD(IOUT,TITR,MAT_ID,NPARAM,UPARAM)   
 c------------------
           CASE (69) 
 c------------------

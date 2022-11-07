@@ -37,6 +37,7 @@ Chd|        FUNC_MAXY                     source/tools/curve/func_maxy.F
 Chd|        FUNC_SLOPE                    source/tools/curve/func_slope.F
 Chd|        HM_READ_FAIL                  source/materials/fail/hm_read_fail.F
 Chd|        HM_READ_FAIL_GENE1            source/materials/fail/gene1/hm_read_fail_gene1.F
+Chd|        HM_READ_FAIL_INIEVO           source/materials/fail/inievo/hm_read_fail_inievo.F
 Chd|        HM_READ_FAIL_TAB2             source/materials/fail/tabulated/hm_read_fail_tab2.F
 Chd|        HM_READ_FUNCT                 source/tools/curve/hm_read_funct.F
 Chd|        HM_READ_MAT                   source/materials/mat/hm_read_mat.F
@@ -65,6 +66,7 @@ Chd|        LAW120_UPD                    source/materials/mat/mat120/law120_upd
 Chd|        LAW36_UPD                     source/materials/mat/mat036/law36_upd.F
 Chd|        LAW42_UPD                     source/materials/mat/mat042/law42_upd.F
 Chd|        LAW58_UPD                     source/materials/mat/mat058/law58_upd.F
+Chd|        LAW62_UPD                     source/materials/mat/mat062/law62_upd.F
 Chd|        LAW69_UPD                     source/materials/mat/mat069/law69_upd.F
 Chd|        LAW76_UPD                     source/materials/mat/mat076/law76_upd.F
 Chd|        LAW87_UPD                     source/materials/mat/mat087/law87_upd.F

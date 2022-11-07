@@ -36,7 +36,7 @@ Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.
 Chd|        INITBUF_MOD                   share/resol/initbuf.F         
 Chd|====================================================================
       SUBROUTINE S4LAGSFEM(IPARG,IXS,X,V,ELBUF_TAB,VARNOD,
-     .                     IAD_ELEM,FR_ELEM,IXS10)
+     .                     IAD_ELEM,FR_ELEM,IXS10,XDP )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -60,6 +60,7 @@ C-----------------------------------------------
 #include      "vect01_c.inc"
 #include      "task_c.inc"
 #include      "scr01_c.inc"
+#include      "scr05_c.inc"
 #include      "units_c.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
@@ -69,6 +70,7 @@ C-----------------------------------------------
 C     REAL
       my_real
      .   X(*),VARNOD(*),V(*)
+      DOUBLE PRECISION , DIMENSION(SXDP), INTENT(IN) :: XDP     
       TYPE (ELBUF_STRUCT_), TARGET, DIMENSION(NGROUP) :: ELBUF_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
@@ -122,14 +124,25 @@ C
 C
         GBUF => ELBUF_TAB(NG)%GBUF
         IF(NNOD==4 .AND.ISROT == 3) THEN
-          CALL S4VOLNOD3(VARNOD6,X,NC1,NC2,NC3,NC4,GBUF%OFF,GBUF%SMSTR,NEL)
-          DO I=LFT,LLT
-           IF(GBUF%OFF(I) == ZERO) THEN
-             VOL0(I)=ZERO
-           ELSE
-             VOL0(I)=GBUF%VOL(I)
-           ENDIF
-          ENDDO
+          CALL S4VOLNOD3(VARNOD6,X,NC1,NC2,NC3,NC4,GBUF%OFF,XDP,NEL)
+          IF(IRESP==1)THEN
+           LBUF => ELBUF_TAB(NG)%BUFLY(1)%LBUF(1,1,1)
+           DO I=LFT,LLT
+              IF(GBUF%OFF(I) == ZERO) THEN
+                VOL0(I)=ZERO
+              ELSE
+                VOL0(I)=LBUF%VOL0DP(I)
+              ENDIF
+           ENDDO
+          ELSE
+           DO I=LFT,LLT
+              IF(GBUF%OFF(I) == ZERO) THEN
+                VOL0(I)=ZERO
+              ELSE
+                VOL0(I)=GBUF%VOL(I)
+              ENDIF
+           ENDDO
+          END IF !(IRESP==1)THEN
 C-----for small strain elements
           CALL S4VOLNOD_SM(VARNOD6,V,NC1,NC2,NC3,NC4,VOL0,GBUF%AMU,GBUF%OFF,
      2                     GBUF%SMSTR,NEL)
@@ -164,7 +177,7 @@ C-----T10 large strain first
           ENDIF
           IF (ISMSTR==10) THEN
             CALL S10VOLNODT3(ELBUF_TAB(NG),VARNOD6,X,NC,GBUF%OFF,
-     +                       GBUF%SMSTR,NEL)
+     +                       GBUF%SMSTR,XDP,NEL)
             IBID = 1
             DO IP=1,NPT
               LBUF => ELBUF_TAB(NG)%BUFLY(IBID)%LBUF(IP,IBID,IBID)
@@ -183,7 +196,7 @@ C-----T10 large strain first
                ENDDO
             END DO !IP=1,NPT
           ELSE
-            CALL S10VOLNOD3(VARNOD6,X,NC,GBUF%OFF,VOLG,NEL)
+            CALL S10VOLNOD3(VARNOD6,X,NC,GBUF%OFF,VOLG,XDP,NEL)
             DO I=LFT,LLT
              IF(GBUF%OFF(I) == ZERO) THEN
                VOL0(I)=ZERO

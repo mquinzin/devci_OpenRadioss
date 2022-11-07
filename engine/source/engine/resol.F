@@ -109,10 +109,10 @@ Chd|        DEPLAFAKEIGE                  source/assembly/deplafakeige.F
 Chd|        DEPLAPINCH                    source/assembly/deplapinch.F  
 Chd|        DESACTI                       source/elements/desacti.F     
 Chd|        DRAPE_WREST                   source/output/restart/wrrest.F
-Chd|        DSWREST                       source/output/restart/wrrest.F
 Chd|        DTNODA                        source/time_step/dtnoda.F     
 Chd|        DTNODAMP                      source/time_step/dtnodamp.F   
 Chd|        DTNODAMS                      source/time_step/dtnodams.F   
+Chd|        DTNODARAYL                    source/time_step/dtnodarayl.F 
 Chd|        EBCCLAP                       source/boundary_conditions/ebcs/ebcclap.F
 Chd|        EBCS_EXTRAPOL                 source/boundary_conditions/ebcs/ebcs_extrapol.F
 Chd|        ELAPSTIME                     source/system/timer.F         
@@ -1228,7 +1228,8 @@ C-------------------------------------------------------------------------------
       ALLOCATE( ICONTACT_OLD(SICONTACT))
       IDAMP_RDOF_TAB = 0
       FLG_DTNODAMP = 0
-      IF ((NODADT==1).AND.(IDAMP_RDOF==NDAMP)) THEN
+      IF ((NODADT==1).AND.
+     .       (IDAMP_RDOF==NDAMP .OR. NDAMP>0 .OR. ISTAT==3)) THEN
         FLG_DTNODAMP = 1
       ENDIF
       FLG_KJ2 = 0
@@ -1506,23 +1507,23 @@ cc                 ALLOCATE(PLYSKYI)
                    ALLOCATE(PLY(I)%ITAG(NPLYXFE))
                    PLY(I)%ITAG = 0
                  ENDDO
-              ELSE
+               ELSE
 C is not available iparit = 0
-               DO I=1,NPLYMAX
-                   NULLIFY(PLY(I)%A)
-                   ALLOCATE(PLY(I)%A(4,NPLYXFE*NTHREAD))
-                   PLY(I)%A  = ZERO
-               ENDDO 
-                  ALLOCATE(PLYSKY(0))
-             ENDIF
-             IF(ANIM_PLY > 0) THEN
-                  ALLOCATE(VN_NOD(3,NPLYXFE))
-                  VN_NOD = ZERO
+                 DO I=1,NPLYMAX
+                     NULLIFY(PLY(I)%A)
+                     ALLOCATE(PLY(I)%A(4,NPLYXFE*NTHREAD))
+                     PLY(I)%A  = ZERO
+                 ENDDO 
+                 ALLOCATE(PLYSKY(0))
+               ENDIF
+               IF(ANIM_PLY > 0) THEN
+                 ALLOCATE(VN_NOD(3,NPLYXFE))
+                 VN_NOD = ZERO
+               ELSE
+                 ALLOCATE(VN_NOD(0,0))
+               ENDIF
              ELSE
-                  ALLOCATE(VN_NOD(0,0))
-                ENDIF
-             ELSE
-                 ALLOCATE(PLY(0),PLYSKY(0))
+               ALLOCATE(PLY(0),PLYSKY(0))
              ENDIF
 C for inteface type 24 + pxfem  
              IF(INTPLYXFEM > 0 ) THEN
@@ -3245,11 +3246,9 @@ C----------------------------------
           CALL TRACE_IN(10,0,ZERO)
           IF (IMON>0) CALL STARTIME(4,1)
           IF (IMONM > 0) CALL STARTIME(41,1)
-          CALL PBLAST(ILOADP  ,LOADP      ,A      ,
-     2                V       ,X          ,
-     3                TFEXC   ,IADS(I87M) ,
-     4                FSKY    ,FSKY       ,LLOADP ,FEXT   ,ITAB       ,
-     5                H3D_DATA)
+          CALL PBLAST(ILOADP     ,LOADP      ,A          ,V       ,X      ,
+     1                IADS(I87M) ,FSKY       ,FSKY       ,LLOADP  ,FEXT   ,
+     2                ITAB       ,H3D_DATA)
           IF (IMONM > 0) CALL STOPTIME(41,1)
           IF (IMON>0) CALL STOPTIME(4,1)
           CALL TRACE_OUT(10)
@@ -3411,7 +3410,7 @@ C---------------------------------------------
         IF(IALE+IEULER+ITHERM==0) THEN
           L1 = 1+NIXS*NUMELS + NSVOIS*NIXS
           CALL S4LAGSFEM(IPARG,IXS,X,V,ELBUF_TAB,VARNOD,
-     .                   IAD_ELEM,FR_ELEM,IXS(L1))
+     .                   IAD_ELEM,FR_ELEM,IXS(L1),XDP)
         ENDIF
       ENDIF
 
@@ -3810,11 +3809,11 @@ C int 24+pxfem
             WAGAP(2,N) = ZERO
           END DO
       ENDIF
-C
-      IF(ANIM_PLY > 0) VN_NOD = ZERO
-C
 C      
 !$OMP END PARALLEL
+
+      IF(ANIM_PLY > 0) VN_NOD = ZERO
+
 
 C--------------move to here to keep TAGNCONT for output
       IF(NLOADP_HYD_INTER > 0 )THEN
@@ -5868,9 +5867,13 @@ C----------------------------------------------------------
 
       IF (FLG_DTNODAMP==1) THEN
 C---------------NODAL TIME STEP FOR DAMPING-----------------
-        CALL DTNODAMP(ITAB  ,MS  ,IN  ,STIFN  ,STIFR  ,DT2T ,
+        IF (IDAMP_RDOF==NDAMP)
+     +  CALL DTNODAMP(ITAB  ,MS  ,IN  ,STIFN  ,STIFR  ,DT2T ,
      1                WEIGHT        ,IGRNOD   ,DAMPR ,ISTOP ,
      2              IDAMP_RDOF_TAB,ICONTACT,IXC,X)
+        IF (NDAMP>0 .OR. ISTAT==3)
+     +  CALL DTNODARAYL(MS       ,IN    ,STIFN ,STIFR ,DT2T     ,
+     1                  IGRNOD   ,DAMPR )
       ENDIF
 C -------------------------- 
 
@@ -6253,6 +6256,7 @@ C===============================================================================
         ENDIF
 C----------------------------------
       IF (IMONM > 0) CALL STARTIME(52,1)
+       IF (NODADT==0) THEN
         IF (ISTAT==3) THEN
          DAMPA3 = TWO*BETATE/(ONE + BETATE * DT12)
          IF (DT2>=EP06) DAMPA3=ZERO
@@ -6306,6 +6310,7 @@ C--           IF no node/elemt on proc - dt2=10E6 -> dt2 can be equal to zero
           BB  = HALF*DAMPA3*DT2*DT2
           DT2 = SQRT(BB*BB + DT2*DT2) - BB
         ENDIF
+       END IF !(NODADT==0) THEN
 
       IF (IMONM > 0) CALL STOPTIME(52,1)
 

@@ -38,6 +38,7 @@ Chd|        FAIL_FLD_XFEM                 source/materials/fail/fld/fail_fld_xfe
 Chd|        FAIL_GENE1_C                  source/materials/fail/gene1/fail_gene1_c.F
 Chd|        FAIL_HASHIN_C                 source/materials/fail/hashin/fail_hashin_c.F
 Chd|        FAIL_HC_DSSE_C                source/materials/fail/hc_dsse/fail_hc_dsse_c.F
+Chd|        FAIL_INIEVO_C                 source/materials/fail/inievo/fail_inievo_c.F
 Chd|        FAIL_JOHNSON_C                source/materials/fail/johnson_cook/fail_johnson_c.F
 Chd|        FAIL_JOHNSON_XFEM             source/materials/fail/johnson_cook/fail_johnson_xfem.F
 Chd|        FAIL_NXT_C                    source/materials/fail/nxt/fail_nxt_c.F
@@ -48,6 +49,7 @@ Chd|        FAIL_RTCL_C                   source/materials/fail/rtcl/fail_rtcl_c
 Chd|        FAIL_SETOFF_C                 source/materials/fail/fail_setoff_c.F
 Chd|        FAIL_SETOFF_NPG_C             source/materials/fail/fail_setoff_npg_c.F
 Chd|        FAIL_SETOFF_WIND_FRWAVE       source/materials/fail/fail_setoff_wind_frwave.F
+Chd|        FAIL_SYAZWAN_C                source/materials/fail/syazwan/fail_syazwan_c.F
 Chd|        FAIL_TAB2_C                   source/materials/fail/tabulated/fail_tab2_c.F
 Chd|        FAIL_TAB_C                    source/materials/fail/tabulated/fail_tab_c.F
 Chd|        FAIL_TAB_OLD_C                source/materials/fail/tabulated/fail_tab_old_c.F
@@ -206,7 +208,7 @@ C-----------------------------------------------
      .   PLY_EXX(MVSIZ,*),PLY_EYY(MVSIZ,*),PLY_EXY(MVSIZ,*), 
      .   PLY_EXZ(MVSIZ,*),PLY_EYZ(MVSIZ,*),PLY_F(MVSIZ,5,*),ETIMP(MVSIZ)
       TYPE(ELBUF_STRUCT_), TARGET :: ELBUF_STR
-      TARGET :: ALDT, IPM
+      TARGET :: ALDT, IPM, VARNL
       TYPE (STACK_PLY) :: STACK
       TYPE (FAILWAVE_STR_) ,TARGET :: FAILWAVE 
       TYPE (MATPARAM_STRUCT_) , DIMENSION(NUMMAT) ,TARGET :: MATPARAM_TAB
@@ -248,7 +250,8 @@ c
       my_real  SCALE1(NEL)
       my_real ,DIMENSION(NEL), TARGET :: LE_MAX
       my_real TT_LOCAL
-      my_real, DIMENSION(:) ,POINTER  :: EL_TEMP,YLDFAC,CRKLEN,CRKDIR,DADV,TFAIL,EL_LEN
+      my_real, DIMENSION(:) ,POINTER  :: EL_TEMP,YLDFAC,CRKLEN,CRKDIR,DADV,TFAIL,EL_LEN,
+     .                                   EL_PLA
       my_real, DIMENSION(NLAY,10)  :: PTHKF
       TARGET :: TEMPEL,BUFMAT,EPSXX,EPSYY,DEPSXX,DEPSYY,SCALE1,POSLY,THKLY
 c----
@@ -1651,7 +1654,8 @@ c
      .           FLAG_ZCFAC,ZCFAC   ,DEPSXX   ,DEPSYY   ,DEPSXY   ,
      .           EPSXX    ,EPSYY    ,EPSXY    ,EPSYZ    ,EPSZX    ,
      .           LBUF%SIG(IJ1),LBUF%SIG(IJ2),LBUF%SIG(IJ3),LBUF%SIG(IJ4),LBUF%SIG(IJ5),
-     .           SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ) 
+     .           SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   , 
+     .           WMC      ,THLY     ,THK0) 
 !          
           ELSEIF (ILAW == 121 )THEN
             CALL SIGEPS121C(
@@ -1713,11 +1717,13 @@ C           plastic strain increment for all plastic laws
                   DPLA(I)  = MAX(VARNL(I,IT),ZERO)
                   EPSPL(I) = LBUF%EPSDNL(I)
                 ENDDO
+                EL_PLA => LBUF%PLANL(1:NEL)
               ! Classical local material
               ELSE
                 DO I=JFT,JLT
                   DPLA(I) = LBUF%PLA(I) - PLA0(I)       
                 ENDDO
+                EL_PLA => LBUF%PLA(1:NEL)
               ENDIF
             ENDIF
 c
@@ -2194,6 +2200,32 @@ c
      4            SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,              
      5            EL_TEMP  ,FOFF     ,DFMAX    ,TDEL     ,IPT      ,
      6            IPG      ,DMG_FLAG ,DMG_LOC_SCALE,PTHKF(ILAYER,IFL)) 
+c
+              CASE (42)     !    INIEVO
+c
+                CALL FAIL_INIEVO_C(
+     1            JLT      ,NUPAR    ,NVARF    ,NFUNC1   ,IFUNC1   ,
+     2            NPF      ,TABLE    ,TF       ,TT       ,UPARAMF  , 
+     3            NGL      ,EL_LEN   ,DPLA     ,EPSPL    ,UVARF    ,     
+     4            SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,              
+     5            EL_PLA   ,EL_TEMP  ,SIGY     ,FOFF     ,DFMAX    ,
+     6            TDEL     ,IPT      ,IPG      ,DMG_FLAG ,DMG_LOC_SCALE,
+     7            PTHKF(ILAYER,IFL))
+c
+              CASE (99)     !    Syazwan failure model
+                DO I=JFT,JLT
+                  COPY_PLA(I) = LBUF%PLA(I)
+                ENDDO
+                CALL FAIL_SYAZWAN_C(
+     1          JLT      ,NVARF   ,
+     2          TT       ,UPARAMF ,NGL      ,IPT      ,MPT      ,
+     3          SIGNXX   ,SIGNYY  ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,
+     4          EPSXX    ,EPSYY   ,EPSXY    ,EPSYZ    ,EPSZX    ,
+     5          DPLA     ,EPSPL   ,UVARF    ,PTHKF(ILAYER,IFL)  ,UELR1    ,
+     6          OFF      ,OFFL    ,DFMAX    ,TDEL     ,NFUNC1   ,
+     7          IFUNC1   ,EL_LEN  ,FOFF     ,IPG      ,COPY_PLA ,
+     8          DMG_FLAG ,DMG_LOC_SCALE,NPF ,TF)
+c  
 c-------------
               END SELECT
 c-------------

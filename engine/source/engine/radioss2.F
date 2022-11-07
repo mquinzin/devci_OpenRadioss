@@ -25,7 +25,6 @@ Chd|  RADIOSS2                      source/engine/radioss2.F
 Chd|-- called by -----------
 Chd|        RADIOSS0                      source/engine/radioss0.F      
 Chd|-- calls ---------------
-Chd|        ABFHIST1                      source/output/abf/abfhist1.F  
 Chd|        ALELAG_RREST                  source/output/restart/rdresb.F
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        ARRET                         source/system/arret.F         
@@ -41,12 +40,8 @@ Chd|        COQINI                        source/elements/shell/coqini.F
 Chd|        CRKXFEM_RREST                 source/output/restart/rdresb.F
 Chd|        CRKXFEM_RRESTANIM             source/output/restart/rdresb.F
 Chd|        CUR_FIL_C                     source/output/tools/sortie_c.c
+Chd|        DELETE_USER_FILE              source/user_interface/dyn_userlib.c
 Chd|        DRAPE_RREST                   source/output/restart/rdresb.F
-Chd|        DSALLOC                       source/implicit/dsolve/dsgest.F
-Chd|        DSCLOSE                       source/implicit/dsolve/dsgest.F
-Chd|        DSDEAL                        source/implicit/dsolve/dsgest.F
-Chd|        DSOPEN                        source/implicit/dsolve/dsgest.F
-Chd|        DSRREST                       source/output/restart/rdresb.F
 Chd|        DYN_USERLIB_INIT              source/user_interface/dyn_userlib.c
 Chd|        FVDEAL                        source/airbag/fvdeal.F        
 Chd|        FVRREST                       source/output/restart/rdresb.F
@@ -72,6 +67,7 @@ Chd|        LECINP                        source/input/lecinp.F
 Chd|        LECTUR                        source/input/lectur.F         
 Chd|        LF_CONVERT_C_FLAT             source/engine/lf_convert_c.c  
 Chd|        LOADPREST                     source/output/restart/rdresb.F
+Chd|        MY_GETPID                     source/system/pid.c           
 Chd|        NFRREST                       source/output/restart/rdresb.F
 Chd|        NITSCHERREST                  source/output/restart/rdresb.F
 Chd|        OPEN_C                        source/output/tools/sortie_c.c
@@ -141,6 +137,7 @@ Chd|        PINCHTYPE_MOD                 ../common_source/modules/pinchtype_mod
 Chd|        RAD2R_MOD                     share/modules/rad2r.F         
 Chd|        RBODY_MOD                     share/modules/rbody_mod.F     
 Chd|        RESTMOD                       share/modules/restart_mod.F   
+Chd|        SCRATCHFILE_MOD               share/modules/scratchfiles_mod.F
 Chd|        SEGVAR_MOD                    share/modules/segvar_mod.F    
 Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        SOLTOSPH_MOD                  share/modules/soltosph_mod.F  
@@ -189,6 +186,7 @@ C-----------------------------------------------
       USE LINEAR_SOLVER_MOD
       USE MDS_RESTART_MOD
       USE SEGVAR_MOD
+      USE SCRATCHFILE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -295,6 +293,11 @@ C-----------------------------------------------
      .          CHR_OLD*2,FNAME*2048,IOFF1*3,IOFF2*3,IOFF3*3
       CHARACTER*2048 INAME
       CHARACTER*4 PROCNAM,CHRU_M1
+
+      CHARACTER*10 CPID
+      CHARACTER*6 CISPMD
+      INTEGER MY_PID
+
       CHARACTER ABC(26)*1, FILNAMTH*100, FILTH*3, LINE*256,
      .          FILNAMABF*100,FILNAMABF_TMP*100
       DATA ABC/'a','b','c','d','e','f','g','h','i','j','k','l','m','n',
@@ -509,6 +512,12 @@ C------------------------------------------------------------------
       IUTITLHI(7)=116
       IUTITLHI(8)=117
       IUTITLHI(9)=118
+      USE_IFXM = 0
+      USE_IFXS = 0
+      USE_IEIGM = 0
+C--------------------------------------------------
+C Initialize ProcessID variable for scratch filesqq
+      CALL MY_GETPID(MY_PID)
 C--------------------------------------------------
 C Radioss userlibraries initialization
 C--------------------------------------------------
@@ -626,18 +635,21 @@ C--------------------------------------------------
       HVISC=HALF
       HVLIN=ZERO
 C--------------------------------------------------
-      OPEN(UNIT=IIN,FORM='FORMATTED',STATUS='SCRATCH')
+      WRITE(CPID,'(I10.10)') MY_PID
+      WRITE(CISPMD,'(I6.6)') ISPMD
+      IINFNA='8_'//ROOTN(1:LENROOTN)//'_'//CPID//'_'//CISPMD//'.tmp'
+      OPEN(UNIT=IIN,FORM='FORMATTED',FILE=TRIM(IINFNA))   ! Create tempo file
 
       IF ( GOT_INPUT == 0)THEN
        IF (ISPMD/=0) THEN
 C redirect IOUT to tmp file  fichier temporaire when SPMD on pi <> 0
          IOUT = IUSC4
-         OPEN(UNIT=IOUT,ACCESS='SEQUENTIAL',
-     .       FORM='FORMATTED',STATUS='SCRATCH')
+         IUSC4_FNAM='70_'//ROOTN(1:LENROOTN)//'_'//CPID//'_'//CISPMD//'.tmp'
+         LEN_IUSC4_FNAM=LEN_TRIM(IUSC4_FNAM)
+         OPEN(UNIT=IOUT,ACCESS='SEQUENTIAL',FORM='FORMATTED',FILE=TRIM(IUSC4_FNAM) )
 
          WRITE(UNIT=IOUT,IOSTAT=IOS,FMT='(A)')
-         OPEN(UNIT=ISTDI,FORM='FORMATTED',FILE=INPUTNAM,
-     .       STATUS='OLD',IOSTAT=IO_ERR)
+         OPEN(UNIT=ISTDI,FORM='FORMATTED',FILE=INPUTNAM,STATUS='OLD',IOSTAT=IO_ERR)
          IF (IO_ERR/=0) THEN
            CALL ANCMSG(MSGID=145,ANMODE=ANINFO,
      .            C1=INPUTNAM)
@@ -647,8 +659,10 @@ C redirect IOUT to tmp file  fichier temporaire when SPMD on pi <> 0
       ELSE
        IF (ISPMD/=0) THEN
          IOUT = IUSC4
-         OPEN(UNIT=IOUT,ACCESS='SEQUENTIAL',
-     .       FORM='FORMATTED',STATUS='SCRATCH')
+         IUSC4_FNAM='70_'//ROOTN(1:LENROOTN)//'_'//CPID//'_'//CISPMD//'.tmp'
+         LEN_IUSC4_FNAM=LEN_TRIM(IUSC4_FNAM)
+         OPEN(UNIT=IOUT,ACCESS='SEQUENTIAL',FORM='FORMATTED',FILE=TRIM(IUSC4_FNAM))
+
          WRITE(UNIT=IOUT,IOSTAT=IOS,FMT='(A)')
        ENDIF
       ENDIF
@@ -766,9 +780,7 @@ C       Create info, hist, monitor, progress and tpl files for writing implicit 
             LEN_TMP_NAME = OUTFILE_NAME_LEN+ROOTLEN+9
             TMP_NAME=OUTFILE_NAME(1:OUTFILE_NAME_LEN)//FILNAM(1:ROOTLEN+9)
             INPUTNAM='CHECK_DATA'
-            OPEN(UNIT=IOUT,FILE=TMP_NAME(1:LEN_TMP_NAME),
-     .       ACCESS='SEQUENTIAL',
-     .       FORM='FORMATTED',STATUS='UNKNOWN')
+            OPEN(UNIT=IOUT,FILE=TMP_NAME(1:LEN_TMP_NAME),ACCESS='SEQUENTIAL',FORM='FORMATTED',STATUS='UNKNOWN')
 
              IO_ERRL=0
             DO WHILE (IO_ERRL>=0)
@@ -777,13 +789,11 @@ C       Create info, hist, monitor, progress and tpl files for writing implicit 
  1000      BACKSPACE(IOUT)
            WRITE(IOUT,'(1X,A)')FILNAM(1:ROOTLEN+9)
            WRITE(PROCNAM,'(I4.4)')ISPMD
-           FILNAM =ROOTNAM(1:ROOTLEN)
-     .                  //'_'//CHRUN//'_'//PROCNAM//'.rst'
+           FILNAM =ROOTNAM(1:ROOTLEN)//'_'//CHRUN//'_'//PROCNAM//'.rst'
            LEN = ROOTLEN + 14
          ENDIF
          WRITE(PROCNAM,'(I4.4)')ISPMD+1
-         FILNAM =ROOTNAM(1:ROOTLEN)
-     .               //'_'//CHRUN//'_'//PROCNAM//'.rst'
+         FILNAM =ROOTNAM(1:ROOTLEN)//'_'//CHRUN//'_'//PROCNAM//'.rst'
          LEN = ROOTLEN + 14
         ELSE
          IF (ISPMD==0) THEN
@@ -891,6 +901,7 @@ C end init rdresa after call xtime0
 
       CALL INIPAR(ITID,3,NNODES,INPUTNAM,GOT_INPUT,NBTASK)
       IF(ISPMD==0) THEN
+
        WRITE(IOUT, '(1X,A,I5)')'NUMBER OF SPMD DOMAINS       ',
      .                           NSPMD
        IF(NBTASK(NSPMD+1) == NSPMD*NTHREAD)THEN
@@ -936,7 +947,8 @@ C------------------------------------------------
       ENDIF
 C
       IF (IRESP==1) THEN
-        ALLOCATE(XDP(3*NUMNOD),STAT=IXDP)
+        SXDP = 3*NUMNOD
+        ALLOCATE(XDP(SXDP),STAT=IXDP)
         IF(IXDP/=0) THEN
           CALL ANCMSG(MSGID=20,ANMODE=ANINFO)
           CALL ARRET(2)
@@ -947,7 +959,8 @@ C
           CALL ARRET(2)
         ENDIF
       ELSE
-        ALLOCATE(XDP(1),STAT=IXDP)
+        SXDP = 3
+        ALLOCATE(XDP(SXDP),STAT=IXDP)
         IF(IXDP/=0) THEN
           CALL ANCMSG(MSGID=20,ANMODE=ANINFO)
           CALL ARRET(2)
@@ -1035,7 +1048,6 @@ c----------
 
       IF (IMPL_S0>0) CALL IMPRREST(IRFORM,IMPL_S0)
 C heat  transfer
-      IF(ITHERM_FE == 0 .AND. ITHERMC > 0)ITHERM_FE= 1
       IF(ITHERM_FE > 0   ) THEN
         ALLOCATE(MCP(NUMNOD),TEMP(NUMNOD))
         CALL THCRREST(MCP,TEMP)
@@ -1546,7 +1558,13 @@ C------------------------------------------------
      F              IGRPART,TAG_SKINS6,ICFIELD,LCFIELD,TAGSLV_RBY,
      G              IPART_DYNAIN,MDS_LABEL,MDS_OUTPUT_TABLE,MDS_NMAT,
      H              MAX_DEPVAR,MDS_NDEPSVAR,STACK,IBCL,ILOADP,LLOADP)
-       CLOSE (UNIT=IIN)
+
+C------------------------------------------------
+C Close & Delete scratch file
+      CLOSE (UNIT=IIN)
+      LEN_IINFNA=LEN_TRIM(IINFNA)
+      CALL DELETE_USER_FILE(IINFNA,LEN_IINFNA)
+C------------------------------------------------
       CALL TRACE_OUT(16)
 C------------------------------------------------
       CALL TRACE_IN(19,0,ZERO)
