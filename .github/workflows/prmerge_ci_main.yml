@@ -558,13 +558,7 @@ jobs:
           call C:\cygwin64\bin\bash --login -c "
           cd %cd:\=/%;
           rm -rf exec;
-          git --version;
           "
-
-      - name: Test git
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          git --version
           
       # Get last git modifications, don't clean before (way to keep persistent obj files)
       - uses: actions/checkout@v3
