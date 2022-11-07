@@ -575,9 +575,9 @@ jobs:
         run: >
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
           cd %cd:\=/%;
-          
+          echo '------- Print ifx version -------';
           ifx --version;
-          
+          echo '---------------------------------';
           mpi_opts='';
           if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
           cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
