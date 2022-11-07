@@ -558,6 +558,8 @@ jobs:
         shell: cmd
         run: >
           call C:\cygwin64\bin\bash --login -c "
+          cd %cd:\=/%;
+          cd OpenRadioss;
           mkdir -p ${{ env.WORKDIR }};
           "
 
@@ -566,6 +568,7 @@ jobs:
         shell: cmd
         run: >
           call C:\cygwin64\bin\bash --login -c "
+          cd %cd:\=/%;
           rm -rf OpenRadioss/exec;
           mkdir -p OpenRadioss/exec;
           echo 'aa' > OpenRadioss/exec/fic1;
