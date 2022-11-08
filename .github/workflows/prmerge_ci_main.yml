@@ -715,7 +715,7 @@ jobs:
           rm -f QA.summary;
           export PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$PATH;
           export PATH=${{ env.oneapi_exlib }}/${{ matrix.os }}:$PATH;
-          cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.1 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}' \";
+          cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=500' \";
           echo \"=========================================\";
           echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"; 
           echo \"--  $cmd --\";   
@@ -873,7 +873,7 @@ jobs:
           mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
           cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
           cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
-
+          cp -a extlib/intelOneAPI_runtime/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/intelOneAPI_runtime/
           cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
           cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
