@@ -127,7 +127,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tools-${{ matrix.os }}
-  #         path: ${{ env.WORKDIR }}/exec
+          path: ${{ env.WORKDIR }}/exec
 
   build_linux:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
