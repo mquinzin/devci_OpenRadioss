@@ -711,6 +711,7 @@ jobs:
           else
           precision_ext=\"_${{ matrix.precision }}\";
           fi;
+          /cygdrive/c/mybin/clean_win10.pl;
           cd qa-tests/scripts;
           rm -f QA.summary;
           export PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$PATH;
