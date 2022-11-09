@@ -665,8 +665,8 @@ jobs:
       STATUS_QA: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
       # DEV ONLY # QA_NB_PROC: 2
-      QA_NB_PROC: 4
-      # QA_NB_PROC: 2
+      # QA_NB_PROC: 4
+      QA_NB_PROC: 2
       QA_NB_THREAD: 2
 
     strategy:
