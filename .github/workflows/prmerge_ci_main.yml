@@ -679,10 +679,10 @@ jobs:
         
     steps:
 
-      # Get git related to the commit
-      - uses: actions/checkout@v3
-        with:
-          lfs: 'true'
+      # # Get git related to the commit
+      # - uses: actions/checkout@v3
+      #   with:
+      #     lfs: 'true'
 
       # - name: Clean local exe dir
       #   shell: cmd
