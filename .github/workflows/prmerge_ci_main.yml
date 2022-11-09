@@ -652,7 +652,7 @@ jobs:
 
   qa_windows_no_container:
 
-    needs: build_windows_no_container
+    # needs: build_windows_no_container
     # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
     # runs-on: ["qa_${{ matrix.os }}","dev"]
     runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
@@ -665,8 +665,8 @@ jobs:
       STATUS_QA: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
       # DEV ONLY # QA_NB_PROC: 2
-      # QA_NB_PROC: 4
-      QA_NB_PROC: 2
+      QA_NB_PROC: 4
+      # QA_NB_PROC: 2
       QA_NB_THREAD: 2
 
     strategy:
@@ -684,19 +684,19 @@ jobs:
         with:
           lfs: 'true'
 
-      - name: Clean local exe dir
-        shell: cmd
-        run: >
-          call C:\cygwin64\bin\bash --login -c "
-          cd %cd:\=/%;
-          rm -rf exec;
-          "
+      # - name: Clean local exe dir
+      #   shell: cmd
+      #   run: >
+      #     call C:\cygwin64\bin\bash --login -c "
+      #     cd %cd:\=/%;
+      #     rm -rf exec;
+      #     "
 
-      # Download artifacts
-      - uses: actions/download-artifact@v3
-        with:
-          name: bins-${{ matrix.os }}-${{ matrix.precision }}
-          path: exec
+      # # Download artifacts
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}
+      #     path: exec
 
       - name: Running qa
         # Running cygwin from powershell or cmd => neither identation nor comment !
