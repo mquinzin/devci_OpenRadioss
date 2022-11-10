@@ -850,7 +850,7 @@ jobs:
           clean: 'false'
           repository: '${{ secrets.EXTRA_REPOSITORY }}'
           path: 'EXTRA'
-          token: '$ {{ secrets.EXTRA_REPOSITORY_PAT }}'
+          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
 
     # # # Download ALL artifacts
