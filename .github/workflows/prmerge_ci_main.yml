@@ -844,8 +844,8 @@ jobs:
         with:
           lfs: 'true'
           repository: '${{ secrets.EXTRA_REPOSITORY }}'
-          path: '${{ secrets.EXTRA_REPOSITORY }}'
-          tocker: '$ {{ secrets.EXTRA_REPOSITORY_PAT }}'
+          path: 'EXTRA'
+          tocken: '$ {{ secrets.EXTRA_REPOSITORY_PAT }}'
 
 
     # # # Download ALL artifacts
