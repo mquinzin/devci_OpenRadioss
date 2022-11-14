@@ -689,8 +689,7 @@ jobs:
         with:
           lfs: 'true'
           clean: 'false'
-          repository: 'OpenRadioss/devci_OpenRadioss_extra'
-          # repository: '${{ secrets.EXTRA_REPOSITORY }}'
+          repository: '${{ secrets.EXTRA_REPOSITORY }}'
           path: 'EXTRA'
           token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
@@ -855,8 +854,7 @@ jobs:
         with:
           lfs: 'true'
           clean: 'false'
-          repository: 'OpenRadioss/devci_OpenRadioss_extra'
-          # repository: '${{ secrets.EXTRA_REPOSITORY }}'
+          repository: '${{ secrets.EXTRA_REPOSITORY }}'
           path: 'EXTRA'
           token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
