@@ -660,7 +660,7 @@ jobs:
     env:
       hm_reader_extlib: ../../extlib/hm_reader
       hm_reader_cfgfiles: ../../hm_cfg_files
-      oneapi_exlib: ../../extlib/intelOneAPI_runtime
+      oneapi_exlib: ../../EXTRA/win64/extlib/intelOneAPI_runtime
       mpi: impi
       STATUS_QA: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
@@ -683,6 +683,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           lfs: 'true'
+
+      # Get OpenRadioss extras from dedicated repository
+      - uses: actions/checkout@v3
+        with:
+          lfs: 'true'
+          clean: 'false'
+          repository: 'OpenRadioss/devci_OpenRadioss_extra'
+          # repository: '${{ secrets.EXTRA_REPOSITORY }}'
+          path: 'EXTRA'
+          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
       - name: Clean local exe dir
         shell: cmd
@@ -888,9 +898,9 @@ jobs:
             cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
             # Get Intel runtime and some other extras from a dedicated repository
-            cp -a EXTRA/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-            # mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/intelOneAPI_runtime
-            # cp -a extlib/intelOneAPI_runtime/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/intelOneAPI_runtime/
+            if test -d EXTRA/${os}
+              cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            fi
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
