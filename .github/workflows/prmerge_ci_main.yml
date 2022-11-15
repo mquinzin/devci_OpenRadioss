@@ -126,9 +126,7 @@ jobs:
 
   build_tools_windows_no_container:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
-    # DEV ONLY # runs-on: ["${{ env.os }}","dev_pmci"]
-    runs-on: ["${{ env.os }}","dev_pmci"]
-    # runs-on: ["${{ env.os }}","prmerge_ci"]
+    runs-on: ["win64","prmerge_ci"]
  
     env:
       STATUS_BUILD: 0
