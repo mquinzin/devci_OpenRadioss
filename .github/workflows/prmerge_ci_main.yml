@@ -177,18 +177,18 @@ jobs:
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
           cd %cd:\=/%;
           mkdir exec;
-          cmd="./build.bat";
-          echo "=========================================";
-          echo "--  BUILD tools for anim_to_vtk (${{ env.os }}) --";
-          echo "--  $cmd --";
-          echo "=========================================";
+          cmd=\"./build.bat\";
+          echo \"=========================================\";
+          echo \"--  BUILD tools for anim_to_vtk (${{ env.os }}) --\";
+          echo \"--  $cmd --\";
+          echo \"=========================================\";
           cd tools/anim_to_vtk/${{ env.os }};
           eval $cmd;
-          cmd="./build.bat";
-          echo "=========================================";
-          echo "--  BUILD tools for anim_to_vtk (${{ env.os }}) --";
-          echo "--  $cmd --";
-          echo "=========================================";
+          cmd=\"./build.bat\";
+          echo \"=========================================\";
+          echo \"--  BUILD tools for anim_to_vtk (${{ env.os }}) --\";
+          echo \"--  $cmd --\";
+          echo \"=========================================\";
           cd ../../th_to_csv/${{ env.os }};
           eval $cmd;
           echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
