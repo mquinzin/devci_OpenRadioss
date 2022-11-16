@@ -126,7 +126,7 @@ jobs:
 
   build_tools_windows_no_container:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
-    runs-on: ["win64","prmerge_ci"]
+    runs-on: ["win64","build","prmerge_ci"]
     continue-on-error: true
 
     env:
@@ -185,7 +185,7 @@ jobs:
           echo \"=========================================\";
           cd tools/anim_to_vtk/${{ env.os }};
           eval $cmd || exit 1;
-          cmd=\"./build.batxxx\";
+          cmd=\"./build.bat\";
           echo \"=========================================\";
           echo \"--  BUILD tools for anim_to_vtk (${{ env.os }}) --\";
           echo \"--  $cmd --\";
@@ -593,32 +593,32 @@ jobs:
             os: win64
             binary: starter
 
-          - build: starter_win64_sp
-            precision: sp
-            os: win64
-            binary: starter
+          # - build: starter_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: starter
 
-          - build: engine_win64_impi
-            precision: dp
-            os: win64
-            binary: engine
-            mpi: impi
+          # - build: engine_win64_impi
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
 
-          - build: engine_win64_impi_sp
-            precision: sp
-            os: win64
-            binary: engine
-            mpi: impi
+          # - build: engine_win64_impi_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
 
-          - build: engine_win64
-            precision: dp
-            os: win64
-            binary: engine
+          # - build: engine_win64
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
 
-          - build: engine_win64_sp
-            precision: sp
-            os: win64
-            binary: engine
+          # - build: engine_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
 
     steps:
 
@@ -813,7 +813,7 @@ jobs:
           rm -f QA.summary;
           export PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$PATH;
           export PATH=${{ env.oneapi_exlib }}/${{ matrix.os }}:$PATH;
-          cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.1-1.3 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}' \";
+          cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.1-1.3,1.759 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}' \";
           echo \"=========================================\";
           echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"; 
           echo \"--  $cmd --\";   
