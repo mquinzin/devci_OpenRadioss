@@ -127,7 +127,8 @@ jobs:
   build_tools_windows_no_container:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     runs-on: ["win64","prmerge_ci"]
- 
+    continue-on-error: true
+    
     env:
       STATUS_BUILD: 0
       os: win64
