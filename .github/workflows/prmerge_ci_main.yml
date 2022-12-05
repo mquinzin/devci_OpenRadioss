@@ -57,7 +57,8 @@ jobs:
   #         md5sum exec/* || echo "Nothing in exec/" 
 
   #     # Get last git modifications, don't clean before (way to keep persistent obj files)
-  #     - uses: actions/checkout@v3
+  #     - name: Checkout git sources
+  #       uses: actions/checkout@v3
   #       with:
   #         path: ${{ env.WORKDIR }}
   #         clean: 'false'
@@ -301,7 +302,8 @@ jobs:
   #         md5sum exec/* || echo "Nothing in exec/" 
 
   #     # Get last git modifications, don't clean before (way to keep persistent obj files)
-  #     - uses: actions/checkout@v3
+  #     - name: Checkout git sources
+  #       uses: actions/checkout@v3
   #       with:
   #         path: ${{ env.WORKDIR }}
   #         clean: 'false'
@@ -451,7 +453,8 @@ jobs:
   #   steps:
 
   #     # Get git related to the commit
-  #     - uses: actions/checkout@v3
+  #     - name: Checkout git sources
+  #       uses: actions/checkout@v3
   #       with:
   #         lfs: 'true'
 
@@ -653,7 +656,8 @@ jobs:
           "
           
       # Get last git modifications, don't clean before (way to keep persistent obj files)
-      - uses: actions/checkout@v3
+      - name: Checkout git sources
+        uses: actions/checkout@v3
         with:
           path: ${{ env.WORKDIR }}
           clean: 'false'
@@ -769,12 +773,14 @@ jobs:
     steps:
 
       # Get git related to the commit
-      - uses: actions/checkout@v3
+      - name: Checkout git sources
+        uses: actions/checkout@v3
         with:
           lfs: 'true'
 
       # Get OpenRadioss extras from dedicated repository
-      - uses: actions/checkout@v3
+      - name: Checkout git EXTRA sources
+        uses: actions/checkout@v3
         with:
           lfs: 'true'
           clean: 'false'
@@ -933,13 +939,15 @@ jobs:
           # rm -rf exec todeliver
 
       # Get last git modifications, don't clean before (way to go faster)
-      - uses: actions/checkout@v3
+      - name: Checkout git sources
+        uses: actions/checkout@v3
         with:
           clean: 'false'
           lfs: 'true'
 
       # Get OpenRadioss extras from dedicated repository
-      - uses: actions/checkout@v3
+      - name: Checkout git EXTRA sources
+        uses: actions/checkout@v3
         with:
           lfs: 'true'
           clean: 'false'
