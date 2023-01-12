@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_SPHCEL                source/elements/reader/hm_read_sphcel.F
 Chd|-- called by -----------
@@ -108,9 +108,7 @@ C-----------------------------------------------
      .        NOD2SP(*),IPM(NPROPMI,*),IGEO(NPROPGI,*),
      .        ITAB(*),ITABM1(*),IPART(LIPART1,*),IPARTSP(*),
      .        RESERVEP(NBPARTINLET), IXS(NIXS,*), IPARTS(*), ISOLNOD(*),
-     .        SPH2SOL(*), SOL2SPH(2,*), IRST(3,NSPHSOL),SOL2SPH_TYP(*),
-     .        OFF_DEF(NSUBMOD),OFF_NOD(NSUBMOD),OFF_EL(NSUBMOD),
-     .        OFF_PART(NSUBMOD)
+     .        SPH2SOL(*), SOL2SPH(2,*), IRST(3,NSPHSOL),SOL2SPH_TYP(*)
 C     REAL
       my_real
      .        X(3,*)
@@ -149,14 +147,6 @@ C-----------------------------------------------
       DATA MESS /'SPH CONNECTIVITIES DEFINITION           '/
 C-----------------------------------------------
 C--------------------------------------------------
-C      HM OFFSETS IDs
-C--------------------------------------------------
-      DO I=1,NSUBMOD
-        OFF_DEF(I) = LSUBMODEL(I)%OFF_DEF
-        OFF_NOD(I) = LSUBMODEL(I)%OFF_NOD
-        OFF_EL(I) = LSUBMODEL(I)%OFF_EL
-        OFF_PART(I) = LSUBMODEL(I)%OFF_PART
-      ENDDO
 C--------------------------------------------------
 C      ALLOCS & INITS
 c      use NUMELQ IN PLACE OF NUMELC ( NBADMESH routine is modifying NUMELC )
@@ -181,16 +171,6 @@ C--------------------------------------------------
 C      FILL OTHER STRUCTURES + CHECKS
 C--------------------------------------------------
       DO I=1,NSPHCEL
-C--------------------------------------------------
-C      SUBMODEL OFFSET
-C--------------------------------------------------
-        IF(SUB_SPH(I) /= 0)THEN
-          IF(IPARTSP(I) /= 0) IPARTSP(I) = IPARTSP(I) + OFF_PART(SUB_SPH(I)) 
-          IF(KXSP(NISP,I) /= 0) KXSP(NISP,I) = KXSP(NISP,I) + OFF_EL(SUB_SPH(I))
-
-          IF(KXSP(3,I) /= 0) KXSP(3,I) = KXSP(3,I) + OFF_NOD(SUB_SPH(I))
-
-        ENDIF
 C--------------------------------------------------
 C      INTERNAL PART ID
 C--------------------------------------------------

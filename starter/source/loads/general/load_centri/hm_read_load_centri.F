@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_LOAD_CENTRI           source/loads/general/load_centri/hm_read_load_centri.F
 Chd|-- called by -----------
@@ -37,10 +37,11 @@ Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.
 Chd|        HM_OPTION_READ_MOD            share/modules1/hm_option_read_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        R2R_MOD                       share/modules1/r2r_mod.F      
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
       SUBROUTINE HM_READ_LOAD_CENTRI(ICFIELD,LCFIELD  ,CFIELD  ,ITAB     ,ITABM1 ,
-     .                               IGRNOD ,NPC      ,LSENSOR ,UNITAB   ,IFRAME ,
+     .                               IGRNOD ,NPC      ,SENSOR_TAB ,UNITAB   ,IFRAME ,
      .                               LSUBMODEL)
 C
 C-----------------------------------------------
@@ -55,6 +56,7 @@ C-----------------------------------------------
       USE GROUPDEF_MOD
       USE SUBMODEL_MOD
       USE HM_OPTION_READ_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -69,19 +71,18 @@ C-----------------------------------------------
 #include      "com04_c.inc"
 #include      "units_c.inc"
 #include      "warn_c.inc"
-#include      "r2r_c.inc"
 #include      "sysunit.inc"
-#include      "mvsiz_p.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       TYPE (UNIT_TYPE_),INTENT(IN) ::UNITAB 
       INTEGER ICFIELD(SIZFIELD,*), LCFIELD(*), ITAB(*), ITABM1(*), 
-     .  NPC(*),LSENSOR(NSENSI,*),IFRAME(LISKN,*)
+     .  NPC(*),IFRAME(LISKN,*)
       my_real CFIELD(LFACLOAD,*)
 C-----------------------------------------------
       TYPE (GROUP_)  , DIMENSION(NGRNOD)  :: IGRNOD
       TYPE(SUBMODEL_DATA),INTENT(IN)::LSUBMODEL(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -260,26 +261,24 @@ C-----------
         ENDIF
 C-----------        
         TSENS = 0
-	IF(ISENS/=0) THEN
+	       IF (ISENS/=0) THEN
           DO J=1,NSENSOR
-	    IF(ISENS==LSENSOR(1,J))TSENS=J
-	  ENDDO
-	  IF(TSENS==0)THEN
-            CALL ANCMSG(MSGID=884,
-     .                MSGTYPE=MSGERROR,
-     .                ANMODE=ANINFO_BLIND_1,
-     .                I1=ID,
-     .                C1=TITR,
-     .                I2=ISENS)
-	  ENDIF
-	ENDIF
+	           IF (ISENS == SENSOR_TAB(J)%SENS_ID) TSENS=J
+	         ENDDO
+	         IF (TSENS==0) THEN
+             CALL ANCMSG(MSGID=884, MSGTYPE=MSGERROR, ANMODE=ANINFO_BLIND_1,
+     .            I1=ID,
+     .            C1=TITR,
+     .            I2=ISENS)
+	         ENDIF
+	       ENDIF
 C-----------        
         NN = NODGRNR5(IGU,IGS,LCFIELD(IAD),IGRNOD,ITABM1,MESS)
 C-----------        
         IF (IVAR == 0) IVAR = 1
 C-----------        
-	ICFIELD(1,K)  = NN
-	ICFIELD(2,K)  = IDIR
+	       ICFIELD(1,K)  = NN
+	       ICFIELD(2,K)  = IDIR
         ICFIELD(3,K)  = NCURS
         ICFIELD(4,K)  = IAD
         ICFIELD(5,K)  = 1 ! Type /LOAD/CENTRI

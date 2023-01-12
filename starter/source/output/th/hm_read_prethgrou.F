@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_PRETHGROU             source/output/th/hm_read_prethgrou.F
 Chd|-- called by -----------
@@ -75,7 +75,7 @@ C-----------------------------------------------
       INTEGER NVARF1,NVARFR
       INTEGER NVARRIV,NVARRIVG,NSELRT
       INTEGER NVARNG,NVARSG,NVARCG,NVARTG,NVARPG,NVARRG,NVARURG
-      INTEGER NVARNSG,NVARSPG
+      INTEGER NVARNSG,NVARSPG,NVARSENS
       INTEGER NVARING,NVARRWG, NVARRBG,NVARACG,NVARSEG,NVARJOG
       INTEGER NVARABG,NVARMG4,NVARMVG,NVARPAG,NVARFXG,NVARFXMG
       INTEGER NVARF1G,NVARFRG,NVARGAUG,NVARCLUS,NVARCLUSG,NVARFLOW
@@ -84,12 +84,12 @@ C-----------------------------------------------
       INTEGER NTHBEAM,NTHTRUS,NTHBRIC,NTHNODE,NTHSHEL,NTHSH3N,NTHSPRING,NTHRBODY
       INTEGER NTHMONVOL,HM_NTHPART,HM_NTHSUBS,HM_NTHSPHCEL, HM_NTHQUAD, HM_NTHSPHFLOW
       INTEGER HM_NTHGAUGE, HM_NTHFXBODY, HM_NTHFRAME, HM_NTHCYLJO, HM_NTHNSTRAND,HM_NTHSURF
-      INTEGER HM_NTHTRIA,HM_NTHSLIPRING,HM_NTHRETRACTOR
+      INTEGER HM_NTHTRIA,HM_NTHSLIPRING,HM_NTHRETRACTOR,HM_NTHSENS
       LOGICAL IS_AVAILABLE
 C
       PARAMETER (NVARRIV = 10,NVARRIVG = 1)
       PARAMETER (NVARN = 628,NVARS =239554 ,NVARC = 37856,NVART = 6)
-      PARAMETER (NVARP = 8,NVARR = 65,NVARUR = 12)
+      PARAMETER (NVARP = 336,NVARR = 65,NVARUR = 12)
       PARAMETER (NVARNS = 4,NVARSPH = 41)
       PARAMETER (NVARIN = 28,NVARRW = 6,NVARRB =15,NVARFX =4)
       PARAMETER (NVARFXM = 3)
@@ -109,6 +109,7 @@ C
       PARAMETER (NVARFLOW = 1)
       PARAMETER (NVARSURF = 3)
       PARAMETER (NVARSLIP = 6,NVARSLIPG = 6,NVARRET = 3,NVARRETG = 3)
+      PARAMETER (NVARSENS = 1)
 C-----------------------------------------------
 C   E x t e r n a l
 C-----------------------------------------------
@@ -570,6 +571,22 @@ C-----------------------------------------------
           IFI     = IFI     + NVARRET + LVARITHB*IDSMAX + 40*IDSMAX 
         ENDDO
       ENDIF       
-C   
+      !-------------------------------------------
+      ! /TH/SENSOR
+      !-------------------------------------------
+      CALL HM_OPTION_COUNT(TRIM(THFILE)//'/SENSOR' ,HM_NTHSENS  )
+      IF (HM_NTHSENS> 0) THEN 
+        CALL HM_OPTION_START(TRIM(THFILE)//'/SENSOR')
+        HM_NTHGRP = HM_NTHGRP + HM_NTHSENS
+        NVALL = 1
+        DO I = 1, HM_NTHSENS
+          CALL HM_OPTION_READ_KEY(LSUBMODEL, OPTION_ID=ID, OPTION_TITR=TITR)  
+          CALL HM_GET_INTV('Number_Of_Variables',NVAR,IS_AVAILABLE,LSUBMODEL) 
+          CALL HM_GET_INTV('idsmax',IDSMAX,IS_AVAILABLE,LSUBMODEL) 
+          NVARTOT   = NVARTOT + 180
+          IFI       = IFI     + NVARSENS + 43*IDSMAX
+        ENDDO
+      ENDIF      
+c-----------   
       RETURN
       END

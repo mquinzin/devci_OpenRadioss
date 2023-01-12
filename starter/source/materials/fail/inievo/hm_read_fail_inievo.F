@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_FAIL_INIEVO           source/materials/fail/inievo/hm_read_fail_inievo.F
 Chd|-- called by -----------
@@ -90,7 +90,7 @@ C MODIFIED ARGUMENT
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER J,NINIEVO,FAILIP,ISHEAR
+      INTEGER J,NINIEVO,FAILIP,ISHEAR,ILEN
       INTEGER,DIMENSION(:), ALLOCATABLE :: 
      .    INITYPE,EVOTYPE,EVOSHAP,COMPTYP,TAB_ID,TAB_EL,
      .    INT_TAB_ID,INT_TAB_EL
@@ -116,6 +116,15 @@ C===============================================================================
       IF (NINIEVO == 0) NINIEVO = 1
       CALL HM_GET_INTV   ('ISHEAR'   ,ISHEAR   ,IS_AVAILABLE,LSUBMODEL)
       ISHEAR = MIN(ISHEAR,1)
+      CALL HM_GET_INTV   ('ILEN'     ,ILEN     ,IS_AVAILABLE,LSUBMODEL)
+      ILEN   = MIN(ILEN,2)
+      IF (ILEN == 2) THEN 
+        CALL ANCMSG(MSGID=2094,
+     .              MSGTYPE=MSGINFO,
+     .              ANMODE=ANINFO_BLIND,
+     .              I1=MAT_ID,
+     .              C1=TITR)
+      ENDIF
       CALL HM_GET_INTV   ('FAILIP'   ,FAILIP   ,IS_AVAILABLE,LSUBMODEL)
       IF (FAILIP == 0)  FAILIP  = 1
       CALL HM_GET_FLOATV ('PTHK'     ,PTHK     ,IS_AVAILABLE,LSUBMODEL,UNITAB)
@@ -209,7 +218,7 @@ C===============================================================================
 c     Filling buffer tables
 C======================================================================================
       ! -> Number of parameters
-      NUPARAM = 4 + NINIEVO*14
+      NUPARAM = 5 + NINIEVO*14
       ! -> Number of functions
       NFUNC   = 0
       ! -> Table internal identifier
@@ -226,23 +235,24 @@ C===============================================================================
 c-----------------------------------------------------    
       UPARAM(1) = NINIEVO
       UPARAM(2) = ISHEAR
-      UPARAM(3) = FAILIP
-      UPARAM(4) = PTHK
+      UPARAM(3) = ILEN
+      UPARAM(4) = FAILIP
+      UPARAM(5) = PTHK
       DO J = 1,NINIEVO
-        UPARAM(5  + 14*(J-1)) = INITYPE(J)
-        UPARAM(6  + 14*(J-1)) = EVOTYPE(J)
-        UPARAM(7  + 14*(J-1)) = EVOSHAP(J)
-        UPARAM(8  + 14*(J-1)) = COMPTYP(J)
-        UPARAM(9  + 14*(J-1)) = INT_TAB_ID(J)
-        UPARAM(10 + 14*(J-1)) = SR_REF(J)
-        UPARAM(11 + 14*(J-1)) = FSCALE(J)
-        UPARAM(12 + 14*(J-1)) = INI_P1(J)
-        UPARAM(13 + 14*(J-1)) = INT_TAB_EL(J)
-        UPARAM(14 + 14*(J-1)) = EL_REF(J) 
-        UPARAM(15 + 14*(J-1)) = ELSCAL(J)  
-        UPARAM(16 + 14*(J-1)) = DISP(J) 
-        UPARAM(17 + 14*(J-1)) = ALPHA(J)
-        UPARAM(18 + 14*(J-1)) = ENER(J)
+        UPARAM(6  + 14*(J-1)) = INITYPE(J)
+        UPARAM(7  + 14*(J-1)) = EVOTYPE(J)
+        UPARAM(8  + 14*(J-1)) = EVOSHAP(J)
+        UPARAM(9  + 14*(J-1)) = COMPTYP(J)
+        UPARAM(10 + 14*(J-1)) = INT_TAB_ID(J)
+        UPARAM(11 + 14*(J-1)) = SR_REF(J)
+        UPARAM(12 + 14*(J-1)) = FSCALE(J)
+        UPARAM(13 + 14*(J-1)) = INI_P1(J)
+        UPARAM(14 + 14*(J-1)) = INT_TAB_EL(J)
+        UPARAM(15 + 14*(J-1)) = EL_REF(J) 
+        UPARAM(16 + 14*(J-1)) = ELSCAL(J)  
+        UPARAM(17 + 14*(J-1)) = DISP(J) 
+        UPARAM(18 + 14*(J-1)) = ALPHA(J)
+        UPARAM(19 + 14*(J-1)) = ENER(J)
       ENDDO    
 c-----------------------------------------------------
 c--------------------------
@@ -252,7 +262,7 @@ c--------------------------
         WRITE(IOUT,'(5X,A,//)')'CONFIDENTIAL DATA'
       ELSE
         WRITE(IOUT,1000)
-        WRITE(IOUT,1100) NINIEVO,ISHEAR
+        WRITE(IOUT,1100) NINIEVO,ISHEAR,ILEN
         WRITE(IOUT,1200) FAILIP,PTHK
         DO J = 1,NINIEVO
           WRITE (IOUT,1300) J,INITYPE(J),TAB_ID(J),SR_REF(J),FSCALE(J),
@@ -296,7 +306,13 @@ c-----------------------------------------------------
      & 5X,'  ----------------------------------------------------   ',/)
  1100 FORMAT(
      & 5X,'NUMBER OF INIEVO CRITERIA. . . . . . . . . . . . . . . .=',I10,/,
-     & 5X,'TRANSVERSE SHEAR FLAG (SHELLS ONLY)  . . . . . . . . . .=',I10,/)
+     & 5X,'TRANSVERSE SHEAR FLAG (SHELLS ONLY)  . . . . . . . . . .=',I10,/,
+     & 5X,'  ISHEAR = 0: TRANSVERSE SHEAR STRESS COMPONENTS NOT CONSIDERED ',/,
+     & 5X,'  ISHEAR = 1: TRANSVERSE SHEAR STRESS COMPONENTS CONSIDERED     ',/,
+     & 5X,'ELEMENT CHARACTERISTIC LENGTH FLAG . . . . . . . . . . .=',I10,/,
+     & 5X,'  ILEN   = 0: INITIAL GEOMETRIC FORMULATION              ',/,
+     & 5X,'  ILEN   = 1: INITIAL CRITICAL TIMESTEP FORMULATION      ',/,
+     & 5X,'  ILEN   = 2: CURRENT GEOMETRIC FORMULATION (SHELLS ONLY)',/)
  1200 FORMAT(
      & 5X,'ELEMENT DELETION PARAMETERS:                             ',/,
      & 5X,'NUMBER OF FAILED INTG. POINTS PRIOR TO SOLID DELETION . =',I10,/,

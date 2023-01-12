@@ -1,5 +1,5 @@
 //Copyright>    OpenRadioss
-//Copyright>    Copyright (C) 1986-2022 Altair Engineering Inc.
+//Copyright>    Copyright (C) 1986-2023 Altair Engineering Inc.
 //Copyright>
 //Copyright>    This program is free software: you can redistribute it and/or modify
 //Copyright>    it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,11 @@
 //Copyright>    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //Copyright>
 //Copyright>
-//Copyright>    Commercial Alternative: Altair Radioss Software 
+//Copyright>    Commercial Alternative: Altair Radioss Software
 //Copyright>
-//Copyright>    As an alternative to this open-source version, Altair also offers Altair Radioss 
-//Copyright>    software under a commercial license.  Contact Altair to discuss further if the 
-//Copyright>    commercial version may interest you: https://www.altair.com/radioss/.    
+//Copyright>    As an alternative to this open-source version, Altair also offers Altair Radioss
+//Copyright>    software under a commercial license.  Contact Altair to discuss further if the
+//Copyright>    commercial version may interest you: https://www.altair.com/radioss/.
 #include <iostream>
 #include <algorithm>
  
@@ -41,7 +41,7 @@ extern "C" {
 
 
 /* -----------------------------------------------------------------------------------------------------
-    remove_duplicates : removes dupplicates in a sorted array
+    remove_duplicates : removes duplicates in a sorted array
    -----------------------------------------------------------------------------------------------------
     int * array1      : input/output - array
     int * size        : input  - size of array
@@ -118,7 +118,7 @@ extern "C" {
   }
 
 /* -----------------------------------------------------------------------------------------------------
-    difference_2_sorted_sets : defference of 2 sets of sorted arrays.
+    difference_2_sorted_sets : difference of 2 sets of sorted arrays.
     Does array1-array2 : Removes all members of array2 in array1
     The Arrays shall not contain 2 time same entity
     The result arrays must be already allocated & big enough, result_size is the size of the nex set.

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  R2R_PRELEC                    source/coupling/rad2rad/r2r_prelec.F
 Chd|-- called by -----------
@@ -790,7 +790,7 @@ C--> type2 interfaces with penality are treated like type7  <------C
                ENDIF
              ENDIF   	      
 
-C--> check if the contact is between domains and if it's asymetric  <------C	   		      	          
+C--> check if the contact is between domains and if it's asymmetric  <------C	   		      	          
              CALL TAGINT_R2R(G1,G2,GRS,GRM,ID_INTER,
      .                	     TYPE2,VAL,TAG,I,COMPT,PASSE,0,IGRPP_R2R,
      .                       IGRNOD ,IGRSURF ,IGRSLIN, IGRBRIC)
@@ -827,7 +827,7 @@ C ---------> case of TYPE18 contact interface-----------------------------------
              CALL HM_GET_INTV('tempsecondaryentityids',GRS,IS_AVAILABLE,LSUBMODEL)
              CALL HM_GET_INTV('mainentityids',GRM,IS_AVAILABLE,LSUBMODEL)
 
-C--> check if the contact is between domains and if it's asymetric  <------C
+C--> check if the contact is between domains and if it's asymmetric  <------C
              IF (GRS > 0) THEN	   		      	          
                CALL TAGINT_R2R(G1,G2,GRS,GRM,ID_INTER,
      .                	     TYPE2,VAL,TAG,I,COMPT,PASSE,0,IGRPP_R2R,
@@ -869,7 +869,7 @@ C
 	     WARN = 0   	  	        
              CALL HM_GET_INTV('secondaryentityids',GRS,IS_AVAILABLE,LSUBMODEL)
              CALL HM_GET_INTV('mainentityids',GRM,IS_AVAILABLE,LSUBMODEL)	     	      
-C--> check if the contact is between domains and if it's asymetric  <------C	   		      	          
+C--> check if the contact is between domains and if it's asymmetric  <------C	   		      	          
              CALL TAGINT_R2R(G1,G2,GRS,GRM,ID_INTER,
      .                	     TYPE2,VAL,TAG,I,COMPT,PASSE,2,IGRPP_R2R,     
      .                       IGRNOD ,IGRSURF ,IGRSLIN, IGRBRIC)
@@ -907,7 +907,7 @@ C--> pretag of elts of line2 to keep them with void material <---C
              CALL HM_GET_INTV('secondaryentityids',GRS,IS_AVAILABLE,LSUBMODEL)
              CALL HM_GET_INTV('mainentityids',GRM,IS_AVAILABLE,LSUBMODEL)	
              IF ((FLAG_T24 == 1).AND.(GRM==0)) GRM = GRS      	
-C--> check if the contact is between domains and if it's asymetric  <------C   		      	          
+C--> check if the contact is between domains and if it's asymmetric  <------C   		      	          
              CALL TAGINT_R2R(G1,G2,GRS,GRM,ID_INTER,
      .                	     TYPE2,VAL,TAG,I,COMPT,PASSE,1,IGRPP_R2R,
      .                       IGRNOD ,IGRSURF ,IGRSLIN, IGRBRIC)

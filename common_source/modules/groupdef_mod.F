@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  GROUPDEF_MOD                  modules/groupdef_mod.F        
 Chd|-- called by -----------
@@ -235,6 +235,7 @@ Chd|        HM_READ_SURF                  starter/source/groups/hm_read_surf.F
 Chd|        HM_READ_SURFSURF              starter/source/groups/hm_read_surfsurf.F
 Chd|        HM_READ_THGROU                starter/source/output/th/hm_read_thgrou.F
 Chd|        HM_READ_THGRPA_SUB            starter/source/output/th/hm_read_thgrpa.F
+Chd|        HM_READ_THGRSENS              starter/source/output/th/hm_read_thgrsens.F
 Chd|        HM_READ_THGRSURF              starter/source/output/th/hm_read_thgrsurf.F
 Chd|        HM_READ_THPART                starter/source/output/thpart/hm_read_thpart.F
 Chd|        HM_READ_XELEM                 starter/source/elements/reader/hm_read_xelem.F
@@ -554,6 +555,7 @@ Chd|        S10CNIDAMP                    engine/source/elements/solid/solide10/
 Chd|        S10CNISTAT                    engine/source/elements/solid/solide10/s10cndf.F
 Chd|        SENSOR0                       engine/source/tools/sensor/sensor0.F
 Chd|        SENSOR1                       engine/source/tools/sensor/sensor1.F
+Chd|        SENSOR_BASE                   engine/source/tools/sensor/sensor_base.F
 Chd|        SENSOR_DIST_SURF              engine/source/tools/sensor/sensor_dist_surf.F
 Chd|        SENSOR_DIST_SURF0             engine/source/tools/sensor/sensor_dist_surf0.F
 Chd|        SENSOR_ENERGY                 engine/source/tools/sensor/sensor_energy.F
@@ -608,7 +610,7 @@ c=======================================================================
 C=======================================================================
       TYPE SUBSET_
         INTEGER   :: ID       ! - SUBSET identifier
-        INTEGER   :: LEVEL    ! - Hierachy level
+        INTEGER   :: LEVEL    ! - Hierarchy level
         INTEGER   :: TH_FLAG  ! - TIME HISTORY flag
         INTEGER   :: PARENT   ! - SUBSET PARENT
         INTEGER   :: NCHILD   ! - SUBSETS number of childs
@@ -640,7 +642,7 @@ C-----------------------------------------------------------------------
         INTEGER, DIMENSION(:),ALLOCATABLE :: ENTITY   ! -Entity identifier (node, element or part)
         INTEGER   :: GRTYPE ! TYPE ( 0-NOEUDS, 1-BRIC, 2-QUAD,   3-SHELL_4N,
 !                                    4-TRUSS,  5-BEAM, 6-SPRINGS,7-SHELL_3N )
-!!                   GRTYPE --- > OBSOLETTE
+!!                   GRTYPE --- > OBSOLETE
         INTEGER   :: SORTED ! FLAG for sorted/unsorted nodes
 !                    = 0 ! sorted
 !                    = 1 ! unsorted
@@ -649,13 +651,13 @@ C-----------------------------------------------------------------------
 !                                 = 1 FOR /GRNOD/NOD
 !                                 = 2 FOR /GRNOD/GNROD
 !                                 = 0 ALL THE REST
-!  For elemen( (part) group:
+!  For element (part) group:
 !                                 = 1 ELEM
 !                                 = 2 GRELEM
 !                                 = 3 SUBSET,PART,MAT,PROP
 !                                 = 4 BOX,GENE
 !                                 = 5 SUBMOD
-        INTEGER   :: LEVEL ! Hierachy level
+        INTEGER   :: LEVEL ! Hierarchy level
 !                             (FLAG 'SUBLEVEL DONE' FOR GROUPS OF GROUPS)
 !                            = 0 ---> not yet initialized
 !                            = 1 ---> done
@@ -693,7 +695,7 @@ C-----------------------------------------------------------------------
 !                                 (computed in Radioss Engine, when receiving Datas from MaDyMo).
 !                                 ID MaDyMo - for entity type which impose surface movement:
 !                                 No systeme MaDyMo for entity type which impose surface movement
-        INTEGER   :: IAD_BUFR   ! Analitical Surfaces address (reals BUFSF - temp)
+        INTEGER   :: IAD_BUFR   ! Analytical Surfaces address (reals BUFSF - temp)
         INTEGER   :: NB_MADYMO  ! No de l'entite qui impose le mvt de la surface.
 !                                --> No systeme Radioss ou MaDyMO.
         INTEGER   :: TYPE_MADYMO  ! Entity type which impose surface movement.

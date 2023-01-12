@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  I21_ICRIT                     source/interfaces/intsort/i21_icrit.F
 Chd|-- called by -----------
@@ -29,17 +29,19 @@ Chd|        SPMD_GLOB_ISUM9               source/mpi/interfaces/spmd_th.F
 Chd|        SPMD_I21CRIT                  source/mpi/interfaces/spmd_i21crit.F
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        INTSTAMP_MOD                  share/modules/intstamp_mod.F  
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE I21_ICRIT(
      1  INTBUF_TAB     ,IPARI  ,DT2T   ,NELTST ,
      2  ITYPTST,XSLV   ,XMSR   ,VSLV   ,VMSR   ,
-     3  INTSTAMP,X21MSR,V21MSR ,SENSOR,NBINTC21,
+     3  INTSTAMP,X21MSR,V21MSR ,SENSOR_TAB,NBINTC21,
      4  INTLIST21)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE INTSTAMP_MOD
       USE INTBUFDEF_MOD 
+      USE SENSOR_MOD
 C----6---------------------------------------------------------------7---------8
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -72,9 +74,10 @@ C     REAL
       my_real
      .        DT2T,
      .        XSLV(18,*), XMSR(12,*), VSLV(6,*), VMSR(6,*),
-     .        X21MSR(3,*), V21MSR(3,*), SENSOR(NSENSR,*)
+     .        X21MSR(3,*), V21MSR(3,*)
       TYPE(INTSTAMP_DATA) INTSTAMP(*)
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -107,8 +110,8 @@ C
 C
           INTERACT = 0
           ISENS = IPARI(64,I)
-          IF(ISENS/=0) THEN             
-            TS = SENSOR(2,ISENS)
+          IF (ISENS > 0) THEN             
+            TS = SENSOR_TAB(ISENS)%TSTART
             IF (TT>=TS) INTERACT = 1
           ELSE
             STARTT = INTBUF_TAB(I)%VARIABLES(3)

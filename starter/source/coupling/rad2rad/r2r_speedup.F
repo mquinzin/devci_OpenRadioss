@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Cbm|====================================================================
 Cbm|  CHK_DT_ENGINE                       src/rad2r/routines_r2r.F      
 Cbm|-- called by -----------
@@ -157,8 +157,9 @@ Chd|  FIND_DT_ENGINE                source/coupling/rad2rad/r2r_speedup.F
 Chd|-- called by -----------
 Chd|        R2R_SPEEDUP                   source/coupling/rad2rad/r2r_speedup.F
 Chd|-- calls ---------------
-Chd|        TRIRAP                        ../common_source/tools/sort/trirap.F
+Chd|        MYQSORT                       ../common_source/tools/sort/myqsort.F
 Chd|        INOUTFILE_MOD                 ../common_source/modules/inoutfile_mod.F
+Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        R2R_MOD                       share/modules1/r2r_mod.F      
 Chd|====================================================================
       SUBROUTINE FIND_DT_ENGINE(DTELEM,DTNODA,DT,FLG_CHK,FLG_CTL,
@@ -169,6 +170,7 @@ C   M o d u l e s
 C-----------------------------------------------
       USE R2R_MOD
       USE INOUTFILE_MOD
+      USE MESSAGE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -183,6 +185,7 @@ C-----------------------------------------------
 #include      "sphcom.inc"
 #include      "rnur_c.inc"
 #include      "r2r_c.inc"
+#include      "my_allocate.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
@@ -199,6 +202,8 @@ C-----------------------------------------------
      .   DTSCA,DTMINI,DTINI,DTMAX,DT_MIN_ELEM(11),DTFAC1(11)
       INTEGER :: LEN_TMP_NAME
       CHARACTER(len=4096) :: TMP_NAME
+      INTEGER :: IERROR
+      INTEGER, DIMENSION(:), ALLOCATABLE :: PERM
 C-----------------------------------------------
 C
       FLG_CHK = 0
@@ -210,6 +215,7 @@ C
       DTFAC1(:) = DTFAC
       NUMEL= NUMELC+NUMELS+NUMELT+NUMELQ+NUMELP+NUMELR+NUMELUR+NUMELTG
      .      +NUMELX+NUMSPH+NUMELIG3D
+      MY_ALLOCATE( PERM,NUMEL )
   
 C-----------------------------------------------
 C     Computation of index in dtelem for each type of elements
@@ -283,7 +289,10 @@ C
       END DO
 C
       DO I=1,11
-        IF (FLAG_TRI(I)==1) CALL TRIRAP(NUME(I),DTELEM(1+DT_INDEX(I)),NUMEL)
+        IF (FLAG_TRI(I)==1) THEN
+            CALL MYQSORT(NUME(I),DTELEM(1+DT_INDEX(I)),PERM(1+DT_INDEX(I)),IERROR)
+            DTELEM(NUMEL+1+DT_INDEX(I):NUMEL+NUME(I)+1+DT_INDEX(I)) = PERM(1+DT_INDEX(I):NUME(I)+1+DT_INDEX(I))
+        ENDIF
       END DO
 
 C-----------------------------------------------
@@ -457,6 +466,8 @@ C
       IF (DTNODA>ZERO) DT = DTNODA
 C
       DT = MIN(DT,DTMAX)
+
+      DEALLOCATE( PERM )
                    
 C------------------------------------------- 
       RETURN

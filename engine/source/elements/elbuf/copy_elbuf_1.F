@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  COPY_ELBUF_1                  source/elements/elbuf/copy_elbuf_1.F
 Chd|-- called by -----------
@@ -68,7 +68,7 @@ C-----------------------------------------------
      .   G_FORPGPINCH,G_MOMPGPINCH,G_EPGPINCHXZ,G_EPGPINCHYZ,G_EPGPINCHZZ,
      .   G_SKEW_ID,G_MAXFRAC,G_MAXEPS,G_SLIPRING_ID,G_SLIPRING_STRAND,G_RETRACTOR_ID,
      .   G_RINGSLIP,G_ADD_NODE,G_UPDATE,G_INTVAR,G_BETAORTH,G_AMU,G_SLIPRING_FRAM_ID,
-     .   G_FRAM_FACTOR
+     .   G_FRAM_FACTOR,G_TSAIWU
       INTEGER  ! layer variables
      .   LY_DMG,LY_GAMA,LY_DIRA,LY_DIRB,LY_CRKDIR,LY_PLAPT,LY_SIGPT,LY_HOURG,
      .   LY_UELR,LY_UELR1,LY_OFFPG,LY_OFF,LEN_PLAPT,LEN_SIGPT
@@ -80,7 +80,7 @@ C-----------------------------------------------
      .   L_DAM,L_DSUM,L_DGLO,L_EPE,L_EPC,L_XST,L_SSP,L_Z,L_FRAC,L_VISC,
      .   L_THK,L_FOR,L_MOM,L_SMSTR,L_BFRAC,L_DMG,LF_DAM,LF_DAMMX,LF_TDEL,
      .   LF_INDX,LF_OFF,L_FORTH,L_EINTTH,L_SEQ,L_SIGPLY,L_FAC_YLD,L_ABURN,
-     .   L_MU,L_PLANL,L_EPSDNL,L_DMGSCL
+     .   L_MU,L_PLANL,L_EPSDNL,L_DMGSCL,L_TSAIWU,LF_DAMINI
       TYPE(BUF_LAY_)  , POINTER :: BUFLY
       TYPE(L_BUFEL_)  , POINTER :: LBUF
       TYPE(G_BUFEL_)  , POINTER :: GBUFS,GBUFT
@@ -222,6 +222,7 @@ c
            L_PLANL  = BUFLY%L_PLANL
            L_EPSDNL = BUFLY%L_EPSDNL
            L_DMGSCL = BUFLY%L_DMGSCL
+           L_TSAIWU = BUFLY%L_TSAIWU
 
 c
            ELBUF_TGT(NG)%BUFLY(IL)%DMG(1:NEL*LY_DMG) =
@@ -315,6 +316,7 @@ c
                LBUFT%PLANL(1:NEL*L_PLANL)    =LBUFS%PLANL(1:NEL*L_PLANL)
                LBUFT%EPSDNL(1:NEL*L_EPSDNL)  =LBUFS%EPSDNL(1:NEL*L_EPSDNL)
                LBUFT%DMGSCL(1:NEL*L_DMGSCL)  =LBUFS%DMGSCL(1:NEL*L_DMGSCL)
+               LBUFT%TSAIWU(1:NEL*L_TSAIWU)  =LBUFS%TSAIWU(1:NEL*L_TSAIWU)
              ENDDO                     
             ENDDO                                                                 
            ENDDO                                                                  
@@ -445,6 +447,10 @@ c
                    LF_DAMMX = FLOCS%LF_DAMMX 
                    FLOCT%LF_DAMMX = LF_DAMMX   
                    FLOCT%DAMMX(1:NEL*LF_DAMMX) = FLOCS%DAMMX(1:NEL*LF_DAMMX) 
+c
+                   LF_DAMINI = FLOCS%LF_DAMINI 
+                   FLOCT%LF_DAMINI = LF_DAMINI
+                   FLOCT%DAMINI(1:NEL*LF_DAMINI) = FLOCS%DAMINI(1:NEL*LF_DAMINI) 
 c
                    LF_TDEL = FLOCS%LF_TDEL 
                    FLOCT%LF_TDEL = LF_TDEL  
@@ -579,6 +585,7 @@ C
           G_MU    = GBUFS%G_MU    
           G_PLANL = GBUFS%G_PLANL
           G_EPSDNL = GBUFS%G_EPSDNL
+          G_TSAIWU = GBUFS%G_TSAIWU
           G_BPRELD= GBUFS%G_BPRELD
           G_COR_NF = GBUFS%G_COR_NF
           G_COR_FR = GBUFS%G_COR_FR

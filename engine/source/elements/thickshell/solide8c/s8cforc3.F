@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  S8CFORC3                      source/elements/thickshell/solide8c/s8cforc3.F
 Chd|-- called by -----------
@@ -67,6 +67,7 @@ Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.
 Chd|        MATPARAM_DEF_MOD              ../common_source/modules/matparam_def_mod.F
 Chd|        MMAIN_MOD                     source/materials/mat_share/mmain.F
 Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
       SUBROUTINE S8CFORC3(ELBUF_TAB,NG     ,
@@ -88,8 +89,8 @@ Chd|====================================================================
      I                    ITASK  ,ISTRAIN,TEMP   ,FTHE    ,
      J                    FTHESKY  ,IEXPAN ,IGEO   ,NNPT   ,GRESAV  ,
      K                    GRTH     ,IGRTH  ,MSSA   ,DMELS  ,TABLE   ,
-     L                    XDP      ,VOLN   ,CONDN  ,CONDNSKY,SENSOR ,
-     M                    LSENSOR  ,IOUTPRT,MATPARAM_TAB,H3D_STRAIN)
+     L                    XDP      ,VOLN   ,CONDN  ,CONDNSKY,SENSOR_TAB,
+     M                    IOUTPRT,MATPARAM_TAB,H3D_STRAIN)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -98,6 +99,7 @@ C-----------------------------------------------
       USE ELBUFDEF_MOD            
       USE NLOCAL_REG_MOD
       USE ALE_CONNECTIVITY_MOD
+      USE SENSOR_MOD
       USE MATPARAM_DEF_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
@@ -130,7 +132,7 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER IXS(NIXS,*), IPARG(NPARG,NGROUP),NPF(*),
      .        IPARTS(*), IPM(NPROPMI,*),IGEO(NPROPGI,*),GRTH(*),
-     .        IGRTH(*),IADS(8,*),LSENSOR(NSENSI,*),IOUTPRT,H3D_STRAIN
+     .        IGRTH(*),IADS(8,*),IOUTPRT,H3D_STRAIN
 C
       INTEGER NELTST,ITYPTST,OFFSET,NEL,ICP, 
      .        ICSIG, NVC,ITASK, ISTRAIN, IEXPAN ,NNPT,NG
@@ -159,13 +161,13 @@ C
      .    MFYY(MVSIZ,729),MFYZ(MVSIZ,729),MFZY(MVSIZ,729),
      .    MFZZ(MVSIZ,729),MFZX(MVSIZ,729),MFXZ(MVSIZ,729),
      .    TEMP(*), FTHE(*), FTHESKY(*),GRESAV(*), MSSA(*), 
-     .    DMELS(*), VOLN(MVSIZ),CONDN(*),CONDNSKY(*),
-     .    SENSOR(NSENSR,*)
+     .    DMELS(*), VOLN(MVSIZ),CONDN(*),CONDNSKY(*)
       TYPE(TTABLE) TABLE(*)
       TYPE (ELBUF_STRUCT_), DIMENSION(NGROUP), TARGET :: ELBUF_TAB
       TYPE (NLOCAL_STR_)  , TARGET :: NLOC_DMG 
       TYPE(t_ale_connectivity), INTENT(IN) :: ALE_CONNECT
       TYPE(MATPARAM_STRUCT_)  , DIMENSION(NUMMAT) :: MATPARAM_TAB
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -990,7 +992,7 @@ C     TIME STEP EST CALCULE ICI DT2T
 C------------------------------------------------------
         IF ((ITASK==0).AND.(IMON_MAT==1)) CALL STARTIME(35,1)
 c
-      IF(IBOLTP /= 0) CALL BOLTST(IBOLTP,IP,BPRELD,LBUF%SIG,TT,NEL,SENSOR,LSENSOR)
+      IF(IBOLTP /= 0) CALL BOLTST(IBOLTP,IP,BPRELD,LBUF%SIG,TT,NEL,SENSOR_TAB)
 
         CALL MMAIN(ELBUF_TAB,NG    ,PM     ,GEO     ,FV      ,ALE_CONNECT   ,
      2           IXS     ,IPARG    ,V      ,TF      ,NPF     ,BUFMAT  ,

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  W_INTBUF_SIZE                 source/restart/ddsplit/inter_tools.F
 Chd|-- called by -----------
@@ -1631,7 +1631,7 @@ C-----------------------------------------------
 !                 used for optimize the initialization
 !                 of TAG_XXX array (XXX = NM or SCRT for SCRATCH)
 !                 allocated array in lectur and threadprivate array
-!       NINDX_XXX : number of non-zero TAG_XXX valuee
+!       NINDX_XXX : number of non-zero TAG_XXX value
 !       TAG_XXX : size = NUMNOD
 !                array used to tag an element for 
 !                a given interface ; allocated in lectur
@@ -1825,7 +1825,7 @@ C-----------------------------------------------
 !                 used for optimize the initialization
 !                 of TAG_XXX array (XXX = NM or SCRT for SCRATCH)
 !                 allocated array in lectur and threadprivate array
-!       NINDX_SCRT : number of non-zero TAG_XXX valuee
+!       NINDX_SCRT : number of non-zero TAG_XXX value
 !       TAG_SCRATCH : size = NUMNOD + NUMELS + I24MAXNSNE2
 !                array used to tag an element for 
 !                a given interface ; allocated in lectur
@@ -2216,8 +2216,8 @@ C-----------------------------------------------
       INTEGER :: II_STOK_E, II_STOK_E_L 
       INTEGER :: II_STOK_S, II_STOK_S_L
       INTEGER :: PROC, IREMI2, FLAGREMNODE, NRTM
-      INTEGER :: TAG_JJ_E2E(*) !Gobal id of global E2E cand (OUT)
-      INTEGER :: TAG_JJ_E2S(*) !Globa id of global E2S cand (OUT)
+      INTEGER :: TAG_JJ_E2E(*) !Global id of global E2E cand (OUT)
+      INTEGER :: TAG_JJ_E2S(*) !Global id of global E2S cand (OUT)
 
       TYPE(INTBUF_STRUCT_) :: INTBUF_TAB
 C-----------------------------------------------
@@ -2507,7 +2507,7 @@ C-----------------------------------------------
       INTEGER :: TAG_II_E2S(*) !local id of global E2S cand (OUT)
       INTEGER :: II_STOK_E, II_STOK_E_L 
       INTEGER :: II_STOK_S, II_STOK_S_L
-      INTEGER :: TAG_JJ_E2E(II_STOK_E) !Gobal id of global E2E cand (OUT)
+      INTEGER :: TAG_JJ_E2E(II_STOK_E) !Global id of global E2E cand (OUT)
       INTEGER :: TAG_JJ_E2S(II_STOK_S) !Globa id of global E2S cand (OUT)
 
 
@@ -5794,7 +5794,7 @@ C-----------------------------------------------
 !                 used for optimize the initialization
 !                 of TAG_XXX array (XXX = NM or SCRT for SCRATCH)
 !                 allocated array in lectur and threadprivate array
-!       NINDX_XXX : number of non-zero TAG_XXX valuee
+!       NINDX_XXX : number of non-zero TAG_XXX value
 !       TAG_XXX : size = NUMNOD + NUMELS + I24MAXNSNE2
 !                array used to tag an element for 
 !                a given interface ; allocated in lectur

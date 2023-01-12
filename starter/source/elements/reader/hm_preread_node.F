@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 C
 Chd|====================================================================
 Chd|  HM_PREREAD_NODE               source/elements/reader/hm_preread_node.F
@@ -74,7 +74,6 @@ C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER N,I,J,IERROR, STAT
       INTEGER FLAG_FMT,FLAG_FMT_TMP,IFIX_TMP,IFLAGUNIT, UID, ID
-      INTEGER OFF_NOD(NSUBMOD), OFF_DEF(NSUBMOD)
 C     REAL
       my_real
      .    FAC_L
@@ -88,13 +87,6 @@ C     REAL
       LOGICAL IS_AVAILABLE
 C-----------------------------------------------      
       FAC_L = ONE
-C-----------------------------------------------
-C      HM OFFSETS IDs
-C--------------------------------------------------
-      DO I=1,NSUBMOD
-        OFF_NOD(I) = LSUBMODEL(I)%OFF_NOD
-        OFF_DEF(I) = LSUBMODEL(I)%OFF_DEF
-      ENDDO  
 C--------------------------------------------------
 C      ALLOCS & INITS
 C--------------------------------------------------
@@ -140,11 +132,7 @@ C--------------------------------------------------
         X(2,N) = HM_X(2,N)
         X(3,N) = HM_X(3,N)
 C--------------------------------------------------
-C      SUBMODEL OFFSET
-C--------------------------------------------------
         IF(SUB_NOD(N) /= 0)THEN
-          IF(ITAB(N) /= 0) ITAB(N) = ITAB(N) + OFF_NOD(SUB_NOD(N))
-          IF(UID_NOD(N) /= 0) UID_NOD(N) = UID_NOD(N) + OFF_DEF(SUB_NOD(N))
           IF(UID_NOD(N) == 0 .AND. LSUBMODEL(SUB_NOD(N))%UID /= 0) 
      .        UID_NOD(N) = LSUBMODEL(SUB_NOD(N))%UID
         ENDIF

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MMAIN_MOD                     source/materials/mat_share/mmain.F
 Chd|-- called by -----------
@@ -304,7 +304,7 @@ C--------------------------------------------
       TYPE(BUF_FAIL_) ,POINTER :: FBUF
       TYPE(BUF_VISC_) ,POINTER :: VBUF
       my_real,
-     .  DIMENSION(:), POINTER  :: UVARF,DFMAX,TDEL 
+     .  DIMENSION(:), POINTER  :: UVARF,DFMAX,TDEL,DAMINI
 c     Bolt Preloading
       INTEGER IBOLTP, NBPRELD
       my_real, 
@@ -409,7 +409,7 @@ C
           DF(1:NEL)  =  RHO0(1:NEL)/LBUF%RHO(1:NEL)
           VOL_AVG(1:NEL) = VOLN(1:NEL) - HALF*DVOL(1:NEL)
       ENDIF
-C-----due to too much returns of QA, temporaly add IRESP here   
+C-----due to too much returns of QA, temporarily add IRESP here
       IF((INCOMP/=1.OR.(JEUL+JALE)/=1).AND.JLAG/=0.AND.N2D==0.AND.JSPH==0.AND.IRESP==1
      .     .AND.IMPL_S==0.AND.ISMSTR/=1.AND.ISMSTR/=3.AND.ISMSTR/=11)THEN
 C-----due to issue w/ SP ----in srho3.F R4_AMU is calculated for SP :      
@@ -522,7 +522,7 @@ C     STRESSES DEVIATORIC/TOTAL
 C-----------------------------------
       IBPRELD = 0
       IF(IBOLTP /= 0)THEN
-        !two conditions checks, otherwise BPRELD has size 0 if IBOLTP==0 and debuger stops as it detects an index out of bounds.
+        !two conditions checks, otherwise BPRELD has size 0 if IBOLTP==0 and debugger stops as it detects an index out of bounds.
         IF(BPRELD(2*NEL+1) <= ONE .AND.BPRELD(2*NEL+1) > ZERO)IBPRELD = 1
       ENDIF
 
@@ -990,7 +990,8 @@ C       TSAI 3D Complet
      8            DEFP     ,NGL      ,LBUF%SEQ,NEL      ,EOSTYP  ,   
      9            RHO0     ,AMU      ,AMU2    ,ESPE     ,DF      ,
      A            PSH      ,PNEW     ,DPDM    ,DPDE     ,LBUF%RHO,
-     B            LBUF%TEMP,ECOLD    ,BUFMAT  ,NPF      ,TF)
+     B            LBUF%TEMP,ECOLD    ,BUFMAT  ,NPF      ,TF      ,
+     C            LBUF%TSAIWU)
         IF (JSPH == 0) THEN
           CALL MQVISCB(PM,OFF    ,LBUF%RHO ,LBUF%RK ,LBUF%TEMP ,CXX       ,
      2         LBUF%RE  ,STIFN   ,DT2T     ,NELTST  ,ITYPTST   ,AIRE      ,
@@ -1020,7 +1021,7 @@ C       TSAI 3D Complet
      5              DVOL     ,CXX      ,DXX     ,DYY      ,DZZ     , 
      6              D4       ,D5       ,D6      ,S1       ,S2      ,
      7              S3       ,S4       ,S5      ,S6       ,SIGY    ,
-     8              DEFP     ,NGL      ,LBUF%SEQ,NEL      )
+     8              DEFP     ,NGL      ,LBUF%SEQ,NEL      ,LBUF%TSAIWU)
         IF (JSPH == 0) THEN
           CALL MQVISCB(PM,OFF   ,LBUF%RHO,LBUF%RK ,LBUF%TEMP,CXX      ,
      2         LBUF%RE  ,STIFN   ,DT2T    ,NELTST  ,ITYPTST  ,AIRE    ,
@@ -1190,7 +1191,7 @@ C     like law25 for shell + S33 = EPS33*E33
      5       TX      ,TY       ,TZ      ,GAMA    ,VOLN     ,CXX      ,          
      6       LBUF%VOL,LBUF%EPSD,LBUF%PLA,LBUF%DAM,LBUF%CRAK,LBUF%STRA,     
      7       DEFP    ,SIGY     ,SIGL    ,NGL     ,ILAY     ,LBUF%OFF ,
-     8       LBUF%SEQ,NEL      ,IPM     ,IPG     )                         
+     8       LBUF%SEQ,NEL      ,IPM     ,IPG     ,LBUF%TSAIWU)                         
         IF (JSPH == 0) THEN
           CALL MQVISCB(PM,OFF   ,LBUF%RHO,LBUF%RK ,LBUF%TEMP,CXX       ,
      2         LBUF%RE  ,STIFN   ,DT2T    ,NELTST  ,ITYPTST  ,AIRE      ,
@@ -1659,7 +1660,8 @@ c----
           UVARF => FBUF%FLOC(IR)%VAR  
           IRUPT  = FBUF%FLOC(IR)%ILAWF 
           NVARF  = FBUF%FLOC(IR)%NVAR 
-          DFMAX => FBUF%FLOC(IR)%DAMMX  
+          DFMAX => FBUF%FLOC(IR)%DAMMX 
+          DAMINI => FBUF%FLOC(IR)%DAMINI 
           TDEL  => FBUF%FLOC(IR)%TDEL  
           NPARAM = IPM(112 + IP, MAT(1)) 
           IADBUF = IPM(114 + IP ,MAT(1))  
@@ -1944,7 +1946,7 @@ C---- Inievo failure model
      5          S1       ,S2       ,S3       ,S4       ,S5       ,S6       ,               
      6          EL_PLA   ,TEMPEL   ,SIGY     ,OFF      ,DFMAX    ,
      7          TDEL     ,DMG_SCALE,GBUF%UELR,IPG      ,NPG      ,
-     8          LBUF%OFF )
+     8          LBUF%OFF ,DAMINI   ,GBUF%VOL ,INLOC    )
 c---------
           ENDIF ! IRUPT 
 c
@@ -2077,7 +2079,7 @@ C-----------
 C-----------------------------------------------------------------  
 C  ALE/EULER  POST-TREATMENT
 C-----------------------------------------------------------------  
-      !IF(TT>=TANIM)THEN     -> becomes unconditionnal since ssp needed for flux calculation : storage recquired .
+      !IF(TT>=TANIM)THEN     -> becomes unconditional since ssp needed for flux calculation : storage required.
         IF(IPARG(7,NG)+IPARG(11,NG) > 0 ) THEN
           LBUF%SSP(1:NEL) = CXX(1:NEL)
         ENDIF

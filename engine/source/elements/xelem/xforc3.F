@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 C calcul des forces sur un groupe d'elements multi-purpose.
 Chd|====================================================================
 Chd|  XFORC3                        source/elements/xelem/xforc3.F
@@ -44,7 +44,7 @@ Chd|====================================================================
      4                   SKEW  ,DT2T  ,NELTST ,ITYPTST ,
      5                   STIFN ,STIFR ,MS     ,IN      ,
      6                   FSKYI ,ISKY  ,PARTSAV,IPARTX  ,
-     7                   BUFMAT,BUFGEO,SENSOR ,LSENSOR ,
+     7                   BUFMAT,BUFGEO,
      8                   GRESAV ,GRTH  ,IGRTH,ELBUF_STR)
 C-----------------------------------------------
 C   M o d u l e s
@@ -72,14 +72,13 @@ C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NFT,NEL,KXX(NIXX,*),IXX(*), NPC(*),ISKY(*),
-     .        LSENSOR(NSENSI,*),IPARTX(*),NELTST ,ITYPTST,
+     .        IPARTX(*),NELTST ,ITYPTST,
      .        ITAB(*),GRTH(*),IGRTH(*)
 C     REAL
       my_real DT2T ,
      .   GEO(NPROPG,*), PM(*), X(3,*),VR(3,*), V(3,*), F(3,*), AR(3,*),
      .   EV(*),PLD(*),SKEW(LSKEW,*),FSKYI(*),
-     .   STIFN(*),STIFR(*),MS(*), IN(*),
-     .   SENSOR(NSENSR,*),PARTSAV(*),
+     .   STIFN(*),STIFR(*),MS(*), IN(*),PARTSAV(*),
      .   BUFMAT(*),BUFGEO(*) ,GRESAV(*)
 C
       TYPE (ELBUF_STRUCT_), TARGET :: ELBUF_STR

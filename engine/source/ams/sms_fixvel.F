@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SMS_FIXVEL                    source/ams/sms_fixvel.F       
 Chd|-- called by -----------
@@ -28,13 +28,18 @@ Chd|        SMS_MASS_SCALE_2              source/ams/sms_mass_scale_2.F
 Chd|        SMS_PCG                       source/ams/sms_pcg.F          
 Chd|-- calls ---------------
 Chd|        VINTER                        source/tools/curve/vinter.F   
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE SMS_FIXVEL(IBFV  ,A     ,V     ,NPC    ,TF     ,
-     2                     VEL    ,MS    ,X     ,SKEW   ,SENSOR ,
-     3                     LSENSOR,WEIGHT,D     ,IFRAME ,XFRAME ,
+     2                     VEL    ,MS    ,X     ,SKEW   ,SENSOR_TAB,
+     3                     WEIGHT,D     ,IFRAME ,XFRAME ,
      4                     IT     ,DIAG_SMS,NODNX_SMS   ,CPTREAC,
      5                     NODREAC,FTHREAC ,AR  ,VR     ,DR     ,
      6                     IN      ,RBY )
+C-----------------------------------------------
+C   M o d u l e s
+C-----------------------------------------------  
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -60,14 +65,15 @@ C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NPC(*),CPTREAC,NODREAC(*)
-      INTEGER IBFV(NIFV,*),LSENSOR(NSENSI,*),WEIGHT(*),IFRAME(LISKN,*),
+      INTEGER IBFV(NIFV,*),WEIGHT(*),IFRAME(LISKN,*),
      .        IT,NODNX_SMS(*)
 C     REAL
       my_real
      .   A(3,*), V(3,*), TF(*), VEL(LFXVELR,*), MS(*), X(3,*), D(3,*),
-     .   SKEW(LSKEW,*), SENSOR(NSENSR,*), XFRAME(NXFRAME,*),
+     .   SKEW(LSKEW,*),XFRAME(NXFRAME,*),
      .   DIAG_SMS(*),FTHREAC(6,*),
      .   AR(3,*), VR(3,*), DR(3,*), IN(*), RBY(NRBY,*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -98,25 +104,22 @@ C
         IF (IBFV(8,NN)==1) GOTO 100
         IC = 0
         IF (NSENSOR>0) THEN
-          DO 10 II = 1, MIN(NFXVEL-IDEB,NVSIZ)
+          DO II = 1, MIN(NFXVEL-IDEB,NVSIZ)
             N = II+IDEB
             STARTT = VEL(2,N)
             STOPT  = VEL(3,N)
             FACX   = VEL(5,N)
-            IF(TT<STARTT)GOTO 10
-            IF(TT>STOPT) GOTO 10
+            IF (TT<STARTT) CYCLE
+            IF (TT>STOPT)  CYCLE
             I=IABS(IBFV(1,N))
 C
             IF(NODNX_SMS(I)==0) CYCLE
-            ISENS=0
-            DO K=1,NSENSOR
-              IF(IBFV(4,N)==LSENSOR(1,K))ISENS=K
-            ENDDO
-            IF(ISENS==0)THEN
-              TS=TT
+            ISENS = IBFV(4,N)
+            IF (ISENS > 0) THEN
+              TS = TT-SENSOR_TAB(ISENS)%TSTART
+              IF (TS < ZERO) CYCLE
             ELSE
-              TS = TT-SENSOR(2,ISENS)
-              IF(TS<0.0)GOTO 10
+              TS = TT
             ENDIF
             IC = IC + 1
             INDEX(IC) = N
@@ -125,16 +128,16 @@ C
             ELSE
               TSC(IC) = (TS+DT2)*FACX
             ENDIF
- 10       CONTINUE
+          END DO
         ELSE
 C         sans sensor
-          DO 20 II = 1, MIN(NFXVEL-IDEB,NVSIZ)
+          DO II = 1, MIN(NFXVEL-IDEB,NVSIZ)
             N = II+IDEB
             STARTT = VEL(2,N)
             STOPT  = VEL(3,N)
             FACX   = VEL(5,N)
-            IF(TT<STARTT)GOTO 20
-            IF(TT>STOPT) GOTO 20
+            IF (TT<STARTT) CYCLE
+            IF (TT>STOPT)  CYCLE
             I=IABS(IBFV(1,N))
 C
             IF(NODNX_SMS(I)==0) CYCLE
@@ -145,7 +148,7 @@ C
             ELSE
               TSC(IC) = (TT+DT2)*FACX
             ENDIF
- 20       CONTINUE
+          END DO
         ENDIF
 C
         IF (CPTREAC/=0) THEN
@@ -1573,14 +1576,11 @@ C
             I=IABS(IBFV(1,N))
 C
             IF(NODNX_SMS(I)==0) CYCLE
-            ISENS=0
-            DO K=1,NSENSOR
-              IF(IBFV(4,N)==LSENSOR(1,K))ISENS=K
-            ENDDO
+            ISENS = IBFV(4,N)
             IF(ISENS==0)THEN
               TS=TT
             ELSE
-              TS = TT-SENSOR(2,ISENS)
+              TS = TT-SENSOR_TAB(ISENS)%TSTART
               IF(TS<0.0)GOTO 210
             ENDIF
             IC = IC + 1

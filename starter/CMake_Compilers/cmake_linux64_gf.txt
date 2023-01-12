@@ -56,7 +56,7 @@ message (STATUS "modules: ${CMAKE_Fortran_MODULE_DIRECTORY}")
 ###########################
 
 if ( sanitize STREQUAL "1" )
-set( FSANITIZE "-fsanitize=address -DSANITIZE") 
+set( FSANITIZE "-fsanitize=address -fsanitize=undefined -fsanitize=bounds-strict -DSANITIZE") 
 endif()
 if ( CMAKE_C_COMPILER_VERSION VERSION_GREATER 10) 
 set( portability " -fallow-argument-mismatch -g  -fallow-invalid-boz -std=legacy")
@@ -98,10 +98,9 @@ endif()
 
 # -------------------------------------------------------------------------------------------------------------------------------------------
 # Specific set of compilation flag
-
 set (F_O0_compiler_flags " -O0 ${precision_flag} -DMETIS5 ${cppmach} ${cpprel}  -ffixed-line-length-none ${portability}")
-
-
+if ( debug STREQUAL "0" )
 #inimsg.F
 set_source_files_properties( ${source_directory}/source/output/message/inimsg.F PROPERTIES COMPILE_FLAGS ${F_O0_compiler_flags} )
+endif()
 

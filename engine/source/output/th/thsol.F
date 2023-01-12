@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  THSOL                         source/output/th/thsol.F      
 Chd|-- called by -----------
@@ -308,7 +308,7 @@ c
               IF (GBUF%G_QVIS > 0) WWA(10)= GBUF%QVIS(I)
               WWA(11)= GBUF%VOL(I)
               IF(JLAG==1 .AND. GBUF%RHO(I)>ZERO)THEN
-                WWA(11)=GBUF%VOL(I) * PM(89,IXS(1,NFT+I))/GBUF%RHO(I)    ! GBUF%VOL(I) = V0 for lagrangian solids ; (rho is optionnal for void material law)
+                WWA(11)=GBUF%VOL(I) * PM(89,IXS(1,NFT+I))/GBUF%RHO(I)    ! GBUF%VOL(I) = V0 for lagrangian solids ; (rho is optional for void material law)
               ENDIF
 C-----------
 C             STRESSES COMPUTING IN GLOBAL OR CONVECTED SYSTEM.
@@ -1351,13 +1351,13 @@ C-----------------in global ref : EPSIJK............-----------
                     ENDIF
 
                  ENDDO
-                ENDDO                     
-               ENDDO  
-C-----------------in local ref : L_EPSX............-----------      
+                ENDDO
+               ENDDO
+C-----------------in local ref : L_EPSX............-----------
                DO J= 1,6
                  WWA(239036+J) = STRAIN(J)
                ENDDO
-C-----------------in golbal ref : EPSX............-----------
+C-----------------in global ref : EPSX............-----------
 
               DO J= 1,3
                  WWA(1618+J) = EVAR(J)

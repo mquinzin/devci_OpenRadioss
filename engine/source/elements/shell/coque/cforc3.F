@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  CFORC3                        source/elements/shell/coque/cforc3.F
 Chd|-- called by -----------
@@ -70,6 +70,7 @@ Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.
 Chd|        FAILWAVE_MOD                  ../common_source/modules/failwave_mod.F
 Chd|        MATPARAM_DEF_MOD              ../common_source/modules/matparam_def_mod.F
 Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
@@ -93,7 +94,7 @@ Chd|====================================================================
      J            JTHE    ,TEMP    , FTHE    ,FTHESKY  ,IEXPAN  ,
      K            GRESAV  ,GRTH    ,XEDGE4N  ,
      L            IGRTH   ,MSC     ,DMELC    ,JSMS     ,TABLE   ,
-     M            IPARG   ,IXFEM   ,KNOD2ELC ,LSENSOR  ,SENSOR  ,
+     M            IPARG   ,IXFEM   ,KNOD2ELC ,SENSOR_TAB,
      N            ELCUTC  ,INOD_CRK,IEL_CRK  ,IBORDNODE,NODENR  ,
      O            IADC_CRK,NODEDGE ,CRKNODIAD,CONDN   ,
      P            CONDNSKY,STACK   ,ISUBSTACK,XFEM_STR ,CRKEDGE ,
@@ -109,6 +110,7 @@ C-----------------------------------------------
       USE MATPARAM_DEF_MOD    
       USE NLOCAL_REG_MOD
       USE DRAPE_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -145,7 +147,7 @@ C-----------------------------------------------
      .   ISUBSTACK,IPRI
       INTEGER NPF(*),IXC(NIXC,*),IADC(4,*),INDXOF(MVSIZ),IPARTC(*),
      .   IGEO(NPROPGI,*),IPM(NPROPMI,*),XEDGE4N(4,*),ITAB(*),
-     .   GRTH(*),IGRTH(*),IPARG(*),IXFEM,KNOD2ELC(*),LSENSOR(NSENSI,*),
+     .   GRTH(*),IGRTH(*),IPARG(*),IXFEM,KNOD2ELC(*),
      .   ELCUTC(2,*),INOD_CRK(*),IEL_CRK(*),IBORDNODE(*),
      .   NODENR(*),IADC_CRK(4,*),NODEDGE(2,*),CRKNODIAD(*)
       my_real
@@ -159,8 +161,7 @@ C-----------------------------------------------
      .   GEO(NPROPG,*),TF(*), BUFMAT(*),PARTSAV(*),STIFN(*),STIFR(*),
      .   FSKY(*),D(*),DR(*),TANI(6,*),EANI(*), THKE(*),DT2T,
      .   FZERO(3,4,*),TEMP(*), FTHE(*),FTHESKY(*),GRESAV(*),
-     .   MSC(*), DMELC(*),SENSOR(NSENSR,*),CONDN(*),
-     .   CONDNSKY(*)
+     .   MSC(*), DMELC(*),CONDN(*),CONDNSKY(*)
 C
       TYPE (TTABLE) TABLE(*)
       TYPE (ELBUF_STRUCT_), TARGET :: ELBUF_STR
@@ -171,6 +172,7 @@ C
       TYPE (NLOCAL_STR_), TARGET :: NLOC_DMG
       TYPE (DRAPE_) :: DRAPE_Q4
       TYPE (MATPARAM_STRUCT_)  , DIMENSION(NUMMAT) :: MATPARAM_TAB
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -484,7 +486,7 @@ C-----------------------------
      I  BID         ,BID         ,BID         ,E1X        ,E1Y        ,
      J  E1Z         ,E2X         ,E2Y         ,E2Z        ,E3X        ,
      K  E3Y         ,E3Z         ,NG          ,TABLE      ,IXFEM      ,
-     L  BID         ,LSENSOR     ,SENSOR      ,BID        ,ELCRKINI   ,
+     L  BID         ,SENSOR_TAB  ,BID        ,ELCRKINI   ,
      M  DIR1_CRK    ,DIR2_CRK    ,ALDT        ,
      N  ISMSTR      ,IR          ,IS          ,NLAY       ,NPT        ,
      O  IXLAY       ,IXEL        ,ISUBSTACK   ,STACK      ,

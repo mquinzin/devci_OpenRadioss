@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS90                      source/materials/mat/mat090/sigeps90.F
 Chd|-- called by -----------
@@ -88,7 +88,7 @@ C SIGVXX  | NEL     | F | W | VISCOUS STRESS XX
 C SIGVYY  | NEL     | F | W | VISCOUS STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C UVAR    |NEL*NUVAR| F |R/W| USER ELEMENT VARIABLE ARRAY
 C OFF     | NEL     | F |R/W| DELETED ELEMENT FLAG (=1. ON, =0. OFF)
@@ -187,7 +187,7 @@ C
              AV(5,I) = HALF*EPSYZ(I)
              AV(6,I) = HALF*EPSZX(I)
          ENDDO                     
-CEigenvalues needed to be calcultated in double precision
+C Eigenvalues needed to be calculated in double precision
 C        for a simple precision executing*
       IF (IRESP==1) THEN
           CALL VALPVECDP(AV,EVV,DIRPRV,NEL)
@@ -271,7 +271,7 @@ C computing energy increase
           DO K=1,3
             EPSE = STRAIN(I,K)                                          
             SQSTAT(I,K) = YFAC*FINTER(IFUNC(1),EPSE,NPF,TF,DF(K))       
-C compute curent energy
+C compute current energy
             QUASI_EINT= QUASI_EINT + HALF*STRAIN(I,K)*SQSTAT(I,K)
           ENDDO   
             DEINT(I)  = QUASI_EINT - UVAR(I,9)
@@ -284,7 +284,7 @@ C check loading and unloading.
              ILOAD(I,K) = 1 
              IF(EPE > EM10 )ILOAD(I,K) = -1
          ENDDO 
-C filtring strain
+C filtering strain
          RATEEPS = SQRT(STRAINRATE(I,1)**2 + STRAINRATE(I,2)**2 + STRAINRATE(I,3)**2)
         IF (ISRATE > 0) THEN
            RATEEPS =  ASRATE*RATEEPS + (ONE - ASRATE)*UVAR(I,3)
@@ -376,7 +376,7 @@ C case with unloading stress-strain curve
             ENDDO ! NEL  
          ENDIF
        ENDIF 
-C unloadind with damage based on the energy.
+C unloading with damage based on the energy.
       IF(IFLAG == 2 ) THEN
              IF(NFUNC == 1) THEN
                YFAC = UPARAM(NFUNC + 11)
@@ -391,7 +391,7 @@ C unloadind with damage based on the energy.
                    S(I,K) = SQSTAT(I,K)
                    Emax = MAX(Emax, YFAC*DF(K))
                    EMIN = MIN(EMIN, YFAC*DF(K))
-C computecurent energy
+C compute current energy
                     ECURENT(I)= ECURENT(I) + HALF*STRAIN(I,K)*SQSTAT(I,K)
                  ENDDO
                    ET(I) = EMIN/E0 ! not used
@@ -401,7 +401,7 @@ C computecurent energy
                ENDDO 
             ELSEIF(NFUNC > 1) THEN 
 C
-C  unlaoding (quasi-static dependency )
+C  unloading (quasi-static dependency)
 C   
                    YFAC = UPARAM(NFUNC + 11)
                    DO II=1,NE_UNL ! unloading
@@ -415,7 +415,7 @@ C
                         S(I,K) = SQSTAT(I,K)
                         Emax = MAX(Emax, YFAC*DF(K))
                         EMIN = MIN(EMIN, YFAC*DF(K))
-C compute cure     nt energy
+C compute current energy
                          ECURENT(I)= ECURENT(I) + HALF*STRAIN(I,K)*SQSTAT(I,K)
 !!                         ECURENT(I)= ECURENT(I) + HALF*EV(I,K)*ABS(SQSTAT(I,K))
                       ENDDO 
@@ -484,7 +484,7 @@ C
                  ECURENT(I) = UVAR(I,4)
               ENDDO
 C 
-C  flag is a hidden falg, only idam=0 is activated, Idam > o not tested.     
+C  flag is a hidden flag, only idam=0 is activated, Idam > o not tested.
               IF(IDAM == 0) THEN 
                 DO II=1,NE_UNL
                   I = INDX_UNL(II)
@@ -501,7 +501,7 @@ C  global
                 ENDDO ! NE_UNL
               ELSE 
 
-C damage by direction to be  tested for               
+C damage by direction to be tested for
                 DO II=1,NE_UNL
                   I = INDX_UNL(II)
                   IF(UVAR(I,2) > ZERO) THEN

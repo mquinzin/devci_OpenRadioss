@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SCHOUR3                       source/elements/thickshell/solidec/schour3.F
 Chd|-- called by -----------
@@ -416,7 +416,7 @@ C
         F38(I) =F38(I)-G81(I)*NFHZ1(I)-G82(I)*NFHZ2(I)
      .                -G83(I)*NFHZ3(I)-G84(I)*NFHZ4(I)
       ENDDO
-      !----hourglass energie est inclued in interal energie------
+      !----hourglass energy is included in internal energy------
       DO I=LFT,LLT
         EINT(I)= EINT(I)+DT1*(
      .   NFHX1(I)*HGX1(I) + NFHZ1(I)*HGZ1(I) + 
@@ -678,7 +678,7 @@ C   -----------FHOUR(1-11,I):XE1,ZE1,YK2,ZK2,XE3,YK3,ZK3,ZE3,XE4,YK4,Z4-------
        FHOUR(I,9) =  OFF(I)*FHOUR(I,9)  +  DH_XE4
        FHOUR(I,10) = OFF(I)*FHOUR(I,10) +  DH_YK4
        FHOUR(I,11) = OFF(I)*FHOUR(I,11) +  DH_Z4
-C------   SIGY(I) : now min(sigy(ip)) and =sigy(e_plas=0) at begining in law2   
+C------   SIGY(I) : now min(sigy(ip)) and =sigy(e_plas=0) at beginning in law2   
        IF (SIGY(I)<ZEP9EP30) THEN
         SE  =(ONE-NU(I))*FHOUR(I,5)
         SK  =(ONE-NU(I))*FHOUR(I,6)
@@ -717,7 +717,7 @@ c        SVM2 = SQRT(MM(I,2)+COEF*(SVMR+MIN(SVM,-SVM)))
           FACM = ZERO
           FHOUR(I,12) = SVM2
         ENDIF
-C------bending behavious : 
+C------bending behaviours :
          SE  =FHOUR(I,9)*FHOUR(I,9)
          SK  =FHOUR(I,10)*FHOUR(I,10)
          SR1 = (ONE +NU(I)*NU(I))*(SE+SK)
@@ -853,7 +853,7 @@ C
         F38(I) =F38(I)-G81(I)*NFHZ1(I)-G82(I)*NFHZ2(I)
      .                -G83(I)*NFHZ3(I)-G84(I)*NFHZ4(I)
       ENDDO
-      !----hourglass energie est inclued in interal energie------
+      !----hourglass energy is included in internal energy------
       DO I=LFT,LLT
         EINT(I)= EINT(I)+DT1*(
      .   NFHX1(I)*HGX1(I) + NFHZ1(I)*HGZ1(I) + 

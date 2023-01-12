@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_OLDNUMCD                 source/mpi/interfaces/spmd_i7tool.F
 Chd|-- called by -----------
@@ -3013,6 +3013,7 @@ Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod
 Chd|        INTERFACE_MODIFICATION_MOD    share/modules/interface_modification_mod.F
 Chd|        INTER_SORTING_MOD             share/modules/inter_sorting_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TRI25EBOX                     share/modules/tri25ebox.F     
 Chd|        TRI7BOX                       share/modules/tri7box.F       
 Chd|====================================================================
@@ -3024,7 +3025,7 @@ Chd|====================================================================
      5   LINDIDEL,LBUFIDEL,IRLEN20 ,ISLEN20 ,IRLEN20T,
      6   ISLEN20T,NBINT20 ,IRLEN20E,ISLEN20E,FR_RBY  ,
      7   FR_RBY6 ,NPBY    ,IRBKIN_L,
-     8   NRBYKIN_L,KINDRBY,SENSOR,LBUFIDEL24,INTBUF_TAB,
+     8   NRBYKIN_L,KINDRBY,SENSOR_TAB,LBUFIDEL24,INTBUF_TAB,
      9   SORT_COMM)
 C-----------------------------------------------
 C   M o d u l e s
@@ -3036,6 +3037,7 @@ C-----------------------------------------------
       USE GROUPDEF_MOD
       USE INTERFACE_MODIFICATION_MOD
       USE INTER_SORTING_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -3070,11 +3072,9 @@ C-----------------------------------------------
      .        IRLEN20,ISLEN20,IRLEN20T,ISLEN20T,NBINT20,
      .        IRLEN20E, ISLEN20E, NRBYKIN_L, IRBKIN_L(*),KINDRBY(*),
      .        FR_RBY(*), FR_RBY6(*), NPBY(NNPBY,*),LBUFIDEL24
-      my_real
-     .        SENSOR(NSENSR,*)
-
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
       TYPE(sorting_comm_type), DIMENSION(NINTER), INTENT(inout) :: SORT_COMM   ! structure for interface sorting comm
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
 C-----------------------------------------------
@@ -3130,8 +3130,8 @@ C
               ISENS = 0
               IF(ITY == 7.OR.ITY == 11.OR.ITY == 24.OR.ITY == 25) 
      .           ISENS = IPARI(64,I)      
-              IF(ISENS/=0) THEN            
-                TS = SENSOR(2,ISENS)
+              IF (ISENS > 0) THEN            
+                TS = SENSOR_TAB(ISENS)%TSTART
                 IF (TS>TT) INTERACT = 0
               ELSE
                 STARTT = INTBUF_TAB(I)%VARIABLES(3)
@@ -5195,10 +5195,11 @@ Chd|        WRITE_R_C                     source/output/tools/sortie_c.c
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        INTERFACE_MODIFICATION_MOD    share/modules/interface_modification_mod.F
 Chd|        INTSTAMP_GLOB_MOD             share/modules/intstamp_glob_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TRI25EBOX                     share/modules/tri25ebox.F     
 Chd|        TRI7BOX                       share/modules/tri7box.F       
 Chd|====================================================================
-      SUBROUTINE SPMD_SAVEFI(IPARI, IFLAG,INTBUF_TAB,SENSOR)
+      SUBROUTINE SPMD_SAVEFI(IPARI, IFLAG,INTBUF_TAB,SENSOR_TAB)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -5207,6 +5208,7 @@ C-----------------------------------------------
       USE INTBUFDEF_MOD
       USE INTSTAMP_GLOB_MOD
       USE INTERFACE_MODIFICATION_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -5230,11 +5232,8 @@ C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER IPARI(NPARI,*), IFLAG
-
-      my_real
-     .        SENSOR(NSENSR,*)
-
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l  V a r i a b l e s
 C-----------------------------------------------
@@ -5270,8 +5269,8 @@ C
                ISENS = 0
                IF(ITYP == 7.OR.ITYP == 11.OR.ITYP == 24) ! All but ITYP == 25
      .            ISENS = IPARI(64,I)      
-                  IF(ISENS/=0) THEN            
-                    TS = SENSOR(2,ISENS)
+                  IF (ISENS > 0) THEN            
+                    TS = SENSOR_TAB(ISENS)%TSTART
                     IF (TS>TT) INTERACT = 0
                   ELSE
                     STARTT = INTBUF_TAB(I)%VARIABLES(3)
@@ -5550,8 +5549,8 @@ C
                ISENS = 0
                IF(ITYP == 7.OR.ITYP == 11.OR.ITYP == 24) ! All but ITYP == 25
      .            ISENS = IPARI(64,I)      
-                  IF(ISENS/=0) THEN            
-                    TS = SENSOR(2,ISENS)
+                  IF (ISENS > 0) THEN            
+                    TS = SENSOR_TAB(ISENS)%TSTART
                     IF (TS>TT) INTERACT = 0
                   ELSE
                     STARTT = INTBUF_TAB(I)%VARIABLES(3)

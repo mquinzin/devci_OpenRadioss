@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  R23L114DEF3                   source/elements/spring/r23l114def3.F
 Chd|-- called by -----------
@@ -30,6 +30,7 @@ Chd|        REDEF3                        source/elements/spring/redef3.F
 Chd|        REDEF_SEATBELT                source/tools/seatbelts/redef_seatbelt.F
 Chd|        REPLA3                        source/elements/spring/repla3.F
 Chd|        SEATBELT_MOD                  ../common_source/modules/seatbelt_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE R23L114DEF3(
      1        SKEW    ,IPM    ,IGEO   ,MID     ,PID    ,
@@ -58,13 +59,14 @@ Chd|====================================================================
      P        LMIN,SLIPRING_ID,UPDATE_FLAG,RETRACTOR_ID,ADD_NODE1,
      Q        ADD_NODE2,NC1,NC2,NC3,X1DP,
      R        X2DP,X3DP,VX3,VY3,VZ3,
-     S        FLAG_SLIPRING_UPDATE,FLAG_RETRACTOR_UPDATE,SENSOR,UINER,FR_ID,
+     S        FLAG_SLIPRING_UPDATE,FLAG_RETRACTOR_UPDATE,SENSOR_TAB,UINER,FR_ID,
      T        FRAM_FACTOR,EPS_OLD,FX_B2,DPX_B2,YIELDX_B2,
      U        XX_OLD_B2,FXEP_B2,POSX_B2,EPS_OLD_B2)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE SEATBELT_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -116,12 +118,13 @@ C     REAL
      .   XKR(MVSIZ),VX1(MVSIZ),VX2(MVSIZ),VY1(MVSIZ),VY2(MVSIZ),
      .   VZ1(MVSIZ),VZ2(MVSIZ),UVAR(NUVAR,*),UPARAM(*),MASS(*),
      .   DX0(*),DY0(*),DZ0(*),RX0(*),RY0(*),RZ0(*),LMIN(*),DFS(*),
-     .   RING_SLIP(*),X02(*),VX3(MVSIZ),VY3(MVSIZ),VZ3(MVSIZ),SENSOR(NSENSR,*),
+     .   RING_SLIP(*),X02(*),VX3(MVSIZ),VY3(MVSIZ),VZ3(MVSIZ),
      .   UINER(*),FRAM_FACTOR(*)
       my_real ,INTENT(INOUT) :: EPS_OLD(MVSIZ),FX_B2(MVSIZ),DPX_B2(MVSIZ),YIELDX_B2(MVSIZ),
      .   XX_OLD_B2(MVSIZ),FXEP_B2(MVSIZ),POSX_B2(MVSIZ),EPS_OLD_B2(MVSIZ)
       TARGET :: UVAR
       DOUBLE PRECISION ALDP(MVSIZ),AL2DP(MVSIZ),X1DP(3,*),X2DP(3,*),X3DP(3,*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -151,7 +154,7 @@ C     REAL
      .     RYAV, RZAV,DEN, C, CP, EXYP,
      .     X21PHI, Y21PHI, Z21PHI, VX21PHI, VY21PHI, VZ21PHI,
      .     RYAV1, RZAV1, RYAV1P, RZAV1P,ASRATE,NORM,GAP,LMIN_B2(MVSIZ),
-     .     EB(MVSIZ),DXOLDB(MVSIZ),XKP_B2(MVSIZ),DX_B2(MVSIZ)
+     .     EB(MVSIZ),DXOLDB(MVSIZ),XKP_B2(MVSIZ),DX_B2(MVSIZ),A1
       DOUBLE PRECISION X0DP(MVSIZ),X0DP_B2(MVSIZ),EX2DP(MVSIZ),EY2DP(MVSIZ),EZ2DP(MVSIZ),
      .                 ALDP_B2(MVSIZ)
       my_real ,DIMENSION(:), POINTER :: COORD_OLD
@@ -496,7 +499,7 @@ C---------------------
 C       MATERIAL FLOW COMPUTATION FOR SLIPRING/RETRACTOR
 C---------------------
 C
-C-      Computation of lenght of 2nd strand 
+C-      Computation of length of 2nd strand
         DO J=1,COMPT2
           I = INDEX_SLIP(J)
           STRD = SLIPRING_STRAND(I)   
@@ -530,6 +533,12 @@ C
           X0DP_B2(I)= X02(I)                     ! cast double vers My_real
           XL02(I)=MAX(X0DP_B2(I),LMIN(I))
           DX_B2(I) = ALDP_B2(I) - X0DP_B2(I)
+C         for 2n strand - unloading curve activated only if cross point is passed
+          IF (YIELDX_B2(I) >  UPARAM(IADBUF + 125)) THEN
+            IFUNC2(I)= IPM(10 + IF3 + 1,MID(I))
+          ELSE
+            IFUNC2(I)= IFUNC(I)
+          ENDIF
         ENDDO
 C
 C--     Computation of stress of 2nd strand for sliprings
@@ -543,6 +552,12 @@ C--     Computation of stress of 2nd strand for sliprings
      .                      IECROU  ,IFUNC  ,IFUNC2 ,XX_OLD_B2,FX_MAX ,
      .                      XK_COMP ,COMPT2 ,INDEX_SLIP ,FLAG ,XKP_B2 ,  
      .                      EPS_OLD_B2,FRAM_FACTOR)
+C
+        DO J=1,COMPT2
+          I = INDEX_SLIP(J)
+          IF (ALDP(I) > ALDP_B2(I)) XKP_B2(I) = XKP(I)
+          IF (ALDP_B2(I) > ALDP(I)) XKP(I) = XKP_B2(I)
+        ENDDO
 
 C--     Computation of material flow for slipring and retractor
         CALL MATERIAL_FLOW(DFS,DFS_OLD,ALDP,SLIPRING_STRAND,XKP,
@@ -553,7 +568,7 @@ C--     Computation of material flow for slipring and retractor
      5                     FLAG_SLIPRING_UPDATE,ADD_NODE1,ADD_NODE2,VX1,VY1,
      6                     VZ1,VX2,VY2,VZ2,VX3,
      7                     VY3,VZ3,XC,RETRACTOR_ID,FLAG_RETRACTOR_UPDATE,
-     8                     SENSOR,X0DP,FR_ID,DFX,FX,FX_B2,
+     8                     SENSOR_TAB,X0DP,FR_ID,DFX,FX,FX_B2,
      9                     ALDP_B2,X0DP_B2,EX2DP,EY2DP,EZ2DP,XL02,
      A                     XKP_B2,COMPT,INDEX2)
 C

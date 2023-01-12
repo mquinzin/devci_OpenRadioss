@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  H3D_MOD                       share/modules/h3d_mod.F       
 Chd|-- called by -----------
@@ -72,7 +72,7 @@ Chd|        FORCEFINGEO                   source/loads/general/forcefingeo.F
 Chd|        FORCEPINCH                    source/loads/general/forcepinch.F
 Chd|        FORINT                        source/elements/forint.F      
 Chd|        FREFORM                       source/input/freform.F        
-Chd|        FVBAG0                        source/airbag/fvbag.F         
+Chd|        FVBAG0                        source/airbag/fvbag0.F        
 Chd|        FVBAG2                        source/airbag/fvbag2.F        
 Chd|        GENANI                        source/output/anim/generate/genani.F
 Chd|        GENH3D                        source/output/h3d/h3d_results/genh3d.F
@@ -261,6 +261,11 @@ Chd|        SORTIE_MAIN                   source/output/sortie_main.F
 Chd|        SPMD_EXCH2_A_PON              source/mpi/forces/spmd_exch2_a_pon.F
 Chd|        SPMD_EXCH_A                   source/mpi/forces/spmd_exch_a.F
 Chd|        SPMD_EXCH_A_AMS_POFF          source/mpi/forces/spmd_exch_a_ams_poff.F
+Chd|        SPMD_EXCH_A_INT2              source/mpi/forces/spmd_exch_a_int2.F
+Chd|        SPMD_EXCH_A_INT2H             source/mpi/forces/spmd_exch_a_int2h.F
+Chd|        SPMD_EXCH_A_INT2H_AMS         source/mpi/forces/spmd_exch_a_int2h_ams.F
+Chd|        SPMD_EXCH_A_INT2_AMS          source/mpi/forces/spmd_exch_a_int2_ams.F
+Chd|        SPMD_EXCH_A_INT2_PON          source/mpi/forces/spmd_exch_a_int2_pon.F
 Chd|        SPMD_FIADD11_POFF             source/mpi/interfaces/spmd_i7tool.F
 Chd|        SPMD_FIADD11_PON              source/mpi/interfaces/spmd_i7tool.F
 Chd|        SPMD_FIADD17_POFF             source/mpi/interfaces/spmd_i7tool.F
@@ -356,7 +361,7 @@ C-----------------------------------------------
           INTEGER, DIMENSION(:), ALLOCATABLE :: PART_LIST
       END TYPE H3D_INPUT
 C-----------------------------------------------
-C   H3D_PARTS : LIST OF OUTPUTED PARTS
+C   H3D_PARTS : LIST OF OUTPUTTED PARTS
 C-----------------------------------------------
       TYPE H3D_PART_LIST
           INTEGER NB_PART
@@ -448,6 +453,11 @@ C-----------------------------------------------
         INTEGER N_VECT_CLUST_MOM        !ANIM_V(20)
         INTEGER N_VECT_CONT_MAX         !ANIM_V(26)
         INTEGER N_VECT_PCONT2           !ANIM_V(27)
+        INTEGER N_VECT_PCONT_MAX     
+        INTEGER N_VECT_CONT2_MAX             
+        INTEGER N_VECT_PCONT2_MAX     
+        INTEGER N_VECT_CONT2_MIN             
+        INTEGER N_VECT_PCONT2_MIN     
 
         INTEGER SOL_SCAL_VORTX          !ANIM_SE(10)
         INTEGER SOL_SCAL_VORTY          !ANIM_SE(4960)

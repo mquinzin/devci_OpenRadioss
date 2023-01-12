@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS37                      source/materials/mat/mat037/sigeps37.F
 Chd|-- called by -----------
@@ -54,7 +54,7 @@ C               This sound speed formulation may leads to global value potential
 C               recommended : Courant number <= 0.5 (dt_scale)
 C
 C Output
-C    !UVAR(I,1) : massic percentage of liquid * global density  (rho1*V1/V : it needs to give liquid mass multipling by element volume in aleconve.F)
+C    !UVAR(I,1) : massic percentage of liquid * global density  (rho1*V1/V : it needs to give liquid mass multiplying by element volume in aleconve.F)
 C    !UVAR(I,2) : density of gas
 C    !UVAR(I,3) : density of liquid
 C    !UVAR(I,4) : volumetric fraction of liquid
@@ -99,7 +99,7 @@ C        ! SIGVXX  | NEL     | F | W | VISCOUS STRESS XX
 C        ! SIGVYY  | NEL     | F | W | VISCOUS STRESS YY
 C        ! ...     |         |   |   |
 C        ! SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C        ! VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C        ! VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C        !---------+---------+---+---+--------------------------------------------
 C        ! UVAR    |NEL*NUVAR| F |R/W| USER ELEMENT VARIABLE ARRAY
 C        ! OFF     | NEL     | F |R/W| DELETED ELEMENT FLAG (=1. ON, =0. OFF)

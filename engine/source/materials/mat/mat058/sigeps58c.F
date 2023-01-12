@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS58C                     source/materials/mat/mat058/sigeps58c.F
 Chd|-- called by -----------
@@ -27,6 +27,7 @@ Chd|        MULAWC                        source/materials/mat_share/mulawc.F
 Chd|-- calls ---------------
 Chd|        FINTER                        source/tools/curve/finter.F   
 Chd|        INTERFACE_TABLE_MOD           share/modules/table_mod.F     
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
       SUBROUTINE SIGEPS58C(
@@ -43,13 +44,13 @@ Chd|====================================================================
      A     SOUNDSP,VISCMAX,THK     ,PLA     ,UVAR   ,
      B     OFF    ,NGL    ,PM      ,MAT     ,ETSE   ,
      C     SHF    ,YLD    ,EPSP    ,TAN_PHI ,
-     D     ALDT   ,LSENSOR,SENSOR  ,ISMSTR  ,TABLE  ,
-     E     OFFGG   )
+     D     ALDT   ,SENSOR_TAB,ISMSTR,TABLE  ,OFFGG   )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE TABLE_MOD
       USE INTERFACE_TABLE_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -100,7 +101,7 @@ C SIGVXX  | NEL0    | F | W | VISCOUS STRESS XX
 C SIGVYY  | NEL0    | F | W | VISCOUS STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL0    | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL0    | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL0    | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C THK     | NEL0    | F |R/W| THICKNESS
 C PLA     | NEL0    | F |R/W| PLASTIC STRAIN
@@ -119,7 +120,7 @@ C-----------------------------------------------
 C   I N P U T   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NEL0, NUPARAM, NUVAR, NPT0, IPT,ISMSTR,IFLAG(*),
-     .   NGL(NEL0),MAT(NEL0),LSENSOR(NSENSI,*)
+     .   NGL(NEL0),MAT(NEL0)
       my_real TIME,TIMESTEP(NEL0),UPARAM(*),
      .   AREA(NEL0),RHO0(NEL0),EINT(NEL0,2),
      .   THKLY(NEL0),PLA(NEL0),OFFGG(NEL0),TAN_PHI(NEL0),
@@ -131,7 +132,7 @@ C-----------------------------------------------
      .   EPSXY(NEL0) ,EPSYZ(NEL0) ,EPSZX(NEL0) ,
      .   SIGOXX(NEL0),SIGOYY(NEL0),
      .   SIGOXY(NEL0),SIGOYZ(NEL0),SIGOZX(NEL0),
-     .   PM(NPROPM,*),SHF(*),EPSP(NEL0),ALDT(NEL0),SENSOR(NSENSR,*)
+     .   PM(NPROPM,*),SHF(*),EPSP(NEL0),ALDT(NEL0)
 C-----------------------------------------------
 C   O U T P U T   A r g u m e n t s
 C-----------------------------------------------
@@ -146,8 +147,8 @@ C   I N P U T   O U T P U T   A r g u m e n t s
 C-----------------------------------------------
       my_real UVAR(NEL0,NUVAR), OFF(NEL0),THK(NEL0),YLD(NEL0)
       TYPE(TTABLE) TABLE(*)
-      my_real,
-     .        DIMENSION(1) :: XX
+      my_real, DIMENSION(1) :: XX
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   VARIABLES FOR FUNCTION INTERPOLATION 
 C-----------------------------------------------
@@ -241,19 +242,14 @@ C----------------------------------------------------------------------
       DAREAMIN = UPARAM(23)  
       ZEROSTRESS = UPARAM(24)
       ISENS    = NINT(UPARAM(25))
-      TSTART   = ZERO
       FLEX1    = UPARAM(26)
       FLEX2    = UPARAM(27)
       NBFCT    = NINT(UPARAM(31))
       GSH      = UPARAM(32)*SHF(1)
-      IF (ZEROSTRESS > ZERO) THEN
-        DO I=1,NSENSOR
-          IF (ISENS == LSENSOR(1,I)) THEN
-            ISENS = I
-            TSTART = SENSOR(2,ISENS)
-            EXIT
-          ENDIF
-        ENDDO
+      IF (ZEROSTRESS > ZERO .and. ISENS > 0) THEN
+        TSTART = SENSOR_TAB(ISENS)%TSTART
+      ELSE
+        TSTART   = ZERO
       ENDIF  
 c
       YFAC(1) = UPARAM(27 + 1 )

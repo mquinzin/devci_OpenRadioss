@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  I25REMLINE                    source/interfaces/int25/i25remlin.F
 Chd|-- called by -----------
@@ -447,11 +447,11 @@ C
         SH_EDGE  =IEDGE-10*SOL_EDGE ! shells
 
 C---------------------------------------------------------------------
-C  Main solids : buid tables for deleted edges for each NRTM
+C  Main solids : build tables for deleted edges for each NRTM
 C     Use tabs of N2S : edge is deactivated if 1 node is deactivated
 C--------------------------------------------------------------------
 
-        IF(SOL_EDGE > 0 ) THEN
+        IF(SOL_EDGE > 0 .AND. IPARI(63,N) == 2) THEN
 
            MAX_INSERTED_EDG = 0
            DO I=1,NUMNOD
@@ -584,7 +584,7 @@ C          Do not add nodes already stored w/IREM_GAP
             ENDIF
 C  
                                
-            IF(JJJ + MAX_INSERTED_EDG > SIZE_INSERTED_EDG) THEN
+            IF(JJJ + MAX_INSERTED_EDG*MAX_INSERTED_I2  > SIZE_INSERTED_EDG) THEN
 C extend INSERTED_EDG if needed
                OLDSIZE = SIZE_INSERTED_EDG
                SIZE_INSERTED_EDG = SIZE_INSERTED_EDG  + MAX(NEDGE,MAX_INSERTED_EDG)

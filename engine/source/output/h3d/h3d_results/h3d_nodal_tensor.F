@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  H3D_NODAL_TENSOR              source/output/h3d/h3d_results/h3d_nodal_tensor.F
 Chd|-- called by -----------
@@ -46,7 +46,9 @@ Chd|====================================================================
      .                  STIFR    , STIFN       , A              , D          , V        , 
      .                  CONT     , FCONTG      , FINT           , FEXT       , KEYWORD  ,
      .                  BUFMAT   , IXS10       , IXS16          , IXS20      , IXT      ,
-     .                  IXP      , IXR         ,IAD_ELEM        ,FR_ELEM     , WEIGHT   )
+     .                  IXP      , IXR         , IAD_ELEM       , FR_ELEM    , WEIGHT   , 
+     .                  IPARTSP  , IPARTR      , IPARTP         , IPARTT     , IPARTS   ,
+     .                  IPARTQ   , KXSP        , N_H3D_PART_LIST)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -74,6 +76,7 @@ C-----------------------------------------------
 #include      "param_c.inc"
 #include      "rnur_c.inc"
 #include      "task_c.inc"
+#include      "sphcom.inc"
 #include      "spmd_c.inc"
 #include      "sms_c.inc"
 C-----------------------------------------------
@@ -92,6 +95,10 @@ C-----------------------------------------------
      .   IXS10(6,*) ,IXS16(8,*) ,IXS20(12,*) ,
      .   IXT(NIXT,*),IXP(NIXP,*),IXR(NIXR,*),IAD_ELEM(2,*),FR_ELEM(*),WEIGHT(*)
       CHARACTER*ncharline KEYWORD
+      INTEGER ,INTENT(IN) :: IPARTSP(NUMSPH),IPARTR(NUMELR),IPARTP(NUMELP),
+     .                       IPARTT(NUMELT),IPARTS(NUMELS),IPARTQ(NUMELQ)
+      INTEGER ,INTENT(IN) :: KXSP(NISP,NUMSPH)
+      INTEGER ,INTENT(IN) :: N_H3D_PART_LIST
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -115,25 +122,75 @@ C
 c
       DO  I=1,NUMNOD 
         NODE_ID(I) = ITAB(I)
+        IOK_PART(I) = 0
+        IS_WRITTEN_NODE(I) = 0
       ENDDO
-
-c      DO I=1,NUMELC
-c        IF( H3D_PART(IPARTC(I)) == 1) THEN
-c          DO J=2,5
-c            IOK_PART(IXC(J,I)) = 1
-c          ENDDO
-c        ENDIF
-c      ENDDO
+C
+      IF(N_H3D_PART_LIST .NE. 0)THEN
+        DO I=1,NUMSPH
+          IF ( H3D_PART(IPARTSP(I)) == 1) THEN
+            IF(KXSP(2,I) > 0 )IOK_PART(KXSP(2,I)) = 1
+          ENDIF
+        ENDDO
 c
-c      DO I=1,NUMELTG
-c        IF( H3D_PART(IPARTTG(I)) == 1) THEN
-c          DO J=2,4
-c            IOK_PART(IXTG(J,I)) = 1
-c          ENDDO
-c        ENDIF
-c      ENDDO
-      IOK_PART(1:NUMNOD) = 1
-
+        DO I=1,NUMELR
+          IF ( H3D_PART(IPARTR(I)) == 1) THEN
+            DO J=2,4
+              IF(IXR(J,I) > 0 )IOK_PART(IXR(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELP
+          IF ( H3D_PART(IPARTP(I)) == 1) THEN
+            DO J=2,4
+              IF(IXP(J,I) > 0 )IOK_PART(IXP(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELT
+          IF ( H3D_PART(IPARTT(I)) == 1) THEN
+            DO J=2,4
+              IF(IXT(J,I) > 0 )IOK_PART(IXT(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELC
+          IF ( H3D_PART(IPARTC(I)) == 1) THEN
+            DO J=2,5
+              IF(IXC(J,I) > 0 )IOK_PART(IXC(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELTG
+          IF ( H3D_PART(IPARTTG(I)) == 1) THEN
+            DO J=2,4
+              IF(IXTG(J,I) > 0 )IOK_PART(IXTG(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELS
+          IF ( H3D_PART(IPARTS(I)) == 1) THEN
+            DO J=2,9
+              IF(IXS(J,I) > 0 )IOK_PART(IXS(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELQ
+          IF ( H3D_PART(IPARTQ(I)) == 1) THEN
+            DO J=2,5
+              IF(IXQ(J,I) > 0 )IOK_PART(IXQ(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+      ELSE
+        IOK_PART(1:NUMNOD) = 1
+      ENDIF
 C
 C-----------------------------------------------
       IF(KEYWORD == 'GPS') THEN

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FVUPD0                        source/airbag/fvupd.F         
 Chd|-- called by -----------
@@ -49,12 +49,12 @@ C-----------------------------------------------
 #include      "task_c.inc"
 C     DTMIN1
 #include      "scr18_c.inc"
+#include      "mvsiz_p.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER MONVOL(*)
-      my_real
-     .        X(3,*), V(3,*), VOLMON(*)
+      my_real X(3,*), V(3,*), VOLMON(*)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -236,7 +236,7 @@ Chd|  FVUPD1                        source/airbag/fvupd.F
 Chd|-- called by -----------
 Chd|        FVUPD0                        source/airbag/fvupd.F         
 Chd|-- calls ---------------
-Chd|        FVTEMP                        source/airbag/fvbag.F         
+Chd|        FVTEMP                        source/airbag/fvtemp.F        
 Chd|        SPMD_FVB_GATH_END             source/mpi/airbags/spmd_fvb.F 
 Chd|        FVBAG_MOD                     share/modules/fvbag_mod.F     
 Chd|        FVMBAG_MESHCONTROL_MOD        ../common_source/modules/fvmbag_meshcontrol_mod.F
@@ -275,6 +275,7 @@ C-----------------------------------------------
 #include      "com08_c.inc"
 #include      "units_c.inc"
 #include      "task_c.inc"
+#include      "mvsiz_p.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
@@ -454,7 +455,7 @@ C
 !$OMP+ PRIVATE(KSI,ETA,FAC,I1,I2)
 C
 C Calcul position et vitesse des noeuds internes 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNA
         IF(NCONA(2,I) == 0) THEN
            FVSPMD(IFV)%WAV(1,I)=ZERO
@@ -476,7 +477,7 @@ C Calcul position et vitesse des noeuds internes
 !$OMP END DO
 
       IF(DT1 == ZERO) THEN         
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
         DO I=1,NNA
           IF(NCONA(2,I) == 0) THEN
              FVSPMD(IFV)%WAV(1,I)=RVOLU(67)
@@ -488,7 +489,7 @@ C Calcul position et vitesse des noeuds internes
       ENDIF
 
 C Calcul la position des noeuds internes 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNA
         IF(NCONA(2,I) == 0) THEN
            VVVA(1,I)=FVSPMD(IFV)%WAV(1,I)
@@ -503,7 +504,7 @@ C Calcul la position des noeuds internes
 
 
 C Calcul la position de tous les points 
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNS
          IF (IFVNOD(1,I)==1) THEN
             IEL=IFVNOD(2,I)
@@ -546,7 +547,7 @@ C
       ENDDO
 !$OMP END DO
 
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNS
          IF (IFVNOD(1,I)==3) THEN
             I1=IFVNOD(2,I)
@@ -560,7 +561,7 @@ C
 !$OMP END DO
 
       IF (NPOLH_ANIM>0) THEN
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
          DO I=1,NNS_ANIM             
             II=REDIR_ANIM(I)         
             NOD_ANIM(1,I)=PNOD(1,II) 
@@ -571,7 +572,7 @@ C
       ENDIF 
 	  
 C Normale et aire des triangles
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNTR
          N1=IFVTRI(1,I)
          N2=IFVTRI(2,I)
@@ -609,7 +610,7 @@ C Normale et aire des triangles
 !$OMP END DO
 C
 C Volume des polyhedres
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NPOLH
          PVOLU(I)= ZERO
          PVOLTMP = ZERO
@@ -707,7 +708,7 @@ C
       ENDDO
 C Volume max de voisins
 !$OMP PARALLEL PRIVATE(I,J,JJ,K,KK,IEL,II)
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NPOLH
          VVMAX(I)=ZERO
          DO J=IFVPADR(I),IFVPADR(I+1)-1
@@ -873,17 +874,17 @@ C
       ALLOCATE(IFVPOLH_OLD(LEN))
 
 !$OMP PARALLEL PRIVATE(I)
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ) 
       DO I=1,IFVPADR(NPOLH+1)-1
          IFVPOLH_OLD(I)=IFVPOLH(I)
       ENDDO
 !$OMP END DO
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ) 
       DO I=1,NPOLH+1
          IFVPADR_OLD(I)=IFVPADR(I)
       ENDDO
 !$OMP END DO
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ) 
       DO I=1,NPOLH
          MPOLH_OLD(I)=MPOLH(I)
          QPOLH_OLD(1,I)=QPOLH(1,I)
@@ -1011,7 +1012,7 @@ C
           IDPOLH(NPOLH)=IDPOLH_OLD(I)
           IF (DT1 /= ZERO) THEN
 C     In case of initial engine merging, time step HAS TO be same as the one that would have
-C     been calculated if mergind had occured during starter
+C     been calculated if mergind had occurred during starter
              IBPOLH(NPOLH)=0
           ENDIF
           DTPOLH(NPOLH)=EP30
@@ -1048,7 +1049,7 @@ C
 !$OMP+ PRIVATE(TEMP,TEMP0,EFAC,CPA,CPB,CPC,CPD,CPE,CPF,RMW)
 !$OMP+ PRIVATE(ITYPL)
       ITYPL = ITYP
-!$OMP DO SCHEDULE(GUIDED,1) 
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ) 
       DO I=1,NPOLH
          IF( EPOLH(I) <= ZERO .OR. 
      .       MPOLH(I) <= ZERO .OR. 

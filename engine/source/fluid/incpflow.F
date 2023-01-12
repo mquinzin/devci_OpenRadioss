@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  INCPFLOW                      source/fluid/incpflow.F       
 Chd|-- called by -----------
@@ -31,14 +31,19 @@ Chd|        SPMD_FL_SUM                   source/mpi/generic/spmd_fl_sum.F
 Chd|        TRGRAD                        source/fluid/incpflow.F       
 Chd|        FINTER                        source/tools/curve/finter.F   
 Chd|        FINTER_SMOOTH                 source/tools/curve/finter_smooth.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE INCPFLOW(NNO   , NEL   , NINOUT , NNI    , IFLOW  ,
      .                    IBUF  , ELEM  , IINOUT , IBUFI  , IBUFR  ,
      .                    IBUFC , IBUFL , RFLOW  , PHI    , PRES   ,
      .                    U     , RINOUT, X      , V      , A      ,
-     .                    NPC   , TF    , SENSOR ,
+     .                    NPC   , TF    , SENSOR_TAB,
      .                    CNP   , ITAGEL, IBUFELR, IBUFELC, IPIV   ,
      .                    HBEM  , GBEM  , IBUFIL , CNPI   , IPINT  )
+C-----------------------------------------------
+C   M o d u l e s
+C-----------------------------------------------  
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -65,8 +70,9 @@ C-----------------------------------------------
      .        CNPI(*), IPINT, ISMOOTH
       my_real
      .        RFLOW(*), PHI(*), PRES(*), U(3,*), RINOUT(NRIOFLOW,*),
-     .        X(3,*), V(3,*), A(3,*), SENSOR(NSENSR,*), TF(*), HBEM(*),
+     .        X(3,*), V(3,*), A(3,*), TF(*), HBEM(*),
      .        GBEM(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -362,7 +368,7 @@ C
             IF (ISENS==0) THEN
                TSTART=ZERO
             ELSE
-               TSTART=SENSOR(2,ISENS)
+               TSTART=SENSOR_TAB(ISENS)%TSTART
             ENDIF
             IF (TT>=TSTART.AND.DT1>ZERO) THEN
                TSG=(TT-TSTART)*SCALT

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  S8EDERI3                      source/elements/solid/solide8e/s8ederi3.F
 Chd|-- called by -----------
@@ -1760,7 +1760,10 @@ C
       DO I=LFT,LLT
         IF(OFFG(I)==ZERO)THEN
          DET(I)=ONE
-         IF (VOL(I)<=ZERO) VOL(I)=ONE
+         IF (VOL(I)<=ZERO) THEN
+           VOL(I)=ONE
+           VOLDP(I)= ONE
+         END IF
         ELSEIF (VOL(I)<=ZERO ) THEN
           ICOR=1
         ENDIF
@@ -3475,11 +3478,11 @@ C
        AJI6(I)=DETT(I)*JAC_34_16(I)
        AJI9(I)=DETT(I)*JAC_15_24(I)
       ENDDO
-C---------not foget this for Ismstr11 and R,S,T
+C---------don't forget this for Ismstr11 and R,S,T
 c      DO I=LFT,LLT
 c       IF (IDEG(I)==0) DELTAX(I)=MIN(DELTAX(I),HUNDRED28*DET(I)*SMAX(I))
 c      ENDDO
-C------ ISMSTR =10       
+C------ ISMSTR =10
       ELSE
       DO I=LFT,LLT
        AJI1(I)=JAC_I(1,I)

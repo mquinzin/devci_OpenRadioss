@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 CC Message TAGS Rules
 C TAGS are represented by variable integer MSGOFF
 C MSGOFF is a 4 digit integer of the form
@@ -1757,9 +1757,10 @@ Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod
 Chd|        INTSTAMP_GLOB_MOD             share/modules/intstamp_glob_mod.F
 Chd|        INTSTAMP_MOD                  share/modules/intstamp_mod.F  
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE SPMD_IFRONT_STAMP(
-     1   IPARI   ,INTBUF_TAB, RETRI,TEMP    ,SENSOR  ,ITAB,
+     1   IPARI   ,INTBUF_TAB, RETRI,TEMP    ,SENSOR_TAB  ,ITAB,
      2   NBINTC21,INTLIST21)
 C============================================================================
 C   M o d u l e s
@@ -1768,6 +1769,7 @@ C-----------------------------------------------
       USE INTSTAMP_MOD
       USE INTSTAMP_GLOB_MOD
       USE INTBUFDEF_MOD 
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -1802,9 +1804,9 @@ C-----------------------------------------------
       INTEGER IPARI(NPARI,NINTER),RETRI(*),ITAB(*),
      .        NBINTC21 ,INTLIST21(*)
 C     REAL
-      my_real
-     .   SENSOR(NSENSR,*),TEMP(*)
+      my_real :: TEMP(*)
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -1846,8 +1848,8 @@ C------------------------------------------------------------------------------
          NIN = INTSTAMP(NI)%NOINTER
          ISENS = IPARI(64,NIN)  ! IF an interface sensor is defined
          INTERACT = 0
-         IF(ISENS/=0) THEN             ! Sensor ID  
-           TS = SENSOR(2,ISENS)
+         IF (ISENS > 0) THEN             ! Sensor ID  
+           TS = SENSOR_TAB(ISENS)%TSTART
            IF (TT>=TS) INTERACT = 1
          ELSE
            STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
@@ -2157,8 +2159,9 @@ Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod
 Chd|        INTSTAMP_GLOB_MOD             share/modules/intstamp_glob_mod.F
 Chd|        INTSTAMP_MOD                  share/modules/intstamp_mod.F  
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
-      SUBROUTINE SPMD_I21TEMPCOM(IPARI,TEMP,INTBUF_TAB,SENSOR) 
+      SUBROUTINE SPMD_I21TEMPCOM(IPARI,TEMP,INTBUF_TAB,SENSOR_TAB) 
 C============================================================================
 C   M o d u l e s
 C-----------------------------------------------
@@ -2166,6 +2169,7 @@ C-----------------------------------------------
       USE INTSTAMP_MOD
       USE INTSTAMP_GLOB_MOD
       USE INTBUFDEF_MOD 
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -2193,9 +2197,9 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER  IPARI(NPARI,NINTER)
 C     REAL
-      my_real
-     .   SENSOR(NSENSR,*),TEMP(*)
+      my_real :: TEMP(*)
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -2228,8 +2232,8 @@ C
          NIN = INTSTAMP(NI)%NOINTER
          ISENS = IPARI(64,NIN)  ! IF an interface sensor is defined
          INTERACT = 0
-         IF(ISENS/=0) THEN             ! Sensor ID  
-           TS = SENSOR(2,ISENS)
+         IF (ISENS > 0) THEN             ! Sensor ID  
+           TS = SENSOR_TAB(ISENS)%TSTART
            IF (TT>=TS) INTERACT = 1
          ELSE
            STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
@@ -2357,9 +2361,10 @@ Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod
 Chd|        INTSTAMP_GLOB_MOD             share/modules/intstamp_glob_mod.F
 Chd|        INTSTAMP_MOD                  share/modules/intstamp_mod.F  
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TRI7BOX                       share/modules/tri7box.F       
 Chd|====================================================================
-      SUBROUTINE SPMD_I21FTHECOM(IPARI    ,FTHE  ,INTBUF_TAB,SENSOR ,NISKYFI ,
+      SUBROUTINE SPMD_I21FTHECOM(IPARI    ,FTHE  ,INTBUF_TAB,SENSOR_TAB,NISKYFI ,
      .                           FTHESKYI ,ISKY  ,FSKYI     ,CONDNSKYI ) 
 C============================================================================
 C   M o d u l e s
@@ -2369,6 +2374,7 @@ C-----------------------------------------------
       USE INTSTAMP_GLOB_MOD
       USE INTBUFDEF_MOD 
       USE TRI7BOX
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -2397,9 +2403,9 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER  IPARI(NPARI,NINTER), ISKY(*), NISKYFI(*)
 C     REAL
-      my_real
-     .   SENSOR(NSENSR,*),FTHE(*),FTHESKYI(*),FSKYI(LSKYI,*),CONDNSKYI(*)
+      my_real :: FTHE(*),FTHESKYI(*),FSKYI(LSKYI,*),CONDNSKYI(*)
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -2441,8 +2447,8 @@ C
          ISENS = IPARI(64,NIN)  ! IF an interface sensor is defined
          INTERACT = 0
 
-         IF(ISENS/=0) THEN             ! Sensor ID  
-           TS = SENSOR(2,ISENS)
+         IF (ISENS > 0) THEN             ! Sensor ID  
+           TS = SENSOR_TAB(ISENS)%TSTART
            IF (TT>=TS) INTERACT = 1
          ELSE
            STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
@@ -2563,8 +2569,8 @@ C
          NIN = INTSTAMP(NI)%NOINTER
          ISENS = IPARI(64,NIN)  ! IF an interface sensor is defined
 
-         IF(ISENS/=0) THEN             ! Sensor ID  
-           TS = SENSOR(2,ISENS)
+         IF (ISENS> 0) THEN             ! Sensor ID  
+           TS = SENSOR_TAB(ISENS)%TSTART
            IF (TT>=TS) INTERACT = 1
          ELSE
            STARTT=INTBUF_TAB(NIN)%VARIABLES(3)

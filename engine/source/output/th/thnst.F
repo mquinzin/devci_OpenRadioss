@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  THNST                         source/output/th/thnst.F      
 Chd|-- called by -----------
@@ -110,7 +110,7 @@ C       multi-purpose elements are nstrands elements only (to be modified).
                                 KVAR  = NUVAR*(I-1)+1
                                 KVARN = NUVARN*NX*(I-1)+1
 C
-C                               initial total lenght UVAR(NB1:NB1)
+C                               initial total length UVAR(NB1:NB1)
                                 NB1=1
 C                               previous elongation  UVAR(NB2:NB2)
                                 NB2=NB1+1
@@ -120,7 +120,7 @@ C                               initial nodes masses UVARN(MB1:MB1+NX-1)
                                 MB1=1
 C                               forces into strands UVARN(MB2:MB2+NX-1)
                                 MB2=MB1+NX
-C                               strands initial lenght UVARN(MB3:MB3+NX-1)
+C                               strands initial length UVARN(MB3:MB3+NX-1)
                                 MB3=MB2+NX
 C                               strands elongations UVARN(MB4:MB4+NX-1)
                                 MB4=MB3+NX
@@ -203,7 +203,7 @@ C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER NB1,NB2,NB3,MB1,MB2,MB3,MB4,MB5
 C-----------------------------------------------
-C       initial total lenght UVAR(NB1:NB1)
+C       initial total length UVAR(NB1:NB1)
       NB1=1
 C       previous elongation  UVAR(NB2:NB2)
       NB2=NB1+1
@@ -214,7 +214,7 @@ C       initial nodes masses UVARN(MB1:MB1+NX-1)
 C       forces into strands UVARN(MB2:MB2+NX-1)
 C       using UVARN(MB2:MB2+NX-2) only.
       MB2=MB1+NX
-C       strands initial lenght UVARN(MB3:MB3+NX-1)
+C       strands initial length UVARN(MB3:MB3+NX-1)
 C       using UVARN(MB3:MB3+NX-2) only.
       MB3=MB2+NX
 C       strands elongations UVARN(MB4:MB4+NX-1)

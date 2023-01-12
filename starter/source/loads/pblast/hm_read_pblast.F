@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_PBLAST                source/loads/pblast/hm_read_pblast.F
 Chd|-- called by -----------
@@ -289,7 +289,7 @@ C-----------------------------------------------
             
             IF(SURF_ID == 0)THEN
               !user forgot to input surf_id
-              ! disply error message : surf_id missing
+              ! display error message : surf_id missing
                 MSGOUT1=''                                                                                              
                 MSGOUT1='MISSING SURFACE IDENTIFIER'                                            
                 MSGOUT2=''                                                                                                                                                                                                                                                                           
@@ -317,7 +317,7 @@ C-----------------------------------------------
             ! IMODEL : flag for blast model
             !---1:Friedlander
             !---2:modified Friedlander
-            IF(IMODEL <= 0 .OR. IMODEL > 2)IMODEL=1
+            IF(IMODEL <= 0 .OR. IMODEL > 2)IMODEL=2
 
             IF(IZ_UPDATE /= 1)IZ_UPDATE=0 !0:update scaled distance  
             !     0:do not update scaled distance  
@@ -357,7 +357,7 @@ C-----------------------------------------------
                   MSGOUT1=''                                                                                              
                   MSGOUT1='ZDET IS NULL. IT IS NOT POSSIBLE TO DETERMINE DEFAULT SURFACE FOR GROUND DEFINITION'                                            
                   MSGOUT2=''                                                                                                                                                                                                                                                                           
-                  MSGOUT2='SURFACE IDENTIFIER MUST BE INTPUT FOR GROUND DEFINITION'
+                  MSGOUT2='SURFACE IDENTIFIER MUST BE INPUT FOR GROUND DEFINITION'
                   CALL ANCMSG(MSGID=2047,MSGTYPE=MSGERROR,ANMODE=ANINFO,C1=TRIM(TITR),I1=ID,C2=MSGOUT1,C3=MSGOUT2)
                   BOOL_SKIP_CALC = .TRUE.
                   Nz_SURF=-ONE ! Starter must go on up to normal termination
@@ -954,7 +954,7 @@ C-----------------------------------------------
                         WRITE(IOUT,*)
      .                   ' ** WARNING : SCALED HEIGHT OF CHARGE IS ABOVE THE RANGE, FIGURE 2-9, CURVE=',10,' HC=',ZC/FAC_UNIT
                         WRITE(ISTDO,*)
-     .                   ' ** WARNING : SCALED HEIGHT OF CHARGE IS ABOCE THE RANGE, FIGURE 2-9, CURVE=',10,' HC=',ZC/FAC_UNIT
+     .                   ' ** WARNING : SCALED HEIGHT OF CHARGE IS ABOVE THE RANGE, FIGURE 2-9, CURVE=',10,' HC=',ZC/FAC_UNIT
                     else
                       idx2=idx1+1
                       calculate=.true.

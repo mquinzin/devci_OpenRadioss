@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  LECTUR                        source/input/lectur.F         
 Chd|-- called by -----------
@@ -62,13 +62,14 @@ Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod
 Chd|        INTSTAMP_GLOB_MOD             share/modules/intstamp_glob_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
       SUBROUTINE LECTUR(ICODE   ,ISKEW ,ISKWN  ,IXTG   ,IXS   ,
      2                  IXQ     ,IXC   ,IXT    ,IXP    ,IXR   ,
      3                  ITAB    ,ITABM1,NPC    ,IPARG  ,IGRV  ,
-     4                  IBGR    ,IPARI ,LSENSOR,
+     4                  IBGR    ,IPARI ,
      5                  NPBY    ,LPBY  ,NNLINK ,LLINK  ,LINALE,
      6                  NEFLSW  ,NNFLSW,ICUT   ,INOISE ,
      7                  X       ,V     ,VR     ,MS     ,IN    ,
@@ -81,7 +82,8 @@ Chd|====================================================================
      E                  IPM     ,H3D_DATA, MULTI_FVM,FLAG_CST_AMS,
      F                  IGRPART ,TAG_SKINS6,ICFIELD,LCFIELD,TAGSLV_RBY,
      G                  IPART_DYNAIN,MDS_LABEL,MDS_OUTPUT_TABLE,MDS_NMAT,
-     H                  MAX_DEPVAR,MDS_NDEPSVAR,STACK,IBCL,ILOADP,LLOADP)
+     H                  MAX_DEPVAR,MDS_NDEPSVAR,STACK,IBCL,ILOADP,LLOADP,
+     I                  SENSOR_TAB)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -96,6 +98,7 @@ C-----------------------------------------------
       USE INTSTAMP_GLOB_MOD
       USE FVBAG_MOD
       USE CHECK_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -164,7 +167,7 @@ C-----------------------------------------------
      .   IXR(NIXR,*), IXTG(NIXTG,*),ITAB(*), ITABM1(*),
      .   ISKWN(LISKN,*), NPBY(NNPBY,*),NNLINK(*) ,LLINK(*) ,LINALE(*),
      .   ICODE(*) ,ISKEW(*),NPC(*),NEFLSW(*),NNFLSW(*),ICUT(*),
-     .   INOISE(*),IGRV(NIGRV,*),IBGR(*),LSENSOR(NSENSI,*),
+     .   INOISE(*),IGRV(NIGRV,*),IBGR(*),
      .   LPBY(*),KXSP(NISP,*),WEIGHT(*),FR_RBY2(*),
      .   FR_RL(NSPMD+2,*),
      .   IPART(*), MONVOL(*), IPART_STATE(*),IFRAME(LISKN,*),
@@ -186,6 +189,7 @@ C-----------------------------------------------
       TYPE(GROUP_)  ,DIMENSION(NGRPART) :: IGRPART
       CHARACTER MDS_LABEL(1024,MDS_NMAT)
       TYPE (STACK_PLY) :: STACK
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR), TARGET :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -716,7 +720,7 @@ C
        IF(ISPMD == 0) THEN
          WRITE(IOUT,*) ' ** WARNING ** : PARITH/ON IS NOT ',
      .                'COMPATIBLE WITH IMPLICIT OPTION '
-         WRITE(IOUT,*) ' ** RESETING **  : PARITH/OFF  '
+         WRITE(IOUT,*) ' ** RESETTING **  : PARITH/OFF  '
        ENDIF
       ENDIF
 C-------------------------------------------
@@ -730,7 +734,8 @@ c
         WRITE(IOUT,5000)H3D_DATA%TH3D,H3D_DATA%DTH3D
         WRITE(IOUT,*)'       |'
         DO I=1,H3D_DATA%N_OUTP_H3D
-          IF( H3D_DATA%OUTPUT_LIST(I)%ETYPE == 2 .AND. NUMELCG+NUMELTGG > 0 .OR.
+          IF( H3D_DATA%OUTPUT_LIST(I)%ETYPE == 1 .OR.
+     .        H3D_DATA%OUTPUT_LIST(I)%ETYPE == 2 .AND. NUMELCG+NUMELTGG > 0 .OR.
      .        H3D_DATA%OUTPUT_LIST(I)%ETYPE == 3 .AND. NUMELSG > 0 .OR.
      .        H3D_DATA%OUTPUT_LIST(I)%ETYPE == 4 .AND. NUMELTRG+NUMELPG+NUMELRG > 0 .OR.
      .        H3D_DATA%OUTPUT_LIST(I)%ETYPE == 5 .AND. NUMSPHG > 0 .OR.
@@ -875,9 +880,9 @@ C-----------------------
 C     The correct indexes in ANIM data structures wrt integration points or layers
 C     of all actual elements will be rebuilt ::
 C-----------------------
-      CALL ANIM_BUILD_INDEX_ALL(ISPMD   ,MCHECK ,LSENSOR ,IGEO    ,GEO    )
+      CALL ANIM_BUILD_INDEX_ALL(ISPMD   ,MCHECK ,SENSOR_TAB ,IGEO    ,GEO    )
 C-------------------------------------------
-C     STOP/LSENSOR
+C     STOP/SENSOR
 C-------------------------------------------
       IF(ISPMD == 0.AND.MCHECK == 0) THEN
        IF (NSTOPSENS /= 0) THEN
@@ -885,7 +890,7 @@ C-------------------------------------------
             IERR = 1
             IF(LSTOPSENS(K) /= 0) THEN
               DO I=1,NSENSOR
-               IF (LSENSOR(1,I)==LSTOPSENS(K)) THEN
+               IF (SENSOR_TAB(I)%SENS_ID == LSTOPSENS(K)) THEN
                  LSTOPSENS(K) = I
                  IERR = 0
                  EXIT
@@ -906,7 +911,7 @@ C-------------------------------------------
         ENDDO
       END IF                    !(ISPMD==0.AND.MCHECK==0)
 C-------------------------------------------
-C     STATE/LSENSOR
+C     STATE/SENSOR
 C-------------------------------------------
       IF(ISPMD == 0.AND.MCHECK == 0) THEN
        MSTATT = 0
@@ -915,7 +920,7 @@ C-------------------------------------------
             IERR = 1
             IF(LSTATSENS(K) /= 0) THEN
               DO I=1,NSENSOR
-               IF (LSENSOR(1,I)==LSTATSENS(K)) THEN
+               IF (SENSOR_TAB(I)%SENS_ID == LSTATSENS(K)) THEN
                  LSTATSENS(K) = I
                  IERR = 0
                  EXIT
@@ -938,7 +943,7 @@ C-------------------------------------------
         ENDDO
       END IF                    !(ISPMD==0.AND.MCHECK==0)
 C-------------------------------------------
-C     OUTP/LSENSOR
+C     OUTP/SENSOR
 C-------------------------------------------
       IF(ISPMD == 0.AND.MCHECK == 0) THEN
        IF (NOUTPSENS /= 0) THEN
@@ -946,7 +951,7 @@ C-------------------------------------------
             IERR = 1
             IF(LOUTPSENS(K) /= 0) THEN
               DO I=1,NSENSOR
-               IF (LSENSOR(1,I)==LOUTPSENS(K)) THEN
+               IF (SENSOR_TAB(I)%SENS_ID == LOUTPSENS(K)) THEN
                  LOUTPSENS(K) = I
                  IERR = 0
                  EXIT
@@ -967,14 +972,14 @@ C-------------------------------------------
          ENDDO
       END IF                    !(ISPMD==0.AND.MCHECK==0)
 C-------------------------------------------
-C     H3D/LSENSOR
+C     H3D/SENSOR
 C-------------------------------------------
       IF(ISPMD == 0.AND.MCHECK == 0) THEN
         DO K=1,H3D_DATA%N_SENS_H3D
          IOK = 0
           IF(H3D_DATA%LSENS_H3D(K) /= 0)THEN
            DO I=1,NSENSOR
-              IF(H3D_DATA%LSENS_H3D(K) == LSENSOR(1,I))THEN
+              IF(H3D_DATA%LSENS_H3D(K) == SENSOR_TAB(I)%SENS_ID)THEN
                 H3D_DATA%LSENS_H3D(K)=I
                IOK = 1
                EXIT
@@ -989,7 +994,7 @@ C-------------------------------------------
       ELSEIF(ISPMD == 0 .AND. MCHECK /= 0) THEN
       ENDIF                     !(ISPMD==0.AND.MCHECK==0)
 C-------------------------------------------
-C     STATE/LSENSOR
+C     STATE/SENSOR
 C-------------------------------------------
       IF(ISPMD == 0.AND.MCHECK == 0) THEN
        WRITE(IOUT,1150)DTIN,DTMX
@@ -1785,7 +1790,7 @@ C
       END IF
 
 C-------------------------------
-C     Outuput by interface :
+C     Output by interface :
 C        1 - Skid lines
 C-------------------------------
       IF(H3D_DATA%N_SCAL_SKID  > 0.AND.NINTSKIDOLD==0) THEN
@@ -2046,7 +2051,7 @@ C                      NALELK <- NALELK+NALELINK
       NALELK_removed=0
       K=6
 
-      !seting MAIN node user id to internal id
+      !setting MAIN node user id to internal id
       DO J=1,NALELK_starter
         IF(IRUN == 1 .AND. MCHECK == 0)
      .   CALL FR_RLALE(LINALE(K-4),LINALE(K-3),LINALE(K+1),ITABM1,-1)
@@ -2452,7 +2457,7 @@ C-------------------------------------------
          ITY = IPARG(5, NG)
          NEL = IPARG(2, NG)
          NFT = IPARG(3, NG)
-C     Initialy, IPARG(76, *) = 0 --> ON
+C     Initially, IPARG(76, *) = 0 --> ON
 C     When restarting a computation, IPARG(76, NG) = Whatever was put here during previous run
 C     Find part associated to the current group
 C     by checking the first element of the group
@@ -2991,7 +2996,7 @@ c    .  ' TIME INTERVAL FOR PATRAN-FILE PLOTS. . . . . . . ',G14.7//
      . 28X,' ALPHA : STABILITY FACTOR . . . . . . . . . . . . ',G14.7/
      . 28X,' GAMMA : NON LINEARITY FACTOR . . . . . . . . . . ',G14.7/
      . 28X,' BETA  : DAMPING COEFFICIENT. . . . . . . . . . . ',G14.7/
-     . 28X,' LC    : CARACTERISTIC LENGTH . . . . . . . . . . ',G14.7//)
+     . 28X,' LC    : CHARACTERISTIC LENGTH. . . . . . . . . . ',G14.7//)
  1300 FORMAT(
      .  ' NUMBER OF INTERFACES TO BE ELIMINATED. . . . . . ',I8//
      .  ' NUMBER OF SOLID  ELEMENT BLOCKS TO BE ELIMINATED ',I8//
@@ -3152,13 +3157,13 @@ C-----------------------------------------------
  2000 FORMAT(
      .  ' EULER BUCKLING ANALYSIS :'/)
  3000 FORMAT(
-     .  ' NUMBER OF MODES TO BE COMPUTED :. . . . . ',2X,I5/
-     .  ' SHIFT IN BUCKLING MODES PENCIL :. . . . . ',2X,G14.7/
-     .  ' MINMUM EIGENVALUE :. . . . . . . . . . .  ',2X,G14.7/
-     .  ' MAXMUM EIGENVALUE :. . . . . . . . . . .  ',2X,G14.7/
-     .  ' OUTPUT MESSAGE LEVEL:. . . . . . . . . . .',2X,I5/
-     .  ' NUMBER OF VECTORS IN BLOCK OR SET: . . . .',2X,I5/
-     .  ' LINEAR SOLVER : . . . . . . . . . . . . . ',2X,A/)
+     .  ' NUMBER OF MODES TO BE COMPUTED: . . . . . ',2X,I5/
+     .  ' SHIFT IN BUCKLING MODES PENCIL: . . . . . ',2X,G14.7/
+     .  ' MINIMUM EIGENVALUE: . . . . . . . . . . . ',2X,G14.7/
+     .  ' MAXIMUM EIGENVALUE: . . . . . . . . . . . ',2X,G14.7/
+     .  ' OUTPUT MESSAGE LEVEL: . . . . . . . . . . ',2X,I5/
+     .  ' NUMBER OF VECTORS IN BLOCK OR SET:  . . . ',2X,I5/
+     .  ' LINEAR SOLVER:  . . . . . . . . . . . . . ',2X,A/)
       END
 Chd|====================================================================
 Chd|  LECIMPL                       source/input/lectur.F         
@@ -3264,7 +3269,7 @@ C       IMPMV>0 isolv/=1 --> IMPMV=0
 
 #ifndef MUMPS5
        IF(ISOLV == 2 .AND. NSPMD > 1) THEN
-         WRITE(6,*) "Fatal error: MUMPS is required, but not avaiable"
+         WRITE(6,*) "Fatal error: MUMPS is required, but not available"
          CALL ARRET(5)
        ENDIF
 #endif
@@ -3295,11 +3300,11 @@ C  AUTO SELECT SOLVER
 
            WRITE(IOUT,*) ' ** WARNING ** : SOLVER AUTO SELECT IS NOT ',
      .                'COMPATIBLE WITH LINEAR RUN '
-           WRITE(IOUT,*) ' ** RESETING TO **  : DEFAULT ONE  '
+           WRITE(IOUT,*) ' ** RESETTING TO **  : DEFAULT ONE  '
 
            WRITE(ISTDO,*) ' ** WARNING ** : SOLVER AUTO SELECT IS NOT ',
      .                'COMPATIBLE WITH LINEAR RUN '
-           WRITE(ISTDO,*) ' ** RESETING TO **  : DEFAULT ONE  '
+           WRITE(ISTDO,*) ' ** RESETTING TO **  : DEFAULT ONE  '
 
            ISOLV = 0
 
@@ -3319,7 +3324,7 @@ C-------ISOLV=2 --> use MUMPS anyway
         IF(IPRINT==1) THEN
          WRITE(IOUT,*) ' ** WARNING ** : DIRECT SOLVER IS NOT ',
      .                'COMPATIBLE WITH IMPL/INTER/KNONL OPTION '
-         WRITE(IOUT,*) ' ** RESETING TO **  : MIXE ONE  '
+         WRITE(IOUT,*) ' ** RESETTING TO **  : MIXE ONE  '
         ENDIF
         ISOLV = ISOLV + 2
        ENDIF
@@ -3362,7 +3367,7 @@ C------case /IMPL/PROJV/n w/o /SOLV/9
         IF (ITOL > 4) THEN
          IF(IPRINT==1) THEN
          WRITE(IOUT,*) ' ** WARNING ** : WRONG LINEAR STOP ',
-     .                'CRITERION NUMBER, RESET TO DEFAUT ONE ** '
+     .                'CRITERION NUMBER, RESET TO DEFAULT ONE ** '
          ENDIF
          ITOL=3
         ENDIF
@@ -3386,7 +3391,7 @@ C--------MIX-----
         IF (ITOL > 4) THEN
          IF(IPRINT==1) THEN
          WRITE(IOUT,*) ' ** WARNING ** : WRONG LINEAR STOP ',
-     .                'CRITERION NUMBER, RESET TO DEFAUT ONE ** '
+     .                'CRITERION NUMBER, RESET TO DEFAULT ONE ** '
          ENDIF
          ITOL=3
         ENDIF
@@ -3400,7 +3405,7 @@ C--------MIX-----
        ELSE
          IF (ISPMD == 0)THEN
           WRITE(IOUT,*) ' ** WARNING ** : SOLVER NON AVAILABLE '
-          WRITE(IOUT,*) ' ** RESETING TO **  : DEFAUT ONE  '
+          WRITE(IOUT,*) ' ** RESETTING TO **  : DEFAULT ONE  '
          ENDIF
          ISOLV = 1
        ENDIF
@@ -3409,7 +3414,7 @@ C--------MIX-----
          IF (ISPMD == 0)THEN
          WRITE(IOUT,*) ' ** WARNING ** : ',
      .                'THIS PRECONDITION METHOD IS NO MORE SUPPORTED '
-         WRITE(IOUT,*) ' ** RESETING TO **  : DEFAUT ONE  '
+         WRITE(IOUT,*) ' ** RESETTING TO **  : DEFAULT ONE  '
          ENDIF
          IPREC = 5
         ENDIF
@@ -3468,7 +3473,7 @@ C--------nonlinear parametres-----
          IF(IPRINT==1) THEN
          WRITE(IOUT,*) ' ** WARNING ** : DYNAMIC IMPLICIT IS NOT ',
      .                'COMPATIBLE WITH IMPL/SPRBACK OPTION '
-         WRITE(IOUT,*) ' ** RESETING **  : STATIC ONE  '
+         WRITE(IOUT,*) ' ** RESETTING **  : STATIC ONE  '
          ENDIF
          IDYNA=0
         ENDIF
@@ -3489,7 +3494,7 @@ C--------nonlinear parametres-----
           IF(IPRINT==1) THEN
           WRITE(IOUT,*) ' ** WARNING ** : QUASI-SATIC IMPLICIT IS NOT ',
      .                'COMPATIBLE WITH DYNAMIC OPTION '
-          WRITE(IOUT,*) ' ** RESETING **  : DYNAMIC ONE  '
+          WRITE(IOUT,*) ' ** RESETTING **  : DYNAMIC ONE  '
           ENDIF
           IQSTAT=0
          END IF
@@ -3513,7 +3518,7 @@ C--------------Non linear solvers
         IF (INSOLV > 4)THEN
          IF(IPRINT==1) THEN
           WRITE(IOUT,*) ' ** WARNING ** : WRONG NONLINEAR SOLVER '
-          WRITE(IOUT,*) ' ** RESETING TO**  : DEFAULT ONE '
+          WRITE(IOUT,*) ' ** RESETTING TO**  : DEFAULT ONE '
          ENDIF
          INSOLV = 0
         ENDIF
@@ -3529,7 +3534,7 @@ C--------stop criteria-------
          IF (NITOL > 3) THEN
           IF(IPRINT==1) THEN
          WRITE(IOUT,*) ' ** WARNING ** : WRONG NONLINEAR STOP ',
-     .                'CRITERION NUMBER, RESET TO DEFAUT ONE ** '
+     .                'CRITERION NUMBER, RESET TO DEFAULT ONE ** '
           ENDIF
           NITOL=0
          ENDIF
@@ -3933,7 +3938,7 @@ C
      .  ' DESIRED CONVERGE ITERATION NUM. . . . . . .',2X,I5/
      .  ' MAXIMUM CONVERGE ITERATION NUM. . . . . . .',2X,I5/
      .  ' DECREASING TIME STEP SCALE FACTOR.  . . . .',2X,G14.7/
-     .  ' MAXINUM INCREASING TIME STEP SCALE FACTOR ',2X,G14.7/
+     .  ' MAXIMUM INCREASING TIME STEP SCALE FACTOR ',2X,G14.7/
      .  ' CONSTANT ARC-LENGTH. . . . . . .. . . . . ',2X,G14.7//)
  5400 FORMAT(
      .  ' TIME INTEGRATION WITH HHT-ALPHA CONSTANT  ',2X,G14.7//)
@@ -3984,7 +3989,7 @@ C
      .  ' DESIRED CONVERGE ITERATION NUM. . . . . . .',2X,I5/
      .  ' MAXIMUM CONVERGE ITERATION NUM. . . . . . .',2X,I5/
      .  ' DECREASING TIME STEP SCALE FACTOR.  . . . .',2X,G14.7/
-     .  ' MAXINUM INCREASING TIME STEP SCALE FACTOR ',2X,G14.7/
+     .  ' MAXIMUM INCREASING TIME STEP SCALE FACTOR ',2X,G14.7/
      .  ' CONSTANT ARC-LENGTH. . . . . . .. . . . . ',2X,G14.7/
      .  ' CONSTRAINT TYPE . . . .. . . . . . . . . . ',2X,I5/
      .  ' LOADING CONTRIBUTION SCALE FACTOR . . . . ',2X,G14.7//)

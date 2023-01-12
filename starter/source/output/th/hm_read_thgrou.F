@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_THGROU                source/output/th/hm_read_thgrou.F
 Chd|-- called by -----------
@@ -36,6 +36,7 @@ Chd|        HM_READ_THGRNE                source/output/th/hm_read_thgrne.F
 Chd|        HM_READ_THGRNS                source/output/th/hm_read_thgrns.F
 Chd|        HM_READ_THGRPA                source/output/th/hm_read_thgrpa.F
 Chd|        HM_READ_THGRPA_SUB            source/output/th/hm_read_thgrpa.F
+Chd|        HM_READ_THGRSENS              source/output/th/hm_read_thgrsens.F
 Chd|        HM_READ_THGRSURF              source/output/th/hm_read_thgrsurf.F
 Chd|        HM_THGRKI_VENT                source/output/th/hm_thgrki_vent.F
 Chd|        THPRIN                        source/output/th/thprin.F     
@@ -46,6 +47,7 @@ Chd|        HM_OPTION_READ_MOD            share/modules1/hm_option_read_mod.F
 Chd|        MAPPING_OPTION_MOD            share/modules1/dichotomy_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MONVOL_STRUCT_MOD             share/modules1/monvol_struct_mod.F
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
       SUBROUTINE HM_READ_THGROU(
@@ -62,7 +64,7 @@ Chd|====================================================================
      B      IGRSURF ,SUBSET ,ITHFLAG,NPBY,LSUBMODEL,IPARG,
      C      IPARTS  ,IPARTQ ,IPARTC ,IPARTT  ,IPARTP  ,IPARTR ,
      D      IPARTG  ,IPARTX ,IPARTSP ,IPARTIG3D, LITHBUFMX,
-     E      MAP_TABLES, IFLAG,PTR_NOPT_SLIPRING,PTR_NOPT_RETRACTOR)
+     E      MAP_TABLES, IFLAG,PTR_NOPT_SLIPRING,PTR_NOPT_RETRACTOR,SENSOR_TAB)
 C-----------------------------------------------
       USE MESSAGE_MOD
       USE GROUPDEF_MOD
@@ -70,6 +72,7 @@ C-----------------------------------------------
       USE SUBMODEL_MOD
       USE HM_OPTION_READ_MOD
       USE MAPPING_OPTION_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -116,8 +119,9 @@ C-----------------------------------------------
      .        IPARTT(NUMELT),IPARTP(NUMELP),IPARTR(NUMELR),IPARTG(NUMELTG),
      .        IPARTX(NUMELX),IPARTSP(NUMSPH),IPARTIG3D(NUMELIG3D)
       TYPE(MONVOL_STRUCT_), DIMENSION(NVOLU), INTENT(IN) :: T_MONVOL
-      TYPE(SUBMODEL_DATA) LSUBMODEL(*)
-      TYPE(MAPPING_STRUCT_), INTENT(IN) :: MAP_TABLES
+      TYPE (SUBMODEL_DATA) ,DIMENSION(NSUBMOD) ,INTENT(IN) :: LSUBMODEL
+      TYPE(MAPPING_STRUCT_),INTENT(IN) :: MAP_TABLES
+      TYPE (SENSOR_STR_)   ,DIMENSION(NSENSOR) ,INTENT(IN) :: SENSOR_TAB
 C-----------------------------------------------
       TYPE (SUBSET_) , DIMENSION(NSUBS) :: SUBSET
       TYPE (SURF_)   , DIMENSION(NSURF) :: IGRSURF
@@ -134,7 +138,7 @@ C
       INTEGER NVARN,NVARS,NVARC,NVART,NVARP,NVARR,NVARUR
       INTEGER NVARNS,NVARSPH
       INTEGER NVARIN,NVARRW,NVARRB,NVARAC,NVARSE,NVARJO,NVARFX,NVARFXM
-      INTEGER NVARAB,NVARMV4,NVARMV,NVARPA,NVARMVENT
+      INTEGER NVARAB,NVARMV4,NVARMV,NVARPA,NVARMVENT,NVARSENS,NVARSENSG
       INTEGER NVARF1,NVARFR,NVARGAU,NVARCLUS,NVARCLUSG,NVARFLOW,NVARSURF
       INTEGER NVARRIV,NVARRIVG,NVARSLIP,NVARRET,NSELRT,INOUT
       INTEGER HM_NTHGRP,NTHACCEL,NTHINTER,NTHRWALL,NTHSECTIO,NTHCLUS
@@ -142,13 +146,13 @@ C
       INTEGER NTHMONVOL,HM_NTHPART ,NUMTHPART, HM_NTHSUBS, HM_NTHSURF
       INTEGER HM_NTHSPHCEL, HM_NTHQUAD, HM_NTHSPHFLOW
       INTEGER HM_NTHGAUGE, HM_NTHFXBODY, HM_NTHFRAME, HM_NTHCYLJO, HM_NTHNSTRAND   
-      INTEGER HM_NTHTRIA,HM_NTHSLIPRING,HM_NTHRETRACTOR
+      INTEGER HM_NTHTRIA,HM_NTHSLIPRING,HM_NTHRETRACTOR,HM_NTHSENS
       PARAMETER (NVARRIV = 10,NVARRIVG = 1)
       INTEGER IVARRIV(18,NVARRIVG)
       CHARACTER*10 VARRIV(NVARRIV),VARRIVG(NVARRIVG)
 C-----------------------------------------------
       PARAMETER (NVARN = 637,NVARS =239554 ,NVARC = 37856,NVART = 6)
-      PARAMETER (NVARP = 8,NVARR = 65,NVARUR = 12)
+      PARAMETER (NVARP = 336,NVARR = 65,NVARUR = 12)
       PARAMETER (NVARNS = 4,NVARSPH = 41)
       PARAMETER (NVARIN = 28,NVARRW = 6,NVARRB =15,NVARFX =4)
       PARAMETER (NVARFXM = 3)
@@ -190,6 +194,7 @@ C-----------------------------------------------
       PARAMETER (NVARPAG = 1)
       PARAMETER (NVARF1G = 3,NVARFRG = 4,NVARGAUG = 1,NVARCLUSG=2,NVARFLOWG=1,
      .           NVARSURFG = 1,NVARSLIPG=1,NVARRETG = 1)
+      PARAMETER (NVARSENS = 1,NVARSENSG = 1)
       CHARACTER*10 VARNG(NVARNG),VARSG(NVARSG)
       CHARACTER*10 VARCG(NVARCG),VARTG(NVARTG)
       CHARACTER*10 VARPG(NVARPG),VARRG(NVARRG),VARURG(NVARURG)
@@ -197,7 +202,7 @@ C-----------------------------------------------
       CHARACTER*10 VARING(NVARING),VARRWG(NVARRWG),VARRBG(NVARRBG)
       CHARACTER*10 VARACG(NVARACG),VARSEG(NVARSEG),VARJOG(NVARJOG)
       CHARACTER*10 VARABG(NVARABG),VARMVG4(NVARMG4),VARMVG(NVARMVG),
-     .             VARMVENTG(NVARMVENTG)
+     .             VARMVENTG(NVARMVENTG),VARSENS(NVARSENS),VARSENSG(NVARSENSG)
       CHARACTER*10 VARPAG(NVARPAG),VARFXG(NVARFXG),VARFXMG(NVARFXMG)
       CHARACTER*10 VARF1G(NVARF1G),VARFRG(NVARFRG),VARGAUG(NVARGAUG)
       CHARACTER*10 VARCLUSG(NVARCLUSG),VARFLOWG(NVARFLOWG)
@@ -212,7 +217,7 @@ C-----------------------------------------------
       INTEGER IVARSEG(18,NVARSEG),IVARJOG(18,NVARJOG)
       INTEGER IVARABG(18,NVARABG),IVARMG4(18,NVARMG4),
      .        IVARMVG(18,NVARMVG),IVARMVENTG(18,NVARMVENTG)
-      INTEGER IVARPAG(18,NVARPAG),IVARFXG(18,NVARFXG)
+      INTEGER IVARPAG(18,NVARPAG),IVARFXG(18,NVARFXG),IVARSENSG(18,NVARSENSG)
       INTEGER IVARFXMG(18,NVARFXMG)
       INTEGER IVARF1G(18,NVARF1G),IVARFRG(18,NVARFRG),
      .        IVARGAUG(18,NVARGAUG),IVARCLUSG(18,NVARCLUSG),
@@ -897,7 +902,73 @@ C   trusses
 C   beams
       DATA VARP/
      . 'OFF     ','F1      ','F2      ','F3      ','M1      ',
-     . 'M2      ','M3      ','IE      '/
+     . 'M2      ','M3      ','IE      ','SX      ','SXY     ',
+     . 'SZX     ','SX_1    ','SXY_1   ','SZX_1   ','SX_2    ',
+     . 'SXY_2   ','SZX_2   ','SX_3    ','SXY_3   ','SZX_3   ',
+     . 'SX_4    ','SXY_4   ','SZX_4   ','SX_5    ','SXY_5   ',
+     . 'SZX_5   ','SX_6    ','SXY_6   ','SZX_6   ','SX_7    ',
+     . 'SXY_7   ','SZX_7   ','SX_8    ','SXY_8   ','SZX_8   ',
+     . 'SX_9    ','SXY_9   ','SZX_9   ','SX_10   ','SXY_10  ',
+     . 'SZX_10  ','SX_11   ','SXY_11  ','SZX_11  ','SX_12   ',
+     . 'SXY_12  ','SZX_12  ','SX_13   ','SXY_13  ','SZX_13  ',
+     . 'SX_14   ','SXY_14  ','SZX_14  ','SX_15   ','SXY_15  ',
+     . 'SZX_15  ','SX_16   ','SXY_16  ','SZX_16  ','SX_17   ',
+     . 'SXY_17  ','SZX_17  ','SX_18   ','SXY_18  ','SZX_18  ',
+     . 'SX_19   ','SXY_19  ','SZX_19  ','SX_20   ','SXY_20  ',
+     . 'SZX_20  ','SX_21   ','SXY_21  ','SZX_21  ','SX_22   ',
+     . 'SXY_22  ','SZX_22  ','SX_23   ','SXY_23  ','SZX_23  ',
+     . 'SX_24   ','SXY_24  ','SZX_24  ','SX_25   ','SXY_25  ',
+     . 'SZX_25  ','SX_26   ','SXY_26  ','SZX_26  ','SX_27   ',
+     . 'SXY_27  ','SZX_27  ','SX_28   ','SXY_28  ','SZX_28  ',
+     . 'SX_29   ','SXY_29  ','SZX_29  ','SX_30   ','SXY_30  ',
+     . 'SZX_30  ','SX_31   ','SXY_31  ','SZX_31  ','SX_32   ',
+     . 'SXY_32  ','SZX_32  ','SX_33   ','SXY_33  ','SZX_33  ',
+     . 'SX_34   ','SXY_34  ','SZX_34  ','SX_35   ','SXY_35  ',
+     . 'SZX_35  ','SX_36   ','SXY_36  ','SZX_36  ','SX_37   ',
+     . 'SXY_37  ','SZX_37  ','SX_38   ','SXY_38  ','SZX_38  ',
+     . 'SX_39   ','SXY_39  ','SZX_39  ','SX_40   ','SXY_40  ',
+     . 'SZX_40  ','SX_41   ','SXY_41  ','SZX_41  ','SX_42   ',
+     . 'SXY_42  ','SZX_42  ','SX_43   ','SXY_43  ','SZX_43  ',
+     . 'SX_44   ','SXY_44  ','SZX_44  ','SX_45   ','SXY_45  ',
+     . 'SZX_45  ','SX_46   ','SXY_46  ','SZX_46  ','SX_47   ',
+     . 'SXY_47  ','SZX_47  ','SX_48   ','SXY_48  ','SZX_48  ',
+     . 'SX_49   ','SXY_49  ','SZX_49  ','SX_50   ','SXY_50  ',
+     . 'SZX_50  ','SX_51   ','SXY_51  ','SZX_51  ','SX_52   ',
+     . 'SXY_52  ','SZX_52  ','SX_53   ','SXY_53  ','SZX_53  ',
+     . 'SX_54   ','SXY_54  ','SZX_54  ','SX_55   ','SXY_55  ',
+     . 'SZX_55  ','SX_56   ','SXY_56  ','SZX_56  ','SX_57   ',
+     . 'SXY_57  ','SZX_57  ','SX_58   ','SXY_58  ','SZX_58  ',
+     . 'SX_59   ','SXY_59  ','SZX_59  ','SX_60   ','SXY_60  ',
+     . 'SZX_60  ','SX_61   ','SXY_61  ','SZX_61  ','SX_62   ',
+     . 'SXY_62  ','SZX_62  ','SX_63   ','SXY_63  ','SZX_63  ',
+     . 'SX_64   ','SXY_64  ','SZX_64  ','SX_65   ','SXY_65  ',
+     . 'SZX_65  ','SX_66   ','SXY_66  ','SZX_66  ','SX_67   ',
+     . 'SXY_67  ','SZX_67  ','SX_68   ','SXY_68  ','SZX_68  ',
+     . 'SX_69   ','SXY_69  ','SZX_69  ','SX_70   ','SXY_70  ',
+     . 'SZX_70  ','SX_71   ','SXY_71  ','SZX_71  ','SX_72   ',
+     . 'SXY_72  ','SZX_72  ','SX_73   ','SXY_73  ','SZX_73  ',
+     . 'SX_74   ','SXY_74  ','SZX_74  ','SX_75   ','SXY_75  ',
+     . 'SZX_75  ','SX_76   ','SXY_76  ','SZX_76  ','SX_77   ',
+     . 'SXY_77  ','SZX_77  ','SX_78   ','SXY_78  ','SZX_78  ',
+     . 'SX_79   ','SXY_79  ','SZX_79  ','SX_80   ','SXY_80  ',
+     . 'SZX_80  ','SX_81   ','SXY_81  ','SZX_81  ','EPSP    ',
+     . 'EPSP_1  ','EPSP_2  ','EPSP_3  ','EPSP_4  ','EPSP_5  ',
+     . 'EPSP_6  ','EPSP_7  ','EPSP_8  ','EPSP_9  ','EPSP_10 ',
+     . 'EPSP_11 ','EPSP_12 ','EPSP_13 ','EPSP_14 ','EPSP_15 ',
+     . 'EPSP_16 ','EPSP_17 ','EPSP_18 ','EPSP_19 ','EPSP_20 ',
+     . 'EPSP_21 ','EPSP_22 ','EPSP_23 ','EPSP_24 ','EPSP_25 ',
+     . 'EPSP_26 ','EPSP_27 ','EPSP_28 ','EPSP_29 ','EPSP_30 ',
+     . 'EPSP_31 ','EPSP_32 ','EPSP_33 ','EPSP_34 ','EPSP_35 ',
+     . 'EPSP_36 ','EPSP_37 ','EPSP_38 ','EPSP_39 ','EPSP_40 ',
+     . 'EPSP_41 ','EPSP_42 ','EPSP_43 ','EPSP_44 ','EPSP_45 ',
+     . 'EPSP_46 ','EPSP_47 ','EPSP_48 ','EPSP_49 ','EPSP_50 ',
+     . 'EPSP_51 ','EPSP_52 ','EPSP_53 ','EPSP_54 ','EPSP_55 ',
+     . 'EPSP_56 ','EPSP_57 ','EPSP_58 ','EPSP_59 ','EPSP_60 ',
+     . 'EPSP_61 ','EPSP_62 ','EPSP_63 ','EPSP_64 ','EPSP_65 ',
+     . 'EPSP_66 ','EPSP_67 ','EPSP_68 ','EPSP_69 ','EPSP_70 ',
+     . 'EPSP_71 ','EPSP_72 ','EPSP_73 ','EPSP_74 ','EPSP_75 ',
+     . 'EPSP_76 ','EPSP_77 ','EPSP_78 ','EPSP_79 ','EPSP_80 ',
+     . 'EPSP_81 '/
 C   springs
       DATA VARR/
      . 'OFF     ','FX      ','FY      ','FZ      ','MX      ',
@@ -1059,6 +1130,9 @@ C
 C
       DATA VARRET/
      . 'SLIP','FN      ','LOCK    '/
+c
+      DATA VARSENS/
+     . 'STATUS   '/
 C-----------------------------------------------
 C   TH GENERIC VARIABLES
 C-----------------------------------------------
@@ -1569,6 +1643,10 @@ C   frames
       DATA VARRETG/'DEF     '/
       DATA IVARRETG
      .         / 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0/
+      DATA VARSENSG/
+     . 'DEF      '/
+      DATA IVARSENSG
+     .         / 1, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0/
 C=======================================================================
       TAGP=0
       TAGS=0
@@ -1809,7 +1887,7 @@ C  DAM3ILYKK ( KK=001,200)
 C  DAM4ILYKK ( KK=001,200)
 C  EINTILKK
         DO KK = 1, 199
-C  3 stresss + 3 strain  + 3 average stress + 3 average strain + 4 max damage 
+C  3 stress + 3 strain + 3 average stress + 3 average strain + 4 max damage 
 C   + EINT          
           II = 30882 + (KK -1)*(6*4 + 11)
           DO J = 1,4
@@ -2215,7 +2293,7 @@ C
           IGS = IGS+1
           CALL FRETITL(TITR,ITHGRP(NITHGR-LTITR+1,IGS),LTITR)
           ITHGRP(1,IGS) = ID
-          NVALL = 8
+          NVALL = 11
           ITYP  = 5
           KEY   = 'BEAM      ' 
           CALL HM_READ_THGRNE(
@@ -2864,6 +2942,31 @@ C             error message if type of inout is not correct
      3      NVARRET  ,VARRET   ,NRETRACTOR  ,VARRETG,NVARRETG  ,
      4      IVARRETG ,NSNE     ,NVALL ,ITHVAR ,FLAGABF ,NVARABF ,
      5      NOM_OPT  ,IGS      ,LSUBMODEL, LITHBUFMX)
+          IF(IGS/=0) NTHWA=MAX(NTHWA,ITHGRP(4,IGS)*ITHGRP(6,IGS))    
+        ENDDO
+      ENDIF
+      !-------------------------------------------
+      ! /TH/SENSOR
+      !-------------------------------------------
+      CALL HM_OPTION_COUNT(TRIM(THFILE)//'/SENSOR' ,HM_NTHSENS  )  
+      IF (HM_NTHSENS > 0) THEN 
+        CALL HM_OPTION_START(TRIM(THFILE)//'/SENSOR')
+        HM_NTHGRP = HM_NTHGRP + HM_NTHSENS
+        DO I = 1, HM_NTHSENS
+          TITR = ''   
+          CALL HM_OPTION_READ_KEY(LSUBMODEL, OPTION_ID=ID, OPTION_TITR=TITR)   
+          IGS = IGS+1
+          CALL FRETITL(TITR,ITHGRP(NITHGR-LTITR+1,IGS),LTITR)
+          ITHGRP(1,IGS) = ID
+          NVALL = 1
+          ITYP  = 120
+          KEY   = 'SENSOR    ' 
+          CALL HM_READ_THGRSENS(SENSOR_TAB,
+     .      ITYP     ,KEY      ,IGS      ,LITHBUFMX ,ITHBUF    ,
+     .      IAD      ,IFI      ,ITHGRP(1,IGS),ITHVAR,NVALL     ,
+     .      NVARSENS ,NVARSENSG,VARSENS  ,VARSENSG  ,IVARSENSG ,
+     .      NSNE     ,NVARABF   ,LSUBMODEL )
+c
           IF(IGS/=0) NTHWA=MAX(NTHWA,ITHGRP(4,IGS)*ITHGRP(6,IGS))    
         ENDDO
       ENDIF

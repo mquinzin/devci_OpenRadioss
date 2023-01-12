@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_OPTION_READ_KEY            source/devtools/hm_reader/hm_option_read_key.F
 Chd|-- called by -----------
@@ -372,37 +372,9 @@ C      ID OFFSETS EXCEPTION //SUBMODEL
 C--------------------------------------------------
       SET_COLLECT_OFFSET = .TRUE.
       IF(KEYWORD(1:12) == '/SET/COLLECT') SET_COLLECT_OFFSET = .FALSE.
-C--------------------------------------------------
-C      ID OFFSETS FOR //SUBMODEL 
-C--------------------------------------------------
-      IF(PRESENT(OPTION_ID) .AND. SET_COLLECT_OFFSET) THEN
-        IF(TMP_SUBMODEL_INDEX /= 0 .AND. TMP_OPTION_ID /= 0)THEN
-          IF(OFFSET_CATEGORY == 1)THEN
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_EL
-          ELSEIF(OFFSET_CATEGORY == 2)THEN
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_NOD
-          ELSEIF(OFFSET_CATEGORY == 3)THEN
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_PART
-          ELSEIF(OFFSET_CATEGORY == 4)THEN
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_MAT
-          ELSEIF(OFFSET_CATEGORY == 5)THEN
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_PROP
-          ELSEIF(OFFSET_CATEGORY == 6)THEN
-c a prendre en compte qd dispo
-c            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_SUBMOD
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_DEF
-          ELSEIF(OFFSET_CATEGORY == 7)THEN
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_DEF
-          ELSE
-            OPTION_ID = TMP_OPTION_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_DEF
-          ENDIF
-        ENDIF
-      ENDIF
 C
       IF(PRESENT(UNIT_ID)) THEN
-        IF(TMP_SUBMODEL_INDEX /= 0 .AND. TMP_UNIT_ID /= 0)THEN
-          UNIT_ID = TMP_UNIT_ID + LSUBMODEL(TMP_SUBMODEL_INDEX)%OFF_DEF
-        ELSEIF(TMP_SUBMODEL_INDEX /= 0 )THEN
+        IF(TMP_SUBMODEL_INDEX /= 0 )THEN
           IF(LSUBMODEL(TMP_SUBMODEL_INDEX)%UID /= 0)THEN
             UNIT_ID = LSUBMODEL(TMP_SUBMODEL_INDEX)%UID
           ENDIF

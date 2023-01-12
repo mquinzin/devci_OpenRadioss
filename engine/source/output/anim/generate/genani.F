@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  GENANI_MOD                    source/output/anim/generate/genani.F
 Chd|-- called by -----------
@@ -249,7 +249,7 @@ C-----------------------------------------------
       USE CRACKXFEM_MOD
       USE CLUSTER_MOD
       USE STACK_MOD
-      USE ALEANIM_MOD  !, ONLY : FANI_CELL
+      USE ALEANIM_MOD                 
       USE H3D_MOD
       USE GROUPDEF_MOD
       USE MULTI_FVM_MOD 
@@ -937,7 +937,7 @@ C-----------------------------------------------
           CALL CUTCNT (ICUT,XCUT,IXS,X,D,LENCUT)
           LENCUT = MAX(LENCUT,NCUTS)
           IF(LENCUT>LENCUTO)THEN
-            IF(LENCUTO>0)THEN
+            IF(ALLOCATED(CBUF))THEN
               DEALLOCATE(CBUF)
               DEALLOCATE(ICBUF)
             ENDIF
@@ -1107,7 +1107,7 @@ C
         IF (IFLAG1D/=0) IFLAG1D = 1
         CALL WRITE_I_C(IFLAG1D,1)
 
-C HIERARCHIE
+C HIERARCHY
         CALL WRITE_I_C(1,1)
 C TH
         CALL WRITE_I_C(0,1)
@@ -2034,7 +2034,7 @@ C-----------------------------------------------
         IF(ANIM_CE(2153)==1) CALL ANI_TXT('FVMBAG - Gama',13)
         IF(ANIM_CE(2154)==1)
      .     CALL ANI_TXT('FVMBAG - Visu Polyhedra',23)
-        IF(ANIM_CE(2155)==1) CALL ANI_TXT('%Thinning',9)
+        IF(ANIM_CE(2155)==1) CALL ANI_TXT('Thinning Percentage',19)
         IF(ANIM_CE(2156)==1)
      .    CALL ANI_TXT('Estimated Error on Thickness',28)
          DO I=2240,10139
@@ -2354,7 +2354,7 @@ C
 !!!
         IDX = 13245 + 4*MX_PLY_ANIM
         IF(ANIM_CE(IDX + 1)==1) CALL ANI_TXT('Plastic Work Upper',18)
-        IF(ANIM_CE(IDX + 1)==1) CALL ANI_TXT('Plastic Work Lower',18)
+        IF(ANIM_CE(IDX + 2)==1) CALL ANI_TXT('Plastic Work Lower',18)
         IDX = 13247 + 4*MX_PLY_ANIM
         DO I=1,100
            IF(ANIM_CE(IDX + I)==1)THEN
@@ -2468,8 +2468,63 @@ C all NPTT for PID51
           ENDIF
         ENDDO 
 
+C----------------------------------------------------------------------
+C   Tsai-Wu criterion output for composites
+C----------------------------------------------------------------------
+!/ANIM/ELEM/TSAIWU
+        IDX = 14595 + 4*MX_PLY_ANIM 
+        IF(ANIM_CE(IDX    )==1) CALL ANI_TXT('Tsai-Wu Criterion'  ,17)
+        IF(ANIM_CE(IDX + 1)==1) CALL ANI_TXT('Tsai-Wu Crit. Upper',19)
+        IF(ANIM_CE(IDX + 2)==1) CALL ANI_TXT('Tsai-Wu Crit. Lower',19)
+        DO I=1,100
+          IF(ANIM_CE(IDX + 2 + I)==1)THEN
+            IUS = I
+            IF(IUS==0) IUS = 100
+            WRITE(MES,'(A,I3,A)')
+     .       'Tsai-Wu Crit. Layer ',IUS, ' '
+            CALL ANI_TXT(MES,24)
+          END IF
+        END DO
+c
+C  upper for PID51
+        IDX = 14697 + 4*MX_PLY_ANIM
+        DO I=1,100
+           IF (ANIM_CE(IDX + I) == 1) THEN
+             IUS = I
+             IF(IUS==0) IUS = 100
+             WRITE(MES,'(A,I3,A)')
+     .       'Tsai-Wu Crit. Upper Layer',IUS, ' '
+               CALL ANI_TXT(MES,29)
+            END IF
+        END DO
+C  lower for PID51
+        IDX = 14797 + 4*MX_PLY_ANIM
+        DO I=1,100
+           IF (ANIM_CE(IDX + I) == 1) THEN
+             IUS = I
+             IF(IUS==0) IUS = 100
+             WRITE(MES,'(A,I3,A)')
+     .       'Tsai-Wu Crit. Lower Layer',IUS, ' '
+               CALL ANI_TXT(MES,29)
+            END IF
+        END DO
+C all NPTT for PID51
+        IDX = 14897 + 4*MX_PLY_ANIM
+        DO I=1,100
+          DO J=1,10
+            IUS = 10*(I-1)+J
+            IF (ANIM_CE(IDX + IUS) == 1) THEN
+              ILAY = I
+              IPT  = J
+              WRITE(MES,'(A,I4,I3,A)')
+     .        'Tsai-Wu Crit. Lay/IPT ',ILAY,IPT, ' '
+              CALL ANI_TXT(MES,30)
+            END IF
+          ENDDO
+        ENDDO 
+
         !---NEXT ANIM
-        !IDX=IDX+1   ! => IDX = 4*MX_PLY_ANIM + 14595
+        !IDX=IDX+1   ! => IDX = 4*MX_PLY_ANIM + 15898
   
        ENDIF !  (NBF+NELCUT+NESBW2/=0)
 !
@@ -3262,12 +3317,15 @@ C-----------------------------------------------
         IF(ANIM_V(18)==1) CALL ANI_TXT('Reaction Moments',16)
         IF(ANIM_V(19)==1) CALL ANI_TXT('Cluster Forces',16)
         IF(ANIM_V(20)==1) CALL ANI_TXT('Cluster Moments',16)
-        IF(ANIM_V(21)==1) CALL ANI_TXT('inter22 - Centroid Velocity',27)       !inter22  
-        IF(ANIM_V(22)==1) CALL ANI_TXT('inter22 - Faces Velocity',24)          !inter22                
-        IF(ANIM_V(23)==1) CALL ANI_TXT('inter22 - Centroid Momentum Density',35)        !inter22         
-        IF(ANIM_V(24)==1) CALL ANI_TXT('inter22 - Faces Pressure Froces',31) !inter22                 
-        IF(ANIM_V(25)==1) CALL ANI_TXT('inter22 - Centroid Internal Force',33) !inter22  
-        IF(ANIM_V(26)==1) CALL ANI_TXT('Maximum Contact Forces Over Time',32)   
+        IF(ANIM_V(21)==1) CALL ANI_TXT('inter22 - Centroid Velocity',27)          !inter22
+        IF(ANIM_V(22)==1) CALL ANI_TXT('inter22 - Faces Velocity',24)             !inter22
+        IF(ANIM_V(23)==1) 
+     .  CALL ANI_TXT('inter22 - Centroid Momentum Density',35)  !inter22
+        IF(ANIM_V(24)==1) CALL ANI_TXT('inter22 - Faces Pressure Forces',31)      !inter22
+        IF(ANIM_V(25)==1) 
+     . CALL ANI_TXT('inter22 - Centroid Internal Force',33)    !inter22
+        IF(ANIM_V(26)==1)
+     . CALL ANI_TXT('Maximum Contact Forces Over Time',32)
         IF(ANIM_V(27)==1) THEN
           CALL ANI_TXT('Tied Contact Pressure / Normal',30)
           CALL ANI_TXT('Tied Contact Pressure / Tangent',31)
@@ -3276,12 +3334,16 @@ C-----------------------------------------------
 C-----------------------------------------------
 C    VECT
 C-----------------------------------------------
-c        NNNSRG=NNSRG+NNSMD+NNSPH+2*NUMELS16
-        NNNSRG=NNSRG+NNSMD+NNSPHG+2*NUMELS16G
-      IF(ANIM_V(1)==1)
-     . CALL VELVEC(V,V_TEMP,ICBUF(MIC2),CBUF(MAC2),NODCUT,NNWL,
+      NNNSRG=NNSRG+NNSMD+NNSPHG+2*NUMELS16G
+C     IF(NCUTS == 0) THEN
+        IF(.NOT. ALLOCATED(ICBUF)) ALLOCATE(ICBUF(1)) 
+        IF(.NOT. ALLOCATED(CBUF)) ALLOCATE(CBUF(1))
+C     ENDIF
+      IF(ANIM_V(1)==1) THEN
+       CALL VELVEC(V,V_TEMP,ICBUF(MIC2),CBUF(MAC2),NODCUT,NNWL,
      .       NNNSRG,NODGLOB,WEIGHT,NFVNOD,1,
      .       NFNOD_PXFEM,NOD_PXFEM,INDX_PLY,NFNOD_CRKXFEMG,ITAB)
+      ENDIF
       IF(ANIM_V(2)==1)
      . CALL VELVEC(D,D_TEMP,ICBUF(MIC2),CBUF(MAC2),NODCUT,NNWL,
      .       NNNSRG,NODGLOB,WEIGHT,NFVNOD,2,
@@ -3301,7 +3363,6 @@ c        NNNSRG=NNSRG+NNSMD+NNSPH+2*NUMELS16
      .       FCONTG,NFNOD_CRKXFEMG)
        END IF
       END IF
-
       IF(ANIM_V(5)==1)
      . CALL VELVEC(FINT,FINT_TEMP,ICBUF(MIC2),CBUF(MAC2),NODCUT,NNWL,
      .       NNNSRG,NODGLOB,WEIGHT,NFVNOD,5,
@@ -3490,7 +3551,7 @@ c       interface 22, centroid rho.vel
       ENDIF 
       
       IF (ANIM_V(24) == 1) THEN
-c       interface 22 / internal froces
+c       interface 22 / internal forces
         CALL VELVECZ22(ELBUF_TAB,IPARG ,IPARI ,IGRNOD ,   X,
      .                 IXS      ,IXQ   ,ITAB  ,2      )
       ENDIF    
@@ -4025,7 +4086,7 @@ C
          DEALLOCATE(FVEL2FA, FVINUM)
       ENDIF
 C-----------------------------------------------
-C   HIERARCHIE
+C   HIERARCHY
 C-----------------------------------------------
        IF (NFVPART>0) THEN
           IF (ISPMD==0) ALLOCATE(FVPBUF(NFVPART))
@@ -4366,7 +4427,7 @@ C-----------------------------------------------
        IF(ANIM_SE(282)==1) CALL ANI_TXT('Failed layers',13)
        !-------------------------------------------------------------!
        !283 to 286 : VOLUMETRIC FRACTION FOR ALE MULTIMATERIAL LAWS
-       !  radioss2.F: check consistancy with engine keyword and occurence material law. ANIM_SE(.) flag is enabled only if consistent
+       !  radioss2.F: check consistency with engine keyword and occurrence material law. ANIM_SE(.) flag is enabled only if consistent
        !  dfunc6.F : corresponding value (in MBUF%VAR) is stored in this function according material law number
        IF(ANIM_SE(283)==1) CALL ANI_TXT('Volumetric Fraction 1',21)        !law51 & law37 & law20
        IF(ANIM_SE(284)==1) CALL ANI_TXT('Volumetric Fraction 2',21)        !law37 & law37 & law20
@@ -4513,11 +4574,11 @@ C-----------------------------------------------
         IF(ANIM_SE(4951)==1)CALL ANI_TXT('Velocity ABS',12) 
         
         IF(ANIM_SE(4952)==1)CALL ANI_TXT('Internal Force X  ',18)
-        IF(ANIM_SE(4953)==1)CALL ANI_TXT('Internal Froce Y  ',18)
+        IF(ANIM_SE(4953)==1)CALL ANI_TXT('Internal Force Y  ',18)
         IF(ANIM_SE(4954)==1)CALL ANI_TXT('Internal Force Z  ',18)
         IF(ANIM_SE(4955)==1)CALL ANI_TXT('Internal Force XY ',18)
-        IF(ANIM_SE(4956)==1)CALL ANI_TXT('Internal Froce YZ ',18)
-        IF(ANIM_SE(4957)==1)CALL ANI_TXT('Internal Force XY ',18)                                             
+        IF(ANIM_SE(4956)==1)CALL ANI_TXT('Internal Force YZ ',18)
+        IF(ANIM_SE(4957)==1)CALL ANI_TXT('Internal Force XY ',18)
         IF(ANIM_SE(4958)==1)CALL ANI_TXT('Internal Force ABS',18)
 C
         IF(ANIM_SE(4959)==1)CALL ANI_TXT('AMS selection',13)         
@@ -4534,6 +4595,14 @@ C
         IF(ANIM_SE(4968)==1)CALL ANI_TXT('Damage',6)
         IF(ANIM_SE(4969)==1)CALL ANI_TXT('Non-local plastic strain',24)
         IF(ANIM_SE(4970)==1)CALL ANI_TXT('Non-local plastic strain rate',29)
+        IF(ANIM_SE(4971)==1)CALL ANI_TXT('Tsai-Wu Criterion',17) 
+        DO I=1,200
+          IF(ANIM_SE(4971+I)==1)THEN
+            WRITE(MES,'(A,I3)')
+     .         'Tsai-Wu Crit. layer',I
+            CALL ANI_TXT(MES,22)
+          ENDIF
+        ENDDO
 C-----------------------------------------------                                         
       ENDIF !(ISPMD==0)
 
@@ -4663,7 +4732,7 @@ C-----------------------------------------------
      .                   DD_IAD,IAD ,NBPART,IADG ,KXSP ,
      .             ISPH3D )
 C-----------------------------------------------
-C   HIERARCHIE
+C   HIERARCHY
 C-----------------------------------------------
        IF (ISPMD==0) THEN
          DO I=1,NPART
@@ -5156,7 +5225,7 @@ C-----------------------------------------------
          ENDDO
       ENDIF
 C-----------------------------------------------
-C   HIERARCHIE
+C   HIERARCHY
 C-----------------------------------------------
       IF (ISPMD==0) THEN
        DO I=1,NPART
@@ -5191,7 +5260,7 @@ C=======================================================================
  600  CONTINUE
 C=======================================================================
 C
-C   HIERARCHIE
+C   HIERARCHY
 C
 C=======================================================================
       IF (ISPMD==0) THEN
@@ -6414,7 +6483,7 @@ C-----------------------------------------------
        CALL DELNUMB0(IPARG ,EL2FA ,NNN  ,WAFT ,DD_IAD,
      .               IAD   ,NBPART,IADG ,KXSP )
 C-----------------------------------------------
-C   HIERARCHIE
+C   HIERARCHY
 C-----------------------------------------------
        IF (ISPMD==0) THEN
          DO I=1,NPART

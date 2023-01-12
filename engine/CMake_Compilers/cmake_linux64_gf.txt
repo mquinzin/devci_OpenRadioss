@@ -1,11 +1,10 @@
 # Compiler predefinition
-# Simplifiy usage for target compilation
+# Simplify usage for target compilation
 #########################################
 
 
 # Executable name
 # ---------------
-
 
 
 # General machine flag setting
@@ -40,7 +39,7 @@ if ( DEFINED MPI )
             set (mpi_inc "-I${mpi_incdir}")
         endif()
         if ( DEFINED mpi_libdir )
-            set (mpi_lib "-I${mpi_libdir} -lmpi -lmpi_mpifh")
+            set (mpi_lib "-L${mpi_libdir} -lmpi -lmpi_mpifh")
         endif()
 
       endif()
@@ -124,10 +123,9 @@ endif()
 set ( opt_flag "  ${wo_linalg} -DCOMP_GFORTRAN=1 -ffp-contract=off -frounding-math -fopenmp " )
 
 if ( sanitize STREQUAL "1" )
-set( FSANITIZE "-fsanitize=address -DSANITIZE") 
+set( FSANITIZE "-fsanitize=address -fsanitize=undefined  -fsanitize=bounds-strict -DSANITIZE") 
 endif()
 
-#Uncomment the following line to add mumps
 set(opt_flag "${opt_flag} ${mumps_flag} ${mumps_inc}")
 
 
@@ -171,7 +169,7 @@ endif()
 
 # -------------------------------------------------------------------------------------------------------------------------------------------
 # Specific set of compilation flag
-if ( NOT debug STREQUAL "1" )
+if ( debug STREQUAL "0" )
 
 set (F_O0_compiler_flags " -O0 ${opt_flag} ${portability} ${precision_flag} ${cppmach} ${cpprel} -DCPP_comp=f90 -ffixed-line-length-none  ${mpi_flag} ${ADF} ")
 set (F_O1_compiler_flags " -O1 ${opt_flag} ${portability} ${precision_flag} ${cppmach} ${cpprel} -DCPP_comp=f90 -ffixed-line-length-none  ${mpi_flag} ${ADF} ")

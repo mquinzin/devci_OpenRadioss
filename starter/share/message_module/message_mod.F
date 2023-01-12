@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|-- called by -----------
@@ -31,6 +31,7 @@ Chd|        PBLAST_WRITE_STARTER          ../common_source/modules/pblast_mod.F
 Chd|        PLOT_CURVE                    ../common_source/sortie/plot_curve.F
 Chd|        READ_UNITS                    ../common_source/comm/write_units.F
 Chd|        ADDMASPART                    source/tools/admas/addmaspart.F
+Chd|        ADD_MASS_STAT                 source/tools/admas/add_mass_stat.F
 Chd|        ADMBCS                        source/model/remesh/admbcs.F  
 Chd|        ADMLCNT                       source/model/remesh/admlist.F 
 Chd|        ADMLIST                       source/model/remesh/admlist.F 
@@ -178,6 +179,7 @@ Chd|        FILL_LINE                     source/model/sets/fill_gr.F
 Chd|        FILL_SURF                     source/model/sets/fill_gr.F   
 Chd|        FINDELE                       source/boundary_conditions/ebcs/findele.F
 Chd|        FIND_DT1BRICK_ENGINE          source/starter/contrl.F       
+Chd|        FIND_DT_ENGINE                source/coupling/rad2rad/r2r_speedup.F
 Chd|        FIND_YIELD_ENGINE             source/general_controls/computation/hm_read_sms.F
 Chd|        FIXMODIF_ND                   source/elements/solid/solide10/dim_s10edg.F
 Chd|        FREDEC0                       source/starter/freform.F      
@@ -239,6 +241,7 @@ Chd|        HM_GET_STRING                 source/devtools/hm_reader/hm_get_strin
 Chd|        HM_GET_STRING_INDEX           source/devtools/hm_reader/hm_get_string_index.F
 Chd|        HM_GROGRO                     source/groups/hm_grogro.F     
 Chd|        HM_GROGRONOD                  source/groups/hm_grogronod.F  
+Chd|        HM_GROUP_IS_USED              source/devtools/hm_reader/hm_group_is_used.F
 Chd|        HM_LECGRE                     source/groups/hm_lecgre.F     
 Chd|        HM_LECGRN                     source/groups/hm_lecgrn.F     
 Chd|        HM_LINENGR                    source/groups/hm_linengr.F    
@@ -660,6 +663,7 @@ Chd|        HM_READ_THGRNS                source/output/th/hm_read_thgrns.F
 Chd|        HM_READ_THGROU                source/output/th/hm_read_thgrou.F
 Chd|        HM_READ_THGRPA                source/output/th/hm_read_thgrpa.F
 Chd|        HM_READ_THGRPA_SUB            source/output/th/hm_read_thgrpa.F
+Chd|        HM_READ_THGRSENS              source/output/th/hm_read_thgrsens.F
 Chd|        HM_READ_THGRSURF              source/output/th/hm_read_thgrsurf.F
 Chd|        HM_READ_THPART                source/output/thpart/hm_read_thpart.F
 Chd|        HM_READ_TRIA                  source/elements/reader/hm_read_tria.F
@@ -924,6 +928,8 @@ Chd|        NLOCAL_INIT_STA               source/materials/fail/nlocal_init_sta.
 Chd|        NLOC_DMG_INIT                 source/materials/fail/nloc_dmg_init.F
 Chd|        NRF51INI                      source/materials/mat/mat051/nrf51ini.F
 Chd|        ORTHDIR_PROJ                  source/interfaces/interf1/inintr_orthdirfric.F
+Chd|        OUTRI                         source/materials/time_step/outri.F
+Chd|        OUTRIN                        source/materials/time_step/outri.F
 Chd|        PCOORI                        source/elements/beam/pcoori.F 
 Chd|        PGRTAILS                      source/elements/beam/pgrtails.F
 Chd|        PINIT3                        source/elements/beam/pinit3.F 
@@ -1148,7 +1154,6 @@ Chd|        ELEGROR                       source/groups/elegror.F
 Chd|        ELEGROR_SEATBELT              source/groups/elegror_seatbelt.F
 Chd|        GET_SKEW                      source/elements/joint/rjoint/rini33.F
 Chd|        GET_SKEW45                    source/elements/joint/rjoint/rini45.F
-Chd|        GET_U_FUNC_X                  source/user_interface/uaccess.F
 Chd|        GET_U_FUNC_Y                  source/user_interface/uaccess.F
 Chd|        GET_U_GEO                     source/user_interface/uaccess.F
 Chd|        GET_U_MAT                     source/user_interface/uaccess.F

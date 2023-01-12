@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_MAT24                 source/materials/mat/mat024/hm_read_mat24.F
 Chd|-- called by -----------
@@ -79,7 +79,7 @@ C-----------------------------------------------
       my_real, DIMENSION(NPROPM)  ,INTENT(OUT)     :: PM     
       CHARACTER(nchartitle) ,INTENT(IN)            :: TITR
       TYPE(SUBMODEL_DATA), DIMENSION(*),INTENT(IN) :: LSUBMODEL
-      TYPE(MLAW_TAG_) :: MTAG
+      TYPE(MLAW_TAG_), INTENT(INOUT) :: MTAG
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -330,12 +330,14 @@ c-----------------
           WRITE(IOUT,1300)
           WRITE(IOUT,1400) YMC,ANUC,FC,FT,FB,F2D,S0,HT,DSUP1,EPSMAX
           WRITE(IOUT,1500) VKY,RT,RC,ROK,RO0,ETC,HBP,HV0,EPS0,HVFAC,
-     .                     ALI,ALF,VMAX,YMS,Y0S,ETS,ARM1,ARM2,ARM3
+     .                     ALI,ALF,VMAX,YMS,Y0S,ETS,ARM1,ARM2,ARM3,
+     .                     AA,BC,BT,CC 
         ELSE
           WRITE(IOUT,1301)
           WRITE(IOUT,1400) YMC,ANUC,FC,FT,FB,F2D,S0,HT,DSUP1,EPSMAX
           WRITE(IOUT,1600) VKY,RT,RC,ROK,RO0,ETC,HBP,HV0,ALI,ALF,VMAX,
-     .                     YMS,Y0S,ETS,ARM1,ARM2,ARM3
+     .                     YMS,Y0S,ETS,ARM1,ARM2,ARM3,
+     .                     AA,BC,BT,CC 
         ENDIF
       ENDIF     
 C-----------------
@@ -388,7 +390,11 @@ C-----------------
      & 5X,'ETS   TANGENT MODULUS . . . . . . . . . . =',E12.4/,
      & 5X,'ARM1  PERCENTAGE OF REINFORCEMENT DIR 1 . =',E12.4/,
      & 5X,'ARM2  PERCENTAGE OF REINFORCEMENT DIR 2 . =',E12.4/,
-     & 5X,'ARM3  PERCENTAGE OF REINFORCEMENT DIR 3 . =',E12.4/)
+     & 5X,'ARM3  PERCENTAGE OF REINFORCEMENT DIR 3 . =',E12.4/,
+     & 5X,'PARAMETER A  FOR OTTOSEN SURFACE. . . . . =',E12.4/,
+     & 5X,'PARAMETER BC FOR OTTOSEN SURFACE. . . . . =',E12.4/,    
+     & 5X,'PARAMETER BT FOR OTTOSEN SURFACE. . . . . =',E12.4/,    
+     & 5X,'PARAMETER C  FOR OTTOSEN SURFACE. . . . . =',E12.4)
  1600 FORMAT(
      & 5X,'KY    INITIAL HARDENING PARAMETER . . . . =',E12.4/,
      & 5X,'RT    FAILURE/PLASTIC TRANSITION PRES . . =',E12.4/,
@@ -407,7 +413,11 @@ C-----------------
      & 5X,'ETS   TANGENT MODULUS . . . . . . . . . . =',E12.4/,
      & 5X,'ARM1  PERCENTAGE OF REINFORCEMENT DIR 1 . =',E12.4/,
      & 5X,'ARM2  PERCENTAGE OF REINFORCEMENT DIR 2 . =',E12.4/,
-     & 5X,'ARM3  PERCENTAGE OF REINFORCEMENT DIR 3 . =',E12.4/)
+     & 5X,'ARM3  PERCENTAGE OF REINFORCEMENT DIR 3 . =',E12.4/,
+     & 5X,'PARAMETER A  FOR OTTOSEN SURFACE. . . . . =',E12.4/,
+     & 5X,'PARAMETER BC FOR OTTOSEN SURFACE. . . . . =',E12.4/,    
+     & 5X,'PARAMETER BT FOR OTTOSEN SURFACE. . . . . =',E12.4/,    
+     & 5X,'PARAMETER C  FOR OTTOSEN SURFACE. . . . . =',E12.4)
 C-----------------
       RETURN
       END

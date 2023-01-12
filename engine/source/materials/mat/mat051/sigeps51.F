@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS51                      source/materials/mat/mat051/sigeps51.F
 Chd|-- called by -----------
@@ -120,7 +120,7 @@ C SIGVXX  | NEL     | F | W | VISCOUS STRESS XX
 C SIGVYY  | NEL     | F | W | VISCOUS STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C UVAR    |NEL*NUVAR| F |R/W| USER ELEMENT VARIABLE ARRAY (see below)
 C OFF     | NEL     | F |R/W| DELETED ELEMENT FLAG (=1. ON, =0. OFF)
@@ -317,7 +317,7 @@ C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C===============================================================================C
 C                                                                               C
-C     LAW51 : TRI MATERIAL LAW & OPTIONNAL HIGH EXPLOSIVE MATERIAL              C
+C     LAW51 : TRI MATERIAL LAW & OPTIONAL HIGH EXPLOSIVE MATERIAL               C
 C                                                                               C
 C      + SOLID, LIQUID, GAS, HE (IFLG==0.or.IFLG==1).and.(IEXP==0.or.IEXP==1)   C
 C      + INLET CONDITIONS (IFLG == 2)                                           C
@@ -334,7 +334,7 @@ C     |===========================================!
       VISA1  = UPARAM(1)  !1st global Viscosity coefficient : mu
       VISB1  = UPARAM(3)  !2nd vglobal iscosity coefficient : lambda    !VISB1 =(VISV1-2.VISA1)/3.
 
-      VISC1 = UPARAM(81) !law 6 paramter when law51 is defined from law6 (iform=12)
+      VISC1 = UPARAM(81) !law 6 parameter when law51 is defined from law6 (iform=12)
       VISC2 = UPARAM(82)
       VISC3 = UPARAM(83)
       VISC4 = UPARAM(84)
@@ -1490,7 +1490,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
               EINT(I)     = EIV(0,I)
               RHO(I)      = RHOV(0,I)
             ELSE
-              !IF(VEL_N(I)<=ZERO)P=P0_NRF-HALF*RHO(I)*VEL_N(I)**2 !Bernouilli
+              !IF(VEL_N(I)<=ZERO)P=P0_NRF-HALF*RHO(I)*VEL_N(I)**2 !Bernoulli
               ROC   =SQRT(RHO(I)*RHOC20)
               POLD  = -THIRD*(SIGOXX(I)+SIGOYY(I)+SIGOZZ(I))
               DP0   = (P0_NRF-P0_NRFv(I)) ! assuming rho0*g(t)*(z-zvois) = cst ; otherwise complicated: get g(t) and compute z-zvois
@@ -2907,7 +2907,7 @@ C=======================================================================
 C===========================================================C
 C  OUTPUT : UVAR(,) SUBMATERIAL OUTPUTS                     C
 C===========================================================C
-C     DC : supress this. Really dangerous, since modification of
+C     DC : suppress this. Really dangerous, since modification of
 C     volume should me followed by modification of density,
 C     energy and pressure ...
         !IF(V1 == ZERO.AND.MAS1 > ZERO)V1 = Tol51*VOLUME(I)

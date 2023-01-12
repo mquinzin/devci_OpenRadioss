@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  I25THERM                      source/interfaces/int25/i25therm.F
 Chd|-- called by -----------
@@ -53,6 +53,7 @@ C-----------------------------------------------
 #include      "com08_c.inc"
 #include      "com01_c.inc"
 #include      "task_c.inc"
+#include      "scr_thermal_c.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
@@ -87,6 +88,7 @@ C     REAL
      .   TM, DDCOND, DD, HCOND, DIST, PENRAD, NORM, AREAC,
      .   PHIM,AREA,CONDS,CONDM
 C-----------------------------------------------
+      PHI(1:JLT) = ZERO
       IF(IFUNCTK==0)THEN
         RSTIF = ONE/MAX(EM30,KTHE)
         DO I=1,JLT
@@ -125,9 +127,9 @@ C-----------------------------------------------
 C         Distance between secnd node 
 C              and main segment 
 C-----------------------------------------------
-         DIST = (SX2*SX1+SY2*SY1+SZ2*SZ1) / MAX(EM15,NORM)
+         DIST = -(SX2*SX1+SY2*SY1+SZ2*SZ1) / MAX(EM15,NORM)
          
-         PENRAD = ABS(DIST) - GAPV(I)
+         PENRAD = DIST - GAPV(I)
 C
           IF(AREAS(I) == ZERO )THEN 
 C            
@@ -141,8 +143,8 @@ C
           TSTIFM =   ZERO
           COND = ZERO
 C---------------------------------
-C         DISTANCE ENTRE LE NOEUD SECOND. 
-C             ET  LA  SURFACE(SURFFACE NODALE)
+C         DISTANCE BETWEEN SECOND NODE
+C             AND SURFACE MAIN
 C---------------------------------
 C-------------------------------------
 C         Conduction : close distance
@@ -150,7 +152,7 @@ C-------------------------------------
 
           IF(PENRAD <= ZERO)THEN
 C---------------------------------
-C           CALCUL DE LA CONDUCTIBILITE
+C           CONDUCTANCE COMPUTATION
 C---------------------------------
 
             MATS = IELESI(I)
@@ -178,9 +180,9 @@ C---------------------------------
             ENDIF
             IF(COND /= ZERO) TSTIFM =   ABS(DIST) / COND
             TSTIFT = TSTIFM  + RSTIF
-            CONDINT(I) = AREAC /TSTIFT
+            CONDINT(I) = AREAC * THEACCFACT  /TSTIFT
 C---------------------------------
-            PHI(I) =  AREAC*(TM - TS)*DT1 / TSTIFT  
+            PHI(I) =  AREAC*(TM - TS)*DT1*THEACCFACT  / TSTIFT  
 C----------------------------------------------------------------------
 C         Conduction + Radiation : Heat exchange depending on distance
 C----------------------------------------------------------------------
@@ -217,19 +219,19 @@ C---------------------------------
             TSTIFT = TSTIFM  + RSTIF
             DD = PENRAD /DDCOND
             HCOND  =  FINTER(FCOND,DD,NPC,TF,DYDX) / TSTIFT 
-            CONDINT(I) = AREAC*HCOND
+            CONDINT(I) = AREAC*HCOND*THEACCFACT 
 
-            PHI(I) = AREAC * (TM - TS)*DT1* HCOND     
+            PHI(I) = AREAC * (TM - TS)*DT1* HCOND*THEACCFACT      
 
             PHI(I) = PHI(I) + FRAD * AREAC * (TM*TM+TS*TS) 
-     .                    * (TM + TS) * (TM - TS) * DT1   
+     .                    * (TM + TS) * (TM - TS) * DT1 * THEACCFACT  
 C-------------------------------------
 C         Radiation :
 C-------------------------------------
           ELSEIF(PENRAD <= DRAD)THEN
 C---------------------------------
             PHI(I) = FRAD * AREAC * (TM*TM+TS*TS) 
-     .                    * (TM + TS) * (TM - TS) * DT1
+     .                    * (TM + TS) * (TM - TS) * DT1 * THEACCFACT 
           END IF  
 C
          IF(IFORM == 1 )THEN 
@@ -251,7 +253,7 @@ C---------------------------------
 C---------------------------------
 C        HEAT GENERATION DUE TO FRICTION
 C---------------------------------
-         PHI(I) = PHI(I) + FHEATS * EFRICT(I)
+         PHI(I) = PHI(I) + FHEATS * EFRICT(I) * THEACCFACT 
        ENDDO
 C
       ELSE
@@ -291,8 +293,9 @@ C-----------------------------------------------
 C         Distance between secnd node 
 C              and main segment 
 C-----------------------------------------------
-         DIST = (SX2*SX1+SY2*SY1+SZ2*SZ1) / MAX(EM15,NORM)
-         PENRAD = ABS(DIST) - GAPV(I)
+         DIST = -(SX2*SX1+SY2*SY1+SZ2*SZ1) / MAX(EM15,NORM)
+         
+         PENRAD = DIST - GAPV(I)
 C
           IF(AREAS(I) == ZERO )THEN 
 C            
@@ -309,8 +312,6 @@ C-------------------------------------
 C         Conduction : close distance
 C-------------------------------------
           IF(PENRAD <= ZERO)THEN
-C Dist = Gapv - Penetration wrt Gapv
-            DIST = PENRAD +GAPV(I)
 C---------------------------------
 C           CALCUL DE LA CONDUCTIBILITE
 C---------------------------------
@@ -341,11 +342,11 @@ C---------------------------------
                COND = CONDS
             ENDIF
 
-            IF(COND /= ZERO) TSTIFM = MAX(DIST,ZERO) / COND
+            IF(COND /= ZERO) TSTIFM =   ABS(DIST) / COND
             TSTIFT = TSTIFM  + RSTIF
-            CONDINT(I) = AREAC/TSTIFT
+            CONDINT(I) = AREAC*THEACCFACT /TSTIFT
 C---------------------------------            
-            PHI(I) = AREAC * (TM- TS)*DT1 / TSTIFT
+            PHI(I) = AREAC * (TM- TS)*DT1 * THEACCFACT / TSTIFT
 C---------------------------------
 C----------------------------------------------------------------------
 C         Conduction + Radiation : Heat exchange depending on distance
@@ -385,12 +386,12 @@ C---------------------------------
 
             DD = PENRAD /DDCOND
             HCOND  =  FINTER(FCOND,DD,NPC,TF,DYDX) / TSTIFT 
-            CONDINT(I) = AREAC*HCOND
+            CONDINT(I) = AREAC*HCOND*THEACCFACT 
 
-            PHI(I) = AREAC * (TM - TS)*DT1 * HCOND         
+            PHI(I) = AREAC * (TM - TS)*DT1 * HCOND * THEACCFACT         
 
             PHI(I) = PHI(I) + FRAD * AREAC * (TM*TM+TS*TS) 
-     .                    * (TM + TS) * (TM - TS) * DT1  
+     .                    * (TM + TS) * (TM - TS) * DT1  * THEACCFACT 
 C-------------------------------------
 C         Radiation :
 C-------------------------------------   
@@ -398,7 +399,7 @@ C---------------------------------
           ELSEIF(PENRAD <= DRAD)THEN
 C---------------------------------
             PHI(I) = FRAD * AREAC * (TM*TM+TS*TS) 
-     .                 * (TM + TS) * (TM - TS) * DT1
+     .                 * (TM + TS) * (TM - TS) * DT1 * THEACCFACT 
           END IF
 C
          IF(IFORM == 1 )THEN 
@@ -419,7 +420,7 @@ C---------------------------------
 C---------------------------------
 C        HEAT GENERATION DUE TO FRICTION
 C---------------------------------
-         PHI(I) = PHI(I) + FHEATS * EFRICT(I)
+         PHI(I) = PHI(I) + FHEATS * EFRICT(I) * THEACCFACT 
        ENDDO
       END IF
 C

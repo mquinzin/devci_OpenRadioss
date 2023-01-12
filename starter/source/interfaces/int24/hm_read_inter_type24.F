@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_INTER_TYPE24          source/interfaces/int24/hm_read_inter_type24.F
 Chd|-- called by -----------
@@ -36,12 +36,13 @@ Chd|        NGR2USR                       source/system/nintrr.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
 Chd|        INTBUF_FRIC_MOD               share/modules1/intbuf_fric_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
       SUBROUTINE HM_READ_INTER_TYPE24(
      1        IPARI      ,STFAC      ,FRIGAP     ,NOINT     ,NI         ,
      2        IGRNOD     ,IGRSURF    ,XFILTR     ,FRIC_P     ,DEF_INTER ,
-     3        LSENSOR    ,NOM_OPT    ,UNITAB     ,LSUBMODEL  ,TITR      ,
+     3        SENSOR_TAB ,NOM_OPT    ,UNITAB     ,LSUBMODEL  ,TITR      ,
      4        NOM_OPTFRIC,INTBUF_FRIC_TAB )
 C============================================================================
 C     
@@ -53,13 +54,11 @@ C-----------------------------------------------
       USE GROUPDEF_MOD
       USE SUBMODEL_MOD
       USE UNITAB_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   A n a l y s e   M o d u l e
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -69,7 +68,7 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NOM_OPT(LNOPT1,*), NOM_OPTFRIC(LNOPT1,*)
       INTEGER ISU1,ISU2,NI
-      INTEGER IPARI(*),DEF_INTER(*),LSENSOR(NSENSI,*)
+      INTEGER IPARI(*),DEF_INTER(*)
       my_real
      .   STFAC,XFILTR
       my_real
@@ -78,6 +77,7 @@ C-----------------------------------------------
       TYPE(INTBUF_FRIC_STRUCT_) INTBUF_FRIC_TAB(*)
       TYPE(SUBMODEL_DATA) LSUBMODEL(*)
       TYPE (UNIT_TYPE_),INTENT(IN) ::UNITAB 
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
       TYPE (GROUP_)  ,TARGET, DIMENSION(NGRNOD)  :: IGRNOD
       TYPE (SURF_)   ,TARGET , DIMENSION(NSURF)   :: IGRSURF
@@ -767,7 +767,7 @@ C------------------------------------------------------------
 C     RENUMBERING OF FUNCTIONS AND SENSOR - USER TO INTERNAL ID
 C------------------------------------------------------------
 C
-        CALL INTER_DCOD_SENSOR (NTYP,NI,IPARI,NOM_OPT,LSENSOR)
+        CALL INTER_DCOD_SENSOR (NTYP,NI,IPARI,NOM_OPT,SENSOR_TAB)
         CALL INTER_DCOD_FRICTION(NTYP,NI,IPARI,NOM_OPT,NOM_OPTFRIC,
      .                INTBUF_FRIC_TAB)
 C

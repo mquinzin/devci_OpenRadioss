@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS15C                     source/materials/mat/mat015/sigeps15c.F
 Chd|-- called by -----------
@@ -35,7 +35,7 @@ Chd|====================================================================
      A                 DEPSXX ,DEPSYY ,DEPSXY ,DEPSYZ ,DEPSZX  ,
      7                 SIGOXX ,SIGOYY ,SIGOXY ,SIGOYZ ,SIGOZX  ,
      8                 SIGNXX ,SIGNYY ,SIGNXY ,SIGNYZ ,SIGNZX  ,
-     9                 SIGR   )
+     9                 SIGR   ,TSAIWU )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -72,7 +72,7 @@ C     REAL
      .   DEPSXX(MVSIZ),DEPSYY(MVSIZ),DEPSXY(MVSIZ),DEPSYZ(MVSIZ),
      .   DEPSZX(MVSIZ),PLA(NEL),SIGOXX(NEL),SIGOYY(NEL),SIGOXY(NEL),
      .   SIGOYZ(NEL),SIGOZX(NEL),SIGNXX(NEL),SIGNYY(NEL),SIGNXY(NEL),
-     .   SIGNYZ(NEL),SIGNZX(NEL),SIGR(NEL,6),DAMT(NEL,2)
+     .   SIGNYZ(NEL),SIGNZX(NEL),SIGR(NEL,6),DAMT(NEL,2),TSAIWU(NEL)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -92,7 +92,7 @@ C-----------------------
      3              DEPSXX ,DEPSYY ,DEPSXY ,DEPSYZ ,DEPSZX,
      4              SIGOXX ,SIGOYY ,SIGOXY ,SIGOYZ ,SIGOZX,
      5              SIGNXX ,SIGNYY ,SIGNXY ,SIGNYZ ,SIGNZX,
-     6              EPSPL  ,ISRATE ,NEL    )
+     6              EPSPL  ,ISRATE ,NEL    ,TSAIWU )
 !
       DMG_FLAG = 2
 !

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ANIM_DCOD_KEY_0               source/output/anim/reader/anim_dcod_key_0.F
 Chd|-- called by -----------
@@ -1318,9 +1318,9 @@ C------------
         ANIM_CE(IDX) = 1    
 !NIM/SHELL/WPLA/KEY4/KEY5
       ELSEIF(KEY3(1:4) == 'WPLA')THEN
-         N1 = 0
-         N2 = 0
-         IDX      = 13245 + 4*MX_PLY_ANIM 
+         N1  = 0
+         N2  = 0
+         IDX = 13245 + 4*MX_PLY_ANIM 
          IF(KEY4(1:5)=='UPPER')THEN
            ANIM_CE(IDX + 1)=1
          ELSEIF(KEY4(1:5)=='LOWER')THEN
@@ -1341,18 +1341,18 @@ C------------
                   IWPLAFULL = 1
                   ANIM_WPLA(N1) = 1
                ELSE
-                  IDX =   13547 + 4*MX_PLY_ANIM 
+                  IDX = 13547 + 4*MX_PLY_ANIM 
                   READ(KEY5(1:5),'(I5)')N2   !  NPTT (max=10) through layer N1 (max=100)
                   IF (N2 > 0 .AND. N2 <= 10) THEN
                     ANIM_CE(IDX + 10*(N1-1) + N2) = 1 ! NPTT through N1
                   ELSE
-                    IDX =   13247 + 4*MX_PLY_ANIM !!! N1 <= 100
+                    IDX = 13247 + 4*MX_PLY_ANIM !!! N1 <= 100
                     ANIM_CE(IDX + N1) = 1 ! classic layer out (mean value)
                   ENDIF
                ENDIF
              ELSE
-               IDX      = 13247 + 4*MX_PLY_ANIM
-                ANIM_CE(IDX) = 1 
+               IDX = 13245 + 4*MX_PLY_ANIM
+               ANIM_CE(IDX) = 1 
              ENDIF 
            ENDIF   
 !  IDX =   13547 + 4*MX_PLY_ANIM + 10*100 limit
@@ -1418,6 +1418,44 @@ C------------
             ANIM_CE(IDX) = 1
           ENDIF
         ENDIF
+!ANIM/SHELL/TSAIWU/KEY4/KEY5
+      ELSEIF (KEY3(1:6) == 'TSAIWU') THEN
+         N1  = 0
+         N2  = 0
+         IDX = 14595 + 4*MX_PLY_ANIM
+         IF(KEY4(1:5)=='UPPER')THEN
+           ANIM_CE(IDX + 1)=1
+         ELSEIF(KEY4(1:5)=='LOWER')THEN
+           ANIM_CE(IDX + 2)=1
+         ELSEIF(KEY4(1:5)=='ALL')THEN
+           ITSAIWUALL = 1 ! mean layer value
+           IF(KEY5(1:3)=='ALL') ITSAIWUALL = 2 ! all NPTT
+         ELSE
+           READ(KEY4(1:5),'(I5)') N1   !  layer
+           IF (N1 > 0 .AND. N1 <= 100) THEN
+             ! case of PID51  (read NPTT, or, UPPER or LOWER within NPTT)
+             IDX = 14697 + 4*MX_PLY_ANIM
+             IF (KEY5(1:5)=='UPPER') THEN
+               ANIM_CE(IDX + N1) = 1
+             ELSEIF(KEY5(1:5)=='LOWER') THEN
+               ANIM_CE(IDX + 100 + N1) = 1
+             ELSEIF(KEY5(1:3)=='ALL')THEN
+               ITSAIWUFULL = N1
+             ELSE
+               IDX = 14897 + 4*MX_PLY_ANIM
+               READ(KEY5(1:5),'(I5)') N2             ! NPTT (max=10) through layer N1 (max=100)
+               IF (N2 > 0 .AND. N2 <= 10) THEN
+                 ANIM_CE(IDX + 10*(N1-1) + N2) = 1   ! NPTT through N1
+               ELSE
+                 IDX = 14597 + 4*MX_PLY_ANIM         ! N1 <= 100
+                 ANIM_CE(IDX + N1) = 1               ! classic layer out (mean value)
+               ENDIF
+             ENDIF
+           ELSE
+             IDX = 14595 + 4*MX_PLY_ANIM 
+             ANIM_CE(IDX) = 1 
+           ENDIF 
+         ENDIF   
       ELSE
         IXITKEY=IXITKEY+1
       ENDIF
@@ -1936,11 +1974,18 @@ C         ANIM_SE(4936) ==> !   law37 -    gas
       ELSEIF(KEY3(1:7)=='NL_EPSP')THEN
         ANIM_SE(4969) = 1    
       ELSEIF(KEY3(1:7)=='NL_EPSD')THEN
-        ANIM_SE(4970) = 1    
+        ANIM_SE(4970) = 1  
+      ELSEIF(KEY3(1:6)=='TSAIWU')THEN
+         READ(KEY4(1:5),'(I5)')N1
+         IF (N1 /= 0 ) THEN
+           ANIM_SE(4971+N1) = 1
+         ELSE
+           ANIM_SE(4971) = 1 
+         ENDIF   
         
 !D YOUR NEW ANIMATION CONTOUR HERE          
       !ELSEIF(...)THEN
-      !  ANIM_SE(4971) = 1
+      !  ANIM_SE(5172) = 1
 
       ENDIF
 C
@@ -2573,7 +2618,11 @@ C--------------------------
         ELSEIF(KEY3(1:5)=='COLOR')THEN
          IDX           = 13547 + 4*MX_PLY_ANIM + 1000 + 3
          ANIM_CE(IDX)  = 1  
-         ANIM_SE(4967) = 1      
+         ANIM_SE(4967) = 1  
+        ELSEIF(KEY3(1:4) == 'DAMG') THEN 
+         IDX           = 14551 + 4*MX_PLY_ANIM
+         ANIM_CE(IDX)  = 1  
+         ANIM_SE(4968) = 1    
         ELSE IF(KEY3(1:7)=='NL_EPSP')THEN
          IDX           = 14567 + 4*MX_PLY_ANIM
          ANIM_CE(IDX)  = 1
@@ -2582,6 +2631,10 @@ C--------------------------
          IDX           = 14581 + 4*MX_PLY_ANIM
          ANIM_CE(IDX)  = 1
          ANIM_SE(4970) = 1
+        ELSE IF(KEY3(1:6)=='TSAIWU')THEN 
+         IDX           = 14595 + 4*MX_PLY_ANIM 
+         ANIM_CE(IDX)  = 1 
+         ANIM_SE(4971) = 1 
        ELSE
          IXITKEY=IXITKEY+1
        ENDIF

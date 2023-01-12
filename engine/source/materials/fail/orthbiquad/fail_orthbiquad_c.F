@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FAIL_ORTHBIQUAD_C             source/materials/fail/orthbiquad/fail_orthbiquad_c.F
 Chd|-- called by -----------
@@ -61,7 +61,7 @@ C---------+---------+---+---+--------------------------------------------
 C NPT     |  1      | I | R | NUMBER OF LAYERS OR INTEGRATION POINTS   
 C IPT     |  1      | I | R | LAYER OR INTEGRATION POINT NUMBER   
 C ISHELL  |  *      | I | R | GEOMETRICAL FLAGS   
-C NGL     | NEL     | I | R | ELEMEMT NUMBER
+C NGL     | NEL     | I | R | ELEMENT NUMBER
 C SHF     | NEL     | F | R | SHEAR FACTOR
 C---------+---------+---+---+--------------------------------------------
 C TIME    |  1      | F | R | CURRENT TIME
@@ -70,7 +70,7 @@ C SIGNXX  | NEL     | F | W | NEW ELASTO PLASTIC STRESS XX
 C SIGNYY  | NEL     | F | W | NEW ELASTO PLASTIC STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C PLA     | NEL     | F |R/W| PLASTIC STRAIN
 C UVAR    |NEL*NUVAR| F |R/W| USER ELEMENT VARIABLE ARRAY
@@ -135,7 +135,7 @@ C
      A 0.   ,9.   ,0.   ,-120.,0.   ,432. ,0.   ,-576 ,0.   ,256. /
 C-----------------------------------------------
 c! UVAR1 = damage due to instability (triax between 1/3 and 2/3)
-c! UVAR2 = actuall integration point ON or OFF
+c! UVAR2 = actual integration point ON or OFF
 c! UVAR3 = 
 C-----------------------------------------------
 c      

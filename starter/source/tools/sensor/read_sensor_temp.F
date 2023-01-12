@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  READ_SENSOR_TEMP              source/tools/sensor/read_sensor_temp.F
 Chd|-- called by -----------
@@ -35,7 +35,7 @@ Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F
 Chd|====================================================================
       SUBROUTINE READ_SENSOR_TEMP(
      .           SENSOR_PTR,SENS_ID  ,TITR    ,
-     .           IGRNOD    ,LSENSOR ,SENSOR   ,UNITAB   ,LSUBMODEL )
+     .           IGRNOD    ,UNITAB   ,LSUBMODEL )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------  
@@ -55,7 +55,6 @@ C-----------------------------------------------
 #include      "param_c.inc"
 #include      "scr17_c.inc"
 #include      "com04_c.inc"
-#include      "scr_usens_c.inc"
 #include      "warn_c.inc"
 #include      "units_c.inc"
 #include      "sysunit.inc"
@@ -64,8 +63,6 @@ C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER ,INTENT(IN) :: SENS_ID
-      INTEGER ,DIMENSION(NSENSI)   ,INTENT(OUT) :: LSENSOR
-      my_real ,DIMENSION(NSENSR)   ,INTENT(OUT) :: SENSOR
       CHARACTER TITR*nchartitle
       TYPE (SENSOR_STR_) :: SENSOR_PTR
       TYPE (SUBMODEL_DATA) ,DIMENSION(NSUBMOD) :: LSUBMODEL
@@ -136,16 +133,6 @@ c
       SENSOR_PTR%RPARAM(1) = TEMPMAX 
       SENSOR_PTR%RPARAM(2) = TEMPMIN 
       SENSOR_PTR%RPARAM(3) = TEMPAVG 
-c---------------------------
-c     old sensor data tables
-c---------------------------
-      LSENSOR(1) = SENS_ID
-      LSENSOR(2) = SENS_TYPE
-c
-      SENSOR(1)  = TDEL        ! time delay
-      SENSOR(2)  = INFINITY    ! start time
-      SENSOR(3)  = INFINITY    ! stop time
-      SENSOR(4)  = INFINITY    ! global activation time
 c------------------------------------------------------------
       WRITE (IOUT ,1000) SENS_ID,TDEL
       WRITE (IOUT ,3000) TEMPMAX,TEMPMIN,TEMPAVG,TMIN,GRNOD_ID

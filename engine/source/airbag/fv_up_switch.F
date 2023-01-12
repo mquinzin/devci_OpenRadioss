@@ -1,36 +1,36 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FV_UP_SWITCH                  source/airbag/fv_up_switch.F  
 Chd|-- called by -----------
-Chd|        FVBAG0                        source/airbag/fvbag.F         
+Chd|        FVBAG0                        source/airbag/fvbag0.F        
 Chd|-- calls ---------------
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        ARRET                         source/system/arret.F         
 Chd|        FVINJT6                       source/airbag/fvinjt6.F       
 Chd|        FVINJT8                       source/airbag/fvinjt8.F       
 Chd|        FVINJT8_1                     source/airbag/fvinjt8_1.F     
-Chd|        FVTEMP                        source/airbag/fvbag.F         
+Chd|        FVTEMP                        source/airbag/fvtemp.F        
 Chd|        FVVENT0                       source/airbag/fvvent0.F       
 Chd|        SPMD_FVB_GATH                 source/mpi/airbags/spmd_fvb_gath.F
 Chd|        SPMD_FVB_IGATH                source/mpi/airbags/spmd_fvb_igath.F
@@ -40,11 +40,12 @@ Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.
 Chd|        FVBAG_MOD                     share/modules/fvbag_mod.F     
 Chd|        FVMBAG_MESHCONTROL_MOD        ../common_source/modules/fvmbag_meshcontrol_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE FV_UP_SWITCH(NN, NEL, ELEM, NJET, NPOLY,LENH,NBA,
      2     IBAGJET, RBAGJET, NVENT    , IBAGHOL, RBAGHOL ,
      3     P      , RHO    , TK       , U      , SSPK    ,
-     4     X      , V        , A      , SENSOR  ,
+     4     X      , V        , A      , SENSOR_TAB,
      5     FSAV   , NPC    , TF       , IVOLU  , RVOLU   ,
      6     MPOLH  , QPOLH  , EPOLH    ,
      7     PPOLH  , RPOLH  , GPOLH    ,
@@ -72,6 +73,7 @@ C-----------------------------------------------
       USE ELBUFDEF_MOD
       USE FVMBAG_MESHCONTROL_MOD
       USE OMP_LIB
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I M P L I C I T   T Y P E S
 C-----------------------------------------------
@@ -95,6 +97,7 @@ C-----------------------------------------------
 #include      "scr16_c.inc"
 #include      "scr17_c.inc"
 #include      "tabsiz_c.inc"
+#include      "mvsiz_p.inc"
 C-----------------------------------------------
 C   D U M M Y   A R G U M E N T S
 C-----------------------------------------------
@@ -111,7 +114,7 @@ C-----------------------------------------------
 
       MY_REAL, INTENT(IN) ::
      .     RBAGJET(NRBJET,NJET), X(3,NUMNOD), V(3,NUMNOD), A(3,NUMNOD),
-     .     SENSOR(NSENSR,NSENSOR),  TF(STF), XXXA(3,NNA), VVVA(3,NNA), POROSITY(NELT - NEL),
+     .     TF(STF), XXXA(3,NNA), VVVA(3,NNA), POROSITY(NELT - NEL),
      .     GEO(NPROPG,NUMGEO), PM(NPROPM,NUMMAT), CFL_COEF,  PDISP_OLD
       MY_REAL, INTENT(INOUT) ::
      .     P(NNT), RHO(NNT), TK(NNT), U(3,NNT), SSPK(NNT), MPOLH(NPOLH), QPOLH(3,NPOLH),
@@ -121,6 +124,7 @@ C-----------------------------------------------
      .     DTPOLH(NPOLH), FSAV(NTHVKI), TPOLH(NPOLH), CPDPOLH(NPOLH), CPEPOLH(NPOLH),
      .     CPFPOLH(NPOLH), RBAGHOL(NRBHOL,NVENT), PDISP, ELFEHPY(NELT), RVOLU(NRVOLU)
       TYPE(ELBUF_STRUCT_), DIMENSION(NGROUP), INTENT(IN) :: ELBUF_TAB
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L O C A L   V A R I A B L E S
 C-----------------------------------------------
@@ -186,6 +190,18 @@ C
       INTEGER :: COUNT, IDT_FVMBAG, PARAM_L_TYPE
       MY_REAL :: CPAM, CPBM, CPCM, RGASM, CPDM, CPEM, CPFM
       MY_REAL :: DTOLD, LAMBDA
+
+C-----------------------------------------------
+C   C O M M E N T S
+C-----------------------------------------------
+C   NEL : number of triangles (external surface only)
+C  NELT : number of triangles (both internal & external surfaces)
+C   NNS : number of nodes of TETRA mesh
+C   NNA : number of 'additional' nodes
+C   NNT : total number of nodes
+C  NNTR : number of triangles (all polyhedra)
+C NPOLH : number of polyhedron
+C NPOLY : number of polygons
 
 C-----------------------------------------------
 C   S O U R C E   L I N E S
@@ -314,7 +330,7 @@ C-----------------------------------------------
                      DOT_PROD = NX * NNX + NY * NNY + NZ * NNZ
 !     EXTERNAL (IEL > 0) OR INTERNAL (IEL < 0) SURFACE ELEMENT
                      IF (IEL < 0) THEN
-!     INTERNAL, THERE IS A POTENTIAL NEIGHBOOR
+!     INTERNAL, THERE IS A POTENTIAL NEIGHBOR
                         IEL = -IEL
                         I1 = IFVTRI(5, KK)
                         I2 = IFVTRI(6, KK)
@@ -381,12 +397,12 @@ C-----------------------------------------------
 !     SURFACE AND NORMAL COMPUTATION FOR FABRIC ELEMENT    !
 !     =================================================    !
 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNT
          NODAREA(I)=ZERO
       ENDDO
 !$OMP END DO
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO IEL=1,NELT
          N1=ELEM(1,IEL)
          N2=ELEM(2,IEL)
@@ -450,7 +466,7 @@ C
 !     VOLUME OF THE FINITE VOLUMES    !
 !     ============================    !
 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO IEL = 1, NELT
          NX = NORM(1, IEL)
          NY = NORM(2, IEL)
@@ -465,7 +481,7 @@ C
       ENDDO
 !$OMP END DO
 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I = 1, NPOLH
          PVOLU(I) = ZERO
          DO J = 1, FVDATA(IFV)%ELEM_TO_TRI(I)%MINUS_SIZE
@@ -568,10 +584,10 @@ C---------------------------------------------------
 C
       SCALT =RVOLU(26)
       IF(ITYP==6) THEN
-        CALL FVINJT6(NJET, IBAGJET, RBAGJET, NPC, TF, SENSOR,
+        CALL FVINJT6(NJET, IBAGJET, RBAGJET, NPC, TF, SENSOR_TAB,
      .               SCALT, DATAINJ )
       ELSEIF(ITYP==8) THEN
-        CALL FVINJT8(NJET, IBAGJET, RBAGJET, NPC, TF, SENSOR,
+        CALL FVINJT8(NJET, IBAGJET, RBAGJET, NPC, TF, SENSOR_TAB,
      .               SCALT, IGEO, GEO, PM, IVOLU, DATAINJ )
       ENDIF
 C
@@ -582,7 +598,7 @@ C
          IF(ISENS==0)THEN
           TSTART=ZERO
          ELSE
-          TSTART=SENSOR(2,ISENS)
+          TSTART=SENSOR_TAB(ISENS)%TSTART
          ENDIF
 C        ITTF : 1 SHIFT EVENT TIME (CAN BE REMOVED IN A LATER VERSION)
 C        ITTF : 2 SHIFT EVENT TIME + EVENT FUNCTION
@@ -612,7 +628,7 @@ C---------------------------------------------------
          PORO(1:NELT)=ZERO
       ELSE
 !$OMP PARALLEL PRIVATE(IEL,N1,N2,N3)
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
          DO IEL=1,NELT
             N1=ELEM(1,IEL)
             N2=ELEM(2,IEL)
@@ -692,7 +708,7 @@ C----------------------
 !     ==================    !
 !     FLUXES COMPUTATION    !
 !     ==================    !
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
          DO IEL = 1, NELT
             MASS_FLUX(IEL) = ZERO
             MOMENTUM_FLUX_X(IEL) = ZERO
@@ -764,7 +780,7 @@ C----------------------
                   UU = NX * UX1 + NY * UY1 + NZ * UZ1
                   RHO2 = RHO1
                   IF (P1 < PEXT) UU = ZERO
-!     BERNOUILLI
+!     BERNOULLI
                ELSEIF ((ITVENT == 2 .AND. P1 > ZERO) .OR. (ITVENT == 4 .AND. P1 >= PEXT)) THEN
                   VV = NX * UX1 + NY * UY1 + NZ * UZ1
                   VV = MAX(VV, ZERO)
@@ -792,7 +808,7 @@ C----------------------
                   ELSE
                      RHO2 = RHO1
                   ENDIF
-!     BERNOUILLI WITH FLOW-IN
+!     BERNOULLI WITH FLOW-IN
                ELSEIF (ITVENT == 4 .AND. P1 < PEXT) THEN
                   GAMAI = RVOLU(1)
                   RHOI = RVOLU(62)
@@ -990,7 +1006,7 @@ C
 ! --- PRIVATE(AREAMAX)
 !$OMP+ PRIVATE(ITYPL,J,IEL,COUNT)
 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I = 1, NPOLH
          MSINI = MPOLH(I)
          CPAPOLH(I) = MSINI * CPAPOLH(I)
@@ -1101,7 +1117,7 @@ C---------------------------------------------------
                    !--------!-------------------------------------------------------------------!
                    ! VALUE  !   DESCRIPTION                                                     !
       !------------!--------!-------------------------------------------------------------------!
-      !            ! 0,1    !    Constant (Starter minimum characteritic length)                !
+      !            ! 0,1    !    Constant (Starter minimum characteristic length)               !
       !  L_TYPE    !  2     !    VOLUME^1/3 at current time                                     !
       !            !  3     !    VOLUME / SMAX at current time                                  !
       !------------!--------!-------------------------------------------------------------------!
@@ -1128,7 +1144,7 @@ C---------------------------------------------------
         CASE(0,1)
         ! ------------ 
            PARAM_L_TYPE = 0
-!$OMP DO SCHEDULE(GUIDED,1)        
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)        
           DO I=1,NPOLH
              IF (IBPOLH(I) == 0) THEN
                 DLS(I)=DLH !POLYHEDRON CONSTANT CHARACTERISTIC LENGTH COMPUTED IN THE STARTER
@@ -1146,21 +1162,21 @@ C---------------------------------------------------
           SELECT CASE(PARAM_L_TYPE)
             CASE(0,1) !dlh = starter constant
             ! /DT/FVMBAG/2 + L_TYPE=0,1 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
               DO I=1,NPOLH
                 DLS(I)=DLH 
               ENDDO
 !$OMP END DO          
             CASE(2) ! dl=VOL**1/3
             ! /DT/FVMBAG/2 + L_TYPE=2
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
               DO I=1,NPOLH
                 DLS(I)=PVOLU(I)**THIRD  
               ENDDO
 !$OMP END DO       
             CASE(3) ! dl=VOL**1/3
             ! /DT/FVMBAG/2 + L_TYPE=3
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
               DO I=1,NPOLH
                 DLS(I)=PVOLU(I)  
               ENDDO
@@ -1176,7 +1192,7 @@ C---------------------------------------------------
       SELECT CASE (IDT_FVMBAG)
 
         CASE(0,1)
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
           DO I=1,NPOLH
              IF(MPOLH(I)<=ZERO.OR.EPOLH(I)<=ZERO.OR.GPOLH(I)<=ONE) THEN
                DTPOLH(I)=EP30
@@ -1203,7 +1219,7 @@ C
          PARAM_L_TYPE = FVDATA(IFV)%L_TYPE !characteristic length formulation
         
           IF(PARAM_L_TYPE /= 3)THEN !L_TYPE=0/1 & 2        
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
            DO I=1,NPOLH
              IF(MPOLH(I) <= ZERO.OR.EPOLH(I) <= ZERO.OR.GPOLH(I) <= ONE) THEN
                 DTPOLH(I)=EP30
@@ -1247,7 +1263,7 @@ C
 !$OMP END DO
 
           ELSE !L_TYPE=3 ! check all faces and compute normal relative velocities
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
            DO I = 1, NPOLH
              SS_=ZERO
              DO J = 1, FVDATA(IFV)%ELEM_TO_TRI(I)%MINUS_SIZE
@@ -1290,7 +1306,7 @@ C
          ENDIF
       ENDDO
       
-      !optionnal time step growth limitor (/DT/FVMBAG/2, 3rd parameter)
+      !optional time step growth limitor (/DT/FVMBAG/2, 3rd parameter)
       IF(NCYCLE > 0  .AND.  IDT_FVMBAG == 2)THEN
         LAMBDA = FVDATA(IFV)%LAMBDA
         IF(LAMBDA > ZERO)THEN
@@ -1318,7 +1334,7 @@ C---------------------------------------------------
 !$OMP PARALLEL PRIVATE(N1,N2,N3,IEL,NX,NY,NZ)
 !$OMP+ PRIVATE(VX1,VX2,VX3,VY1,VY2,VY3,VZ1,VZ2,VZ3)
 !$OMP+ PRIVATE(VVX,VVY,VVZ,I1,I2,AREA,IVENT,IDEF,IVENTYP,AOUT,PP,P1,P2,PMEAN,AREA_OLD,AREA1,SS_)
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO IEL=1,NELT
          N1=ELEM(1,IEL)
          N2=ELEM(2,IEL)
@@ -1406,7 +1422,7 @@ C---------------------------------------------------
 !$OMP PARALLEL PRIVATE(I, J, IEL)
 !$OMP+ PRIVATE(NX, NY, NZ, N1, N2, N3, VX1, VX2, VX3, VY1, VY2, VY3, VZ1, VZ2, VZ3)
 !$OMP+ PRIVATE(VVX, VVY, VVZ, I1, I2, PP, AREA_OLD, AREA, AREA1, SS_)
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I = 1, NPOLH
          DO J = 1, FVDATA(IFV)%ELEM_TO_TRI(I)%MINUS_SIZE
             IEL = FVDATA(IFV)%ELEM_TO_TRI(I)%MINUS(J)
@@ -1671,7 +1687,7 @@ C     PEL(1:NELT)=ZERO
 !$OMP PARALLEL PRIVATE(I,J,JJ,K,KK,IEL,JEL,II,NV)
 !$OMP+ PRIVATE(NX,NY,NZ,NRX,NRY,NRZ)
 !$OMP+ PRIVATE(FAC,AREA,I1,I2)
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO IEL = 1, NELT
          AREA = ELAREA(IEL)
          I1 = FVDATA(IFV)%TRI_TO_ELEM(1, IEL)
@@ -1692,7 +1708,7 @@ C------------------
 C VENT HOLES
 C------------------
       IF(PREPARE_ANIM == 1) THEN
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
         DO IEL=1,NEL
            IF(ITAGEL(IEL)<0) THEN
              UEL(1,IEL)=ELFVEL(IEL)*NORM(1,IEL)
@@ -1715,7 +1731,7 @@ C------------------
 !$OMP END SINGLE
       ENDIF
 
-!$OMP DO SCHEDULE(GUIDED,1)
+!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
       DO I=1,NNT
         P(I)=ZERO
       ENDDO

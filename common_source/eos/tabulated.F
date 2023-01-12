@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  TABULATED                     eos/tabulated.F               
 Chd|-- called by -----------
@@ -197,11 +197,13 @@ C-----------------------------------------------
            DO I=LFT,LLT
              RES_A(I) = ZERO
              RES_B(I) = FSCALE_B*FINTER(B_fun_id,MU(I),NPF,TF,DERI_B(I))
+             DERI_A(I) = ZERO             
            ENDDO
          ELSEIF(B_fun_id == 0)THEN
            DO I=LFT,LLT
              RES_A(I) = FSCALE_A*FINTER(A_fun_id,MU(I),NPF,TF,DERI_A(I))
              RES_B(I) = ZERO
+             DERI_B(I) = ZERO             
            ENDDO         
          ELSE
            DO I=LFT,LLT         
@@ -215,8 +217,8 @@ C-----------------------------------------------
                PP      = RES_A(I) + RES_B(I)*ESPE(I) - PSH(I)                  
                DPDM(I) = DERI_A(I)+DERI_B(I)*ESPE(I) + RES_B(I)*(PP+PSH(I))/( (ONE+MU(I))*(ONE+MU(I)) ) ! A'(MU0) + B'(MU0)*E0+B(MU0)/(ONE+MU0)/(ONE+MU0)*P0     !total derivative
                DPDE(I) = RES_B(I) ! B(MU(I))                                               !partial derivative
-               PNEW(I) = PP                                                        
-            ENDIF                                                                  
+               PNEW(I) = PP                                                       
+            ENDIF 
          ENDDO                                                                     
       ENDIF
 C-----------------------------------------------

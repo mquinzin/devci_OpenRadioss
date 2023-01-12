@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ANIM_BUILD_INDEX_ALL          source/output/anim/reader/anim_build_index_all.F
 Chd|-- called by -----------
@@ -28,14 +28,16 @@ Chd|-- calls ---------------
 Chd|        ANCMSG                        source/output/message/message.F
 Chd|        ARRET                         source/system/arret.F         
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|====================================================================
-      SUBROUTINE ANIM_BUILD_INDEX_ALL(ISPMD   ,MCHECK ,LSENSOR ,IGEO    ,GEO    )
+      SUBROUTINE ANIM_BUILD_INDEX_ALL(ISPMD   ,MCHECK ,SENSOR_TAB ,IGEO    ,GEO    )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE MESSAGE_MOD
       USE STACK_MOD    
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -51,9 +53,10 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
-      INTEGER ISPMD, MCHECK, LSENSOR(NSENSI,*), IGEO(NPROPGI,*)
+      INTEGER ISPMD, MCHECK, IGEO(NPROPGI,*)
       my_real
      .        GEO(NPROPG,*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR), TARGET :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -63,12 +66,12 @@ C-----------------------------------------------
 C-------------------------------------------
       IF(ISPMD == 0.AND.MCHECK == 0) THEN
 C-----------------------
-C      ANIM/LSENSOR Initializations
+C      ANIM/SENSOR Initializations
 C-----------------------       
         IANIS0=IANISENS
         IF(IANIS0 /= 0)THEN
           DO I=1,NSENSOR
-            IF(IANIS0 == LSENSOR(1,I))IANISENS=I
+            IF( IANIS0 == SENSOR_TAB(I)%SENS_ID ) IANISENS=I
           ENDDO
         ENDIF
         DO K=1,NLSENS
@@ -76,7 +79,7 @@ C-----------------------
           IANIS0=LANISENS(K)
           IF(IANIS0 /= 0)THEN
             DO I=1,NSENSOR
-              IF(IANIS0 == LSENSOR(1,I))THEN
+              IF( IANIS0 == SENSOR_TAB(I)%SENS_ID ) THEN
                 LANISENS(K)=I
                 IOK = 1
                 EXIT
@@ -91,7 +94,7 @@ C-----------------------
 C-----------------------       
       ELSEIF(ISPMD == 0 .AND. MCHECK /= 0) THEN
 C-----------------------
-C     ANIM/LSENSOR Iniializations
+C     ANIM/SENSOR Iniializations
 C-----------------------   
          IANISENS = IANISENS_OLD
          DO K=1,IANISENS_OLD
@@ -123,7 +126,9 @@ C-------------------------------------------
      .                        IWPLAFULL > 0        .OR.
      .                        IBEAM_EPSPALL > 0    .OR.
      .                        IEPSPNLALL == 1      .OR.
-     .                        IEPSDNLALL == 1    ) THEN
+     .                        IEPSDNLALL == 1      .OR.
+     .                        ITSAIWUALL > 0       .OR.
+     .                        ITSAIWUFULL > 0)     THEN
          NIPMAX = 0
          DO I=1,NUMGEO
            NIPMAX = MAX(NIPMAX,NINT(GEO(6,I)))
@@ -902,6 +907,44 @@ c
              ENDIF
            ENDDO
          ENDIF
+       ENDIF
+C       
+!   ...TSAIWU/ALL 
+       IF (ITSAIWUALL == 1)THEN
+         IDX = 14597 + 4*MX_PLY_ANIM
+         NMAX = MIN(100,NIPMAX)
+         DO I=1,NMAX
+           IF (ANIM_CE(IDX + I) == 0) THEN
+             ANIM_CE(IDX + I) = 1
+             NCE_ANI = NCE_ANI + 1
+           ENDIF
+         ENDDO
+       ELSEIF (ITSAIWUALL == 2) THEN
+!   ...TSAIWU/ALL/ALL
+         IDX  = 14897 + 4*MX_PLY_ANIM
+         NMAX = MIN(100,NIPMAX)
+         DO I=1,NMAX
+           DO J=1,NPTT_PLY
+             IUS = 10*(I-1) + J
+             IF (ANIM_CE(IDX + IUS) == 0) THEN
+               ANIM_CE(IDX + IUS) = 1
+               NCE_ANI = NCE_ANI + 1
+             ENDIF
+           ENDDO
+         ENDDO
+       ENDIF 
+
+       IF (ITSAIWUFULL > 0) THEN
+!   ...TSAIWU/N1/ALL
+         IDX = 14897 + 4*MX_PLY_ANIM
+         ITSAIWUFULL = MIN(100,ITSAIWUFULL)
+         DO J=1,NPTT_PLY
+           IUS = 10*(ITSAIWUFULL-1) + J
+           IF (ANIM_CE(IDX + IUS) == 0) THEN
+             ANIM_CE(IDX + IUS) = 1
+             NCE_ANI = NCE_ANI + 1
+           ENDIF
+         ENDDO
        ENDIF
 C
       ELSE ! IF(MCHECK == 0 ) THEN

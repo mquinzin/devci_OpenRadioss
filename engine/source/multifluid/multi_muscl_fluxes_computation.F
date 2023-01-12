@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MULTI_MUSCL_FLUXES_COMPUTATIONsource/multifluid/multi_muscl_fluxes_computation.F
 Chd|-- called by -----------
@@ -492,7 +492,7 @@ C     Intermediate pressure
                   VII(3) = RHOII * VYII
                   VII(4) = RHOII * VZII
                   VII(5) = EINTII + HALF * RHOII * VELII2
-!     Normal physical flux curent element
+!     Normal physical flux current element
                   FII(1) = VII(1) * NORMAL_VELII
                   FII(2) = VII(2) * NORMAL_VELII + PII * NX
                   FII(3) = VII(3) * NORMAL_VELII + PII * NY
@@ -529,7 +529,7 @@ C
                   VII(3) = RHOII * VYII
                   VII(4) = RHOII * VZII
                   VII(5) = EINTII + HALF * RHOII * VELII2
-!     Normal physical flux curent element
+!     Normal physical flux current element
                   FII(1) = VII(1) * NORMAL_VELII
                   FII(2) = VII(2) * NORMAL_VELII + PII * NX
                   FII(3) = VII(3) * NORMAL_VELII + PII * NY
@@ -584,7 +584,7 @@ C     Submaterial fluxes
                   VII(3) = RHOJJ * VYJJ
                   VII(4) = RHOJJ * VZJJ
                   VII(5) = EINTJJ + HALF * RHOJJ * VELJJ2
-!     Normal physical flux curent element
+!     Normal physical flux current element
                   FII(1) = VII(1) * NORMAL_VELJJ
                   FII(2) = VII(2) * NORMAL_VELJJ + PJJ * NX
                   FII(3) = VII(3) * NORMAL_VELJJ + PJJ * NY
@@ -637,7 +637,7 @@ C     Submaterial fluxes
                   VII(3) = RHOJJ * VYJJ
                   VII(4) = RHOJJ * VZJJ
                   VII(5) = EINTJJ + HALF * RHOJJ * VELJJ2
-!     Normal physical flux curent element
+!     Normal physical flux current element
                   FII(1) = VII(1) * NORMAL_VELJJ
                   FII(2) = VII(2) * NORMAL_VELJJ + PJJ * NX
                   FII(3) = VII(3) * NORMAL_VELJJ + PJJ * NY

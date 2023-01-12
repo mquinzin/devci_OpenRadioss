@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ALEMAIN                       source/ale/alemain.F          
 Chd|-- called by -----------
@@ -92,7 +92,7 @@ Chd|====================================================================
      H         GRTH        , IGRTH       ,LGAUGE        ,GAUGE     ,MSSA      ,
      I         DMELS       , IGAUP       ,NGAUP         ,TABLE     ,MS0       ,
      J         XDP         , IGRNOD      ,VARNOD                   ,FSKYI     ,ISKY            ,
-     K         INTBUF_TAB  , IXT         ,IGRV          ,AGRAV     ,SENSOR    ,LSENSOR         ,
+     K         INTBUF_TAB  , IXT         ,IGRV          ,AGRAV     ,SENSOR_TAB,
      L         LGRAV       , CONDNSKY    ,CONDN         ,MS_2D     ,MULTI_FVM ,IGRTRUSS        ,
      M         IGRBRIC     , NLOC_DMG    ,ID_GLOBAL_VOIS,FACE_VOIS ,EBCS_TAB  ,ALE_CONNECTIVITY, 
      N         DIFFUSION   , MATPARAM_TAB,H3D_DATA)
@@ -165,7 +165,7 @@ C-----------------------------------------------
      .   WEIGHT(*), ITABM1(*),
      .   ISIZXV, LENQMV,NV46,GRTH(*),IGRTH(*),LGAUGE(3,NBGAUGE),
      .   IGAUP(*),NGAUP(*),NODLT, IXT(NIXT,*),
-     .   IGRV(*),LSENSOR(NSENSI,*),LGRAV(*)
+     .   IGRV(*),LGRAV(*)
       ! for parith/on : ID_GLOBAL_VOIS --> user id ; FACE_VOIS --> face of the remote element
       INTEGER, DIMENSION(*), INTENT(in) :: ID_GLOBAL_VOIS,FACE_VOIS
      
@@ -181,7 +181,7 @@ C-----------------------------------------------
      .        AGLOB(3,*),GAUGE(LLGAUGE,*),MS0(*),
      .        MSNF(*),VOLMON(*),FSAV(NTHVKI,*),GRESAV(*),
      .        MSSA(*), DMELS(*),VARNOD(*),FSKYI(LSKYI,NFSKYI),
-     .        AGRAV(*),SENSOR(NSENSR,*),CONDN(*),CONDNSKY(*),MS_2D(*),TEMP(*)
+     .        AGRAV(*),CONDN(*),CONDNSKY(*),MS_2D(*),TEMP(*)
      
       TYPE(t_segvar) :: SEGVAR
       TYPE(TTABLE) TABLE(*)
@@ -200,6 +200,7 @@ C-----------------------------------------------
       TYPE(T_DIFFUSION), INTENT(INOUT) :: DIFFUSION
       TYPE(MATPARAM_STRUCT_)  , DIMENSION(NUMMAT) :: MATPARAM_TAB
       TYPE (H3D_DATABASE) :: H3D_DATA
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
       my_real, INTENT(INOUT) :: XCELL(3,SXCELL)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
@@ -312,7 +313,7 @@ C  IOUTPRT (assembly report)
       !--------------------------------------------------------
       ! F L U I D E
       !       ALE SUB-CYCLING PREPARATION
-      !       IALESUB=1 LEGACY IMPLMENTATION, NOT PARALLEL, DELETED IN V11
+      !       IALESUB=1 LEGACY IMPLEMENTATION, NOT PARALLEL, DELETED IN V11
       !       IALESUB=2 PARALLEL IMPLMEMENTATION IN 2002
       !--------------------------------------------------------
       IF(IALESUB /= 0) CALL MY_BARRIER    
@@ -439,7 +440,7 @@ c
          ! SUPERCELLS MANAGEMENT + VELOCITY INTERPOLATION !
          !------------------------------------------------!         
          IF(INT22>0)THEN 
-           NIN     = 1 !temporary (max 1 inteface) !!!interface number                     
+           NIN     = 1 !temporary (max 1 interface) !!!interface number                     
            IAD22   = IPARI(NPARI*(NIN-1)+39)                                   
            NBRIC_L = IGRBRIC(IPARI(NPARI*(NIN-1)+45))%NENTITY
 
@@ -566,7 +567,7 @@ C     -------------------------
 C     Gravity terms
 C     -------------------------
                CALL ALEFVM_GRAV_INIT(
-     1              AGRAV, IGRV    , LGRAV, SENSOR, LSENSOR,
+     1              AGRAV, IGRV    , LGRAV, SENSOR_TAB,
      2              IXS  , ITASK   , NPC  , TF    , SKEW   ,
      3              ITAB 
      .              )
@@ -714,9 +715,9 @@ C
          !---------------------------------------------          
           IF(IALEFVM > 0) THEN
             !GRAVITY INIT
-            ! VERTEX(4,1:NUMNOD) = ZERO  !-> not needed, nodes remain the same ones and VERTEX is initialized on allcoation
+            ! VERTEX(4,1:NUMNOD) = ZERO  !-> not needed, nodes remain the same ones and VERTEX is initialized on allocation
             CALL ALEFVM_GRAV_INIT(
-     1                           AGRAV, IGRV    , LGRAV, SENSOR, LSENSOR,
+     1                           AGRAV, IGRV    , LGRAV, SENSOR_TAB,
      2                           IXS  , ITASK   , NPC  , TF    , SKEW   ,
      3                           ITAB 
      .                           )
@@ -728,13 +729,13 @@ C
          !---------------------------------------------
          ! TETRA4 : SMOOTH FINITE ELEMENT FORMULATIONS
          !---------------------------------------------
-c non parralel SMP section (SPMD communications in S4ALESFEM)
+c non parallel SMP section (SPMD communications in S4ALESFEM)
 !$OMP SINGLE
           IF(ISFEM >= 1) THEN
             CALL S4ALESFEM(IPARG,IXS,X,ELBUF_TAB,VARNOD,PM,
      .                     IAD_ELEM,FR_ELEM)
           ENDIF
-c end non parralel SMP section
+c end non parallel SMP section
 !$OMP END SINGLE
 
          !---------------------------------------------
@@ -785,8 +786,7 @@ C
      B            BID       ,BID       ,BID     ,IBID       ,GRESAV   ,
      C            GRTH      ,IGRTH     ,MSSA    ,DMELS      ,TABLE    ,
      D            XDP       ,VARNOD    ,VOLN    ,BID        ,BID      ,
-     E            D        ,
-     F            SENSOR    ,LSENSOR   ,IOUTPRT ,MATPARAM_TAB,IBID)
+     E            D         ,SENSOR_TAB,IOUTPRT ,MATPARAM_TAB,IBID)
 C
                  ELSEIF (ITY == 1 .AND. ISOLNOD /= 4) THEN
                   NULLIFY(pQMV); 
@@ -816,8 +816,8 @@ C
      J            BID          ,BID          ,BID          ,BID          ,BID     ,
      K            BID          ,BID          ,IPARG(1,NG)  ,XDP     ,
      M            BID          ,IBID         ,IBID         ,VOLN         ,CONDN   ,
-     N            CONDNSKY     ,AGRAV        ,IGRV         ,LGRAV        ,SENSOR  ,
-     O            LSENSOR      ,SKEW          ,
+     N            CONDNSKY     ,AGRAV        ,IGRV         ,LGRAV        ,SENSOR_TAB,
+     O            SKEW          ,
      P            ALE_CONNECTIVITY%NALE      ,D            ,IOUTPRT      ,NLOC_DMG,
      Q            MATPARAM_TAB ,IBID)
 C
@@ -864,7 +864,7 @@ C
          !---------------------------------------------
          ! ELEMENTS : LAW==11
          !---------------------------------------------
-          CALL MY_BARRIER !wait for ajacent elems
+          CALL MY_BARRIER !wait for adjacent elems
           IF (ILAW11 /= 0) THEN            !LAW11 ou LAW51 IN/OUT
             IF(NSPMD > 1) THEN
              ! SPMD COMMUNICATION VOISINS LOI11
@@ -943,8 +943,7 @@ C     ALE ON / OFF
      B            BID       ,BID       ,BID     ,IBID       ,GRESAV   ,
      C            GRTH      ,IGRTH     ,MSSA    ,DMELS      ,TABLE    ,
      D            XDP       ,BID       ,VOLN    ,BID        ,BID      ,
-     E            D        ,
-     F            SENSOR    ,LSENSOR   ,IOUTPRT ,MATPARAM_TAB ,IBID)
+     E            D         ,SENSOR_TAB,IOUTPRT ,MATPARAM_TAB ,IBID)
 
                  ELSEIF(ITY == 1 .AND. ISOLNOD /= 4)THEN
                   NULLIFY(pQMV); 
@@ -974,8 +973,8 @@ C     ALE ON / OFF
      J            BID          ,BID         ,BID       ,BID          ,BID     ,      
      K            BID          ,BID         ,IPARG(1,NG)  ,XDP     ,      
      M            BID          ,IBID        ,IBID      ,VOLN         ,CONDN   ,
-     N            CONDNSKY     ,AGRAV       ,IGRV      ,LGRAV        ,SENSOR  ,
-     O            LSENSOR      ,SKEW        ,
+     N            CONDNSKY     ,AGRAV       ,IGRV      ,LGRAV        ,SENSOR_TAB,
+     O            SKEW        ,
      P            ALE_CONNECTIVITY%NALE         ,D           ,IOUTPRT   ,NLOC_DMG     ,
      Q            MATPARAM_TAB ,IBID)
                

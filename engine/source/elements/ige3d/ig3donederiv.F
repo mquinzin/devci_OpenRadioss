@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  IG3DONEDERIV                  source/elements/ige3d/ig3donederiv.F
 Chd|-- called by -----------
@@ -62,9 +62,9 @@ C IDY2        |  1           |  I  |   R  |  ELEMENT LAST INDEX IN KNOT VECTOR I
 C IDZ2        |  1           |  I  |   R  |  ELEMENT LAST INDEX IN KNOT VECTOR IN Z DIRECTION
 C R           |  NCTRL       |  F  |   W  |  ARRAY OF TRIVIATE NURBS BASIS FUNCTION
 C DRDX        |  NCTRL,3     |  F  |   W  |  TRIVIATE NURBS FUNCTION DERIVATIVES IN PARAMETRIC COORDINATES
-C GAUSSX      |  1           |  F  |   R  |  COORDONATES IN DIRECTION X OF GAUSS POINT 
-C GAUSSY      |  1           |  F  |   R  |  COORDONATES IN DIRECTION Y OF GAUSS POINT 
-C GAUSSZ      |  1           |  F  |   R  |  COORDONATES IN DIRECTION Z OF GAUSS POINT 
+C GAUSSX      |  1           |  F  |   R  |  COORDINATES IN DIRECTION X OF GAUSS POINT 
+C GAUSSY      |  1           |  F  |   R  |  COORDINATES IN DIRECTION Y OF GAUSS POINT 
+C GAUSSZ      |  1           |  F  |   R  |  COORDINATES IN DIRECTION Z OF GAUSS POINT 
 C NCTRL       |  1           |  I  |   R  |  NUMBER OF ELEMENT CONTROL POINTS IN CURRENT GROUP
 C PX          |  1           | I  |   R  |  POLYNOMIAL INTERPOLATION DEGREE IN X DIRECTION
 C PY          |  1           | I  |   R  |  POLYNOMIAL INTERPOLATION DEGREE IN Y DIRECTION

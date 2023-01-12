@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  CGRTAILS                      source/elements/shell/coque/cgrtails.F
 Chd|-- called by -----------
@@ -47,7 +47,7 @@ Chd|====================================================================
      6       IPART  ,SH4TREE ,NOD2ELC   ,ISHEOFF ,
      7       SH4TRIM ,TAGPRT_SMS,LGAUGE  ,IWORKSH ,
      8       STACK   ,DRAPE    ,RNOISE  ,MATPARAM_TAB,
-     9       SH4ANG)
+     9       SH4ANG, IDDLEVEL)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -58,6 +58,7 @@ C-----------------------------------------------
       USE GROUPDEF_MOD
       USE MATPARAM_DEF_MOD
       USE DRAPE_MOD
+      USE QA_OUT_MOD
 C-----------------------------------------------
 C            A R G U M E N T S
 C-----------------------------------------------
@@ -119,7 +120,7 @@ C-----------------------------------------------
      .    IPM(NPROPMI,*), IPART(LIPART1,*), SH4TREE(KSH4TREE,*), 
      .    ISHEOFF(*),MINDEXC(NUMELC), TAGPRT_SMS(*),LGAUGE(3,*),
      .    NOD2ELC(*),IWORKSH(3,*)
-C     REAL OU REAL*8
+      INTEGER, INTENT(IN) :: IDDLEVEL
       MY_REAL
      .    PM(NPROPM,*), GEO(NPROPG,*), XNUM(*),THK(*),RNOISE(NPERTURB,*),
      .    SH4ANG(*)
@@ -156,6 +157,8 @@ C     REAL OU REAL*8
      .   TITR,TITR1,TITR2
       my_real, DIMENSION(:,:), ALLOCATABLE :: XNUM_RNOISE
       TYPE(MATPARAM_STRUCT_) , POINTER :: MATPARAM
+      INTEGER :: NB_NODES, LDIM, OFFSET
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7--
 
       IF(NADMESH /= 0)THEN
@@ -239,22 +242,33 @@ C
           ANGLE(I) = SH4ANG(NFT+I)          
         ENDDO
 C
- 	IF(NADMESH/=0)THEN
- 	  DO  K=1,KSH4TREE
- 	    DO  I=1,NEL
- 	      ISTOR(K,I)=SH4TREE(K,NFT+I)
- 	    ENDDO
- 	  ENDDO
- 	  IF(LSH4TRIM/=0)THEN
- 	    DO  I=1,NEL
- 	      ISTOR(KSH4TREE+1,I)=SH4TRIM(NFT+I)
- 	    ENDDO
- 	  END IF
- 	END IF
+        IF(NADMESH/=0)THEN
+          DO  K=1,KSH4TREE
+            DO  I=1,NEL
+              ISTOR(K,I)=SH4TREE(K,NFT+I)
+            ENDDO
+          ENDDO
+          IF(LSH4TRIM/=0)THEN
+            DO  I=1,NEL
+              ISTOR(KSH4TREE+1,I)=SH4TRIM(NFT+I)
+            ENDDO
+          END IF
+        END IF
 C
       
-        MODE=0
-        CALL MY_ORDERS( MODE, WORK, CEP(NFT+1), INDEX, NEL , 1)
+
+
+        IF(DOQA .NE. 0 .OR. NADMESH /=0 .OR. IDDLEVEL == 0) THEN
+          MODE=0
+          CALL MY_ORDERS( MODE, WORK, CEP(NFT+1), INDEX, NEL , 1)
+        ELSE
+          NB_NODES = 4 ! 8 nodes for solids
+          LDIM = 9 ! fist dimension of INUM
+          OFFSET = 3 ! nodes starts at INUM(4,I)
+          CALL CPP_REORDER_ELEMENTS(NEL, NSPMD, NB_NODES, OFFSET, LDIM , CEP(NFT+1), INUM, INDEX)
+        ENDIF
+
+
         DO I = 1, NEL
           PERMUTATION%SHELL(I+NFT)=INDEXS2(INDEX(I)+NFT)
           IPARTC(I+NFT) =INUM(1,INDEX(I))

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
-Copyright>        but WITHOUT ANY WARRAITY; without even the implied warraITY of
+Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_EXCH_DELETED_SURF_EDGE   source/mpi/interfaces/spmd_exch_deleted_surf_edge.F
 Chd|-- called by -----------
@@ -39,12 +39,12 @@ Chd|====================================================================
      .                                          ADDCNEL,CNEL,TAG_NODE,TAG_ELEM )
 !$COMMENT
 !       SPMD_EXCH_DELETED_SURF_EDGE description
-!           exchange of edge/surface that need to be deactivate
+!           exchange of edge/surface that need to be deactivated
 !       SPMD_EXCH_DELETED_SURF_EDGE organization 
 !           step 1 : exchange the number of edge and surface
 !           step 2 : allocation of buffer
 !           step 3 : exchange the list of edge and surface
-!           step 4 : deactive the edge/surface
+!           step 4 : deactivate the edge/surface
 !$ENDCOMMENT
         USE ARRAY_MOD
         USE SHOOTING_NODE_MOD
@@ -159,7 +159,7 @@ C-----------------------------------------------
         ! ----------------
 
         ! ----------------
-        ! recieve the data : "number of 4 nodes defining a surface + number of 2 nodes def. an edge"
+        ! receive the data : "number of 4 nodes defining a surface + number of 2 nodes def. an edge"
         RECV_NB = 0        
         DO I=1,NSPMD
             FRONTIER_ELM = IAD_ELEM(1,I+1)-IAD_ELEM(1,I)
@@ -201,7 +201,7 @@ C-----------------------------------------------
         ! ----------------
 
         ! ----------------
-        ! recieve the data : "list of 4 nodes defining a surface + 2 nodes def. an edge"
+        ! receive the data : "list of 4 nodes defining a surface + 2 nodes def. an edge"
         RECV_SURF_NB = 0
         INDEX_BUFFER_R_2(1:NSPMD) = 0
         REMOTE_SURF_PER_PROC_2(1:2,1:NSPMD) = 0

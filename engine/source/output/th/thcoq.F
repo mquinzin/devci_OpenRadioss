@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  THCOQ                         source/output/th/thcoq.F      
 Chd|-- called by -----------
@@ -136,7 +136,7 @@ C-------------------
 cc         NPT  = NLAY*NPTT ! not compatible with PID51 (shell)
           MPT   = MAX(1,NPT)
 !
-          DO I=1,8  ! lenght max of GBUF%G_STRA = 8
+          DO I=1,8  ! length max of GBUF%G_STRA = 8
             KK(I) = NEL*(I-1)
           ENDDO
 !
@@ -649,8 +649,8 @@ C---
                               UVAR=>ELBUF_TAB(NG)%BUFLY(IL)%MAT(IR,IS,IT)%VAR              
                               DO J = 1, NUVAR
                                 I1 = (J-1)*NEL                             
-                                IF (J==4 .OR. J==5) THEN                                         
-                                  VAR(J,IL) = VAR(J,IL) + LOG(UVAR(I1+I)+ONE)/NPG
+                                IF (J==4 .OR. J==5) THEN    ! convert to eng strain                                     
+                                  VAR(J,IL) = VAR(J,IL) + (EXP(UVAR(I1+I))-ONE)/NPG
                                 ELSE
                                   VAR(J,IL) = VAR(J,IL) + UVAR(I1+I)/NPG
                                 ENDIF               
@@ -671,8 +671,8 @@ C---
                             K = NPTR*(IS-1) + IR                                        
                             DO J = 1, NUVAR
                               I1 = (J-1)*NEL 
-                              IF (J==4 .OR. J==5) THEN
-                               VAR(J,IPT) = VAR(J, IPT) + LOG(UVAR(I1+I)+ONE)/NPG               
+                              IF (J==4 .OR. J==5) THEN        ! convert to eng strain 
+                               VAR(J,IPT) = VAR(J, IPT) + (EXP(UVAR(I1+I))-ONE)/NPG               
                               ELSE                                          
                                VAR(J,IPT) = VAR(J, IPT) + UVAR(I1 + I)/NPG               
                               ENDIF                                          

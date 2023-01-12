@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ANI_PCONT                     source/output/anim/generate/ani_pcont.F
 Chd|-- called by -----------
@@ -71,7 +71,8 @@ C-----------------------------------------------
      .     AREA, 
      .     X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,
      .     X31,Y31,Z31,X42,Y42,Z42,X32,Y32,Z32,E3X,E3Y,E3Z,
-     .     FS2, FS3, FT2, FT3, E, F, G, RAYON,AY1,AY2,AY3,AY4
+     .     FS2, FS3, FT2, FT3, E, F, G, RAYON,AY1,AY2,AY3,AY4,
+     .     AREAINV
       INTEGER FACES(4,6),LINES(2,4),FACES10(3,24)
        my_real, DIMENSION(:), ALLOCATABLE ::  NODAREA
 C     REAL
@@ -402,13 +403,13 @@ C
              CONTT(2,N)=ZERO
              CONTT(3,N)=ZERO
            ELSE
-             NODAREA(N)=ONE/MAX(EM30,NODAREA(N))
-             CONTN(1,N)=NODAREA(N)*CONTN(1,N)
-             CONTN(2,N)=NODAREA(N)*CONTN(2,N)
-             CONTN(3,N)=NODAREA(N)*CONTN(3,N)
-             CONTT(1,N)=NODAREA(N)*CONTT(1,N)
-             CONTT(2,N)=NODAREA(N)*CONTT(2,N)
-             CONTT(3,N)=NODAREA(N)*CONTT(3,N)
+             AREAINV = ONE/MAX(EM30,NODAREA(N))
+             CONTN(1,N)=AREAINV*CONTN(1,N)
+             CONTN(2,N)=AREAINV*CONTN(2,N)
+             CONTN(3,N)=AREAINV*CONTN(3,N)
+             CONTT(1,N)=AREAINV*CONTT(1,N)
+             CONTT(2,N)=AREAINV*CONTT(2,N)
+             CONTT(3,N)=AREAINV*CONTT(3,N)
            ENDIF
          END DO
        ENDIF
@@ -423,13 +424,13 @@ C
              FTCONTP2(2,N)=ZERO
              FTCONTP2(3,N)=ZERO
            ELSE
-             NODAREA(N)=ONE/MAX(EM30,NODAREA(N))
-             FNCONTP2(1,N)=NODAREA(N)*FNCONTP2(1,N)
-             FNCONTP2(2,N)=NODAREA(N)*FNCONTP2(2,N)
-             FNCONTP2(3,N)=NODAREA(N)*FNCONTP2(3,N)
-             FTCONTP2(1,N)=NODAREA(N)*FTCONTP2(1,N)
-             FTCONTP2(2,N)=NODAREA(N)*FTCONTP2(2,N)
-             FTCONTP2(3,N)=NODAREA(N)*FTCONTP2(3,N)
+             AREAINV = ONE/MAX(EM30,NODAREA(N))
+             FNCONTP2(1,N)=AREAINV*FNCONTP2(1,N)
+             FNCONTP2(2,N)=AREAINV*FNCONTP2(2,N)
+             FNCONTP2(3,N)=AREAINV*FNCONTP2(3,N)
+             FTCONTP2(1,N)=AREAINV*FTCONTP2(1,N)
+             FTCONTP2(2,N)=AREAINV*FTCONTP2(2,N)
+             FTCONTP2(3,N)=AREAINV*FTCONTP2(3,N)
            ENDIF
          END DO
        ENDIF
@@ -775,13 +776,13 @@ C
              FTCONTP2(2,N)=ZERO
              FTCONTP2(3,N)=ZERO
            ELSE
-             NODAREA(N)=ONE/MAX(EM30,NODAREA(N))
-             FNCONTP2(1,N)=NODAREA(N)*FNCONTP2(1,N)
-             FNCONTP2(2,N)=NODAREA(N)*FNCONTP2(2,N)
-             FNCONTP2(3,N)=NODAREA(N)*FNCONTP2(3,N)
-             FTCONTP2(1,N)=NODAREA(N)*FTCONTP2(1,N)
-             FTCONTP2(2,N)=NODAREA(N)*FTCONTP2(2,N)
-             FTCONTP2(3,N)=NODAREA(N)*FTCONTP2(3,N)
+             TMP=ONE/MAX(EM30,NODAREA(N))
+             FNCONTP2(1,N)=TMP*FNCONTP2(1,N)
+             FNCONTP2(2,N)=TMP*FNCONTP2(2,N)
+             FNCONTP2(3,N)=TMP*FNCONTP2(3,N)
+             FTCONTP2(1,N)=TMP*FTCONTP2(1,N)
+             FTCONTP2(2,N)=TMP*FTCONTP2(2,N)
+             FTCONTP2(3,N)=TMP*FTCONTP2(3,N)
            ENDIF
          END DO
        ENDIF

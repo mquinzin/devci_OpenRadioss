@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  W_FI                          source/restart/ddsplit/w_fi.F 
 Chd|-- called by -----------
@@ -107,7 +107,7 @@ C-----------------------------------------------
      .        NSNFI(NSPMD), NUMP(NSPMD),NMNFI(NSPMD),
      .        WORK(70000),KD(50),JD(50),I,J,IEDGE4,INTNITSCHE,MY_NODE,
      .        CPT1,CPT2,P1,P2,PROC1,PROC2,SE1,PLOC,ND,FLAGREMN,LREMNORMAX
-      INTEGER :: IEDGE,NEDGE,NEDGE_KEPT
+      INTEGER :: IEDGE,NEDGE,NEDGE_KEPT,ILEV
       INTEGER, PARAMETER :: E_IBUF_SIZE = 13
       LOGICAL INACTI_CASE
 
@@ -800,6 +800,7 @@ C
           END IF   ! Type 20 edge
 
           IEDGE = IPARI(58,NI)
+          ILEV  = IPARI(20,NI)
 
           IF( ITYP == 25 .AND. IEDGE /= 0) THEN
             NEDGE = IPARI(68,NI)
@@ -837,7 +838,11 @@ C LEDGE_FIE
                 ! LocalID
                 LEDGE_FIE(E_IBUF_SIZE*(K-1) +12) = 0         
                 ! BINFLG
-                LEDGE_FIE(E_IBUF_SIZE*(K-1) +13) = INTBUF_TAB(NI)%EBINFLG(J)
+                IF(ILEV == 2) THEN
+                  LEDGE_FIE(E_IBUF_SIZE*(K-1) +13) = INTBUF_TAB(NI)%EBINFLG(J)
+                ELSE
+                  LEDGE_FIE(E_IBUF_SIZE*(K-1) +13) = 0
+                ENDIF
               ENDDO
               NSNE =  E_IBUF_SIZE*NEDGE_KEPT
               CALL WRITE_I_C(LEDGE_FIE,NSNE) ! LEDGE_FIE

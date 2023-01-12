@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ALLOCBUF_AUTO                 source/elements/elbuf/allocbuf_auto.F
 Chd|-- called by -----------
@@ -71,7 +71,7 @@ C-----------------------------------------------
      .   G_FORPGPINCH,G_MOMPGPINCH,G_EPGPINCHXZ,G_EPGPINCHYZ,G_EPGPINCHZZ,
      .   G_SKEW_ID,G_MAXFRAC,G_MAXEPS,G_GAMA_R,G_SLIPRING_ID,G_SLIPRING_STRAND,G_RETRACTOR_ID,
      .   G_RINGSLIP,G_ADD_NODE,G_UPDATE,G_INTVAR,G_BETAORTH,G_AMU,G_SLIPRING_FRAM_ID,G_FRAM_FACTOR,
-     .   G_TM_YIELD,G_TM_SEQ,G_TM_EINT,G_TM_DMG,G_TM_SIG,G_TM_STRA 
+     .   G_TM_YIELD,G_TM_SEQ,G_TM_EINT,G_TM_DMG,G_TM_SIG,G_TM_STRA,G_TSAIWU
       INTEGER  ! layer variables
      .   LY_DMG,LY_GAMA,LY_DIRA,LY_DIRB,LY_CRKDIR,LY_PLAPT,LY_SIGPT,LY_SMSTR,
      .   LY_HOURG,LY_UELR,LY_UELR1,LY_OFFPG,LY_OFF,LEN_PLAPT,LEN_SIGPT
@@ -85,9 +85,9 @@ C-----------------------------------------------
      .   L_DAM,L_DSUM,L_DGLO,L_EPE,L_EPC,L_XST,L_SSP,L_Z,L_FRAC,L_VISC,
      .   L_THK,L_FOR,L_MOM,L_EPS,L_SMSTR,L_BFRAC,L_DMG,L_FORTH,L_EINTTH,
      .   L_SEQ,L_SIGPLY,L_JAC_I,L_FAC_YLD,L_ABURN,L_MU,L_PLANL,L_EPSDNL,
-     .   L_DMGSCL,L_PIJ,L_VOL0DP
+     .   L_DMGSCL,L_PIJ,L_VOL0DP,L_TSAIWU
        INTEGER  ! failure variables
-     .   LF_DAM,LF_DAMMX,LF_TDEL,LF_INDX,LF_OFF
+     .   LF_DAM,LF_DAMMX,LF_DAMINI,LF_TDEL,LF_INDX,LF_OFF
       my_real, 
      .  ALLOCATABLE, DIMENSION(:)  :: RBUF
 
@@ -357,7 +357,9 @@ c
         L_EPSDNL = NINT(RBUF(IAD+1)) 
           IAD = IAD+1   
         L_DMGSCL = NINT(RBUF(IAD+1)) 
-          IAD = IAD+1          
+          IAD = IAD+1       
+        L_TSAIWU = NINT(RBUF(IAD+1)) 
+          IAD = IAD+1               
         L_PIJ    = NINT(RBUF(IAD+1)) 
           IAD = IAD+1 
         L_VOL0DP = NINT(RBUF(IAD+1)) 
@@ -449,6 +451,7 @@ c
         BUFLY%L_PLANL   = L_PLANL
         BUFLY%L_EPSDNL  = L_EPSDNL
         BUFLY%L_DMGSCL  = L_DMGSCL
+        BUFLY%L_TSAIWU  = L_TSAIWU
         BUFLY%L_PIJ     = L_PIJ 
         BUFLY%L_VOL0DP  = L_VOL0DP 
 c-------------------------------------------------
@@ -712,7 +715,10 @@ c--------
               IAD = IAD+NEL*L_EPSDNL   
           ALLOCATE(LBUF%DMGSCL(NEL*L_DMGSCL)  ,STAT=ERR)              
             LBUF%DMGSCL(1:NEL*L_DMGSCL) = RBUF(IAD+1:IAD+NEL*L_DMGSCL)               
-              IAD = IAD+NEL*L_DMGSCL   
+              IAD = IAD+NEL*L_DMGSCL  
+          ALLOCATE(LBUF%TSAIWU(NEL*L_TSAIWU)  ,STAT=ERR)              
+            LBUF%TSAIWU(1:NEL*L_TSAIWU) = RBUF(IAD+1:IAD+NEL*L_TSAIWU)               
+              IAD = IAD+NEL*L_TSAIWU 
           ALLOCATE(LBUF%PIJ(NEL*L_PIJ)  ,STAT=ERR)              
             LBUF%PIJ(1:NEL*L_PIJ)   = RBUF(IAD+1:IAD+NEL*L_PIJ)               
               IAD = IAD+NEL*L_PIJ 
@@ -833,7 +839,11 @@ c-------------------------------
 
                 LF_DAMMX = RBUF(IAD+1)                                        
                 IAD = IAD+1                                                
-                FLOC%LF_DAMMX = LF_DAMMX       
+                FLOC%LF_DAMMX = LF_DAMMX     
+
+                LF_DAMINI = RBUF(IAD+1)                                        
+                IAD = IAD+1                                                
+                FLOC%LF_DAMINI = LF_DAMINI
 
                 LF_TDEL = RBUF(IAD+1)                                        
                 IAD = IAD+1                                                
@@ -858,6 +868,10 @@ c-------------------------------
                 ALLOCATE(FLOC%DAMMX(NEL*LF_DAMMX), STAT=ERR)                    
                 FLOC%DAMMX(1:NEL*LF_DAMMX) = RBUF(IAD+1:IAD+NEL*LF_DAMMX)                        
                 IAD = IAD + NEL*LF_DAMMX     
+
+                ALLOCATE(FLOC%DAMINI(NEL*LF_DAMINI), STAT=ERR)                    
+                FLOC%DAMINI(1:NEL*LF_DAMINI) = RBUF(IAD+1:IAD+NEL*LF_DAMINI)                        
+                IAD = IAD + NEL*LF_DAMINI 
 
                 ALLOCATE(FLOC%TDEL(NEL*LF_TDEL), STAT=ERR)                    
                 FLOC%TDEL(1:NEL*LF_TDEL) = RBUF(IAD+1:IAD+NEL*LF_TDEL)                        
@@ -1162,7 +1176,9 @@ C
       G_PLANL=  NINT(RBUF(IAD+1))         
         IAD = IAD + 1  
       G_EPSDNL= NINT(RBUF(IAD+1))         
-        IAD = IAD + 1                                      
+        IAD = IAD + 1    
+      G_TSAIWU= NINT(RBUF(IAD+1))         
+        IAD = IAD + 1   
       G_TEMPG =  NINT(RBUF(IAD+1))         
         IAD = IAD + 1       
       G_COR_NF  =  NINT(RBUF(IAD+1))         
@@ -1360,7 +1376,8 @@ C
       GBUF%G_ABURN  = G_ABURN  
       GBUF%G_MU     = G_MU   
       GBUF%G_PLANL  = G_PLANL
-      GBUF%G_EPSDNL = G_EPSDNL       
+      GBUF%G_EPSDNL = G_EPSDNL 
+      GBUF%G_TSAIWU = G_TSAIWU      
       GBUF%G_TEMPG  = G_TEMPG     
       GBUF%G_COR_NF = G_COR_NF
       GBUF%G_COR_FR = G_COR_FR

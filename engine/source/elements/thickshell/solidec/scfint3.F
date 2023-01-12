@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SCFINT3                       source/elements/thickshell/solidec/scfint3.F
 Chd|-- called by -----------
@@ -152,7 +152,7 @@ C   +++ non constante part------------
         SX1(I)= ZI*SX0(I)
         NU1(I) = NU(I)/(ONE -NU(I))
       ENDDO
-C---- asymetric part of gama------------
+C---- asymmetric part of gama------------
       DO I=LFT,LLT
 C   ---- I =1--------------
         XH1I =-RY1(I)*PX1H1(I)
@@ -219,7 +219,7 @@ C   ---- I =4--------------
         F34(I)=F34(I)+FINT
         F36(I)=F36(I)-FINT
       ENDDO
-C---- symetric part of gama------------
+C---- symmetric part of gama------------
 C 1 1 -1 -1 -1 -1 1 1
 C 1 -1 -1 1 -1 1 1 -1
       DO I=LFT,LLT

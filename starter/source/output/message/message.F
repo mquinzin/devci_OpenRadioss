@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ANCMSG                        source/output/message/message.F
 Chd|-- called by -----------
@@ -71,7 +71,6 @@ Chd|        CINMAS                        source/elements/shell/coque/cinmas.F
 Chd|        CM27IN3                       source/materials/mat/mat027/cm27in3.F
 Chd|        CMAINI3                       source/elements/sh3n/coquedk/cmaini3.F
 Chd|        CMATINI4                      source/materials/mat_share/cmatini4.F
-Chd|        CNLOC_MATINI                  source/materials/mat_share/cnloc_matini.F
 Chd|        CONTRL                        source/starter/contrl.F       
 Chd|        CORTHINI                      source/elements/shell/coque/corthini.F
 Chd|        CREATE_CHILD                  source/coupling/rad2rad/r2r_fork.F
@@ -198,6 +197,7 @@ Chd|        HM_READ_FAIL_INIEVO           source/materials/fail/inievo/hm_read_f
 Chd|        HM_READ_FAIL_JOHNSON          source/materials/fail/johnson_cook/hm_read_fail_johnson.F
 Chd|        HM_READ_FAIL_ORTHBIQUAD       source/materials/fail/orthbiquad/hm_read_fail_orthbiquad.F
 Chd|        HM_READ_FAIL_SPALLING         source/materials/fail/spalling/hm_read_fail_spalling.F
+Chd|        HM_READ_FAIL_SYAZWAN          source/materials/fail/syazwan/hm_read_fail_syazwan.F
 Chd|        HM_READ_FAIL_TAB1             source/materials/fail/tabulated/hm_read_fail_tab1.F
 Chd|        HM_READ_FAIL_TAB_OLD          source/materials/fail/tabulated/hm_read_fail_tab_old.F
 Chd|        HM_READ_FAIL_TBUTCHER         source/materials/fail/tuler_butcher/hm_read_fail_tbutcher.F
@@ -450,6 +450,7 @@ Chd|        HM_READ_THGRNS                source/output/th/hm_read_thgrns.F
 Chd|        HM_READ_THGROU                source/output/th/hm_read_thgrou.F
 Chd|        HM_READ_THGRPA                source/output/th/hm_read_thgrpa.F
 Chd|        HM_READ_THGRPA_SUB            source/output/th/hm_read_thgrpa.F
+Chd|        HM_READ_THGRSENS              source/output/th/hm_read_thgrsens.F
 Chd|        HM_READ_THGRSURF              source/output/th/hm_read_thgrsurf.F
 Chd|        HM_READ_THPART                source/output/thpart/hm_read_thpart.F
 Chd|        HM_READ_TRIA                  source/elements/reader/hm_read_tria.F
@@ -803,7 +804,6 @@ Chd|        XINIT3                        source/elements/xelem/xinit3.F
 Chd|        YCTRL                         source/initial_conditions/inista/yctrl.F
 Chd|        GET_SKEW                      source/elements/joint/rjoint/rini33.F
 Chd|        GET_SKEW45                    source/elements/joint/rjoint/rini45.F
-Chd|        GET_U_FUNC_X                  source/user_interface/uaccess.F
 Chd|        GET_U_FUNC_Y                  source/user_interface/uaccess.F
 Chd|        GET_U_GEO                     source/user_interface/uaccess.F
 Chd|        GET_U_MAT                     source/user_interface/uaccess.F

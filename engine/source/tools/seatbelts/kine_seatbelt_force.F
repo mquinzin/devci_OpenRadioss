@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  KINE_SEATBELT_FORCE           source/tools/seatbelts/kine_seatbelt_force.F
 Chd|-- called by -----------
@@ -77,7 +77,7 @@ C
           A(3,ANCHOR_NODE)=A(3,ANCHOR_NODE)+A(3,NODE2)
           STIFN(ANCHOR_NODE)=STIFN(ANCHOR_NODE)+STIFN(NODE2) 
           IF (SLIPRING(I)%FRAM(J)%N_REMOTE_PROC > 0) THEN
-C--         Contribution stored to be exhanged to remote anchor node
+C--         Contribution stored to be exchanged to remote anchor node
             BUF_EXCH(L,1) = A(1,NODE2)
             BUF_EXCH(L,2) = A(2,NODE2)
             BUF_EXCH(L,3) = A(3,NODE2)
@@ -103,7 +103,7 @@ C----------------------------------------------------------
          A(3,ANCHOR_NODE)=A(3,ANCHOR_NODE)+A(3,NODE2)
          STIFN(ANCHOR_NODE)=STIFN(ANCHOR_NODE)+STIFN(NODE2)  
          IF (RETRACTOR(I)%N_REMOTE_PROC > 0) THEN
-C--        Contribution stored to be exhanged to remote anchor node
+C--        Contribution stored to be exchanged to remote anchor node
             BUF_EXCH(1,L) = A(1,NODE2)
             BUF_EXCH(2,L) = A(2,NODE2)
             BUF_EXCH(3,L) = A(3,NODE2)

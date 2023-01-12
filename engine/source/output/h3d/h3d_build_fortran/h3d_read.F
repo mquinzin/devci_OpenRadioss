@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  H3D_READ                      source/output/h3d/h3d_build_fortran/h3d_read.F
 Chd|-- called by -----------
@@ -77,7 +77,7 @@ C-----------------------------------------------
       INTEGER I, NBC, L, KCUR, N1, N2, N3, ITYP,IADG, J,NTITLE,IUS,
      .        NH3D,IREC,NBSENS
       CHARACTER  TITLE*72, KEY2*ncharkey, KEY3*ncharkey, KEY4*ncharkey, KEY5*ncharkey, 
-     .           KEY6*ncharkey,KEY7*ncharkey, KEY8*ncharkey,
+     .           KEY6*ncharkey,KEY7*ncharkey, KEY8*ncharkey,KEYTMP*ncharkey,
      .           CARTE*ncharline,TITLE2*80,LINE*120
       my_real
      .   X0,Y0,Z0,VNX,VNY,VNZ,V0
@@ -182,6 +182,31 @@ C----- TMIN automatically created /w TMAX  (/H3D/?/TENS/STRESS/TMAX ;/H3D/NODA/G
           CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEY2,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
           KEY4 = 'TMIN'
           CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEY2,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+        ELSEIF(KEY3=='VECT' .AND. KEY4=='PEXT') THEN
+          IF(KEY2 == 'ELEM') THEN
+             KEYTMP = 'SOLID'
+             CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEYTMP,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+             KEYTMP = 'SHELL'
+             CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEYTMP,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+          END IF
+        ELSEIF(KEY3=='PEXT') THEN
+          IF(KEY2 == 'ELEM') THEN
+             KEYTMP = 'SOLID'
+             CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEYTMP,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+             KEYTMP = 'SHELL'
+             CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEYTMP,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+          END IF
+C---- add /VECT/PEXT
+          KEY3 = 'VECT'
+          KEY4 = 'PEXT'
+          IF(KEY2 == 'ELEM') THEN
+             KEYTMP = 'SOLID'
+             CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEYTMP,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+             KEYTMP = 'SHELL'
+             CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEYTMP,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+          ELSEIF(KEY2 == 'SHELL'.OR.KEY2 == 'SOLID') THEN
+            CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEY2,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
+          END IF
         ELSE
           CALL CREATE_H3D_INPUT(H3D_DATA,IKAD,KCUR,IREC,NBC,KEY0,KEY2,KEY3,KEY4,KEY5,KEY6,KEY7,KEY8)
         ENDIF

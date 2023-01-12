@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS36C                     source/materials/mat/mat036/sigeps36c.F
 Chd|-- called by -----------
@@ -33,16 +33,17 @@ Chd|====================================================================
      2     KFUNC  ,NPF    ,NPT0    ,IPT     ,IPLAS  ,
      2     TF     ,TIME   ,TIMESTEP,UPARAM  ,RHO0   ,
      3     AREA   ,EINT   ,THKLY   ,ASRATE  ,
-     4     EPSPXX ,EPSPYY ,EPSPXY  ,EPSPYZ  ,EPSPZX  ,
-     5     DEPSXX ,DEPSYY ,DEPSXY  ,DEPSYZ  ,DEPSZX  ,
-     6     EPSXX  ,EPSYY  ,EPSXY   ,EPSYZ   ,EPSZX   ,
-     7     SIGOXX ,SIGOYY ,SIGOXY  ,SIGOYZ  ,SIGOZX  ,
-     8     SIGNXX ,SIGNYY ,SIGNXY  ,SIGNYZ  ,SIGNZX  ,
-     9     SOUNDSP,VISCMAX,THK     ,PLA     ,UVAR    ,
-     A     VARTMP ,OFF    ,NGL     ,IPM     ,IMAT    ,
-     B     ETSE   ,GS     ,YLD     ,EPSP    ,ISRATE  ,
+     4     EPSPXX ,EPSPYY ,EPSPXY  ,EPSPYZ  ,EPSPZX ,
+     5     DEPSXX ,DEPSYY ,DEPSXY  ,DEPSYZ  ,DEPSZX ,
+     6     EPSXX  ,EPSYY  ,EPSXY   ,EPSYZ   ,EPSZX  ,
+     7     SIGOXX ,SIGOYY ,SIGOXY  ,SIGOYZ  ,SIGOZX ,
+     8     SIGNXX ,SIGNYY ,SIGNXY  ,SIGNYZ  ,SIGNZX ,
+     9     SOUNDSP,VISCMAX,THK     ,PLA     ,UVAR   ,
+     A     VARTMP ,OFF    ,NGL     ,IPM     ,IMAT   ,
+     B     ETSE   ,GS     ,YLD     ,EPSP    ,ISRATE ,
      C     DPLA_I ,GAMA_IMP,SIGNOR ,SHF     ,HARDM  ,
-     D     FACYLDI,SIGB   ,INLOC   ,DPLANL  )
+     D     FACYLDI,SIGB   ,INLOC   ,DPLANL  ,DMG    ,
+     E     PLANL  )
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -90,7 +91,7 @@ C SIGNXX  | NEL    | F | W | NEW ELASTO PLASTIC STRESS XX
 C SIGNYY  | NEL    | F | W | NEW ELASTO PLASTIC STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL    | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL    | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL    | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C THK     | NEL    | F |R/W| THICKNESS
 C PLA     | NEL    | F |R/W| PLASTIC STRAIN
@@ -117,7 +118,8 @@ C-----------------------------------------------
      .   DEPSXX(NEL),DEPSYY(NEL),DEPSXY(NEL),DEPSYZ(NEL),DEPSZX(NEL),
      .   EPSXX(NEL) ,EPSYY(NEL),EPSXY(NEL),EPSYZ(NEL),EPSZX(NEL) ,
      .   SIGOXX(NEL),SIGOYY(NEL),SIGOXY(NEL),SIGOYZ(NEL),SIGOZX(NEL),
-     .   GS(NEL),EPSP(NEL),SHF(NEL),HARDM(NEL),DPLANL(NEL)
+     .   GS(NEL),EPSP(NEL),SHF(NEL),HARDM(NEL),DPLANL(NEL),DMG(NEL),
+     .   PLANL(NEL)
 C-----------------------------------------------
 C   O U T P U T   A r g u m e n t s
 C-----------------------------------------------
@@ -272,6 +274,7 @@ c-------------------
      .   + SQRT( (EPSXX(1:NEL)-EPSYY(1:NEL))*(EPSXX(1:NEL)-EPSYY(1:NEL))
      .   + EPSXY(1:NEL)*EPSXY(1:NEL) ) )
         FAIL(1:NEL) = MAX(EM20,MIN(ONE,(EPSR2-EPST(1:NEL))/(EPSR2-EPSR1)))
+        DMG(1:NEL)  = ONE - MAX(ZERO,MIN(ONE,(EPSR2-EPST(1:NEL))/(EPSR2-EPSR1)))
       ELSE
         FAIL(1:NEL) = ONE
       ENDIF
@@ -902,13 +905,29 @@ c----------------------------------------------------------------------
 c     Element failure
 c----------------------------------------------------------------------
       IF (IFAIL == 1) THEN
-        DO I=1,NEL
-          IF (OFF(I) == ONE .and. PLA(I) > EPSMAX) OFF(I) = FOUR_OVER_5
-        ENDDO
+        IF (INLOC > 0) THEN 
+          DO I=1,NEL
+            IF (EPSMAX < EP20) DMG(I) = PLANL(I)/EPSMAX
+            IF (OFF(I) == ONE .AND. PLANL(I) > EPSMAX) OFF(I) = FOUR_OVER_5
+          ENDDO
+        ELSE 
+          DO I=1,NEL
+            IF (EPSMAX < EP20) DMG(I) = PLA(I)/EPSMAX
+            IF (OFF(I) == ONE .AND. PLA(I) > EPSMAX)   OFF(I) = FOUR_OVER_5
+          ENDDO
+        ENDIF
       ELSEIF (IFAIL == 2) THEN
-        DO I=1,NEL
-          IF (OFF(I) == ONE .and. (PLA(I) > EPSMAX .or. EPST(I) > EPSF)) OFF(I) = FOUR_OVER_5
-        ENDDO
+        IF (INLOC > 0) THEN
+          DO I=1,NEL 
+            IF (EPSMAX < EP20) DMG(I) = MAX(DMG(I),PLANL(I)/EPSMAX)
+            IF (OFF(I) == ONE .AND. (PLANL(I) > EPSMAX .OR. EPST(I) > EPSF)) OFF(I) = FOUR_OVER_5
+          ENDDO
+        ELSE
+          DO I=1,NEL 
+            IF (EPSMAX < EP20) DMG(I) = MAX(DMG(I),PLA(I)/EPSMAX)
+            IF (OFF(I) == ONE .AND. (PLA(I) > EPSMAX .OR. EPST(I) > EPSF))   OFF(I) = FOUR_OVER_5
+          ENDDO
+        ENDIF
       ENDIF     
 c----------------------------------------------------------------------
       IF (IMPL_S > 0) THEN
@@ -920,7 +939,7 @@ c ...... Parameter d(gama)
 c ...... HK,HH---
          SIGNOR(I,4)=FISOKIN*H(I)
          SIGNOR(I,5)=(ONE-FISOKIN)*H(I)
-c ...... Deviatoric stresses shifted by midified back stress ->ksi
+c ...... Deviatoric stresses shifted by modified back stress ->ksi
          SIGNOR(I,1)=THIRD*(TWO*SIGNXX(I)-SIGNYY(I))
          SIGNOR(I,2)=THIRD*(TWO*SIGNYY(I)-SIGNXX(I))
          SIGNOR(I,3)=TWO*SIGNXY(I)

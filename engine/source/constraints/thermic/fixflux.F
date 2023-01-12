@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FIXFLUX                       source/constraints/thermic/fixflux.F
 Chd|-- called by -----------
@@ -29,9 +29,14 @@ Chd|        ARRET                         source/system/arret.F
 Chd|        S4VOLUME                      source/elements/solid/solide4/s4volume.F
 Chd|        S8EVOLUME                     source/elements/solid/solide8e/s8evolume.F
 Chd|        FINTER                        source/tools/curve/finter.F   
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE FIXFLUX (IBFFLUX ,FBFFLUX ,NPC   ,TF  ,X  ,IXS,
-     1                    SENSOR  ,LSENSOR ,FTHE  ,IAD ,FTHESKY)
+     1                    SENSOR_TAB,FTHE  ,IAD ,FTHESKY)
+C-----------------------------------------------
+C   M o d u l e s
+C-----------------------------------------------  
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -49,19 +54,16 @@ C-----------------------------------------------
 #include      "thermal_c.inc"
 #include      "scr_thermal_c.inc"
 #include      "units_c.inc"
-C-----------------------------------------------
-C   E x t e r n a l  F u n c t i o n s
-C-----------------------------------------------
-
 C-----------------------------------------------,
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NPC(*),IAD(4,*)
-      INTEGER IBFFLUX(NITFLUX,*),LSENSOR(NSENSI,*),IXS(NIXS,*)
+      INTEGER IBFFLUX(NITFLUX,*),IXS(NIXS,*)
 C     REAL
       my_real
-     .   FBFFLUX(LFACTHER,*), TF(*), X(3,*), SENSOR(NSENSR,*),
+     .   FBFFLUX(LFACTHER,*), TF(*), X(3,*),
      .   FTHESKY(LSKY), FTHE(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -97,8 +99,8 @@ C
          IF(ISENS == 0)THEN
             TS = TTA - STARTT
          ELSE 
-            STARTT = STARTT + SENSOR(2,ISENS)
-            STOPT  = STOPT  + SENSOR(2,ISENS)		
+            STARTT = STARTT + SENSOR_TAB(ISENS)%TSTART
+            STOPT  = STOPT  + SENSOR_TAB(ISENS)%TSTART
             TS = TTA - STARTT      
          ENDIF       
 C
@@ -235,11 +237,11 @@ C-------------------------
            STOPT  = FBFFLUX(5,NL)
            TTA    = TT*THEACCFACT
            DT1A   = DT1*THEACCFACT
-           IF(ISENS == 0)THEN
+           IF (ISENS == 0)THEN
               TS = TTA - STARTT
            ELSE 
-              STARTT = STARTT + SENSOR(2,ISENS)
-              STOPT  = STOPT  + SENSOR(2,ISENS)		
+              STARTT = STARTT + SENSOR_TAB(ISENS)%TSTART
+              STOPT  = STOPT  + SENSOR_TAB(ISENS)%TSTART
               TS = TTA - STARTT
            ENDIF       
            IFLAG = 1

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 C
 Chd|====================================================================
 Chd|  W_FRONT                       source/restart/ddsplit/w_front.F
@@ -386,7 +386,7 @@ C
               NBDDNOD = NBDDNOD + 1
               DD_ELEM(NBDDNOD) = I
               PROC_REM(NBDDNOD) = P
-              !FLAGKIN array identies boundary nodes with kinematic constraints
+              !FLAGKIN array identities boundary nodes with kinematic constraints
               !(FLAGKIN(N)=1 <=> old FRONT TAG=10)  
               !FLAGKIN(N) can be set to one only for first SPMD domain
               IF(FLAGKIN(I)==1.AND.(PROC==1.OR.P==1))THEN
@@ -2288,7 +2288,7 @@ C On remplit le tableau FR_USERW
         NUSERWI_L=IADUSERW(NSPMD+1)-IADUSERW(1)
       ENDIF
 C-------------------------
-C  xfem edge boudary treatment
+C  xfem edge boundary treatment
       IF(ICRACK3D > 0)THEN
 C
         DO P = 1, NSPMD+1

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 #define TO1D(i,j,k,s1,s2) i+(j-1)*s1+(k-1)*s1*s2
 Chd|====================================================================
 Chd|  SPMD_I25FRONT_INIT            source/mpi/interfaces/spmd_i25front.F
@@ -390,7 +390,7 @@ C-----------------------------------------------
       INTEGER :: IM,M1,M2
       INTEGER :: NEDGE_LOCAL
       INTEGER :: IGLOB,IBEGIN
-      INTEGER :: N1,N2,N3,N4,NN1,NN2,PP
+      INTEGER :: N1,N2,N3,N4,NN1,NN2,PP,TYPEDG
       INTEGER :: NRTM
       REAL *4 :: SP
 #ifdef WITH_ASSERT
@@ -489,9 +489,11 @@ C             ASSERT(IED <= NEDGE)
               M2 = INTBUF_TAB(N)%LEDGE(6+(IED-1)*NLEDGE)
               IM = INTBUF_TAB(N)%LEDGE(10+(IED-1)*NLEDGE)
 C             ASSERT( (IM == 1 .OR. IM == -1) )
-
-              NN1 = INTBUF_TAB(N)%ADMSR(JE+(IE-1)*4)
-              NN2 = INTBUF_TAB(N)%ADMSR(MOD(JE,4)+1+(IE-1)*4)
+              TYPEDG = INTBUF_TAB(N)%LEDGE((IED-1)*NLEDGE+7)
+              IF(TYPEDG == 1) THEN 
+                 NN1 = INTBUF_TAB(N)%ADMSR(JE+(IE-1)*4)
+                 NN2 = INTBUF_TAB(N)%ADMSR(MOD(JE,4)+1+(IE-1)*4)
+              ENDIF
 
 C C====================================================
 C               IF( IM /= 1 .AND. IM /= -1) THEN
@@ -705,7 +707,9 @@ C             WRITE(6,*) "Out:",INTBUF_TAB(N)%LEDGE((IED-1)*NLEDGE+8),L
 #endif
               ENDIF
 
-C Send Normal of nodes of second edge : 
+C Send Normal of nodes of second edge : edge solid
+
+              IF(TYPEDG == 1) THEN 
 
                 BUFFERS(NI25)%SEND_BUF(L+PP+1)  = INTBUF_TAB(N)%E2S_NOD_NORMAL(3*(NN1-1)+1)
                 BUFFERS(NI25)%SEND_BUF(L+PP+2)  = INTBUF_TAB(N)%E2S_NOD_NORMAL(3*(NN1-1)+2)
@@ -714,6 +718,15 @@ C Send Normal of nodes of second edge :
                 BUFFERS(NI25)%SEND_BUF(L+PP+4)  = INTBUF_TAB(N)%E2S_NOD_NORMAL(3*(NN2-1)+1)
                 BUFFERS(NI25)%SEND_BUF(L+PP+5)  = INTBUF_TAB(N)%E2S_NOD_NORMAL(3*(NN2-1)+2)
                 BUFFERS(NI25)%SEND_BUF(L+PP+6)  = INTBUF_TAB(N)%E2S_NOD_NORMAL(3*(NN2-1)+3)
+              ELSE
+                BUFFERS(NI25)%SEND_BUF(L+PP+1)  = 0
+                BUFFERS(NI25)%SEND_BUF(L+PP+2)  = 0
+                BUFFERS(NI25)%SEND_BUF(L+PP+3)  = 0
+
+                BUFFERS(NI25)%SEND_BUF(L+PP+4)  = 0
+                BUFFERS(NI25)%SEND_BUF(L+PP+5)  = 0
+                BUFFERS(NI25)%SEND_BUF(L+PP+6)  = 0
+              ENDIF
 
 C             EID = INTBUF_TAB(N)%LEDGE((IED-1)*NLEDGE+8)
 
@@ -780,7 +793,7 @@ C           CALL FLUSH(6)
 C           WRITE(6,*) "Go into wait"
             CALL FLUSH(6)
             CALL MPI_WAITANY(NSPMD,BUFFERS(NI25)%RECV_RQ,P,MPI_STATUS_IGNORE,IERROR)
-C           WRITE(6,*) "RECIEVE FROM",P-1
+C           WRITE(6,*) "RECEIVE FROM",P-1
             L0 = (BUFFERS(NI25)%IAD_RECV(P) - 1)*NB_VALUES 
             IBEGIN = 0
             IF( P > 1) THEN
@@ -913,7 +926,7 @@ C debug mode
 #endif
 
 
-C --------------- Free Send rquest SEND wait 
+C --------------- Free Send request SEND wait
       DO NI25=1,NINTER25
         N = INTLIST25(NI25)
         IEDGE = IPARI(58,N)

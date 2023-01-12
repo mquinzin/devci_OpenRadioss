@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SMS_ENCIN_2                   source/ams/sms_encin_2.F      
 Chd|-- called by -----------
@@ -40,6 +40,7 @@ Chd|        SPMD_LIST_SMS                 source/mpi/ams/spmd_sms.F
 Chd|        SPMD_MIJ_SMS                  source/mpi/ams/spmd_sms.F     
 Chd|        INTSTAMP_MOD                  share/modules/intstamp_mod.F  
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE SMS_ENCIN_2(
      1        ITASK    ,NODFT    ,NODLT    ,NODXI_SMS,
@@ -48,7 +49,7 @@ Chd|====================================================================
      4        A        ,WV       ,WMV      ,WDG       ,XMOM_SMS ,
      5        ICODT    ,ICODR    ,ISKEW    ,SKEW      ,IBFV     ,
      6        VEL      ,NPC      ,TF       ,X         ,D        ,
-     7        SENSOR   ,LSENSOR  ,IFRAME   ,XFRAME    ,JADI_SMS ,
+     7        SENSOR_TAB,IFRAME   ,XFRAME    ,JADI_SMS ,
      8        JDII_SMS ,LTI_SMS  ,ISKYI_SMS ,MSKYI_SMS ,FR_SMS  ,
      9        FR_RMS   ,NPBY     ,TAGSLV_RBY_SMS,INTSTAMP,CPTREAC,
      A        NODREAC  ,FTHREAC  ,AR        ,VR        ,
@@ -64,6 +65,7 @@ C-----------------------------------------------
       USE MOD_SMS_WORK
       USE INTSTAMP_MOD
       USE MESSAGE_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -93,7 +95,7 @@ C-----------------------------------------------
      .         JAD_SMS(*), JDI_SMS(*), INDX1_SMS(*),
      .         IAD_ELEM(2,NSPMD+1) ,FR_ELEM(*), WEIGHT(*),
      .         ICODT(*), ICODR(*), ISKEW(*),
-     .         NPC(*), IBFV(NIFV,*), LSENSOR(NSENSI,*), IFRAME(LISKN,*),
+     .         NPC(*), IBFV(NIFV,*),IFRAME(LISKN,*),
      .         JADI_SMS(*), JDII_SMS(*),CPTREAC,NODREAC(*),
      .         FR_SMS(NSPMD+1), FR_RMS(NSPMD+1), ISKYI_SMS(*),
      .         NPBY(NNPBY,*), TAGSLV_RBY_SMS(*),
@@ -106,13 +108,13 @@ C-----------------------------------------------
      .    MS(*), DIAG_SMS(*), LT_SMS(*),
      .    V(3,*), A(3,*), WV(3,*), WMV(3,*), WDG(*),  XMOM_SMS(3,*),
      .    SKEW(*), X(3,*), D(3,*), TF(*), VEL(LFXVELR,*),
-     .    SENSOR(NSENSR,*), XFRAME(NXFRAME,*),
-     .    LTI_SMS(*), MSKYI_SMS(*),FTHREAC(6,*),
+     .    XFRAME(NXFRAME,*),LTI_SMS(*), MSKYI_SMS(*),FTHREAC(6,*),
      .    AR(3,*), VR(3,*), DR(3,*), IN(*), RBY(NRBY,*),
      .    FRBE3(*), RRBE3(*)
       DOUBLE PRECISION RRBE3_PON(*)
       DOUBLE PRECISION RBY6(8,6,NRBYKIN)
       TYPE(INTSTAMP_DATA) INTSTAMP(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l  V a r i a b l e s
 C-----------------------------------------------
@@ -332,8 +334,8 @@ C       reimp wmv=0
 C
         IF(ITASK==0)
      .  CALL SMS_FIXVEL(IBFV   ,WMV     ,V     ,NPC    ,TF     ,
-     2                  VEL    ,DIAG_SMS,X     ,SKEW   ,SENSOR ,
-     3                  LSENSOR,WEIGHT  ,D     ,IFRAME ,XFRAME ,
+     2                  VEL    ,DIAG_SMS,X     ,SKEW   ,SENSOR_TAB,
+     3                  WEIGHT  ,D     ,IFRAME ,XFRAME ,
      4                  -(IT+1),DIAG_SMS,NODXI_SMS,CPTREAC,
      5                  NODREAC,FTHREAC ,AR     ,VR       ,DR  ,
      6                  IN     ,RBY     )

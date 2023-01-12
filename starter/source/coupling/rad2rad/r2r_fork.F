@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  R2R_FORK                      source/coupling/rad2rad/r2r_fork.F
 Chd|-- called by -----------
@@ -75,7 +75,7 @@ C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER ISTAT,KDOM,IPID_RET,IERROR,WAIT,IPID_L,STAT,DOM_SWITCH
       LOGICAL(4) WAITA       
-#if defined(COMP_ARMFLANG) || defined(COMP_LLVM)
+#if defined(COMP_ARMFLANG) || defined(COMP_LLVM) || defined(COMP_AOCC)
       INTEGER  GETPID
 #endif
       INTEGER :: LEN_TMP_NAME
@@ -108,7 +108,7 @@ C----------------------------------------------------------------------
 C-------------------INTEL -> LINUX/LINUXIA64/MACOSX--------------------
 C----------------------------------------------------------------------         
 #else
-#if defined (COMP_GFORTRAN) ||  defined(COMP_ARMFLANG) || defined(COMP_LLVM)
+#if defined(COMP_GFORTRAN) || defined(COMP_ARMFLANG)|| defined(COMP_LLVM) || defined(COMP_AOCC)
         CALL MY_FORK(IPID)
         IPID_RET = GETPID()
 #else
@@ -139,7 +139,7 @@ C----------------------------------------------------------------------
 C-------------------INTEL -> LINUX/LINUXIA64/MACOSX--------------------
 C----------------------------------------------------------------------                     
 #else
-#if defined(COMP_GFORTRAN) ||  defined(COMP_ARMFLANG) || defined(COMP_LLVM)
+#if defined(COMP_GFORTRAN) ||  defined(COMP_ARMFLANG) || defined(COMP_LLVM) ||  defined(COMP_AOCC)
             CALL MY_WAITPID(IPID,ISTAT,0,IPID_RET)
 #else
             CALL PXFWAITPID(IPID,ISTAT,0,IPID_RET,IERROR)

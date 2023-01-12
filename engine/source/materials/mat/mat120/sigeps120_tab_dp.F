@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS120_TAB_DP              source/materials/mat/mat120/sigeps120_tab_dp.F
 Chd|-- called by -----------
@@ -104,17 +104,17 @@ c     UPARAM(3)  = shear modulus   G
 c     UPARAM(4)  = bulk modulus    K
 c     UPARAM(5)  = Yld0: instant yield stress 
 c     UPARAM(6)  = Q : expontial term coefficient in the hardening law
-c     UPARAM(7)  = BETA : exponent of the exponetial term 
+c     UPARAM(7)  = BETA : exponent of the exponential term 
 c     UPARAM(8)  = P : multiplier of the linear term in the hardening law
 c     UPARAM(9)  = A1F : parameter of the yield function
 c     UPARAM(10) = A2F : parameter of the yield function
 c     UPARAM(11) = A1H : distortionnal yield hardening coefficiant
 c     UPARAM(12) = A2H : distortionnal yield hardening coefficiant
 c     UPARAM(13) = AS : parameter of the potential function
-c     UPARAM(14) = D1C: first  damage strain parameter in initial damage treshold
-c     UPARAM(15) = D2C: second damage strain parameter in initial damage treshold 
-c     UPARAM(16) = D1F: first  damage strain parameter in final damage treshold
-c     UPARAM(17) = D2F: second damage strain parameter in final damage treshold
+c     UPARAM(14) = D1C: first  damage strain parameter in initial damage threshold
+c     UPARAM(15) = D2C: second damage strain parameter in initial damage threshold 
+c     UPARAM(16) = D1F: first  damage strain parameter in final damage threshold
+c     UPARAM(17) = D2F: second damage strain parameter in final damage threshold
 c     UPARAM(18) = D_TRX : triaxiality factor in damage formula
 c     UPARAM(19) = D_JC: JC strain rate coefficient in damage formula
 c     UPARAM(20) = EXPN exponent in damage evolution
@@ -145,7 +145,7 @@ C=======================================================================
       NU    = UPARAM(2)
       G     = UPARAM(3)
       BULK  = UPARAM(4)
-c     Paramters of yield function/hardening law and flow potential
+c     Parameters of yield function/hardening law and flow potential
       YLD0  = UPARAM(5)
       A1F   = UPARAM(9) 
       A2F   = UPARAM(10)

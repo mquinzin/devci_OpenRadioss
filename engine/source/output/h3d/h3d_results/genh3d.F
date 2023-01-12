@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  GENH3D                        source/output/h3d/h3d_results/genh3d.F
 Chd|-- called by -----------
@@ -58,6 +58,7 @@ Chd|        H3D_SHELL_TENSOR              source/output/h3d/h3d_results/h3d_shel
 Chd|        H3D_SHELL_VECTOR              source/output/h3d/h3d_results/h3d_shell_vector.F
 Chd|        H3D_SKIN_IXSKIN               source/output/h3d/h3d_results/h3d_skin_ixskin.F
 Chd|        H3D_SKIN_OFF                  source/output/h3d/h3d_results/h3d_skin_off.F
+Chd|        H3D_SKIN_PRE_MAP              source/output/h3d/h3d_results/h3d_skin_pre_map.F
 Chd|        H3D_SKIN_SCALAR               source/output/h3d/h3d_results/h3d_skin_scalar.F
 Chd|        H3D_SKIN_TENSOR               source/output/h3d/h3d_results/h3d_skin_tensor.F
 Chd|        H3D_SKIN_VECTOR               source/output/h3d/h3d_results/h3d_skin_vector.F
@@ -91,11 +92,14 @@ Chd|        CRACKXFEM_MOD                 share/modules/crackxfem_mod.F
 Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.F
 Chd|        FVBAG_MOD                     share/modules/fvbag_mod.F     
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        H3D_INC_MOD                   share/modules/h3d_inc_mod.F   
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        INOUTFILE_MOD                 ../common_source/modules/inoutfile_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        OUTMAX_MOD                    ../common_source/modules/outmax_mod.F
 Chd|        PLYXFEM_MOD                   share/modules/plyxfem_mod.F   
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|====================================================================
       SUBROUTINE GENH3D(X        ,D        ,V           ,A           ,BUFEL    ,
@@ -135,8 +139,8 @@ Chd|====================================================================
      1                  SH4TREE  ,SH3TREE  ,H3D_DATA    ,MULTI_FVM   ,SUBSET    ,
      2                  PSKIDS   ,TAG_SKINS6,TF         ,NPF         ,FCONT_MAX ,
      3                  MDS_MATID,FNCONTP2 ,FTCONTP2    ,IBCL        ,ILOADP    ,
-     4                  LLOADP   ,FAC      ,SENSOR      ,LSENSOR     ,TAGNCONT  ,
-     5                  LOADP_HYD_INTER    ,XFRAME      ,FORC        )
+     4                  LLOADP   ,FAC      ,SENSOR_TAB  ,TAGNCONT    ,
+     5                  LOADP_HYD_INTER,XFRAME,FORC     ,AR          )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -153,6 +157,9 @@ C-----------------------------------------------
       USE GROUPDEF_MOD
       USE INOUTFILE_MOD
       USE ALE_CONNECTIVITY_MOD
+      USE SENSOR_MOD
+      USE OUTMAX_MOD
+      USE H3D_INC_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -256,11 +263,11 @@ C-----------------------------------------------
      .        NERBT(NRBODY),LOC_PROC,PROC,NERBE2T(NRBE2G),
      .        NERBE3T(NRBE3G),IAD_RBE2(4,*),NV46,KXIG3D(*),
      .        IXIG3D(*),SIG3DSOLID,MDS_MATID(*)
-      INTEGER LLOADP(SLLOADP),LSENSOR(NSENSI,*)
+      INTEGER LLOADP(SLLOADP)
       INTEGER ILOADP(SIZLOADP,*),IBCL(NIBCLD,*)
       INTEGER TAGNCONT(NLOADP_HYD_INTER,NUMNOD),LOADP_HYD_INTER(NLOADP_HYD)
       my_real
-     .       FAC(LFACCLD,*), SENSOR(NSENSR,*), XFRAME(NXFRAME,*),FORC(*)
+     .       FAC(LFACCLD,*),XFRAME(NXFRAME,*),FORC(*)
       TYPE (ELBUF_STRUCT_), DIMENSION(NGROUP) :: ELBUF_TAB
       TYPE (ELBUF_STRUCT_), DIMENSION(NGROUP,NXEL) :: XFEM_TAB
       TYPE (CLUSTER_) ,DIMENSION(NCLUSTER)    :: CLUSTER
@@ -271,6 +278,8 @@ C-----------------------------------------------
       TYPE (GROUP_)  , DIMENSION(NGRNOD) :: IGRNOD
       TYPE (SUBSET_) , TARGET, DIMENSION(NSUBS) :: SUBSET
       TYPE(t_ale_connectivity), INTENT(IN) :: ALE_CONNECT
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
+      my_real , INTENT(IN) :: AR(SAR)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -324,7 +333,7 @@ C-----------------------------------------------
       INTEGER IFLAG1D,NNNSRG,NNN,BUF
       INTEGER NANIMONED_L,IUS,NANIM3D_L
       INTEGER ISPH3D,M4,N0
-      INTEGER SBUFSPM,SBUFRECVM,SBUFSPO,SPORBY,N_OUTP_DATA,LEN_H3DTITLE
+      INTEGER SBUFSPM,SBUFRECVM,SBUFSPO,SPORBY,N_OUTP_DATA,LEN_H3DTITLE,N_H3D_PART_LIST
       my_real
      .   CDG(3),XMIN,YMIN,ZMIN,XMAX,YMAX,ZMAX, SCALE,
      .   RVAL
@@ -396,7 +405,8 @@ c a mettre en allocatable
      .         IPARTTG_P,
      .         IPARTQ_P,  
      .         IPARTSKIN_P,
-     .         NODAL_IPART
+     .         NODAL_IPART,
+     .         IMAPSKP
       my_real, DIMENSION(:), ALLOCATABLE :: X_P,D_P
       INTEGER, DIMENSION(:), ALLOCATABLE :: ITAB_P
 
@@ -1394,17 +1404,18 @@ C CREATE SKIN (4-N) CONNECTIVITY ( THICK SHELLS +solid +PLOAD...)
 C**********************************************************************************************
 C-------------nodal_pid used for PLOAD---        
        IF (NUMSKINP>0) THEN
-          ALLOCATE(NODAL_IPART(NUMNOD))
+          ALLOCATE(NODAL_IPART(NUMNOD),IMAPSKP(NUMSKINP0))
           CALL GET_NODAL_IPART(ELBUF_TAB,IPARG,IPARTC,IPARTTG,IPARTS,
      .                          IXC, IXTG, IXS,IXS10,IXS16,IXS20,
      .                          NODAL_IPART)
+          CALL H3D_SKIN_PRE_MAP(IBCL  ,ILOADP  ,LLOADP ,IMAPSKP)
        END IF
       IF(H3D_DATA%IH3D == 1 .AND. NUMSKING>0 ) THEN
 C----create connectivity IXSKIN_P(NIXQ,NUMSKING),IPARTSKIN_P(NUMSKING) 
         IXSKIN_TMP = 0 
         CALL H3D_SKIN_IXSKIN(ELBUF_TAB,IPARG,IPARTS,IXS,IXS10,
      .                       ITAB ,IXSKIN_TMP  ,TAG_SKINS6,
-     .                       IBCL,ILOADP,LLOADP,NODAL_IPART) 
+     .                       IBCL,ILOADP,LLOADP,NODAL_IPART,IMAPSKP) 
 c--------IXSKIN_TMP(1,i) :ipart (instead of mid)--IXSKIN_TMP(2-5,i) : Nj(user_id)
         IF(NSPMD > 1) THEN 
 C         
@@ -1856,6 +1867,7 @@ c-----
           INFO2 = H3D_DATA%OUTPUT_LIST(I)%INFO2
           KEYWORD = H3D_DATA%OUTPUT_LIST(I)%KEYWORD
           N_OUTP_DATA = H3D_DATA%OUTPUT_LIST(I)%N_OUTP
+          N_H3D_PART_LIST = H3D_DATA%OUTPUT_LIST(I)%N_H3D_PART_LIST
           INTERSKID = 0
           IF(KEYWORD == 'SKID_LINE')THEN
             DO NI=1,NINTER
@@ -1881,7 +1893,9 @@ c          IF(ISPMD == 0) print *,'H3D_DATA%OUTPUT_LIST(I)%PART',H3D_DATA%OUTPUT
      .                     VOLMON   , ALE_CONNECT  ,DIAG_SMS      ,MS           ,PDAMA2    ,
      .                     X        , STIFR        , STIFN        ,KEYWORD      ,H3D_DATA  ,
      .                     NPBY     ,RBY           ,INTERSKID     ,H3D_DATA%N_SCAL_SKID,PSKIDS,
-     .                     NODGLOB  ,ITYSKID       )
+     .                     NODGLOB  ,ITYSKID       ,IPARTSP       ,IPARTR       ,IPARTP    , 
+     .                     IPARTT   ,IPARTS        ,IPARTQ        ,KXSP         ,IXR       ,
+     .                     IXP      ,IXT           ,N_H3D_PART_LIST)
 
 c
           IF (NSPMD > 1 ) THEN
@@ -1926,6 +1940,7 @@ c
           INFO2 = H3D_DATA%OUTPUT_LIST(I)%INFO2
           N_OUTP_DATA = H3D_DATA%OUTPUT_LIST(I)%N_OUTP
           KEYWORD = H3D_DATA%OUTPUT_LIST(I)%KEYWORD
+          N_H3D_PART_LIST = H3D_DATA%OUTPUT_LIST(I)%N_H3D_PART_LIST
 c          IF(ISPMD == 0) print *,'nodal vector',N_OUTP_DATA,'IFUNC',IFUNC,'INFO1',INFO1,'INFO2',INFO2
 
 c          IF(ISPMD == 0) print *,'H3D_DATA%OUTPUT_LIST(I)%PART',H3D_DATA%OUTPUT_LIST(I)%PART(1:NPART)
@@ -1940,18 +1955,20 @@ c          IF(ISPMD == 0) print *,'H3D_DATA%OUTPUT_LIST(I)%PART',H3D_DATA%OUTPUT
      .                   DR      , DXANCG  , FANREAC, FCLUSTER  , MCLUSTER ,
      .                   VR      , FOPT    , NPBY   , IXUR      , VGAZ     ,
      .                   IPARI   , IGRNOD  , WEIGHT , NODGLOB   ,FCONT_MAX ,
-     .                   FNCONTP2, FTCONTP2)
+     .                   FNCONTP2, FTCONTP2, AR     , IPARTSP   ,IPARTR    ,
+     .                   IPARTP  , IPARTT  , IPARTS , IPARTQ    ,KXSP      ,
+     .                   IXR     , IXP     , IXT    , N_H3D_PART_LIST)
 
 c
           IF (NSPMD > 1 ) THEN
             IF(KEYWORD == 'CONT'.OR.KEYWORD == 'PCONT/NORMAL'.OR.KEYWORD == 'PCONT/TANGENT'.OR.KEYWORD == 'FEXT'
-     .         .OR.(KEYWORD == 'CONT/MAX'.AND.NINTSTAMP==0)
      .         .OR.(KEYWORD == 'CONT2'.OR.KEYWORD == 'PCONT2/NORMAL'.OR.KEYWORD == 'PCONT2/TANGENT')) THEN
 
                CALL STARTIME(MACRO_TIMER_SPMDH3D,1) 
                CALL SPMD_OUTPITAB(NODE_ID,WEIGHT,NODGLOB,NODE_ID_P)
                CALL SPMD_OUTPITAB(IS_WRITEN_NODE,WEIGHT,NODGLOB,IS_WRITEN_NODE_P)
-               IF(NINTSTAMP==0) THEN
+               IF(NINTSTAMP==0.OR.KEYWORD == 'CONT2'.OR.KEYWORD == 'PCONT2/NORMAL'.OR.KEYWORD == 'PCONT2/NORMAL'
+     .           .OR.KEYWORD == 'PCONT2/TANGENT'.OR.KEYWORD == 'FEXT') THEN
                   CALL SPMD_H3D_SUM_R_NODAL(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG)
                ELSEIF(KEYWORD == 'CONT')THEN
                   CALL SPMD_H3D_SUM_R_NODAL_21(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG,FCONTG)
@@ -1959,24 +1976,24 @@ c
                   CALL SPMD_H3D_SUM_R_NODAL_21(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG,FNCONTG)
                ELSEIF(KEYWORD == 'PCONT/TANGENT')THEN  
                   CALL SPMD_H3D_SUM_R_NODAL_21(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG,FTCONTG)
-               ELSEIF(KEYWORD == 'CONT2')THEN
-                  CALL SPMD_H3D_SUM_R_NODAL_21(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG,FNCONT2)
-               ELSEIF(KEYWORD == 'PCONT2/NORMAL')THEN    
-                  CALL SPMD_H3D_SUM_R_NODAL_21(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG,FNCONTP2)
-               ELSEIF(KEYWORD == 'PCONT2/TANGENT')THEN  
-                  CALL SPMD_H3D_SUM_R_NODAL_21(NODGLOB,NODAL_VECTOR,3*NUMNOD,NODAL_VECTOR_P,3*NUMNODG,FTCONTP2)
                ENDIF                     
                CALL STOPTIME(MACRO_TIMER_SPMDH3D,1) 
 
-            ELSEIF(KEYWORD == 'CONT/MAX'.AND.NINTSTAMP/=0) THEN
-
-               CALL STARTIME(MACRO_TIMER_SPMDH3D,1) 
-               CALL SPMD_OUTPITAB(NODE_ID,WEIGHT,NODGLOB,NODE_ID_P)
-               CALL SPMD_OUTPITAB(IS_WRITEN_NODE,WEIGHT,NODGLOB,IS_WRITEN_NODE_P)
-               IF(ISPMD == 0) THEN
-                  NODAL_VECTOR_P(1:3*NUMNODG) =FCONT_MAX(1:3*NUMNODG)
-               ENDIF 
-               CALL STOPTIME(MACRO_TIMER_SPMDH3D,1)
+            ELSEIF(NINTSTAMP/=0.AND.((KEYWORD == 'CONT/MAX').OR.(KEYWORD == 'MAXPCONT/NORMAL') .OR.
+     .           (KEYWORD == 'MAXPCONT/TANGENT'))) THEN
+               IF(KEYWORD == 'CONT/MAX')THEN
+                  IF(ISPMD == 0) THEN
+                     NODAL_VECTOR_P(1:3*NUMNODG) =FCONT_MAX(1:3*NUMNODG)
+                  ENDIF
+               ELSEIF(KEYWORD == 'MAXPCONT/NORMAL')THEN
+                  IF(ISPMD == 0) THEN
+                     NODAL_VECTOR_P(1:3*NUMNODG) =FNCONT_MAX(1:3*NUMNODG)
+                 ENDIF 
+               ELSEIF(KEYWORD == 'MAXPCONT/TANGENT')THEN
+                  IF(ISPMD == 0) THEN
+                     NODAL_VECTOR_P(1:3*NUMNODG) =FTCONT_MAX(1:3*NUMNODG)
+                 ENDIF
+               ENDIF            
 
             ELSE
                CALL STARTIME(MACRO_TIMER_SPMDH3D,1) 
@@ -2012,6 +2029,7 @@ c
           INFO2 = H3D_DATA%OUTPUT_LIST(I)%INFO2
           N_OUTP_DATA = H3D_DATA%OUTPUT_LIST(I)%N_OUTP
           KEYWORD = H3D_DATA%OUTPUT_LIST(I)%KEYWORD
+          N_H3D_PART_LIST = H3D_DATA%OUTPUT_LIST(I)%N_H3D_PART_LIST
 c          IF(ISPMD == 0) print *,'nodal tensor',N_OUTP_DATA,'IFUNC',IFUNC,'INFO1',INFO1,'INFO2',INFO2
 
 c          IF(ISPMD == 0) print *,'H3D_DATA%OUTPUT_LIST(I)%PART',H3D_DATA%OUTPUT_LIST(I)%PART(1:NPART)
@@ -2022,8 +2040,10 @@ c          IF(ISPMD == 0) print *,'H3D_DATA%OUTPUT_LIST(I)%PART',H3D_DATA%OUTPUT
      .                     IS_WRITEN_NODE,H3D_DATA%OUTPUT_LIST(I)%PART ,IPARTC,IPARTTG,
      .                  IXC, IXTG,TEMP,IFLOW,RFLOW,IXS,IXQ,NV46,MONVOL   ,VOLMON, DIAG_SMS,MS,
      .                   PDAMA2,X, STIFR, STIFN, A, D, V, CONT, FCONTG, FINT, FEXT,KEYWORD,
-     .                   BUFMAT   , IXS10       , IXS16          , IXS20 , IXT      ,
-     .                   IXP      , IXR        ,IAD_ELEM        ,FR_ELEM     , WEIGHT)
+     .                   BUFMAT   ,IXS10      ,IXS16      ,IXS20   ,IXT      ,
+     .                   IXP      ,IXR        ,IAD_ELEM   ,FR_ELEM ,WEIGHT   , 
+     .                   IPARTSP  ,IPARTR     ,IPARTP     ,IPARTT  ,IPARTS   , 
+     .                   IPARTQ   ,KXSP       ,N_H3D_PART_LIST)
 
 c
           IF (NSPMD > 1 ) THEN
@@ -2793,8 +2813,8 @@ c-----
      .                    IS_WRITEN_SKIN,INFO1,KEYWORD       , H3D_DATA  ,
      6                    IAD_ELEM        ,FR_ELEM     , WEIGHT    ,TAG_SKINS6,
      7                    NPF  ,TF   ,BUFMAT,IBCL    ,ILOADP     ,LLOADP    ,FAC    , 
-     8                    SENSOR,LSENSOR ,TAGNCONT    ,LOADP_HYD_INTER,XFRAME,FORC  ,
-     9                    NODAL_IPART )
+     8                    SENSOR_TAB,TAGNCONT    ,LOADP_HYD_INTER,XFRAME,FORC  ,
+     9                    NODAL_IPART ,IMAPSKP )
 c
           IF (NSPMD > 1 ) THEN
             CALL STARTIME(MACRO_TIMER_SPMDH3D,1) 
@@ -2829,8 +2849,8 @@ c-----
 
           CALL H3D_SKIN_VECTOR(SKIN_VECTOR,NODAL_IPART,
      .                   IS_WRITEN_SKIN  ,H3D_DATA%OUTPUT_LIST(I)%PART,INFO1   ,KEYWORD ,
-     .                   IBCL,ILOADP,LLOADP,FAC ,NPF,TF ,SENSOR,LSENSOR ,
-     .                   TAGNCONT,LOADP_HYD_INTER,FORC,XFRAME,X ,V  )
+     .                   IBCL,ILOADP,LLOADP,FAC ,NPF,TF ,SENSOR_TAB,
+     .                   TAGNCONT,LOADP_HYD_INTER,FORC,XFRAME,X ,V ,IMAPSKP)
 c
           IF (NSPMD > 1 ) THEN
             CALL STARTIME(MACRO_TIMER_SPMDH3D,1) 
@@ -2974,6 +2994,7 @@ c
       DEALLOCATE(SKIN_ID_P)
       DEALLOCATE(IXSKIN_TMP)
       DEALLOCATE(IXSKIN_P)
+      IF (NUMSKINP>0) DEALLOCATE(NODAL_IPART,IMAPSKP)
 c
       DEALLOCATE(ITAB_P)
 

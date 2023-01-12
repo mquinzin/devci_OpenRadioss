@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  S10CNDF1                      source/elements/solid/solide10/s10cndf.F
 Chd|-- called by -----------
@@ -1203,7 +1203,7 @@ C-----------------------------------------------
 C=======================================================================
 C---- for /CHKPT and restart : just affect output in ecrit
        IF (MCHECK>0.OR.IRUN>1) THEN
-C---- can't do it precisily unless to storer MASI2ND0
+C---- can't do it precisely unless to store MASI2ND0
         IF (NKEND<0.OR.IRUN>1) THEN
           DMAS2 = MSI20
           NKEND =IABS(NKEND)
@@ -1224,7 +1224,7 @@ C
            NS = IABS(ICNDS10(1,I))
            IF (WEIGHT(NS)/=0) MASND = MASND + MS(NS)
          ENDDO
-C---due to the part w/ weigth(ns)=0; DMSI2 in itet2_c.inc for restart
+C---due to the part w/ weight(ns)=0; DMSI2 in itet2_c.inc for restart
         IF (TT==ZERO) THEN      
          DMSI2 = MASND-MS_ND-DMAS2
          DMSI2 = MAX(ZERO,DMSI2)

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  H3D_SOLID_SCALAR_1            source/output/h3d/h3d_results/h3d_solid_scalar_1.F
 Chd|-- called by -----------
@@ -125,7 +125,7 @@ C-----------------------------------------------
      .   CUMUL(3),VX,VY,VZ,NX,NY,NZ,SURF,TMP_2(MVSIZ,3)
       my_real
      .   G1(MVSIZ,3),G2(MVSIZ,3),G3(MVSIZ,3),VOLN(MVSIZ),AREAM(MVSIZ),
-     .   RHO0,DET(MVSIZ),EZZ(MVSIZ)
+     .   RHO0,DET(MVSIZ),EZZ(MVSIZ),MAXDAMINI
       INTEGER I,I1,II,J,NEL,NPTR,NPTS,NPTT,NLAY,L,IFAIL,ILAY,
      .        IR,IS,IT,IL,MLW, NUVAR,IUS,LENF,PTF,PTM,PTS,NFAIL,
      .        N,NN,K,K1,K2,JTURB,MT,IMID,IALEL,IPID,ISH3N,NNI,
@@ -325,7 +325,28 @@ C--------------------------------------------------
                       IS_WRITTEN_VALUE(I) = 1
                     ENDIF  
                   ENDDO
-                ENDIF ! Isolid ...               
+                ENDIF ! Isolid ...         
+C--------------------------------------------------  
+              ELSEIF (KEYWORD == 'TSAIWU' .AND. GBUF%G_TSAIWU > 0) THEN
+C--------------------------------------------------  
+                DO I=LFT,LLT   
+                  VALUE(I) = ZERO                                      
+                ENDDO  
+                DO IL=1,NLAY                          
+                  IF (ELBUF_TAB(NG)%BUFLY(IL)%L_TSAIWU > 0) THEN
+                    DO IS=1,NPTS 
+                      DO IT=1,NPTT                                      
+                        DO IR=1,NPTR                                    
+                          LBUF=>ELBUF_TAB(NG)%BUFLY(IL)%LBUF(IR,IS,IT)
+                          DO I=LFT,LLT                                 
+                            VALUE(I) = VALUE(I) + LBUF%TSAIWU(I)/NPTG 
+                            IS_WRITTEN_VALUE(I) = 1         
+                          ENDDO
+                        ENDDO    
+                      ENDDO      
+                    ENDDO        
+                  ENDIF 
+                ENDDO
 C--------------------------------------------------  
               ELSEIF(KEYWORD == 'DENS')THEN
 C--------------------------------------------------  
@@ -1391,6 +1412,71 @@ c
                     ENDIF                                                 
                   ENDIF 
                 ENDIF  
+C-------------------------------------------------- 
+              ELSEIF (KEYWORD == 'DAMINI') THEN
+C--------------------------------------------------
+                ! Resetting values
+                DO I=1,NEL                                          
+                  VALUE(I) = ZERO                                      
+                ENDDO 
+c ILAYER=NULL IR=NULL IS=NULL IT=NULL
+                IF ( ILAY == -1 .AND. IR == -1 .AND. IS == -1 .AND. IT == -1) THEN 
+                  DO IL=1,NLAY 
+                    NFAIL = ELBUF_TAB(NG)%BUFLY(IL)%NFAIL
+                    DO IS=1,NPTS
+                      DO IT=1,NPTT
+                        DO IIR=1,NPTR
+                          FBUF => ELBUF_TAB(NG)%BUFLY(IL)%FAIL(IIR,IS,IT)
+                          DO I=1,NEL
+                            MAXDAMINI = ZERO
+                            DO IR=1,NFAIL 
+                              IF (FBUF%FLOC(IR)%LF_DAMINI > 0) THEN  
+                                MAXDAMINI = MAX(MAXDAMINI,FBUF%FLOC(IR)%DAMINI(I))
+                              ENDIF
+                            ENDDO
+                            VALUE(I) = VALUE(I) + MAXDAMINI/(NPTS*NPTR*NPTT*NLAY)
+                            IS_WRITTEN_VALUE(I) = 1
+                          ENDDO 
+                        ENDDO
+                      ENDDO
+                    ENDDO
+                  ENDDO 
+c ILAYER=NULL IR= IS= IT=
+                ELSEIF ( ILAY == -1 .AND. IR >= 0 .AND. IR <= NPTR .AND. 
+     .                   IS >= 0 .AND.  IS <= NPTS .AND. IT >= 0 .AND. IT <= NPTT) THEN 
+                  IIR = IR
+                  IF (IIR <= NPTR .AND. IS <= NPTS .AND. IT <= NPTT) THEN
+                    DO IL=1,NLAY   
+                      NFAIL = ELBUF_TAB(NG)%BUFLY(IL)%NFAIL
+                      FBUF => ELBUF_TAB(NG)%BUFLY(IL)%FAIL(IIR,IS,IT)
+                      DO I=1,NEL     
+                        MAXDAMINI = ZERO
+                        DO IR=1,NFAIL
+                          IF (FBUF%FLOC(IR)%LF_DAMINI > 0) THEN 
+                            MAXDAMINI = MAX(MAXDAMINI,FBUF%FLOC(IR)%DAMINI(I))
+                          ENDIF
+                        ENDDO
+                        VALUE(I) = VALUE(I) + MAXDAMINI/NLAY
+                        IS_WRITTEN_VALUE(I) = 1
+                      ENDDO
+                    ENDDO
+                  ENDIF 
+c ILAYER= IR= IS= IT=
+                ELSEIF ( ILAY > 0 .AND. ILAY <= NLAY .AND. IR >= 0 .AND. IR <= NPTR .AND. 
+     .                   IS >= 0 .AND.  IS <= NPTS) THEN
+                  NFAIL = ELBUF_TAB(NG)%BUFLY(ILAY)%NFAIL
+                  FBUF => ELBUF_TAB(NG)%BUFLY(ILAY)%FAIL(IR,IS,IT)
+                  DO I=1,NEL
+                    MAXDAMINI = ZERO
+                    DO IIR=1,NFAIL
+                      IF (FBUF%FLOC(IIR)%LF_DAMINI > 0) THEN
+                        MAXDAMINI = MAX(MAXDAMINI,FBUF%FLOC(IIR)%DAMINI(I))
+                      ENDIF
+                    ENDDO
+                    VALUE(I) = MAXDAMINI
+                    IS_WRITTEN_VALUE(I) = 1
+                  ENDDO
+                ENDIF   
 C--------------------------------------------------                
               ELSEIF(KEYWORD == 'TDEL') THEN
 C-------------------------------------------------- 

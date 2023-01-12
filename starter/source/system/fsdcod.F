@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FSDCOD                        source/system/fsdcod.F        
 Chd|-- called by -----------
@@ -32,15 +32,16 @@ Chd|        NINTRI                        source/system/nintrr.F
 Chd|        USR2SYS                       source/system/sysfus.F        
 Chd|        INTSTAMP_MOD                  share/modules1/intstamp_mod.F 
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        TABLE_MOD                     share/modules1/table_mod.F    
 Chd|====================================================================
-      SUBROUTINE FSDCOD(BUFMAT,PM,GEO,IBCL,IPRES,
-     .                  IBFV,ISKEW,ISKN,
-     .                  ITABM1,SKEW,LACCELM,INSEL,BUFGEO,
-     .                  IBCSLAG,IGEO ,IPM   ,
-     .                  DAMPR, IBFT  ,IBCV,
-     .                  IBCR  ,TABLE ,NPC1  ,NPC   ,PLD ,
-     .                  NOM_OPT,LSENSOR,IBFFLUX )
+      SUBROUTINE FSDCOD(BUFMAT    ,PM        ,GEO       ,IBCL      ,IPRES   ,
+     .                  IBFV      ,ISKEW     ,ISKN      ,SENSOR_TAB,
+     .                  ITABM1    ,SKEW      ,LACCELM   ,INSEL     ,BUFGEO  ,
+     .                  IBCSLAG   ,IGEO      ,IPM       ,
+     .                  DAMPR     ,IBFT      ,IBCV      ,IBFVEL    ,
+     .                  IBCR      ,TABLE     ,NPC1      ,NPC       ,PLD     ,
+     .                  NOM_OPT   ,IBFFLUX   )  
 C-----------------------------------------------
 C     SOUS PROGRAMME DE DECODAGE DES NOS USERS DES SKEW ET FCTS
 C          ENTREES NOS USER DES SKEW ET FCTS
@@ -51,6 +52,7 @@ C-----------------------------------------------
       USE MESSAGE_MOD
       USE INTSTAMP_MOD
       USE TABLE_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -77,14 +79,17 @@ C-----------------------------------------------
       INTEGER IBFV(NIFV,*),NPC(*), NPC1(*), IBCL(NIBCLD,*), IPRES(NIBCLD,*),
      .   ISKEW(*), ISKN(LISKN,*), ITABM1(*),
      .   LACCELM(3,*),INSEL(*),IBCSLAG(5,*), 
-     .   IPM(NPROPMI,*), IGEO(NPROPGI,*), IBFT(NIFT,*), IBCV(NICONV,*),
-     .   IBCR(NIRADIA,*), LSENSOR(NSENSI,*), IBFFLUX(NITFLUX,*)
+     .   IPM(NPROPMI,*), IGEO(NPROPGI,*),IBCV(NICONV,*),
+     .   IBCR(NIRADIA,*),IBFFLUX(NITFLUX,*)
+      INTEGER ,DIMENSION(NIFV,NFXVEL)  ,INTENT(INOUT) :: IBFVEL
+      INTEGER ,DIMENSION(NIFT,NFXTEMP) ,INTENT(INOUT) :: IBFT
       my_real
      .   PM(NPROPM,*), GEO(NPROPG,*),SKEW(LSKEW,*),
      .   DAMPR(NRDAMP,*), PLD(*),BUFMAT(*)
       TYPE(TTABLE) , DIMENSION(NTABLE) :: TABLE
       DOUBLE PRECISION BUFGEO(*)
       INTEGER NOM_OPT(LNOPT1,*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -1947,7 +1952,7 @@ C
           IOK = 0
           IF (ISENS > 0) THEN
             DO J=1,NSENSOR
-              IF (ISENS == LSENSOR(1,J)) THEN
+              IF (ISENS == SENSOR_TAB(J)%SENS_ID) THEN
                 BUFMAT(IADD+13) = J
                 IOK = 1
                 EXIT
@@ -1956,6 +1961,7 @@ C
             IF (IOK == 0)  
      .        CALL ANCMSG(MSGID=1240,ANMODE=ANINFO,MSGTYPE=MSGWARNING,
      .                    I1=ID,C1=TITR,I2=ISENS) 
+              BUFMAT(IADD+13) = 0   ! If not found set SENSOR ID to 0 as if there is no sensor
           ENDIF
         ENDIF
       ENDDO
@@ -1966,7 +1972,7 @@ C-------------------------
           ISENS = IBCV(6,I)
           IF(ISENS/=0) THEN
             DO J=1,NSENSOR
-              IF(ISENS == LSENSOR(1,J)) THEN
+              IF(ISENS == SENSOR_TAB(J)%SENS_ID) THEN
                  IBCV(6,I) = J
                  GO TO 801
               ENDIF
@@ -1983,7 +1989,7 @@ C------------------------
           ISENS = IBCR(6,I)
           IF(ISENS/=0) THEN
             DO J=1,NSENSOR
-              IF(ISENS == LSENSOR(1,J)) THEN
+              IF(ISENS == SENSOR_TAB(J)%SENS_ID) THEN
                  IBCR(6,I) = J
                  GO TO 802
               ENDIF
@@ -2000,7 +2006,7 @@ C---------------------
           ISENS = IBFFLUX(6,I)
           IF(ISENS/=0) THEN
             DO J=1,NSENSOR
-              IF(ISENS == LSENSOR(1,J)) THEN
+              IF(ISENS == SENSOR_TAB(J)%SENS_ID) THEN
                  IBFFLUX(6,I) = J
                  GO TO 803
               ENDIF
@@ -2011,6 +2017,36 @@ C---------------------
  803   CONTINUE
        ENDDO
 
+C---------------------
+C  IMPOSED TEMPERATURE
+C---------------------
+      DO I=1,NFXTEMP
+        ISENS = IBFT(3,I)
+        IF (ISENS > 0) THEN
+          DO J=1,NSENSOR
+            IF (ISENS == SENSOR_TAB(J)%SENS_ID) THEN
+               IBFT(3,I) = J
+               EXIT
+            ENDIF
+          ENDDO  
+        END IF
+      ENDDO
+
+C---------------------
+C  IMPOSED DISPLACEMENTS/VELOCITIES/ACCELERATIONS
+C---------------------
+      DO I=1,NFXVEL
+        ISENS = IBFVEL(4,I)
+        IF (ISENS > 0) THEN
+          DO J=1,NSENSOR
+            IF (ISENS == SENSOR_TAB(J)%SENS_ID) THEN
+               IBFVEL(4,I) = J
+               EXIT
+            ENDIF
+          ENDDO  
+        END IF
+      ENDDO
+c
 C----------------------------
 C     (III) TRAITEMENT DES TABLES
 C----------------------------

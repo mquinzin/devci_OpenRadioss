@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  INTFOP1                       source/interfaces/interf/intfop1.F
 Chd|-- called by -----------
@@ -33,6 +33,7 @@ Chd|        INTVO3                        source/interfaces/inter3d/intvo3.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE INTFOP1(
      1       IPARI ,X      ,A    ,
@@ -41,13 +42,14 @@ Chd|====================================================================
      4       NPC   ,TF      ,FSKYI   ,ISKY   ,VR   ,
      5       FCONT ,IN      ,IGRSURF ,BUFSF  ,FNCONT,
      6       FTCONT,ICONTACT,RCONTACT,NUM_IMP,NS_IMP,
-     8       NE_IMP ,NT_IMP  ,SENSOR  ,INTBUF_TAB,H3D_DATA)
+     8       NE_IMP ,NT_IMP  ,SENSOR_TAB,INTBUF_TAB,H3D_DATA)
 C-----------------------------------------------
 C   M o d u l e s
 C----------------------------------------------- 
       USE INTBUFDEF_MOD
       USE H3D_MOD
       USE GROUPDEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -78,11 +80,12 @@ C     REAL
       my_real DT2T, 
      .   X(*), A(*), FSAV(NTHVKI,*) , WA(*), V(*),MS(*),
      .   STIFN(*), TF(*),FSKYI(LSKY,NFSKYI),VR(3,*),FCONT(3,*),IN(*),
-     .   BUFSF(*), FNCONT(3,*),FTCONT(3,*),RCONTACT(*),SENSOR(NSENSR,*)
+     .   BUFSF(*), FNCONT(3,*),FTCONT(3,*),RCONTACT(*)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
       TYPE(H3D_DATABASE) :: H3D_DATA
       TYPE (SURF_)   , DIMENSION(NSURF)   :: IGRSURF
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -109,8 +112,8 @@ C
          ISENS = 0
          IF(NTY == 5 ) ISENS = IPARI(64,N) ! INTERFACE SENSOR NUMBER
 
-         IF(ISENS/=0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
-            TS = SENSOR(2,ISENS)
+         IF (ISENS > 0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
+            TS = SENSOR_TAB(ISENS)%TSTART
          ELSE
             TS = TT
          ENDIF

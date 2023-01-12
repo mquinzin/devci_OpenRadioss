@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  INTER_CHECK_SORT              source/interfaces/generic/inter_check_sort.F
 Chd|-- called by -----------
@@ -27,9 +27,11 @@ Chd|        INTTRI                        source/interfaces/intsort/inttri.F
 Chd|-- calls ---------------
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        INTER_STRUCT_MOD              share/modules/inter_struct_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
         SUBROUTINE INTER_CHECK_SORT( ITASK,NEED_TO_SORT,NBINTC,INTLIST,IPARI,
-     .                               INTBUF_TAB,SENSOR,NB_INTER_SORTED,LIST_INTER_SORTED,INTER_STRUCT)
+     .                               INTBUF_TAB,SENSOR_TAB,NB_INTER_SORTED,
+     .                               LIST_INTER_SORTED,INTER_STRUCT)
 !$COMMENT
 !       INTER_CHECK_SORT description
 !       check if a interface must be sorted
@@ -41,8 +43,9 @@ Chd|====================================================================
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
-        USE INTBUFDEF_MOD  
-        USE INTER_STRUCT_MOD
+      USE INTBUFDEF_MOD  
+      USE INTER_STRUCT_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -76,8 +79,8 @@ C-----------------------------------------------
         INTEGER, DIMENSION(NBINTC), INTENT(inout) :: LIST_INTER_SORTED   !   list of interfaces that need to be sorted
         INTEGER, DIMENSION(NPARI,NINTER), INTENT(in) :: IPARI    !   interface data
         TYPE(INTBUF_STRUCT_),DIMENSION(NINTER) :: INTBUF_TAB    ! interface data
-        my_real, DIMENSION(NSENSR,NSENSOR), INTENT(in) :: SENSOR  !   sesnor data
-        TYPE(inter_struct_type), DIMENSION(NINTER), INTENT(inout) :: INTER_STRUCT   !   struture for interface
+        TYPE(inter_struct_type), DIMENSION(NINTER), INTENT(inout) :: INTER_STRUCT   !   structure for interface
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -100,8 +103,8 @@ C-----------------------------------------------
 
             ISENS = 0
             IF(NTY == 7.OR.NTY == 11.OR.NTY == 24.OR.NTY == 25) ISENS = IPARI(64,N)  
-            IF(ISENS/=0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
-                TS = SENSOR(2,ISENS)
+            IF (ISENS > 0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
+                TS = SENSOR_TAB(ISENS)%TSTART
             ELSE
                 TS = TT
             ENDIF

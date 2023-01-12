@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|-- called by -----------
@@ -86,6 +86,7 @@ Chd|        HM_GET_INT_ARRAY_INDEX        source/devtools/hm_reader/hm_get_int_a
 Chd|        HM_GET_MAX_ID                 source/devtools/hm_reader/hm_get_max_id.F
 Chd|        HM_GROGRO                     source/groups/hm_grogro.F     
 Chd|        HM_GROGRONOD                  source/groups/hm_grogronod.F  
+Chd|        HM_GROUP_IS_USED              source/devtools/hm_reader/hm_group_is_used.F
 Chd|        HM_LECGRE                     source/groups/hm_lecgre.F     
 Chd|        HM_LECGRN                     source/groups/hm_lecgrn.F     
 Chd|        HM_LINENGR                    source/groups/hm_linengr.F    
@@ -529,6 +530,7 @@ Chd|        HM_READ_THGRNS                source/output/th/hm_read_thgrns.F
 Chd|        HM_READ_THGROU                source/output/th/hm_read_thgrou.F
 Chd|        HM_READ_THGRPA                source/output/th/hm_read_thgrpa.F
 Chd|        HM_READ_THGRPA_SUB            source/output/th/hm_read_thgrpa.F
+Chd|        HM_READ_THGRSENS              source/output/th/hm_read_thgrsens.F
 Chd|        HM_READ_THGRSURF              source/output/th/hm_read_thgrsurf.F
 Chd|        HM_READ_THPART                source/output/thpart/hm_read_thpart.F
 Chd|        HM_READ_TRIA                  source/elements/reader/hm_read_tria.F

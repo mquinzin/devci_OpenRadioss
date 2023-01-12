@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_SUB_BOUNDARIES           source/mpi/spmd_exch_sub.F    
 Chd|-- called by -----------
@@ -290,7 +290,7 @@ C=======================================================================
       NSIZESUB=NLOC_DMG%NNOD
       SIZEA = NLOC_DMG%L_NLOC
 C-------------------------------
-C 1. SEND & RECIEVE Buffer size
+C 1. SEND & RECEIVE Buffer size
 C-------------------------------
       SIZ = NLOC_DMG%IAD_SIZE(NSPMD+1)-NLOC_DMG%IAD_SIZE(1)
       ALLOCATE(RECV_BUF(SIZ))
@@ -346,7 +346,7 @@ c--------------------------------------------------------------------
           ENDIF
       ENDDO
 c--------------------------------------------------------------------
-c     Receive buffer & compute recieve_size
+c     Receive buffer & compute receive_size
 c-------------------------------------------------------------------
       K=1
       DO I = 1, NSPMD
@@ -468,7 +468,7 @@ C=======================================================================
       NSIZESUB=NLOC_DMG%NNOD
       SIZEA = NLOC_DMG%L_NLOC
 C-------------------------------
-C 1. SEND & RECIEVE Buffer size
+C 1. SEND & RECEIVE Buffer size
 C-------------------------------
       SIZ_S = NLOC_DMG%FR_NBCC(1,NSPMD+1)
       SIZ_R = NLOC_DMG%FR_NBCC(2,NSPMD+1)
@@ -530,7 +530,7 @@ c--------------------------------------------------------------------
           ENDIF
       ENDDO
 c--------------------------------------------------------------------
-c     Receive buffer & compute recieve_size
+c     Receive buffer & compute receive_size
 c-------------------------------------------------------------------
       K=1
       DO I = 1, NSPMD

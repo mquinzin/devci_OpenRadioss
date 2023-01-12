@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  LECIG3D                       source/elements/ige3d/lecig3d.F
 Chd|-- called by -----------
@@ -47,11 +47,11 @@ C     KXIG3D(4,*):IAD  :   ADRESSE DE LA ZONE DES NOS DE NOEUDS DANS IXIG3D
 C                                     IXIG3D(IAD) A IXIG3D(IAD+NNOD-1)
 C     KXIG3D(5,*):ID   :   ID DE L'ELEMENT.
 C     KXIG3D(6,*):ID   :   index of 1st knot in the Xknot vector corresponding to the element
-C     KXIG3D(7,*):ID   :   index of 1nd knot in the Yknot vector corresponding to the element
-C     KXIG3D(8,*):ID   :   index of 1rd knot in the Zknot vector corresponding to the element
-C     KXIG3D(9,*):ID   :   index of 2st knot in the Xknot vector corresponding to the element
+C     KXIG3D(7,*):ID   :   index of 1st knot in the Yknot vector corresponding to the element
+C     KXIG3D(8,*):ID   :   index of 1st knot in the Zknot vector corresponding to the element
+C     KXIG3D(9,*):ID   :   index of 2nd knot in the Xknot vector corresponding to the element
 C     KXIG3D(10,*):ID  :   index of 2nd knot in the Yknot vector corresponding to the element
-C     KXIG3D(11,*):ID  :   index of 2rd knot in the Zknot vector corresponding to the element
+C     KXIG3D(11,*):ID  :   index of 2nd knot in the Zknot vector corresponding to the element
 C     KXIG3D(12,*):    :
 C     KXIG3D(13,*):    :   
 C     KXIG3D(14,*):    :   

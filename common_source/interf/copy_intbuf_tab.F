@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  COPY_INTBUF_TAB               interf/copy_intbuf_tab.F      
 Chd|-- called by -----------
@@ -51,7 +51,7 @@ C-----------------------------------------------
       INTEGER I,SIZ,OLD_SIZ
 C=======================================================================
 
-! re-set to old sizes and reallocate only arrays that have potentialy size 
+! re-set to old sizes and reallocate only arrays that have potential size
 ! changes with MULTIMP, other sizes should not have been modified
       
         SIZ = INTBUF_TAB%S_CAND_E
@@ -1093,7 +1093,7 @@ C=======================================================================
 
       DO NI= 1, NINTER
 
-! inintialize INTERGER sizes and arrays for INTBUF_TAB_CP
+! uninitialize INTEGER sizes and arrays for INTBUF_TAB_CP
         SIZ = INTBUF_TAB(NI)%S_IRECTS
         INTBUF_TAB_C(NI)%S_IRECTS = SIZ
         ALLOCATE(INTBUF_TAB_C(NI)%IRECTS(SIZ))
@@ -1386,7 +1386,7 @@ C=======================================================================
         INTBUF_TAB_C(NI)%S_FACNRTS = SIZ
         ALLOCATE(INTBUF_TAB_C(NI)%FACNRTS(SIZ))
 
-! inintialize REAL sizes and arrays for INTBUF_TAB_CP
+! uninitialize REAL sizes and arrays for INTBUF_TAB_CP
 
         SIZ = INTBUF_TAB(NI)%S_STFAC
         INTBUF_TAB_C(NI)%S_STFAC = SIZ

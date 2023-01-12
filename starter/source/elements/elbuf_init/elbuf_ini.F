@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ELBUF_INI                     source/elements/elbuf_init/elbuf_ini.F
 Chd|-- called by -----------
@@ -578,6 +578,11 @@ c
                   FLOC%DAMMX = ZERO
                   LFAIL = LFAIL + FLOC%LF_DAMMX*NEL + 1 
 c
+                  FLOC%LF_DAMINI = FAIL_TAG(IRUPT)%LF_DAMINI                        
+                  MY_ALLOCATE(FLOC%DAMINI,FLOC%LF_DAMINI*NEL) 
+                  FLOC%DAMINI = ZERO
+                  LFAIL = LFAIL + FLOC%LF_DAMINI*NEL + 1 
+c
                   FLOC%LF_TDEL  = FAIL_TAG(IRUPT)%LF_TDEL                        
                   MY_ALLOCATE(FLOC%TDEL,FLOC%LF_TDEL*NEL)
                   FLOC%TDEL = ZERO                                                               
@@ -932,6 +937,7 @@ c            LLOC = LLOC + BUFLY%L_VOL0DP
             LLOC = LLOC + BUFLY%L_PLANL
             LLOC = LLOC + BUFLY%L_EPSDNL
             LLOC = LLOC + BUFLY%L_DMGSCL
+            LLOC = LLOC + BUFLY%L_TSAIWU
             BUFLEN = BUFLEN + (LLOC * NEL + NPAR_LBUF) * NPG       
           ENDDO
 c          print*,'      local=',(LLOC * NEL + NPAR_LBUF) * NPG
@@ -1225,6 +1231,11 @@ c
                   MY_ALLOCATE(FLOC%DAMMX,FLOC%LF_DAMMX*NEL) 
                   FLOC%DAMMX = ZERO
                   LFAIL = LFAIL + FLOC%LF_DAMMX*NEL + 1 
+c
+                  FLOC%LF_DAMINI = FAIL_TAG(IRUPT)%LF_DAMINI                      
+                  MY_ALLOCATE(FLOC%DAMINI,FLOC%LF_DAMINI*NEL) 
+                  FLOC%DAMINI = ZERO
+                  LFAIL = LFAIL + FLOC%LF_DAMINI*NEL + 1 
 c
                   FLOC%LF_TDEL  = FAIL_TAG(IRUPT)%LF_TDEL                        
                   MY_ALLOCATE(FLOC%TDEL,FLOC%LF_TDEL*NEL)
@@ -1714,6 +1725,7 @@ c
             LLOC = LLOC + BUFLY%L_PLANL
             LLOC = LLOC + BUFLY%L_EPSDNL
             LLOC = LLOC + BUFLY%L_DMGSCL
+            LLOC = LLOC + BUFLY%L_TSAIWU
 c
             BUFLEN = BUFLEN + (LLOC * NEL + NPAR_LBUF) * NIP_LAY
 

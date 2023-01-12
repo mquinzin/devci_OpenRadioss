@@ -1,44 +1,44 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  PFLUID                        source/loads/general/pfluid/pfluid.F
 Chd|-- called by -----------
 Chd|        RESOL                         source/engine/resol.F         
 Chd|-- calls ---------------
 Chd|        FINTER                        source/tools/curve/finter.F   
-Chd|        GET_U_SENS_VALUE              source/user_interface/usensor.F
-Chd|        SET_U_SENS_VALUE              source/user_interface/usensor.F
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE PFLUID(ILOADP  ,FAC     ,NPC    ,TF    ,A       ,
      2                  V       ,X       ,XFRAME ,AR    ,VR      ,
-     3                  SENSOR  ,LSENSOR ,WEIGHT ,TFEXC ,IADC    ,
+     3                  SENSOR_TAB,WEIGHT ,TFEXC ,IADC    ,
      4                  FSKY    ,FSKYV   ,LLOADP ,FEXT  ,H3D_DATA
      5                  )
 C-----------------------------------------------
 C   M o d u l e s
 C----------------------------------------------- 
       USE H3D_MOD 
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -59,6 +59,7 @@ C-----------------------------------------------
 #include      "scr16_c.inc"
 #include      "scr17_c.inc"
 #include      "tabsiz_c.inc"
+#include      "mvsiz_p.inc"
 C-----------------------------------------------
 C   E x t e r n a l  F u n c t i o n s
 C-----------------------------------------------
@@ -68,12 +69,13 @@ C-----------------------------------------------,
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NPC(SNPC),LLOADP(SLLOADP)
-      INTEGER ILOADP(SIZLOADP,NLOADP),LSENSOR(NSENSI,NSENSOR)
+      INTEGER ILOADP(SIZLOADP,NLOADP)
       INTEGER WEIGHT(SWEIGHT), IADC(DSNCOL)
       my_real FAC(LFACLOAD,NLOADP), TF(STF), A(3,NUMNOD), V(3,NUMNOD), AR(3,NUMNOD), VR(3,NUMNOD),
-     .        X(3,NUMNOD), XFRAME(NXFRAME,NUMFRAM+1), SENSOR(NSENSR,NSENSOR),TFEXC,
+     .        X(3,NUMNOD), XFRAME(NXFRAME,NUMFRAM+1),TFEXC,
      .        FSKY(8,SFSKY/8), FSKYV(SFSKY/8,8),FEXT(3,NUMNOD)
       TYPE(H3D_DATABASE) :: H3D_DATA
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) ,INTENT(IN) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -119,17 +121,15 @@ C-----------------------------------------------
           ISENS=0                                                                                  
           XSENS = ONE                                                                              
           DO K=1,NSENSOR                                                                           
-            IF(ILOADP(6,NL) == LSENSOR(1,K))ISENS=K                                                
+            IF(ILOADP(6,NL) == SENSOR_TAB(K)%SENS_ID) ISENS=K      ! do it in starter !!!                                          
           ENDDO                                                                                    
           IF(ISENS == 0)THEN                                                                       
              TS=TT                                                                                 
-          ELSEIF (LSENSOR(4,ISENS)==753096514 .AND. TT /= ZERO) THEN                               
-            IERR = SET_U_SENS_VALUE(ISENS,1,ZERO)                                                  
-            IERR = GET_U_SENS_VALUE(ISENS,2,XSENS)                                                 
           ELSE                                                                                     
-             TS = TT-SENSOR(2,ISENS)                                                               
+             TS = TT-SENSOR_TAB(ISENS)%TSTART                                                              
              IF(TS < ZERO) CYCLE                                                                   
-          ENDIF                                                                                    
+          ENDIF  
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)                                                                                            
           DO I = 1,ILOADP(1,NL)/4                                                                  
             N1=LLOADP(ILOADP(4,NL)+4*(I-1))                                                        
             N2=LLOADP(ILOADP(4,NL)+4*(I-1)+1)                                                      
@@ -333,7 +333,9 @@ C-----------------------------------------------
      +                           +FZ*(V(3,N1)+V(3,N2)+V(3,N3)))   
                                                        
             ENDIF                                                                                  
-          ENDDO !next I                                                                                 
+          ENDDO !next I   
+!$OMP END DO
+                                                                                        
         ENDDO !nextNL
 
 #include "atomic.inc"
@@ -367,6 +369,7 @@ C-----------------------------------------------
            XSENS = ONE
            ! -------------
            ! flush fsky array to 0.
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)           
            DO I = 1,ILOADP(1,NL)/4
              N1=LLOADP(ILOADP(4,NL)+4*(I-1))
              N2=LLOADP(ILOADP(4,NL)+4*(I-1)+1)
@@ -383,19 +386,19 @@ C-----------------------------------------------
                   FSKY(1:3,IAD) = ZERO
              ENDDO
            ENDDO
+!$OMP END DO           
            ! -------------
            DO K=1,NSENSOR
-             IF(ILOADP(6,NL) == LSENSOR(1,K))ISENS=K
+             IF(ILOADP(6,NL) == SENSOR_TAB(K)%SENS_ID) ISENS=K
            ENDDO
            IF(ISENS == 0)THEN
               TS=TT
-           ELSEIF (LSENSOR(4,ISENS)==753096514 .AND. TT /= ZERO) THEN
-             IERR = SET_U_SENS_VALUE(ISENS,1,ZERO)         
-             IERR = GET_U_SENS_VALUE(ISENS,2,XSENS)  
            ELSE                        
-              TS = TT-SENSOR(2,ISENS)  
+              TS = TT- SENSOR_TAB(ISENS)%TSTART 
               IF(TS < ZERO) CYCLE     
            ENDIF
+
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)                      
            DO I = 1,ILOADP(1,NL)/4
              N1=LLOADP(ILOADP(4,NL)+4*(I-1))
              N2=LLOADP(ILOADP(4,NL)+4*(I-1)+1)
@@ -608,8 +611,9 @@ C-----------------------------------------------
      +                          +FY*(V(2,N1)+V(2,N2)+V(2,N3))
      +                          +FZ*(V(3,N1)+V(3,N2)+V(3,N3)))
              ENDIF
-            ENDDO!next I
-          ENDDO!next NL
+           ENDDO!next I
+!$OMP END DO           
+         ENDDO!next NL
 
 #include "atomic.inc"
                 TFEXT = TFEXT + TFEXTT
@@ -638,17 +642,15 @@ C---------------------
            XSENS = ONE
 
            DO K=1,NSENSOR
-             IF(ILOADP(6,NL) == LSENSOR(1,K))ISENS=K
+             IF(ILOADP(6,NL) == SENSOR_TAB(K)%SENS_ID) ISENS=K
            ENDDO
            IF(ISENS == 0)THEN
               TS=TT
-           ELSEIF (LSENSOR(4,ISENS)==753096514 .AND. TT /= ZERO) THEN
-             IERR = SET_U_SENS_VALUE(ISENS,1,ZERO)         
-             IERR = GET_U_SENS_VALUE(ISENS,2,XSENS)  
            ELSE                        
-              TS = TT-SENSOR(2,ISENS)  
+              TS = TT- SENSOR_TAB(ISENS)%TSTART 
               IF(TS < ZERO) CYCLE     
            ENDIF
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)           
            DO I = 1,ILOADP(1,NL)/4
              N1=LLOADP(ILOADP(4,NL)+4*(I-1))
              N2=LLOADP(ILOADP(4,NL)+4*(I-1)+1)
@@ -861,6 +863,7 @@ C---------------------
      +                           +FZ*(V(3,N1)+V(3,N2)+V(3,N3)))
              ENDIF
            ENDDO!next I
+!$OMP END DO           
          ENDDO!next NL
 C
 #include "atomic.inc"

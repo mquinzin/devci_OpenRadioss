@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 C BERGSTROM BOYCE
 Chd|====================================================================
 Chd|  SIGEPS95                      source/materials/mat/mat095/sigeps95.F
@@ -186,7 +186,7 @@ c    material parameters
 C	  
       IF (IAVIS>0) THEN	  
       DO  I = 1, NEL
-         !retreive previous viscous deformation gradient
+         !retrieve previous viscous deformation gradient
          FPO(I,1,1)  = UVAR(I,1) 
          FPO(I,2,2)  = UVAR(I,2) 
          FPO(I,3,3)  = UVAR(I,3) 
@@ -330,7 +330,7 @@ C
         !------------------------------------   
         !Solve F_n+1 viscous :   
         !------------------------------------  
-        !PRODMAT(A, B, C, NEL) computes C(NEL,3,3) wich is the product [C] = [A][B] 
+        !PRODMAT(A, B, C, NEL) computes C(NEL,3,3) which is the product [C] = [A][B] 
         CALL KMATINV3(FE , INVFE, NEL)       !  INVFE  = INVERSE (FE)   
         CALL PRODMAT (LB ,    FE, FEDP, NEL) !  FEDP   = Lb * FE
         CALL PRODMAT(INVFE ,FEDP, DFP , NEL) !  DFP    = INVFE  * Lb * FE

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS53                      source/materials/mat/mat053/sigeps53.F
 Chd|-- called by -----------
@@ -94,7 +94,7 @@ C SIGVXX  | NEL     | F | W | VISCOUS STRESS XX
 C SIGVYY  | NEL     | F | W | VISCOUS STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C UVAR    |NEL*NUVAR| F |R/W| USER ELEMENT VARIABLE ARRAY
 C OFF     | NEL     | F |R/W| DELETED ELEMENT FLAG (=1. ON, =0. OFF)
@@ -363,7 +363,7 @@ C... CORRECTION
      .        (HALF)*(F11(I)+ F22(I) + F44(I)) +
      .         (F1(I) + F2(I))/S45C(I)     
            ENDIF
-C... Chek the yeil condition according to Tsay Wu.
+C... Check the yield condition according to Tsay Wu.
        F(I) = F1(I)*SIGNXX(I) + F2(I)* SIGNYY(I) + F2(I)*SIGNZZ(I)+
      . F11(I)*SIGNXX(I)**2 + F22(I)*SIGNYY(I)**2 + F22(I)*SIGNZZ(I)**2
      .+F44(I)*SIGNXY(I)**2 + F55(I)*SIGNYZ(I)**2 + F44(I)*SIGNZX(I)**2

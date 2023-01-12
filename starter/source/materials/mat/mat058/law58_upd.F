@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  LAW58_UPD                     source/materials/mat/mat058/law58_upd.F
 Chd|-- called by -----------
@@ -31,17 +31,18 @@ Chd|        FUNC_INTERS_SHEAR             source/tools/curve/func_inters.F
 Chd|        FUNC_SLOPE                    source/tools/curve/func_slope.F
 Chd|        MATFUN_USR2SYS                source/materials/tools/matfun_usr2sys.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        TABLE_MOD                     share/modules1/table_mod.F    
 Chd|====================================================================
       SUBROUTINE LAW58_UPD(IOUT   ,TITR   ,UPARAM ,NPC    ,PLD    ,  
      .                     NFUNC  ,NFUNL  ,IFUNC  ,MAT_ID ,FUNC_ID,
-     .                     PM     ,NUPARAM,LSENSOR)
-      USE MESSAGE_MOD
+     .                     PM     ,NUPARAM,SENSOR_TAB)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE MESSAGE_MOD
       USE TABLE_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -58,12 +59,13 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       CHARACTER*nchartitle  :: TITR
       INTEGER MAT_ID,IOUT,NFUNC,NFUNL,NUPARAM,NPTS
-      INTEGER NPC(SNPC), FUNC_ID(*),IFUNC(NFUNC+NFUNL), LSENSOR(NSENSI,*)
+      INTEGER NPC(SNPC), FUNC_ID(*),IFUNC(NFUNC+NFUNL)
       my_real UPARAM(NUPARAM),PLD(STF),PM(NPROPM)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER I,K,FUNC,FUND,UNLOAD,PN,IOK,ISENS,TEST
+      INTEGER I,K,FUNC,FUND,UNLOAD,PN,IOK,ISENS,SENS_ID,TEST
       my_real KC,KT,KCMAX,KTMAX,KFC,KFT,GMAX,DERI,STIFF,STIFFMIN,STIFFINI,
      .  STIFFMAX,STIFFAVG,XINT1,YINT1,XINT2,YINT2,FAC,FAC1,FAC2,GFROT,GSH
 C=======================================================================
@@ -77,15 +79,19 @@ c
 C----------------------------
 C     SENSOR NUMBERING CHECK
 C----------------------------
-      IOK = 0
-      ISENS = UPARAM(25)
-      IF(ISENS/=0) THEN
+      SENS_ID = UPARAM(25)
+      ISENS   = 0
+      IF (SENS_ID > 0 ) THEN
         DO I=1,NSENSOR
-          IF(ISENS==LSENSOR(1,I)) IOK = 1
+          IF (SENS_ID == SENSOR_TAB(I)%SENS_ID) THEN
+            ISENS = I
+            UPARAM(25) = ISENS
+            EXIT
+          END IF
         ENDDO
-        IF (IOK == 0)  
+        IF (ISENS == 0)  
      .    CALL ANCMSG(MSGID=1240,ANMODE=ANINFO,MSGTYPE=MSGWARNING,
-     .  	 I1=MAT_ID,C1=TITR,I2=ISENS) 
+     .  	      I1=MAT_ID,C1=TITR,I2=ISENS) 
       ENDIF
 c---------------------------------------------------------------
       KC   = ZERO

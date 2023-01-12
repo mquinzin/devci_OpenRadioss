@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_INTERFACES            source/interfaces/reader/hm_read_interfaces.F
 Chd|-- called by -----------
@@ -41,16 +41,17 @@ Chd|        INTBUF_FRIC_MOD               share/modules1/intbuf_fric_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
 Chd|        R2R_MOD                       share/modules1/r2r_mod.F      
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
       SUBROUTINE HM_READ_INTERFACES(
-     1           IPARI    ,FRIGAP   ,LINTER   ,ITAB       ,ITABM1     ,
-     2           IGRNOD   ,IGRSURF  ,IGRSLIN  ,IGRBRIC    ,IGRSH3N    ,
-     3           IGRTRUSS ,NPC      ,ISKN     ,XFILTR     ,STFAC      , 
-     4           FRIC_P   ,I2RUPT   ,AREASL   ,UNITAB     ,NOM_OPT    ,
-     5           DEF_INTER,NPC1     ,LSENSOR  ,MULTI_FVM  ,NOM_OPTFRIC,
-     6           INTBUF_FRIC_TAB    ,IDDLEVEL ,LSUBMODEL  ,TF         ,
-     7           KLOADPINTER        ,DGAPINT  )
+     1           IPARI    ,FRIGAP   ,LINTER    ,ITAB       ,ITABM1     ,
+     2           IGRNOD   ,IGRSURF  ,IGRSLIN   ,IGRBRIC    ,IGRSH3N    ,
+     3           IGRTRUSS ,NPC      ,ISKN      ,XFILTR     ,STFAC      , 
+     4           FRIC_P   ,I2RUPT   ,AREASL    ,UNITAB     ,NOM_OPT    ,
+     5           DEF_INTER,NPC1     ,SENSOR_TAB,MULTI_FVM  ,NOM_OPTFRIC,
+     6           INTBUF_FRIC_TAB    ,IDDLEVEL  ,LSUBMODEL  ,TF         ,
+     7           KLOADPINTER        ,DGAPINT   )
 C============================================================================
 C   M o d u l e s
 C-----------------------------------------------
@@ -62,13 +63,11 @@ C-----------------------------------------------
       USE GROUPDEF_MOD
       USE SUBMODEL_MOD
       USE HM_OPTION_READ_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------      
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   A n a l y s e   M o d u l e
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -95,8 +94,7 @@ C-----------------------------------------------
       INTEGER NOM_OPT(LNOPT1,*)
       INTEGER LINTER
       INTEGER IPARI(NPARI,*), ITAB(NUMNOD), ITABM1(*),NPC(*),ISKN(*),
-     .        DEF_INTER(*),NPC1(*),LSENSOR(NSENSI,*),
-     .        NOM_OPTFRIC(LNOPT1,*),KLOADPINTER(NINTER+1)
+     .        DEF_INTER(*),NPC1(*),NOM_OPTFRIC(LNOPT1,*),KLOADPINTER(NINTER+1)
       my_real
      .   XFILTR(*),STFAC(*),FRIC_P(10,*),I2RUPT(6,*),
      .   FRIGAP(NPARIR,*),AREASL(*),TF(*)
@@ -104,6 +102,7 @@ C-----------------------------------------------
       TYPE(MULTI_FVM_STRUCT), INTENT(IN) :: MULTI_FVM
       TYPE(INTBUF_FRIC_STRUCT_) INTBUF_FRIC_TAB(*)
       TYPE (SUBMODEL_DATA), DIMENSION(*),INTENT(IN) :: LSUBMODEL
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
       TYPE (GROUP_)  , DIMENSION(NGRNOD)  :: IGRNOD
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
@@ -247,7 +246,7 @@ C---------------------------------------------------------------
      2          IGRNOD       ,IGRSURF    ,IGRSLIN        ,NPC       ,ILAGM       ,
      3          ITABM1       ,ITAB       ,ISKN           ,UNITAB    ,I2RUPT(1,NI),
      4          AREASL(NI)   ,NI         ,NOM_OPT        ,TITR      ,DEF_INTER   ,
-     5          IDINT7       ,IDINT7B    ,IDINT11        ,NPC1     , LSENSOR     ,
+     5          IDINT7       ,IDINT7B    ,IDINT11        ,NPC1     , SENSOR_TAB  ,
      6          NOM_OPTFRIC,INTBUF_FRIC_TAB,IGRBRIC      ,NOINT    , KEY         ,
      7          LSUBMODEL    ,TF         )
 

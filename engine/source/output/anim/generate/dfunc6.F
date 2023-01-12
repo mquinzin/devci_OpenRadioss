@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  DFUNCS                        source/output/anim/generate/dfunc6.F
 Chd|-- called by -----------
@@ -1557,6 +1557,54 @@ c------------------------------------ Non-local plastic strain
                     ENDDO
                   ENDDO
                 ENDDO 
+c------------------------------------ Tsai-Wu criterion          
+            ! -- Mean value     
+            ELSEIF(IFUNC == 4971 .AND. GBUF%G_TSAIWU > 0)THEN
+C              
+                DO I=LFT,LLT                                          
+                  EVAR(I) = ZERO                                      
+                ENDDO  
+                DO IL=1,NLAY                          
+                  IF (ELBUF_TAB(NG)%BUFLY(IL)%L_TSAIWU > 0) THEN
+                    DO IS=1,NPTS                                        
+                      DO IT=1,NPTT                                      
+                        DO IR=1,NPTR                                    
+                          LBUF=>ELBUF_TAB(NG)%BUFLY(IL)%LBUF(IR,IS,IT)
+                          DO I=LFT,LLT                                 
+                            EVAR(I) = EVAR(I) + LBUF%TSAIWU(I)/NPTG          
+                          ENDDO
+                        ENDDO                                           
+                      ENDDO                                             
+                    ENDDO                                               
+                  ENDIF                                        
+                ENDDO   
+C
+            ! -- Layer value
+            ELSEIF(IFUNC >= 4971+1 .AND. IFUNC<= 4971+200 .AND. GBUF%G_TSAIWU > 0) THEN
+                DO I=LFT,LLT
+                  EVAR(I) = ZERO 
+                ENDDO               
+                IUS = IFUNC - 4971
+                IF (ISOLNOD == 16.OR.ISOLNOD == 20.OR.
+     .             (ISOLNOD == 8.AND.JHBE == 14).OR.
+     .             ((ISOLNOD == 6.OR.ISOLNOD == 8).AND.JHBE == 15))THEN
+                  IF (IUS <= NPTG) THEN      
+                    DO IL=1,NLAY                                          
+                      IF (ELBUF_TAB(NG)%BUFLY(IL)%L_TSAIWU > 0) THEN
+                        DO IS=1,NPTS                                        
+                         DO IT=1,NPTT                                      
+                          DO IR=1,NPTR                                    
+                            LBUF=>ELBUF_TAB(NG)%BUFLY(IL)%LBUF(IR,IS,IT)
+                            DO I=LFT,LLT                                 
+                              EVAR(I) = EVAR(I) + LBUF%TSAIWU(I)              
+                            ENDDO
+                           ENDDO                                           
+                          ENDDO                                             
+                        ENDDO                                               
+                      ENDIF                                        
+                    ENDDO                                                 
+                  ENDIF                                              
+                ENDIF         
 c------------------------------------ 
               !OTHER IFUNC VALUES
               ELSE 

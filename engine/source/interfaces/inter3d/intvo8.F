@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  INTVO8                        source/interfaces/inter3d/intvo8.F
 Chd|-- called by -----------
@@ -128,12 +128,13 @@ C     REAL
       my_real, DIMENSION(:), ALLOCATABLE :: YN1,YN2,YN3,YN4
       my_real, DIMENSION(:), ALLOCATABLE :: ZN1,ZN2,ZN3,ZN4
       my_real, DIMENSION(:), ALLOCATABLE :: THK,AREA,ALP
+      my_real, DIMENSION(:), ALLOCATABLE :: DISTLIN
       INTEGER IBC, NCIMP, NRTM4, NOINT,IGIMP,NINSKID
-      INTEGER MFROT,IBAG,IADM,IFORM,IFT0
+      INTEGER MFROT,IBAG,IADM,IFORM,IFT0,IFLINEAR
 C     REAL
       my_real
      .   STARTT, FRIC, GAP,  STOPT,  
-     .   VISC,VISCF,FNOR,DEPTH
+     .   VISC,VISCF,FNOR,DEPTH,FRIC_LAST,FNOR_LAST
 
 C     INTEGER aa,bb,cc,dd 
 C     INTEGER FLAG
@@ -155,6 +156,7 @@ C----
       IADM =IPARI(44)
       IFORM=IPARI(48)
       IFT0 =IPARI(50)
+      IFLINEAR = IPARI(49)
 C
       STARTT=INTBUF_TAB%VARIABLES(3)
       STOPT =INTBUF_TAB%VARIABLES(11)
@@ -167,6 +169,8 @@ C
       VISCF=INTBUF_TAB%VARIABLES(15)
       FNOR =INTBUF_TAB%VARIABLES(4)
       DEPTH=INTBUF_TAB%VARIABLES(5)
+      FRIC_LAST =INTBUF_TAB%VARIABLES(6)
+      FNOR_LAST =INTBUF_TAB%VARIABLES(7)
 C
 C
       IF(NTY==3)THEN
@@ -208,9 +212,10 @@ C
      .  HAS_MOVED(NSN),
      .  TAB_RMAX(NSN),TAB_RMAX_UID(4,NSN),
      .  IRTL_A(NSN),NSV_A(NSN),NSV2(NSN),
-     .  INDEX_IN_COMM(NMN))
+     .  INDEX_IN_COMM(NMN),DISTLIN(NSN))
 
         DIST = 0
+        DISTLIN(1:NSN) = ZERO
 !       DO 180 NG=1,NGROUS
         NFT=0
         LFT=1
@@ -236,7 +241,7 @@ C
 
         CALL I8LOC3(X ,INTBUF_TAB%IRECTM,INTBUF_TAB%LMSR,INTBUF_TAB%MSR,
      .          INTBUF_TAB%NSV,INTBUF_TAB%ILOCS,INTBUF_TAB%NSEGM,
-     .          XI,YI,ZI,FACE, ITAB,DISTANCE)
+     .          XI,YI,ZI,FACE, ITAB,DISTANCE,IFLINEAR,DISTLIN)
         IF(NSPMD > 1) THEN
 
           CALL SPMD_I8_ILOC(INTBUF_TAB%ILOCS,    INTBUF_TAB%MSR,ITAB,T8%BUFFER,
@@ -365,7 +370,8 @@ C
      K           YI3    , ZI3      , XI4,
      L           THK    ,H3D_DATA  , NINSKID,
      M           H3D_DATA%N_SCAL_SKID, PSKIDS,INTBUF_TAB%IRECTM,NIN,
-     N           TAGNCONT ,KLOADPINTER,LOADPINTER ,LOADP_HYD_INTER)
+     N           TAGNCONT ,KLOADPINTER,LOADPINTER ,LOADP_HYD_INTER,
+     O           IFLINEAR ,FRIC_LAST,FNOR_LAST,DISTLIN)
 
       
       
@@ -405,7 +411,8 @@ C
      .  HAS_MOVED,
      .  TAB_RMAX,TAB_RMAX_UID,
      .  IRTL_A,NSV_A,NSV2,
-     .  INDEX_IN_COMM)
+     .  INDEX_IN_COMM,
+     .  DISTLIN)
 
       ENDIF ! TYPE 8
 

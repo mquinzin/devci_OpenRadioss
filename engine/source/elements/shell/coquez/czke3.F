@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  CZKE3                         source/elements/shell/coquez/czke3.F
 Chd|-- called by -----------
@@ -108,7 +108,7 @@ c  I   NCYCLE        - cycle(increment) number
 c  I   ISTRAIN       - total strain output flag
 c  I   IPLA          -  radial return plasticity compute option
 c  I   PM ,GEO       - Material and geometrical property data
-c  I   IXC(NIXC,NEL) - connectivity and mid,pid interger data
+c  I   IXC(NIXC,NEL) - connectivity and mid,pid integer data
 c  I   BUFMAT()      - internal material data
 c  I   INDXOF(NEL)   - deleted element flag (not used in this subroutine)
 c  I   ETAG(NEL)     - activating element flag for Eigenvalue analysis
@@ -122,7 +122,7 @@ c  I   THKE          - initial thickness
 c  I   ISMSTR        - small strain flag
 c  I   IKGEO  ,      - geometrical stiffness matrix including (if >0)
 c  I   X(3,NUMNOD)         co-ordinate 
-c  I   IPM ,IGEO     - Material and geometrical property interger data 
+c  I   IPM ,IGEO     - Material and geometrical property integer data 
 c  I   IEXPAN        - thermo flag used in materials
 c  I   IPARG(NG)           element group data
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7--

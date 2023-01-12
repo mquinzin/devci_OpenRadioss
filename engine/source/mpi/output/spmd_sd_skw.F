@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_SD_SKW                   source/mpi/output/spmd_sd_skw.F
 Chd|-- called by -----------
@@ -83,9 +83,9 @@ C-----------------------------------------------
 !       SPMD_SD_SKW organization :
 !       - initialize the SBUF buffer with the local SKEW value
 !       - initialize the displacement and the total number of 
-!         recevied SKEW
+!         received SKEW
 !       - ALLGATHERV comm
-!       - fill the SKEW array with the recevied RBUFF buffer
+!       - fill the SKEW array with the received RBUFF buffer
 !
 !       proc 1 :
 !               SBUF :   1 | 4 | 100          (--> 3 values)
@@ -122,7 +122,7 @@ C-----------------------------------------------
                 SBUF(10+(K-1)*10) = N+1
         END DO
 
-!       displacement, number of sent value and total number of recevied values
+!       displacement, number of sent value and total number of received values
         SENDCOUNT = K*10
         DIPSPL(1)=0
         TOTAL_RECV = RECVCOUNT(1)
@@ -212,9 +212,9 @@ C-----------------------------------------------
 !       SPMD_SD_SKW_ANIM organization :
 !       - initialize the SBUF buffer with the local SKEW value
 !       - initialize the displacement and the total number of 
-!         recevied SKEW
+!         received SKEW
 !       - ALLGATHER comm on 0 proc
-!       - fill the SKEW array with the recevied RBUFF buffer
+!       - fill the SKEW array with the received RBUFF buffer
 !
 !       proc 1 :
 !               SBUF :   1 | 4 | 100          (--> 3 values)
@@ -253,7 +253,7 @@ C-----------------------------------------------
                 IF(ISKWP(N+1)/=0) RECVCOUNT(ABS(ISKWP(N+1))) = RECVCOUNT(ABS(ISKWP(N+1))) + 10
         END DO
 
-!       displacement, number of sent value and total number of recevied values
+!       displacement, number of sent value and total number of received values
         SENDCOUNT = K*10
         DIPSPL(1)=0
         TOTAL_RECV = RECVCOUNT(1)

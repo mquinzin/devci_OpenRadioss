@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FORINTS                       source/elements/forints.F     
 Chd|-- called by -----------
@@ -42,7 +42,7 @@ Chd|====================================================================
      7    IADS      ,IPARG     ,NPC       ,IXS       ,
      8    NELTST    ,ITYPTST   ,IPART     ,IPARTS    ,ITAB      ,
      9    FSKYI     ,BUFGEO    ,KXX       ,IXX       ,ISKY      ,
-     A    IPARTX    ,LSENSOR   ,SENSOR    ,GRESAV    ,GRTH      ,
+     A    IPARTX    ,GRESAV    ,GRTH      ,
      B    IGRTH     ,ELBUF_TAB )
 C-----------------------------------------------
 C   M o d u l e s
@@ -79,7 +79,7 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER IXS(NIXS,*),IPART(LIPART1,*) ,IPARTS(*) ,
      .   NPC(*), IPARG(NPARG,*),IADS(8,*),NELTST,ITYPTST,
-     .   KXX(NIXX,*),I XX(*), ITAB(*), LSENSOR(NSENSI,*),
+     .   KXX(NIXX,*),I XX(*), ITAB(*),
      .   IPARTX(*), ISKY(*),GRTH(*),IGRTH(*)
 C     REAL
       my_real
@@ -90,8 +90,7 @@ C     REAL
      .   FV(*)     ,A(3,*)    ,AR(3,*)     ,VAL2(*)  ,
      .   FANI(3,*) ,PARTSAV(*),STIFN(*) ,STIFR(*),
      .   FSKY(*) ,
-     .   DT2T,
-     .   SENSOR(NSENSR,*), FSKYI(LSKYI,NFSKYI) ,BUFGEO(*),GRESAV(*)
+     .   DT2T,FSKYI(LSKYI,NFSKYI) ,BUFGEO(*),GRESAV(*)
 C
       TYPE(ELBUF_STRUCT_), DIMENSION(NGROUP), TARGET :: ELBUF_TAB
 C-----------------------------------------------
@@ -136,7 +135,7 @@ C           but Multi-purpose element is not supposed to be vectorized ..
      4                   SKEW   ,DT2T   ,NELTST ,ITYPTST ,
      5                   STIFN  ,STIFR ,MS      ,IN     ,
      6                   FSKYI ,ISKY   ,PARTSAV,IPARTX,
-     7                   BUFMAT ,BUFGEO ,SENSOR       ,LSENSOR  ,
+     7                   BUFMAT ,BUFGEO ,
      8                   GRESAV ,GRTH  ,IGRTH,ELBUF_TAB(NG))
             IF (IDDW>0) CALL STOPTIMEG(NG)
          END DO

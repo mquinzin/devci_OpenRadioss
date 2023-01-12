@@ -1,36 +1,41 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FVINJT8                       source/airbag/fvinjt8.F       
 Chd|-- called by -----------
-Chd|        FVBAG1                        source/airbag/fvbag.F         
+Chd|        FVBAG1                        source/airbag/fvbag1.F        
 Chd|        FV_UP_SWITCH                  source/airbag/fv_up_switch.F  
 Chd|-- calls ---------------
 Chd|        FINTER                        source/tools/curve/finter.F   
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE FVINJT8(NJET   , IBAGJET , RBAGJET , NPC    , TF,
-     2                   SENSOR , SCALT,    IGEO,     GEO,     PM, 
+     2                   SENSOR_TAB, SCALT,    IGEO,     GEO,     PM, 
      3                   IVOLU,   DATAINJ )
+C-----------------------------------------------
+C   M o d u l e s
+C-----------------------------------------------  
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -38,6 +43,7 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
+#include      "com04_c.inc"
 #include      "com08_c.inc"
 #include      "param_c.inc"
 #include      "units_c.inc"
@@ -47,9 +53,9 @@ C-----------------------------------------------
       INTEGER NJET, IBAGJET(NIBJET,*), NPC(*), IGEO(NPROPGI,*), IVOLU(*)
 C     REAL
       my_real
-     .   RBAGJET(NRBJET,*), TF(*), SENSOR(NSENSR,*), SCALT, 
+     .   RBAGJET(NRBJET,*), TF(*),SCALT, 
      .   GEO(NPROPG,*), PM(NPROPM,*), DATAINJ(6,NJET)
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7--
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -81,7 +87,7 @@ C
         IF(ISENS==0)THEN
          TSTART=ZERO
         ELSE
-         TSTART=SENSOR(2,ISENS)
+         TSTART=SENSOR_TAB(ISENS)%TSTART
         ENDIF
         IFLU =IGEO(24,I_INJ)
         ASTIME = GEO(201,I_INJ)

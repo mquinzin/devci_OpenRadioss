@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  READ_SENSOR_GAUGE             source/tools/sensor/read_sensor_gauge.F
 Chd|-- called by -----------
@@ -35,8 +35,8 @@ Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
-      SUBROUTINE READ_SENSOR_GAUGE(SENSOR_TAB ,SENS_ID  ,TITR  ,
-     .           LGAUGE   ,LSENSOR ,SENSOR   ,UNITAB   ,LSUBMODEL )
+      SUBROUTINE READ_SENSOR_GAUGE(SENSOR_PTR ,SENS_ID  ,TITR  ,
+     .           LGAUGE   ,UNITAB   ,LSUBMODEL )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------  
@@ -63,25 +63,23 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER ,INTENT(IN) :: SENS_ID
       INTEGER ,DIMENSION(3,*)    ,INTENT(IN)  :: LGAUGE
-      INTEGER ,DIMENSION(NSENSI) ,INTENT(OUT) :: LSENSOR
-      my_real ,DIMENSION(NSENSR) ,INTENT(OUT) :: SENSOR
       CHARACTER TITR*nchartitle
-      TYPE (SENSOR_STR_) :: SENSOR_TAB
+      TYPE (SENSOR_STR_) :: SENSOR_PTR
       TYPE (SUBMODEL_DATA) ,DIMENSION(NSUBMOD) :: LSUBMODEL
       TYPE (UNIT_TYPE_)    ,INTENT(IN) ::UNITAB 
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER :: I,J,NGAU,SENS_TYPE
+      INTEGER :: I,J,NGAU,NPARIS,NPARRS,NVAR,SENS_TYPE
       my_real :: TDEL
       INTEGER ,DIMENSION(6) :: IGAU,G_ID
       my_real ,DIMENSION(6) :: PRES,TMIN
-      TYPE (SENSOR_STR_) :: SENSOR_PTR
       LOGICAL :: IS_AVAILABLE
 C--------------------------------
 C     SENSOR : PRESSURE GAUGE LIST
 C=======================================================================
       IS_AVAILABLE = .FALSE.
+      SENS_TYPE = 10
 c--------------------------------------------------
 card1
       CALL HM_GET_FLOATV('Tdelay' ,TDEL  ,IS_AVAILABLE,LSUBMODEL,UNITAB)
@@ -98,13 +96,6 @@ c--------------------------------------------------
          CALL ANCMSG(MSGID=833, MSGTYPE=MSGERROR, ANMODE=ANINFO, I1=SENS_ID,C1=TITR)
       ENDIF
 c
-      SENS_TYPE = 10
-      LSENSOR(1) = SENS_ID
-      LSENSOR(2) = SENS_TYPE
-      LSENSOR(3) = NGAU
-      SENSOR (1) = TDEL
-      SENSOR (2) = INFINITY   ! activation time
-c
       DO I=1,NGAU
         IGAU(I) = 0
         DO J = 1,NBGAUGE
@@ -118,12 +109,42 @@ c
      .                I1=SENS_ID, C1=TITR)
           EXIT
         END IF
-C
-        LSENSOR(4+(I-1)*2)= IGAU(I)
-        SENSOR(3+(I-1)*3) = PRES(I)
-        SENSOR(4+(I-1)*3) = TMIN(I)
-        SENSOR(5+(I-1)*3) = INFINITY  ! activation time
       ENDDO
+c--------------------------------------------------
+c
+      SENSOR_PTR%TYPE    = SENS_TYPE
+      SENSOR_PTR%SENS_ID = SENS_ID
+      SENSOR_PTR%STATUS  = 0            ! status = deactivated
+      SENSOR_PTR%TSTART  = INFINITY
+      SENSOR_PTR%TCRIT   = INFINITY
+      SENSOR_PTR%TMIN    = ZERO         ! TMIN global
+      SENSOR_PTR%TDELAY  = TDEL         ! time delay before activation
+      SENSOR_PTR%VALUE   = ZERO
+
+      NPARIS = NGAU + 1
+      NPARRS = NGAU * 3
+      NVAR   = 0 
+c
+      SENSOR_PTR%NPARI  = NPARIS
+      SENSOR_PTR%NPARR  = NPARRS
+      SENSOR_PTR%NVAR   = NVAR
+c
+      ALLOCATE (SENSOR_PTR%IPARAM(NPARIS))
+      ALLOCATE (SENSOR_PTR%RPARAM(NPARRS))
+      ALLOCATE (SENSOR_PTR%VAR(NVAR))
+      SENSOR_PTR%VAR(:) = ZERO
+c
+      SENSOR_PTR%IPARAM(1) = NGAU
+      DO I = 1,NGAU
+        SENSOR_PTR%IPARAM(I+1) = IGAU(I)
+      END DO
+      J = 0
+      DO I = 1,NGAU
+        SENSOR_PTR%RPARAM(J+1) = PRES(I)
+        SENSOR_PTR%RPARAM(J+2) = TMIN(I)
+        SENSOR_PTR%RPARAM(J+3) = INFINITY       
+        J = J+3
+      END DO    
 c------------------------------------------------------------
       WRITE(IOUT, 1000) SENS_ID,TDEL
       WRITE(IOUT, 2000) NGAU

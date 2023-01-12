@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  CREATE_SEATBELT               source/tools/seatbelts/create_seatbelt.F
 Chd|-- called by -----------
@@ -29,16 +29,18 @@ Chd|        ANCMSG                        source/output/message/message.F
 Chd|        NEW_SEATBELT                  source/tools/seatbelts/new_seatbelt.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        SEATBELT_MOD                  ../common_source/modules/seatbelt_mod.F
+Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|====================================================================
       SUBROUTINE CREATE_SEATBELT(IXR,ITAB,KNOD2EL1D,NOD2EL1D,IPM,
-     .                           X,LSENSOR,BUFMAT,PM,GEO,
+     .                           X,SENSOR_TAB,BUFMAT,PM,GEO,
      .                           IDDLEVEL,KNOD2ELC,NOD2ELC,IXC,IGEO,
-     .                           ISKN)
+     .                           ISKN    )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE MESSAGE_MOD
       USE SEATBELT_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -57,10 +59,11 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
-      INTEGER IXR(NIXR,*),ITAB(*),KNOD2EL1D(*),NOD2EL1D(*),IPM(NPROPMI,*),LSENSOR(NSENSI,*),IDDLEVEL,
+      INTEGER IDDLEVEL,IXR(NIXR,*),ITAB(*),KNOD2EL1D(*),NOD2EL1D(*),IPM(NPROPMI,*),
      .        KNOD2ELC(*),NOD2ELC(*),IXC(NIXC,*)
       INTEGER, INTENT(INOUT) :: IGEO(NPROPGI,NUMGEO),ISKN(SISKWN)
       my_real X(3,*),BUFMAT(*),PM(NPROPM,*),GEO(NPROPG,*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -68,7 +71,7 @@ C-----------------------------------------------
      .        FLAG,NNOD,MTYP,MID,NDIR,
      .        I1,I2,IADBUF,TAG_PRINT,ISENS_LOC(2),IPID,OFFC,OFFR,NB_ELEM,NODE,
      .        NB_2D_SEATBELT,COMPT_BELT_END,COMPT_FRAM,NEXT_NODE,NODE_CUR,COMPT_2D,MID_2D,NODE_LONGI,
-     .        IADBUF_2D,FUNC1,FUNC2,ISK,N1,N2,SEATBELT_ELEM_FOUND,IMOV
+     .        IADBUF_2D,FUNC1,FUNC2,ISK,N1,N2,SEATBELT_ELEM_FOUND,IMOV,IECROU
       my_real DIST2,LMIN,RHO,XK,XC,AREA,LONGI_DIRECTION(3),EDGE_DIRECTION(3),SCAL,E11,E22,G12,DET,
      .        N12,N21,NU,FSCALE1,FSCALE2,A11,A22,A12,C1,SSP,RHO0,YOUNG,FSCALET,KMAX,A1C,A2C
 C
@@ -90,7 +93,7 @@ C
           ISENS_LOC(1) = 0
           IF(SLIPRING(I)%SENSID > 0)THEN
             DO K=1,NSENSOR
-              IF(SLIPRING(I)%SENSID == LSENSOR(1,K)) ISENS_LOC(1) = K
+              IF(SLIPRING(I)%SENSID == SENSOR_TAB(K)%SENS_ID) ISENS_LOC(1) = K
             ENDDO
             IF(ISENS_LOC(1) == 0) THEN
               CALL ANCMSG(MSGID=2002,
@@ -109,7 +112,7 @@ C
           DO J=1,2
             IF(RETRACTOR(I)%ISENS(J) > 0)THEN
               DO K=1,NSENSOR
-                IF(RETRACTOR(I)%ISENS(J) == LSENSOR(1,K)) ISENS_LOC(J) = K
+                IF(RETRACTOR(I)%ISENS(J) == SENSOR_TAB(K)%SENS_ID) ISENS_LOC(J) = K
               ENDDO
               IF(ISENS_LOC(J) == 0) THEN
                 CALL ANCMSG(MSGID=2028,
@@ -577,6 +580,7 @@ C
         IF (CPT_MAT(MID) > 0) THEN
           XC = BUFMAT(IADBUF+70)
           XK = BUFMAT(IADBUF+64)
+          IECROU = INT(BUFMAT(IADBUF+76))
           IF (XC == ZERO) THEN
 C--         default damping is 30% of critical damping
             RHO = PM(1,MID)
@@ -596,6 +600,11 @@ C--       for 2D_seatbelt mass is applied on shell - rho set to 0 - rho is store
             PM(1,MID) = EM20
             BUFMAT(IADBUF+71) = 0.3*XC  
             BUFMAT(IADBUF+72) = 0.3*XC
+            IF (IECROU==10) THEN
+C--           specific non linear formulation for 2d seatblets
+              IECROU = 12
+              BUFMAT(IADBUF+76) = IECROU + EM01          
+            ENDIF
           ENDIF       
         ENDIF       
       ENDDO

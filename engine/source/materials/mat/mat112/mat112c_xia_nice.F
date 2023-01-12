@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MAT112C_XIA_NICE              source/materials/mat/mat112/mat112c_xia_nice.F
 Chd|-- called by -----------
@@ -652,7 +652,9 @@ c
           DSIGY5_DP(1:NEL)= DSIGY5_DP(1:NEL) * YSCALE5
           VARTMP(1:NEL,5) = IPOS(1:NEL,1)          
           ! Yield function value update
-          DO I = 1,NEL
+#include "vectorize.inc" 
+          DO II=1,NINDX 
+            I = INDEX(II)
             GAM1(I) = (N1(1)*SIGNXX(I)+N1(2)*SIGNYY(I))/SIGY1(I)
             GAM2(I) = (N2(1)*SIGNXX(I)+N2(2)*SIGNYY(I))/SIGY2(I)
             GAM3(I) = N3*SIGNXY(I)/SIGY3(I)
@@ -676,7 +678,9 @@ c
           DSIGYS_DP(1:NEL)= DSIGYS_DP(1:NEL) * YSCALES
           VARTMP(1:NEL,7) = IPOS(1:NEL,1)
           ! Yield function value update
-          DO I = 1,NEL
+#include "vectorize.inc" 
+          DO II=1,NINDX2 
+            I = INDEX2(II)
             PSI(I) = (SQRT(SIGNYZ(I)**2 + SIGNZX(I)**2)/SIGYS(I)) - ONE
           ENDDO
         ENDIF
@@ -685,8 +689,8 @@ c
       ! Storing new values
       DO I=1,NEL  
         ! USR Outputs
-        UVAR(I,1) = PHI(I) ! In-plane yield function value
-        UVAR(I,2) = PSI(I) ! Transverse shear yield function value
+        UVAR(I,1) = ZERO ! Reset in-plane yield function value
+        UVAR(I,2) = ZERO ! Reset transverse shear yield function value
         ! Plastic strain
         PLA(I,1)  = SQRT(PLA(I,2)**2 + PLA(I,4)**2)
         DPLA(I)   = (PLA(I,2)/(MAX(SQRT(PLA(I,2)**2 + PLA(I,4)**2),EM20)))*DPLA2(I) +
@@ -711,6 +715,20 @@ c
         ! Storing the yield stress
         SIGY(I) = SQRT(SIGY1(I)**2 + SIGY2(I)**2      + SIGY4(I)**2 + 
      .                 SIGY5(I)**2 + TWO*SIGY3(I)**2 + TWO*SIGYS(I)**2)
+      ENDDO
+c
+      ! Save in-plane yield function remaining value
+#include "vectorize.inc" 
+      DO II=1,NINDX                                              
+        I = INDEX(II)
+        UVAR(I,1) = PHI(I) 
+      ENDDO
+c
+      ! Save transverse shear yield function remaining value
+#include "vectorize.inc" 
+      DO II=1,NINDX2                                            
+        I = INDEX2(II)
+        UVAR(I,2) = PSI(I) 
       ENDDO
 c
       END

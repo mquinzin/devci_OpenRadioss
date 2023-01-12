@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  I25MAIN_SLID                  source/interfaces/int25/i25main_slid.F
 Chd|-- called by -----------
@@ -44,10 +44,11 @@ Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod
 Chd|        INTBUFMOD                     share/modules/restart_mod.F   
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MPI_COMMOD                    share/modules/mpi_comm_mod.F  
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TRI7BOX                       share/modules/tri7box.F       
 Chd|====================================================================
       SUBROUTINE I25MAIN_SLID(
-     1       IPARI    ,IAD_ELEM ,FR_ELEM  ,ITAB     ,SENSOR ,
+     1       IPARI    ,IAD_ELEM ,FR_ELEM  ,ITAB     ,SENSOR_TAB,
      2       INTLIST25,INTBUF_TAB ,IAD_FRNOR,FR_NOR ,
      3       X        ,V       ,MS      ,TEMP   ,KINET   ,
      4       NODNX_SMS,JTASK   ,NB_DST2, MAIN_PROC,
@@ -56,7 +57,6 @@ Chd|====================================================================
      7       NB_DST1 ,H3D_DATA, 
      8       ICODT,
      9       ISKEW)
-
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -66,6 +66,7 @@ C-----------------------------------------------
       USE INTBUFDEF_MOD  
       USE MPI_COMMOD  
       USE H3D_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -95,8 +96,7 @@ C-----------------------------------------------
      .        IAD_ELEM(2,*) ,FR_ELEM(*), IAD_FRNOR(NINTER25,NSPMD+1), FR_NOR(*),
      .        KINET(*), NODNX_SMS(*), NB_DST1(PARASIZ), NB_DST2(PARASIZ)
       INTEGER, INTENT(IN) :: ICODT(*),ISKEW(*)
-      my_real
-     .        SENSOR(NSENSR,*), X(3,*), V(3,*), MS(*), TEMP(*)
+      my_real :: X(3,*), V(3,*), MS(*), TEMP(*)
       TYPE(INTBUF_STRUCT_),DIMENSION(NINTER) :: INTBUF_TAB
       INTEGER MAIN_PROC(NUMNOD)
       INTEGER NBINTC,ISLEN7,IRLEN7,
@@ -104,6 +104,7 @@ C-----------------------------------------------
      .        NEWFRONT(*), INTLIST(*),
      .        ISENDTO(NINTER+1,*) ,IRCVFROM(NINTER+1,*)
       TYPE(H3D_DATABASE) :: H3D_DATA
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -173,7 +174,7 @@ C
 C
         CALL I25COMP_1(
      1    IPARI   ,INTBUF_TAB(NIN),X   ,ITAB      ,NIN       ,
-     2    KINET     ,JTASK    ,NB_DST1(JTASK),V   ,SENSOR    )
+     2    KINET     ,JTASK    ,NB_DST1(JTASK),V   ,SENSOR_TAB)
       ENDDO
 C
       CALL MY_BARRIER
@@ -203,20 +204,6 @@ C
 C
           IPARI(29,NIN) = 0
 C
-C         STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
-C         STOPT =INTBUF_TAB(NIN)%VARIABLES(11)
-C         IF(STARTT>TT) CYCLE
-C         IF(TT>STOPT)  CYCLE
-C
-C         Look if interface is activated 
-C          ISENS = IPARI(64,NIN)  
-C          IF(ISENS/=0)  THEN         ! Interface activated by sensor
-C             TS = SENSOR(2,ISENS)
-C          ELSE
-C             TS = TT
-C          ENDIF
-C          IF(TT<TS) CYCLE
-
           DO P = 1,NSPMD
              LENT25 = IAD_FRNOR(NI25,P+1)-IAD_FRNOR(NI25,P)
              IF(P /= ISPMD +1 .AND. LENT25 /= 0) THEN
@@ -240,7 +227,7 @@ C
 C         Look if interface is activated 
 C         ISENS = IPARI(64,NIN)  
 C         IF(ISENS/=0)  THEN         ! Interface activated by sensor
-C            TS = SENSOR(2,ISENS)
+C            TS = SENSOR_TAB(ISENS)%TSTART
 C         ELSE
 C            TS = TT
 C         ENDIF
@@ -291,20 +278,6 @@ C
 
              IPARI(29,NIN) = 0
 C
-C            STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
-C            STOPT =INTBUF_TAB(NIN)%VARIABLES(11)
-C            IF(STARTT>TT) CYCLE
-C            IF(TT>STOPT)  CYCLE
-C
-C            Look if interface is activated 
-C            ISENS = IPARI(64,NIN)  
-C            IF(ISENS/=0)  THEN         ! Interface activated by sensor
-C               TS = SENSOR(2,ISENS)
-C            ELSE
-C               TS = TT
-C            ENDIF
-C            IF(TT<TS) CYCLE
-
 C ==========================================================================
 C            Post Asynchronous reception of the sizes
              CALL SPMD_I25_SLIDE_EXCH(IBUFR    ,RBUFR      ,ISIZ(NI25)     ,RSIZ(NI25) 
@@ -412,21 +385,7 @@ C
 
           IPARI(29,NIN) = 0
 C
-C          STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
-C          STOPT =INTBUF_TAB(NIN)%VARIABLES(11)
-C          IF(STARTT>TT) CYCLE
-C          IF(TT>STOPT)  CYCLE
-C
-C         Look if interface is activated 
-C         ISENS = IPARI(64,NIN)  
-C         IF(ISENS/=0)  THEN         ! Interface activated by sensor
-C            TS = SENSOR(2,ISENS)
-C         ELSE
-C            TS = TT
-C         ENDIF
-C         IF(TT<TS) CYCLE
-C
-C         Recieve buffer ( + wait for sizes)
+C         Receive buffer ( + wait for sizes)
           IF(NSPMD > 1) THEN
             CALL SPMD_I25_SLIDE_EXCH(IBUFR    ,RBUFR      ,ISIZ(NI25)     ,RSIZ(NI25) 
      .                    ,SIZBUFR_GLOB       ,COMM_INT,COMM_REAL,COMM_SIZ
@@ -560,20 +519,6 @@ C-----------------------------------------------------------------------
           DO NI25=1,NINTER25
           NIN = INTLIST25(NI25)
 C
-C         STARTT=INTBUF_TAB(NIN)%VARIABLES(3)
-C         STOPT =INTBUF_TAB(NIN)%VARIABLES(11)
-C         IF(STARTT>TT) CYCLE
-C         IF(TT>STOPT)  CYCLE
-C
-C         Look if interface is activated 
-C         ISENS = IPARI(64,NIN)  
-C         IF(ISENS/=0)  THEN         ! Interface activated by sensor
-C            TS = SENSOR(2,ISENS)
-C         ELSE
-C            TS = TT
-C         ENDIF
-C         IF(TT<TS) CYCLE
-
           ! Wait and deallocate Send buffers
           CALL SPMD_I25_SLIDE_EXCH(IBUFS    ,RBUFS      ,ISIZ(NI25)     ,RSIZ(NI25) 
      .                    ,SIZBUFS_GLOB       ,COMM_INT,COMM_REAL,COMM_SIZ

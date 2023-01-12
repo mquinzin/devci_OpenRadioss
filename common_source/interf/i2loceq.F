@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  I2LOCEQ                       interf/i2loceq.F              
 Chd|-- called by -----------
@@ -301,7 +301,7 @@ C
         MYX = RSY(1)*FMX(1)+RSY(2)*FMX(2)+RSY(3)*FMX(3)+RSY(4)*FMX(4)+(ONE-ALPHA)*MZS
         MZZ = MXY - MYX
 C
-C       RQ : BETAX = BETAY = 1 in standard situation - moment mz must be tranfered either only by FXX or FXX if swicth to 1D formulation
+C       RQ : BETAX = BETAY = 1 in standard situation - moment mz must be transferred either only by FXX or FXX if switch to 1D formulation
 C       standard situation  -> FXX = -MYX/RYY and FYY = MXY/RXX
 C       1D formulation in X -> FXX = 0 and FYY = MZ / RXX
 C       1D formulation in Y -> FYY = 0 and FXX = MZ / RYY
@@ -324,7 +324,7 @@ C
 c
 c---    Moments Mx, MY
 C
-C       RQ : BETAX = BETAY = 1 in standard situation - used to impose that mx=0 or my=0 if swicth to 1D formulation
+C       RQ : BETAX = BETAY = 1 in standard situation - used to impose that mx=0 or my=0 if switch to 1D formulation
 c
         MYZ = RSY(1)*FMZ(1)+RSY(2)*FMZ(2)+RSY(3)*FMZ(3)+RSY(4)*FMZ(4)
         MZY = RSZ(1)*FMY(1)+RSZ(2)*FMY(2)+RSZ(3)*FMY(3)+RSZ(4)*FMY(4)
@@ -370,7 +370,7 @@ C
         MYX = RSY(1)*FMX(1)+RSY(2)*FMX(2)+RSY(3)*FMX(3)+(ONE-ALPHA)*MZS
         MZZ = MXY - MYX
 C
-C       RQ : BETAX = BETAY = 1 in standard situation - moment mz must be tranfered either only by FXX or FXX if swicth to 1D formulation
+C       RQ : BETAX = BETAY = 1 in standard situation - moment mz must be transferred either only by FXX or FXX if switch to 1D formulation
 C       standard situation  -> FXX = -MYX/RYY and FYY = MXY/RXX
 C       1D formulation in X -> FXX = 0 and FYY = MZ / RXX
 C       1D formulation in Y -> FYY = 0 and FXX = MZ / RYY
@@ -391,7 +391,7 @@ C
 c
 c---    Moments Mx, MY
 C
-C       RQ : BETAX = BETAY = 1 in standard situation - used to impose that mx=0 or my=0 if swicth to 1D formulation
+C       RQ : BETAX = BETAY = 1 in standard situation - used to impose that mx=0 or my=0 if switch to 1D formulation
 c
         MX=BETAX*(MX+(TWO*RSZ(1)-RSZ(2)-RSZ(3))*FYY - MXS)
         MY=BETAY*(MY+(TWO*RSZ(3)-RSZ(1)-RSZ(2))*FXX - MYS)

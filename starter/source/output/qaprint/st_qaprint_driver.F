@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ST_QAPRINT_DRIVER             source/output/qaprint/st_qaprint_driver.F
 Chd|-- called by -----------
@@ -110,7 +110,7 @@ Chd|====================================================================
      U                             XSEED       ,XLAS       ,LAS             ,IRBE2          ,LRBE2            ,
      V                             KXSP        ,IPARTSP    ,DRAPE           ,IXR_KJ         ,IACTIV           ,
      W                             FACTIV      ,UNITAB     ,NPBYL           ,LPBYL          ,RBYL             ,
-     X                             XYZREF      ,SENSOR_TAB ,LSENSOR         ,SENSOR         ,FUNC2D           ,
+     X                             XYZREF      ,SENSOR_TAB ,FUNC2D          ,
      Y                             INICRACK    ,IPRELOAD   ,PRELOAD         ,IFLAG_BPRELOAD ,IBMPC,
      Z                             IBMPC2      ,IBMPC3     ,IBMPC4          ,RBMPC          ,LJOINT           ,
      A                             NNLINK      ,LNLINK     ,BUFSF           ,SBUFSF_        ,PM_STACK         ,
@@ -195,8 +195,6 @@ C-----------------------------------------------
       TYPE (UNIT_TYPE_) ::UNITAB
       my_real, INTENT(IN) :: XYZREF(SX)
       TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR), TARGET :: SENSOR_TAB
-      INTEGER ,DIMENSION(NSENSI,*)  ,INTENT(IN) :: LSENSOR
-      my_real ,DIMENSION(NSENSR,*)  ,INTENT(IN) :: SENSOR
       TYPE(FUNC2D_STRUCT), DIMENSION(NFUNC2D), INTENT(IN) :: FUNC2D
       TYPE (INICRACK_) , DIMENSION(NINICRACK) :: INICRACK
       INTEGER, INTENT(IN) :: LLINAL
@@ -439,7 +437,7 @@ C-----------------------------------------------
       CALL ST_QAPRINT_OUTPUT_DATABASES(NOM_OPT, INOM_OPT, LACCELM ,ACCELM,LGAUGE,GAUGE)
       CALL ST_QAPRINT_MODEL_TOOLS(NOM_OPT, INOM_OPT, IBOX, IPMAS, NOM_SECT, NSTRF, SECBUF ,
      .                            SKEW   , ISKWN   , XFRAME, NPC,PLD,TABLE,NPTS, 
-     .                            IACTIV , FACTIV  ,SENSOR_TAB,LSENSOR   ,SENSOR, FUNC2D)
+     .                            IACTIV , FACTIV  ,SENSOR_TAB,FUNC2D)
       CALL ST_QAPRINT_MONVOL(T_MONVOL, T_MONVOL_METADATA)
       CALL ST_QAPRINT_FRICTION(NOM_OPT,INOM_OPT,INTBUF_FRIC_TAB,NPFRICORTH,PFRICORTH ,IREPFORTH,PHIFORTH,VFORTH) 
       CALL ST_QAPRINT_REFERENCE_STATE(XREFC     ,XREFTG    ,XREFS     ,TAGXREF   ,

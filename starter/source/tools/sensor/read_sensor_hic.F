@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  READ_SENSOR_HIC               source/tools/sensor/read_sensor_hic.F
 Chd|-- called by -----------
@@ -36,7 +36,7 @@ Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
       SUBROUTINE READ_SENSOR_HIC(SENSOR_PTR ,SENS_ID  ,TITR      ,
-     .           LSENSOR ,SENSOR  ,LACCELM  ,UNITAB   ,LSUBMODEL )
+     .           LACCELM  ,UNITAB   ,LSUBMODEL )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------  
@@ -55,7 +55,6 @@ C-----------------------------------------------
 #include      "param_c.inc"
 #include      "scr17_c.inc"
 #include      "com04_c.inc"
-#include      "scr_usens_c.inc"
 #include      "units_c.inc"
 #include      "sysunit.inc"
 #include      "submod_c.inc"
@@ -64,8 +63,6 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER ,INTENT(IN) :: SENS_ID
       INTEGER ,DIMENSION(3,*) ,INTENT(IN) :: LACCELM
-      INTEGER ,DIMENSION(NSENSI)  ,INTENT(OUT) :: LSENSOR
-      my_real ,DIMENSION(NSENSR)  ,INTENT(OUT) :: SENSOR
       CHARACTER (len=nchartitle) TITR
       TYPE (SENSOR_STR_)  :: SENSOR_PTR
       TYPE (SUBMODEL_DATA) ,DIMENSION(NSUBMOD) :: LSUBMODEL
@@ -73,7 +70,7 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER :: K,SENSOR_TYPE,INP_FLAG,ACC_ID,NOD_ID,IACC,IDIR,
+      INTEGER :: K,SENS_TYPE,INP_FLAG,ACC_ID,NOD_ID,IACC,IDIR,
      .   NPOINT,NPARIS,NPARRS,NVAR
       my_real :: TDEL,PERIOD,HIC_CRIT,DEF_GRAVITY,GRAVITY,TMIN,
      .   FAC_GRAV,Time_Unit
@@ -85,7 +82,7 @@ C     SENSOR BASED ON HEAD INJURY INDEX CRITERION
 C=======================================================================
       IS_AVAILABLE = .FALSE.
 c
-      SENSOR_TYPE = 16
+      SENS_TYPE = 16
       INP_FLAG    = 1       ! input is accelerometer ID (instead of node ID)
       NPOINT      = 200     ! default value
 c--------------------------------------------------
@@ -155,20 +152,7 @@ c--------------------
 c
       Time_Unit = FAC_T_WORK
 c-------------------------------                          
-      NPARIS = 4
-      NPARRS = 4
-      NVAR   = 4 + NPOINT
-c
-      ALLOCATE (SENSOR_PTR%IPARAM(NPARIS))
-      ALLOCATE (SENSOR_PTR%RPARAM(NPARRS))
-      ALLOCATE (SENSOR_PTR%VAR(NVAR))
-      SENSOR_PTR%VAR(:) = ZERO
-c
-      SENSOR_PTR%NPARI  = NPARIS
-      SENSOR_PTR%NPARR  = NPARRS
-      SENSOR_PTR%NVAR   = NVAR
-c
-      SENSOR_PTR%TYPE    = SENSOR_TYPE
+      SENSOR_PTR%TYPE    = SENS_TYPE
       SENSOR_PTR%SENS_ID = SENS_ID
       SENSOR_PTR%STATUS  = 0            ! status = deactivated
       SENSOR_PTR%TSTART  = INFINITY
@@ -176,6 +160,19 @@ c
       SENSOR_PTR%TMIN    = TMIN
       SENSOR_PTR%TDELAY  = TDEL         ! time delay before activation
       SENSOR_PTR%VALUE   = ZERO
+c
+      NPARIS = 4
+      NPARRS = 4
+      NVAR   = 4 + NPOINT
+c
+      SENSOR_PTR%NPARI  = NPARIS
+      SENSOR_PTR%NPARR  = NPARRS
+      SENSOR_PTR%NVAR   = NVAR
+c
+      ALLOCATE (SENSOR_PTR%IPARAM(NPARIS))
+      ALLOCATE (SENSOR_PTR%RPARAM(NPARRS))
+      ALLOCATE (SENSOR_PTR%VAR(NVAR))
+      SENSOR_PTR%VAR(:) = ZERO
 c
       SENSOR_PTR%IPARAM(1) = INP_FLAG
       SENSOR_PTR%IPARAM(2) = IACC
@@ -186,13 +183,6 @@ c
       SENSOR_PTR%RPARAM(2) = HIC_CRIT
       SENSOR_PTR%RPARAM(3) = GRAVITY          
       SENSOR_PTR%RPARAM(4) = Time_Unit          
-c---------------------------
-c     old sensor data tables
-c---------------------------
-      LSENSOR(1) = SENS_ID
-      LSENSOR(2) = SENSOR_TYPE
-      LSENSOR(3:NSENSI) = 0
-      SENSOR(:) = ZERO
 c-----------------------------------------------------------------------
       WRITE (IOUT, 1000) SENS_ID,TDEL
       WRITE (IOUT, 2000) ACC_ID,DIR(1:1),TDEL,PERIOD,HIC_CRIT,TMIN,GRAVITY

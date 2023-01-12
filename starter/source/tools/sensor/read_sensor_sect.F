@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  READ_SENSOR_SECT              source/tools/sensor/read_sensor_sect.F
 Chd|-- called by -----------
@@ -34,8 +34,8 @@ Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
-      SUBROUTINE READ_SENSOR_SECT(SENSOR_TAB ,SENS_ID  ,TITR   ,
-     .           LSENSOR ,SENSOR   ,UNITAB   ,LSUBMODEL )
+      SUBROUTINE READ_SENSOR_SECT(SENSOR_PTR ,SENS_ID  ,TITR   ,
+     .           UNITAB   ,LSUBMODEL )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------  
@@ -54,8 +54,6 @@ C-----------------------------------------------
 #include      "param_c.inc"
 #include      "scr17_c.inc"
 #include      "com04_c.inc"
-#include      "scr_usens_c.inc"
-#include      "warn_c.inc"
 #include      "units_c.inc"
 #include      "sysunit.inc"
 #include      "submod_c.inc"
@@ -63,24 +61,22 @@ C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER ,INTENT(IN) :: SENS_ID
-      INTEGER ,DIMENSION(NSENSI)  ,INTENT(OUT) :: LSENSOR
-      my_real ,DIMENSION(NSENSR)  ,INTENT(OUT) :: SENSOR
       CHARACTER TITR*nchartitle
-      TYPE (SENSOR_STR_) :: SENSOR_TAB
+      TYPE (SENSOR_STR_) :: SENSOR_PTR
       TYPE (SUBMODEL_DATA) ,DIMENSION(NSUBMOD) :: LSUBMODEL
       TYPE (UNIT_TYPE_)    ,INTENT(IN) :: UNITAB 
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER :: SECT_ID,IDIR,SENS_TYPE
+      INTEGER :: SECT_ID,IDIR,NPARIS,NPARRS,NVAR,SENS_TYPE
       my_real :: TDEL,TMIN,FMIN,FMAX
-      TYPE (SENSOR_STR_) :: SENSOR_PTR
       CHARACTER DIR*ncharkey
       LOGICAL :: IS_AVAILABLE
 C--------------------------------
 C     SENSOR BASED ON SECTION FORCE
 C=======================================================================
       IS_AVAILABLE = .FALSE.
+      SENS_TYPE  = 12
 c--------------------------------------------------
 card1
       CALL HM_GET_FLOATV('Tdelay'      ,TDEL   ,IS_AVAILABLE,LSUBMODEL,UNITAB)
@@ -110,17 +106,33 @@ c--------------------------------------------------
       END IF                                       
 c--------------------------------------------------
 c
-      SENS_TYPE  = 12
-      LSENSOR(1) = SENS_ID
-      LSENSOR(2) = SENS_TYPE
-      LSENSOR(4) = SECT_ID     ! section ID is converted to sys number in inisen()
-      LSENSOR(6) = IDIR     
-      SENSOR(1)  = TDEL
-      SENSOR(2)  = INFINITY   ! activation time
-      SENSOR(3)  = INFINITY 
-      SENSOR(4)  = FMIN     
-      SENSOR(5)  = FMAX     
-      SENSOR(6)  = TMIN     
+      SENSOR_PTR%TYPE    = SENS_TYPE
+      SENSOR_PTR%SENS_ID = SENS_ID
+      SENSOR_PTR%STATUS  = 0            ! status = deactivated
+      SENSOR_PTR%TSTART  = INFINITY
+      SENSOR_PTR%TCRIT   = INFINITY
+      SENSOR_PTR%TMIN    = TMIN
+      SENSOR_PTR%TDELAY  = TDEL         ! time delay before activation
+      SENSOR_PTR%VALUE   = ZERO
+
+      NPARIS = 2
+      NPARRS = 2
+      NVAR   = 0 
+c
+      SENSOR_PTR%NPARI  = NPARIS
+      SENSOR_PTR%NPARR  = NPARRS
+      SENSOR_PTR%NVAR   = NVAR
+c
+      ALLOCATE (SENSOR_PTR%IPARAM(NPARIS))
+      ALLOCATE (SENSOR_PTR%RPARAM(NPARRS))
+      ALLOCATE (SENSOR_PTR%VAR(NVAR))
+      SENSOR_PTR%VAR(:) = ZERO
+
+      SENSOR_PTR%IPARAM(1) = SECT_ID
+      SENSOR_PTR%IPARAM(2) = IDIR
+
+      SENSOR_PTR%RPARAM(1) = FMIN
+      SENSOR_PTR%RPARAM(2) = FMAX
 c------------------------------------------------------------
       WRITE (IOUT, 1000) SENS_ID,TDEL
       WRITE (IOUT, 2000) SECT_ID,FMIN,FMAX,TMIN,DIR

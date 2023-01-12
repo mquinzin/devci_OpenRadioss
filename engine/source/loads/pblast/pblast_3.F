@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  PBLAST_3                      source/loads/pblast/pblast_3.F
 Chd|-- called by -----------
@@ -28,6 +28,7 @@ Chd|-- calls ---------------
 Chd|        ARRET                         source/system/arret.F         
 Chd|        MY_BARRIER                    source/system/machine.F       
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        H3D_INC_MOD                   share/modules/h3d_inc_mod.F   
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        PBLAST_MOD                    ../common_source/modules/pblast_mod.F
 Chd|====================================================================
@@ -40,6 +41,7 @@ C-----------------------------------------------
       USE H3D_MOD 
       USE PBLAST_MOD
       USE GROUPDEF_MOD      
+      USE H3D_INC_MOD 
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -231,7 +233,7 @@ C-----------------------------------------------
       !---------------------------------------------                                                                                                                                                 
       !   LOOP ON SEGMENTS (4N or 3N)                                                                                                                                                                
       !---------------------------------------------                                                                                                                                                 
-!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)
       DO I = 1,ISIZ_SEG                                                                                                                                                                              
         N1=LLOADP(ILOADP(4,NL)+4*(I-1))                                                                                                                                                              
         N2=LLOADP(ILOADP(4,NL)+4*(I-1)+1)                                                                                                                                                            
@@ -239,7 +241,7 @@ C-----------------------------------------------
         N4=LLOADP(ILOADP(4,NL)+4*(I-1)+3)                                                                                                                                                            
                                                                                                                                                                                                      
         IF(N4==0 .OR. N3==N4 )THEN                                                                                                                                                                   
-          !3 NODE SEGEMENT                                                                                                                                                                           
+          !3 NODE SEGMENT                                                                                                                                                                           
           PBLAST_TAB(IL)%NPt(I) = THREE  
           NPT = THREE                                                                                                                                                                         
           !Segment Zentrum                                                                                                                                                                           
@@ -254,7 +256,7 @@ C-----------------------------------------------
           NZ = (X(1,N3)-X(1,N1))*(X(2,N3)-X(2,N2)) - (X(2,N3)-X(2,N1))*(X(1,N3)-X(1,N2))                                                                                                             
           NORM = SQRT(NX*NX+NY*NY+NZ*NZ)                                                                                                                                                             
         ELSE                                                                                                                                                                                         
-          !4 NODE SEGEMENT                                                                                                                                                                           
+          !4 NODE SEGMENT                                                                                                                                                                           
           PBLAST_TAB(IL)%NPt(I) = FOUR  
           NPT = FOUR                                                                                                                                                                          
           !Segment Zentrum                                                                                                                                                                           
@@ -469,7 +471,7 @@ C-----------------------------------------------
               WRITE(IOUT,*)                                                                                                                                                                          
      .         ' ** WARNING : SCALED HEIGHT OF CHARGE IS ABOVE THE RANGE, FIGURE 2-9, CURVE=',10,' HC=',ZC/FAC_UNIT                                                                                  
               WRITE(ISTDO,*)                                                                                                                                                                         
-     .         ' ** WARNING : SCALED HEIGHT OF CHARGE IS ABOCE THE RANGE, FIGURE 2-9, CURVE=',10,' HC=',ZC/FAC_UNIT                                                                                  
+     .         ' ** WARNING : SCALED HEIGHT OF CHARGE IS ABOVE THE RANGE, FIGURE 2-9, CURVE=',10,' HC=',ZC/FAC_UNIT                                                                                  
           else                                                                                                                                                                                       
             idx2=idx1+1                                                                                                                                                                              
             calculate=.true.                                                                                                                                                                         
@@ -559,7 +561,7 @@ C-----------------------------------------------
            LogRes = LOG10(bound1) + LAMBDA*LOG10(bound2/bound1)                                                                                                                                      
            DT_0 = exp(LogRes*log10_)                                                                                                                                                                 
 
-           !swtich from normalized values.       Pressure are not scaled by W13 in abacuses                                                                                                          
+           !switch from normalized values.       Pressure are not scaled by W13 in abacuses                                                                                                          
            P_inci = Pra                                                                                                                                                                              
            P_refl = Pra_refl                                                                                                                                                                         
            I_inci = Ira                                                                                                                                                                              
@@ -730,7 +732,7 @@ C-----------------------------------------------
       !-------------------------------------------!                                                 
       ! SPMD/SMP Parith/OFF                                                                         
       IF(IPARIT==0) THEN  
-!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)                                                                                
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)                                                                                
         DO I = 1,ISIZ_SEG                                                                           
           N1=LLOADP(ILOADP(4,NL)+4*(I-1))                                                           
           N2=LLOADP(ILOADP(4,NL)+4*(I-1)+1)                                                         
@@ -753,7 +755,7 @@ C-----------------------------------------------
         ENDDO                                                                                       
 !$OMP END DO        
       ELSE    
-!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)                                                                                            
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)                                                                                            
         DO I = 1,ISIZ_SEG                                                                           
           IAD         =IADC(ILOADP(4,NL)+4*(I-1))                                                   
           FSKY(1,IAD) =PBLAST_TAB(IL)%FX(I)                                                                        
@@ -783,7 +785,7 @@ C-----------------------------------------------
       !-------------------------------------------!                                                 
       IF(IANIM>0) THEN                                                                              
         IF(IANIM > 0) THEN  
-!$OMP DO SCHEDULE(DYNAMIC,MVSIZ)                                                                                
+!$OMP DO SCHEDULE(GUIDED,MVSIZ)                                                                                
           DO I = 1,ISIZ_SEG                                                                         
             N1=PBLAST_TAB(IL)%N(1,I)                                                                               
             N2=PBLAST_TAB(IL)%N(2,I)                                                                               

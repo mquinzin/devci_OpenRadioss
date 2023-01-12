@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  I18MAIN_KINE_1                source/interfaces/int18/i18main_kine.F
 Chd|-- called by -----------
@@ -49,7 +49,7 @@ C-----------------------------------------------
 C   D e s c r i p t i o n 
 C-----------------------------------------------
 C This subroutine is a 'kinematic version' of coupling interface type 18
-C It is an old and experimental version which has never been released (abandonned)
+C It is an old and experimental version which has never been released (abandoned)
 C  Principle : Structural velocity is imposing fluid velocity
 C  Starter Keyword : /INTER/TYPE18/KINE
 C-----------------------------------------------
@@ -641,7 +641,7 @@ C
       KMIN  =INTBUF_TAB%VARIABLES(17)
       KMAX  =INTBUF_TAB%VARIABLES(18)
 
-C     parrallel part after elem forces
+C     parallel part after elem forces
 C     static cutting
       NB_LOC = I_STOK / NTHREAD
       IF (JTASK == NTHREAD) THEN
@@ -1761,7 +1761,7 @@ C
 C
       ENDDO
 C---------------------------------
-C    transfering fluid force to structure nodes
+C    transferring fluid force to structure nodes
 C---------------------------------
       DO I=1,JLT
         IF(PENE(I) > ZERO)THEN
@@ -1781,7 +1781,7 @@ C
           FY4(I)=FYI(I)*H4(I)
           FZ4(I)=FZI(I)*H4(I)
 C---------------------------------
-c       transfering fluid tensorial mass to structural nodes
+c       transferring fluid tensorial mass to structural nodes
 C---------------------------------
 c
 c            | nx*nx nx*ny nx*nz |

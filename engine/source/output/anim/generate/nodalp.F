@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  NODALP                        source/output/anim/generate/nodalp.F
 Chd|-- called by -----------
@@ -39,7 +39,7 @@ C   D e s c r i p t i o n
 C-----------------------------------------------
 C     This suroutine computes nodal pressure for
 C     ALE elements. In case of CEL coupling (inter22)
-C     result is also calcultated from cut cells.
+C     result is also calculated from cut cells.
 C-----------------------------------------------
 C   P r e - C o n d i t i o n s
 C-----------------------------------------------
@@ -177,7 +177,7 @@ C                print *, "treating brick id=", IX(11,I+NFT)
                 ! NOT A CUT CELL            !
                 !---------------------------! 
                 IF(IB>0)THEN
-                  IF(BRICK_LIST(NIN,IB)%NBCUT==0)IB=0 !in cut cell buffer but not partitionned (because it is adjacent to a cut cell)
+                  IF(BRICK_LIST(NIN,IB)%NBCUT==0)IB=0 !in cut cell buffer but not partitioned (because it is adjacent to a cut cell)
                 ENDIF             
                 IF(IB==0)THEN                
                   P = GBUF%SIG(NEL*(1-1)+I)+GBUF%SIG(NEL*(2-1)+I)+GBUF%SIG(NEL*(3-1)+I)   

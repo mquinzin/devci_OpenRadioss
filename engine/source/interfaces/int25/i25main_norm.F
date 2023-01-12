@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       module MOD_I25MAIN_NORM
       implicit none
 #include      "my_real.inc"
@@ -41,10 +41,11 @@ Chd|        I25TAGN                       source/interfaces/int25/i25norm.F
 Chd|        MY_BARRIER                    source/system/machine.F       
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        MPI_COMMOD                    share/modules/mpi_comm_mod.F  
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE I25MAIN_NORM(
      1                   INTLIST25,IPARI   ,INTBUF_TAB ,JTASK    ,X       ,
-     2                   ITAB    ,SENSOR ,IAD_FRNOR    ,FR_NOR   ,
+     2                   ITAB    ,SENSOR_TAB,IAD_FRNOR    ,FR_NOR   ,
      3                   IAD_FREDG,FR_EDG,IAD_ELEM,FR_ELEM,FSKYN25,
      4                   ADDCSRECT,PROCNOR)
 C=======================================================================
@@ -54,6 +55,7 @@ C-----------------------------------------------
       USE MOD_I25MAIN_NORM
       USE MPI_COMMOD
       USE INTBUFDEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -81,11 +83,11 @@ C-----------------------------------------------
      .        IAD_FRNOR(NINTER25,*), FR_NOR(*), IAD_FREDG(NINTER25,*), FR_EDG(*), 
      .        IAD_ELEM(2,*), FR_ELEM(*),ADDCSRECT(*), PROCNOR(*)
 C     REAL
-      my_real 
-     .   X(3,*), SENSOR(NSENSR,*)
+      my_real  :: X(3,*)
       TYPE(INTBUF_STRUCT_),DIMENSION(NINTER) :: INTBUF_TAB
       TYPE(MPI_COMM_NOR_STRUCT) , DIMENSION(NINTER25) :: BUFFERS
       REAL*4 FSKYN25(3,*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -121,8 +123,8 @@ C
         IF(TT>STOPT)  CYCLE
 C
         ISENS = IPARI(64,N)  
-        IF(ISENS/=0)  THEN         ! Interface activated by sensor
-           TS = SENSOR(2,ISENS)
+        IF (ISENS > 0)  THEN         ! Interface activated by sensor
+           TS = SENSOR_TAB(ISENS)%TSTART
         ELSE
            TS = TT
         ENDIF
@@ -244,8 +246,8 @@ C
         IF(TT>STOPT)  CYCLE
 C
         ISENS = IPARI(64,N)  
-        IF(ISENS/=0)  THEN         ! Interface activated by sensor
-           TS = SENSOR(2,ISENS)
+        IF (ISENS > 0)  THEN         ! Interface activated by sensor
+           TS = SENSOR_TAB(ISENS)%TSTART
         ELSE
            TS = TT
         ENDIF
@@ -313,8 +315,8 @@ C       NEDGE  = IPARI(68,N) ! Updated in i25normp
         IF(SOL_EDGE/=0)THEN
 
           ISENS = IPARI(64,N)  
-          IF(ISENS/=0)  THEN         ! Interface activated by sensor
-             TS = SENSOR(2,ISENS)
+          IF (ISENS > 0)  THEN         ! Interface activated by sensor
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF

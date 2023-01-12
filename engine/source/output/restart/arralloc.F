@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  RESTALLOC                     source/output/restart/arralloc.F
 Chd|-- called by -----------
@@ -124,6 +124,7 @@ C-----------------------------------------------
 #include      "eigcom.inc"
 #include      "inter18.inc"
 #include      "stati_c.inc"
+#include      "com09_c.inc"
 C-----------------------------------------------
       TYPE(MULTI_FVM_STRUCT) :: MULTI_FVM
       TYPE(H3D_DATABASE) :: H3D_DATA
@@ -1777,12 +1778,14 @@ C
            ALLOCATE(FCONTG(0,0),STAT=IERR)
          END IF
 C
-         IF(ANIM_V(26)+H3D_DATA%N_VECT_CONT_MAX >0)THEN
+         SFCONT_MAX = 0
+         IF(ANIM_V(26)+H3D_DATA%N_VECT_CONT_MAX >0.OR.IFCONTMAX > 0)THEN
            IF(NSPMD > 1 .AND. NINTSTAMP/=0) THEN
               IF(ISPMD == 0) THEN
                  ALLOCATE(FCONT_MAX(3*NUMNODG),STAT=IERR)
                  IF (IERR/=0) GOTO 1000
                  FCONT_MAX=ZERO
+                 SFCONT_MAX = NUMNODG
               ELSE
                  ALLOCATE(FCONT_MAX(0),STAT=IERR)
                ENDIF
@@ -1790,6 +1793,7 @@ C
                ALLOCATE(FCONT_MAX(3*NUMNOD),STAT=IERR)
                IF (IERR/=0) GOTO 1000
                FCONT_MAX=ZERO
+               SFCONT_MAX = NUMNOD
             ENDIF
          ELSE
             ALLOCATE(FCONT_MAX(0),STAT=IERR)
@@ -1804,6 +1808,67 @@ C
          ELSE
            ALLOCATE(FNCONTG(0,0),FTCONTG(0,0),STAT=IERR)
          END IF
+C
+         SPCONT_MAX = 0
+         IF(H3D_DATA%N_VECT_PCONT_MAX >0.OR.IFCONTPMAX > 0)THEN
+           IF(NSPMD > 1 .AND. NINTSTAMP/=0) THEN
+              IF(ISPMD == 0) THEN
+                 ALLOCATE(FTCONT_MAX(3*NUMNODG),FNCONT_MAX(3*NUMNODG),STAT=IERR)
+                 IF (IERR/=0) GOTO 1000
+                 FTCONT_MAX=ZERO
+                 FNCONT_MAX=ZERO
+                 SPCONT_MAX = NUMNODG
+              ELSE
+                 ALLOCATE(FNCONT_MAX(0),FTCONT_MAX(0),STAT=IERR)
+               ENDIF
+            ELSE
+               ALLOCATE(FTCONT_MAX(3*NUMNOD),FNCONT_MAX(3*NUMNOD),STAT=IERR)
+               IF (IERR/=0) GOTO 1000
+               FTCONT_MAX=ZERO
+               FNCONT_MAX=ZERO
+               SPCONT_MAX = NUMNOD
+            ENDIF
+         ELSE
+            ALLOCATE(FNCONT_MAX(0),STAT=IERR)
+            ALLOCATE(FTCONT_MAX(0),STAT=IERR)
+         END IF
+C
+         IF(H3D_DATA%N_VECT_CONT2_MAX >0.OR.IFCONT2MAX > 0)THEN
+            ALLOCATE(FCONT2_MAX(3*NUMNOD),STAT=IERR)
+            IF (IERR/=0) GOTO 1000
+            FCONT2_MAX=ZERO
+         ELSE
+            ALLOCATE(FCONT2_MAX(0),STAT=IERR)
+         END IF
+C
+         IF(H3D_DATA%N_VECT_PCONT2_MAX >0.OR.IFCONTP2MAX > 0)THEN
+            ALLOCATE(FTCONT2_MAX(3*NUMNOD),FNCONT2_MAX(3*NUMNOD),STAT=IERR)
+            IF (IERR/=0) GOTO 1000
+            FNCONT2_MAX=ZERO
+            FTCONT2_MAX=ZERO
+         ELSE
+            ALLOCATE(FNCONT2_MAX(0),STAT=IERR)
+            ALLOCATE(FTCONT2_MAX(0),STAT=IERR)
+         END IF
+C
+         IF(H3D_DATA%N_VECT_CONT2_MIN >0.OR.IFCONT2MIN > 0)THEN
+            ALLOCATE(FCONT2_MIN(3*NUMNOD),STAT=IERR)
+            IF (IERR/=0) GOTO 1000
+            FCONT2_MIN=ZERO
+         ELSE
+            ALLOCATE(FCONT2_MIN(0),STAT=IERR)
+         END IF
+C
+         IF(H3D_DATA%N_VECT_PCONT2_MIN >0.OR.IFCONTP2MIN > 0)THEN
+            ALLOCATE(FTCONT2_MIN(3*NUMNOD),FNCONT2_MIN(3*NUMNOD),STAT=IERR)
+            IF (IERR/=0) GOTO 1000
+            FNCONT2_MIN=ZERO
+            FTCONT2_MIN=ZERO
+         ELSE
+            ALLOCATE(FNCONT2_MIN(0),STAT=IERR)
+            ALLOCATE(FTCONT2_MIN(0),STAT=IERR)
+         END IF
+C 
 C
          IF(NINTSTAMP/=0.AND.(ANIM_V(12)+OUTP_V(12)+H3D_DATA%N_VECT_PCONT>0.OR.
      .          ANIM_V(4)+OUTP_V(4)+H3D_DATA%N_VECT_CONT >0))THEN

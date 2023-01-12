@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  USERMAT_SHELL                 source/materials/mat_share/usermat_shell.F
 Chd|-- called by -----------
@@ -93,19 +93,18 @@ Chd|====================================================================
      4       EYZ      ,KXX      ,KYY      ,KXY       ,GEO      ,THK_LY   ,             
      5       PID      ,TF       ,NPF      ,MTN       ,DT1C     ,DM       ,           
      6       BUFMAT   ,SSP      ,RHO      ,VISCMX    ,IPLA     ,IOFC     ,    
-     7       INDX     ,NGL      ,THKLY    ,MATLY     ,ZCFAC    ,              
+     7       INDX     ,NGL      ,THKLY    ,MATLY     ,ZCFAC    ,NG       ,               
      8       SHF      ,GS       ,SIGY     ,THK0      ,EPSP     ,              
      9       POSLY    ,IGEO     ,IPM      ,FAILWAVE  ,FWAVE_EL ,                                   
      A       IFAILURE ,ALDT     ,TEMPEL   ,DIE       ,                        
      B       R11      ,R12      ,R13      ,R21       ,R22      ,R23      ,    
      C       R31      ,R32      ,R33      ,TABLE     ,IXFEM    ,ELCRKINI ,    
-     D       LSENSOR  ,SENSOR   ,NG       ,                         
-     E       DIR1_CRK ,DIR2_CRK ,IPARG    ,JHBE      ,ISMSTR   ,JTHE     ,             
-     F       TENSX    ,IR       ,IS       ,NLAY      ,NPT      ,IXLAY    ,    
-     G       IXEL     ,ITHK     ,F_DEF    ,ISHPLYXFEM,
-     H       ITASK    ,PM_STACK , ISUBSTACK,STACK    ,TSTAR    ,ALPE     ,
-     I       PLY_EXX  ,PLY_EYY  ,PLY_EXY  ,PLY_EXZ   ,PLY_EYZ  ,PLY_F    ,
-     J       VARNL    ,NLOC_DMG )
+     D       DIR1_CRK ,DIR2_CRK ,IPARG    ,JHBE      ,ISMSTR   ,JTHE     ,                        
+     E       TENSX    ,IR       ,IS       ,NLAY      ,NPT      ,IXLAY    ,             
+     F       IXEL     ,ITHK     ,F_DEF    ,ISHPLYXFEM,                        
+     G       ITASK    ,PM_STACK , ISUBSTACK,STACK    ,TSTAR    ,ALPE     ,
+     H       PLY_EXX  ,PLY_EYY  ,PLY_EXY  ,PLY_EXZ   ,PLY_EYZ  ,PLY_F    ,
+     I       VARNL    ,NLOC_DMG )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -148,7 +147,7 @@ C-----------------------------------------------
      .  IREP,ISUBSTACK,ITASK,ISHPLYXFEM,NUMTABL
       INTEGER MAT(*),MATLY(*),PID(*),NPF(*),NGL(MVSIZ),INDX(MVSIZ),
      .   IGEO(NPROPGI,*),IPM(NPROPMI,*),ELCRKINI(NXLAYMAX,*),
-     .   LSENSOR(NSENSI,*),IPARG(*),FWAVE_EL(NEL)
+     .   IPARG(*),FWAVE_EL(NEL)
       my_real DM
       my_real FOR(NEL,5),MOM(NEL,3),GSTR(NEL,8),THK(*),EINT(JLT,2),OFF(*),
      .   DIR_A(*),DIR_B(*),VISCMX(*),PM(NPROPM,*),THK_LY(NEL,*),
@@ -160,7 +159,7 @@ C-----------------------------------------------
      .   R11(MVSIZ), R12(MVSIZ), R13(MVSIZ),
      .   R21(MVSIZ), R22(MVSIZ), R23(MVSIZ),
      .   R31(MVSIZ), R32(MVSIZ), R33(MVSIZ),
-     .   SENSOR(NSENSR,*),DIR1_CRK(*),DIR2_CRK(*),TENSX(NEL,5),
+     .   DIR1_CRK(*),DIR2_CRK(*),TENSX(NEL,5),
      .   F_DEF(MVSIZ,8),PM_STACK(20,*),TSTAR(MVSIZ),ALPE(MVSIZ),
      .   PLY_EXX(MVSIZ,*),PLY_EYY(MVSIZ,*),PLY_EXY(MVSIZ,*), 
      .   PLY_EXZ(MVSIZ,*),PLY_EYZ(MVSIZ,*),PLY_F(MVSIZ,5,*)
@@ -238,7 +237,7 @@ c----
       INTEGER, DIMENSION(:) ,POINTER  :: FLD_IDX,FOFF,OFFLY,ITABLE,VARTMP
       my_real, DIMENSION(:) ,POINTER  :: UVAR,UVARF,UELR,UELR1,DAM,
      .   DFMAX,TDEL ,OFFL,UVARV,UPARAM,UPARAMF,EPS1,EPS2,DEPS1,DEPS2,
-     .   DIRDMG,DIR_ORTH,ZZ,THLY
+     .   DIRDMG,DIR_ORTH,ZZ,THLY,DAMINI
 c----
       LOGICAL :: LOGICAL_USERL_AVAIL
       LOGICAL :: FLAG_EPS,FLAG_EPSP,FLAG_ZCFAC
@@ -282,7 +281,7 @@ C
         IF(IPM(222,IMAT) > 0) IPRONY=1
       ENDDO
 C
-!     ZCFAC computation is only usefull for CZFORC3 and CZFORC3_CRK routines
+!     ZCFAC computation is only useful for CZFORC3 and CZFORC3_CRK routines
       FLAG_ZCFAC=.FALSE.
       IF( (JHBE>=21.AND.JHBE<=29).OR.(IMPL_S>0)) FLAG_ZCFAC=.TRUE.
       SCALE1(1:NEL) = ONE
@@ -1268,6 +1267,7 @@ c---
               IRUPT  =  FBUF%FLOC(IFL)%ILAWF                                
               DAM    => FBUF%FLOC(IFL)%DAM
               DFMAX  => FBUF%FLOC(IFL)%DAMMX 
+              DAMINI => FBUF%FLOC(IFL)%DAMINI
               TDEL   => FBUF%FLOC(IFL)%TDEL   
               FLD_IDX=> FBUF%FLOC(IFL)%INDX
               FOFF   => FBUF%FLOC(IFL)%OFF
@@ -1520,7 +1520,7 @@ c
      2               TT        ,NGL       ,IPG       ,ILAYER    ,IT        ,
      3               SIGNXX    ,SIGNYY    ,SIGNXY    ,SIGNYZ    ,SIGNZX    ,
      4               OFF       ,FOFF ,PTHKF(ILAYER,IFL),DMG_FLAG,DMG_LOC_SCALE ,
-     5               DFMAX     ,TDEL      )
+     5               DFMAX     ,TDEL      ,DT1C      )
 c
               CASE (23)     !    Tabulated failure model
                 IF (IXFEM == 0) THEN
@@ -1721,21 +1721,18 @@ c
      4            SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,              
      5            EL_PLA   ,EL_TEMP  ,SIGY     ,FOFF     ,DFMAX    ,
      6            TDEL     ,IPT      ,IPG      ,DMG_FLAG ,DMG_LOC_SCALE,
-     7            PTHKF(ILAYER,IFL))
+     7            PTHKF(ILAYER,IFL)  ,DAMINI   ,AREA     ,INLOC    ,
+     8            NPG      )
 c
-              CASE (99)     !    Syazwan failure model
-                DO I=JFT,JLT
-                  COPY_PLA(I) = LBUF%PLA(I)
-                ENDDO
+              CASE (43)     !    Syazwan failure model
+c
                 CALL FAIL_SYAZWAN_C(
-     1          JLT      ,NVARF   ,
-     2          TT       ,UPARAMF ,NGL      ,IPT      ,MPT      ,
-     3          SIGNXX   ,SIGNYY  ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,
-     4          EPSXX    ,EPSYY   ,EPSXY    ,EPSYZ    ,EPSZX    ,
-     5          DPLA     ,EPSPL   ,UVARF    ,GBUF%NOFF,UELR1    ,
-     6          OFF      ,OFFL    ,DFMAX    ,TDEL     ,NFUNC1   ,
-     7          IFUNC1   ,EL_LEN  ,FOFF    , IGTYP    ,COPY_PLA ,
-     8          DMG_FLAG ,DMG_LOC_SCALE,NPF,TF)
+     1            JLT      ,UPARAMF  ,NUPAR    ,UVARF    ,NVARF    ,
+     2            TT       ,NGL      ,IPT      ,DPLA     ,EL_PLA   ,
+     3            SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,
+     4            EPSXX    ,EPSYY    ,EPSXY    ,EPSYZ    ,EPSZX    ,
+     5            DFMAX    ,NFUNC1   ,IFUNC1   ,EL_LEN   ,FOFF     ,
+     6            IPG      ,DMG_FLAG ,DMG_LOC_SCALE,NPF  ,TF       )
 c 
 c-------------
               END SELECT

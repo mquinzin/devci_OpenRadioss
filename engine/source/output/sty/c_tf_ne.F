@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  C_TF_NE                       source/output/sty/c_tf_ne.F   
 Chd|-- called by -----------
@@ -119,7 +119,7 @@ C
 C-----------------------------------------------
       GBUF => ELBUF_STR%GBUF
 !
-      DO I=1,12  ! lenght max of GBUF%G_HOURG = 12
+      DO I=1,12  ! length max of GBUF%G_HOURG = 12
         II(I) = NEL*(I-1)
       ENDDO
 !
@@ -481,7 +481,7 @@ C
       ELSE  ! IF (IW == 1)
 C---QEPH:------
         IF (IHBE == 23) THEN
-C---Transfert to QBAT------
+C---Transfer to QBAT------
           IF (MPT == 0) THEN
             DO I=1,NEL
               SIG0(1,I) = GBUF%FOR(II(1)+I)  

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS36                      source/materials/mat/mat036/sigeps36.F
 Chd|-- called by -----------
@@ -41,8 +41,9 @@ Chd|====================================================================
      7     SIGNXX ,SIGNYY ,SIGNZZ  ,SIGNXY  ,SIGNYZ  ,SIGNZX ,
      8     SOUNDSP,VISCMAX,UVAR    ,OFF     ,NGL     ,IPT    ,
      9     IPM    ,MAT    ,EPSP    ,IPLA    ,YLD     ,PLA    ,
-     A     DPLA1  ,ETSE   ,AL_IMP  ,SIGNOR  ,AMU,
-     B     FACYLDI,NVARTMP,VARTMP  ,SIGB)
+     A     DPLA1  ,ETSE   ,AL_IMP  ,SIGNOR  ,AMU     ,
+     B     FACYLDI,NVARTMP,VARTMP  ,SIGB    ,DMG     ,INLOC  ,
+     C     PLANL  )
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -86,7 +87,7 @@ C SIGNXX  | NEL     | F | W | NEW ELASTO PLASTIC STRESS XX
 C SIGNYY  | NEL     | F | W | NEW ELASTO PLASTIC STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C UVAR    |NEL*NUVAR| F |R/W| USER ELEMENT VARIABLE ARRAY
 C OFF     | NEL     | F |R/W| DELETED ELEMENT FLAG (=1. ON, =0. OFF)
@@ -101,7 +102,7 @@ C---------+---------+---+---+--------------------------------------------
 #include      "impl1_c.inc"
 C=======================================================================
       INTEGER NEL, NUPARAM, NUVAR,IPT,IPLA,NVARTMP,
-     .   NGL(NEL),MAT(NEL),IPM(NPROPMI,*)
+     .   NGL(NEL),MAT(NEL),IPM(NPROPMI,*),INLOC
       my_real
      .   TIME,TIMESTEP,UPARAM(*),SIGB(*),
      .   RHO(NEL),RHO0(NEL),VOLUME(NEL),EINT(NEL),
@@ -111,7 +112,8 @@ C=======================================================================
      .   DEPSXY(NEL),DEPSYZ(NEL),DEPSZX(NEL),
      .   SIGOXX(NEL),SIGOYY(NEL),SIGOZZ(NEL),
      .   SIGOXY(NEL),SIGOYZ(NEL),SIGOZX(NEL),
-     .   EPSP(NEL),ETSE(NEL),AMU(NEL),FACYLDI(NEL)
+     .   EPSP(NEL),ETSE(NEL),AMU(NEL),FACYLDI(NEL),
+     .   DMG(NEL),PLANL(NEL)
 C-----------------------------------------------
 C   O U T P U T   A r g u m e n t s
 C-----------------------------------------------
@@ -256,7 +258,7 @@ c          from the old stresses, thus, SIGOxx is a shifted old stress
         ENDDO            
       ENDIF 
 c------------------------------------------
-c     element lenght scale function
+c     element length scale function
 c------------------------------------------
       IF (OPTE == 1) THEN
         IFUNCE = UPARAM( 2*NRATE + 22)
@@ -404,6 +406,7 @@ C-------------------
 C     tension failure 
 C-------------------
           FAIL(I) = MAX(EM20, MIN(ONE, (EPSR2-EPST)/(EPSR2-EPSR1) ))
+          DMG(I)  = ONE - MAX(ZERO, MIN(ONE,(EPSR2-EPST)/(EPSR2-EPSR1)))
         ENDDO
       ENDIF
 C=======================================================================
@@ -1463,21 +1466,45 @@ c
       IF (IFAIL > 0) THEN
         NINDX = 0
         IF (IFAIL == 2) THEN
-          DO I=1,NEL
-            IF ((PLA(I) > EPSMAX .OR. EPSTT(I) > EPSF) .AND. OFF(I) == ONE) THEN
-              OFF(I)= FOUR_OVER_5
-              NINDX = NINDX+1
-              INDX(NINDX) = I
-            ENDIF
-          ENDDO
+          IF (INLOC > 0) THEN 
+            DO I=1,NEL
+              IF (EPSMAX < EP20) DMG(I) = MAX(DMG(I),PLANL(I)/EPSMAX)
+              IF ((PLANL(I) > EPSMAX .OR. EPSTT(I) > EPSF) .AND. OFF(I) == ONE) THEN
+                OFF(I)= FOUR_OVER_5
+                NINDX = NINDX+1
+                INDX(NINDX) = I
+              ENDIF
+            ENDDO
+          ELSE
+            DO I=1,NEL
+              IF (EPSMAX < EP20) DMG(I) = MAX(DMG(I),PLA(I)/EPSMAX)
+              IF ((PLA(I) > EPSMAX .OR. EPSTT(I) > EPSF) .AND. OFF(I) == ONE) THEN
+                OFF(I)= FOUR_OVER_5
+                NINDX = NINDX+1
+                INDX(NINDX) = I
+              ENDIF
+            ENDDO
+          ENDIF
         ELSE
-          DO I=1,NEL
-            IF (PLA(I) > EPSMAX .AND. OFF(I) == ONE) THEN
-              OFF(I)= FOUR_OVER_5
-              NINDX = NINDX+1
-              INDX(NINDX) = I
-            ENDIF
-          ENDDO
+          IF (INLOC > 0) THEN 
+            DO I=1,NEL
+              IF (EPSMAX < EP20) DMG(I) = PLANL(I)/EPSMAX
+              IF (PLANL(I) > EPSMAX .AND. OFF(I) == ONE) THEN
+                OFF(I)= FOUR_OVER_5
+                NINDX = NINDX+1
+                INDX(NINDX) = I
+              ENDIF
+            ENDDO
+          ELSE
+            DO I=1,NEL
+              IF (EPSMAX < EP20) DMG(I) = PLA(I)/EPSMAX
+              IF (PLA(I) > EPSMAX .AND. OFF(I) == ONE) THEN
+                OFF(I)= FOUR_OVER_5
+                NINDX = NINDX+1
+                INDX(NINDX) = I
+              ENDIF
+            ENDDO
+          ENDIF
         END IF
         IF (NINDX > 0 .AND. IMCONV == 1) THEN
           IDEL7NOK = 1

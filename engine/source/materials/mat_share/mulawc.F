@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MULAWC                        source/materials/mat_share/mulawc.F
 Chd|-- called by -----------
@@ -125,6 +125,7 @@ Chd|        LAW_USERSH                    source/user_interface/law_usersh.F
 Chd|        MATPARAM_DEF_MOD              ../common_source/modules/matparam_def_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
@@ -141,7 +142,7 @@ Chd|====================================================================
      A       IFAILURE ,ALDT     ,TEMPEL   ,DIE       ,                        
      B       R11      ,R12      ,R13      ,R21       ,R22      ,R23      ,    
      C       R31      ,R32      ,R33      ,TABLE     ,IXFEM    ,ELCRKINI ,    
-     D       LSENSOR  ,SENSOR   ,NG       ,                         
+     D       SENSOR_TAB,NG      ,                         
      E       DIR1_CRK ,DIR2_CRK ,IPARG    ,JHBE      ,ISMSTR   ,JTHE     ,             
      F       TENSX    ,IR       ,IS       ,NLAY      ,NPT      ,IXLAY    ,    
      G       IXEL     ,ITHK     ,F_DEF    ,ISHPLYXFEM,
@@ -159,6 +160,7 @@ C-----------------------------------------------
       USE MESSAGE_MOD
       USE MATPARAM_DEF_MOD
       USE NLOCAL_REG_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -191,7 +193,7 @@ C-----------------------------------------------
      .  IREP,ISUBSTACK,ITASK,ISHPLYXFEM,NUMTABL
       INTEGER MAT(*),MATLY(*),PID(*),NPF(*),NGL(MVSIZ),INDX(MVSIZ),
      .   IGEO(NPROPGI,*),IPM(NPROPMI,*),ELCRKINI(NXLAYMAX,*),
-     .   LSENSOR(NSENSI,*),IPARG(*),FWAVE_EL(NEL)
+     .   IPARG(*),FWAVE_EL(NEL)
       my_real DM
       my_real FOR(NEL,5),MOM(NEL,3),GSTR(NEL,8),THK(*),EINT(JLT,2),OFF(*),
      .   DIR_A(*),DIR_B(*),VISCMX(*),PM(NPROPM,*),THK_LY(NEL,*),
@@ -203,7 +205,7 @@ C-----------------------------------------------
      .   R11(MVSIZ), R12(MVSIZ), R13(MVSIZ),
      .   R21(MVSIZ), R22(MVSIZ), R23(MVSIZ),
      .   R31(MVSIZ), R32(MVSIZ), R33(MVSIZ),
-     .   SENSOR(NSENSR,*),DIR1_CRK(*),DIR2_CRK(*),TENSX(NEL,5),
+     .   DIR1_CRK(*),DIR2_CRK(*),TENSX(NEL,5),
      .   F_DEF(MVSIZ,8),PM_STACK(20,*),TSTAR(MVSIZ),ALPE(MVSIZ),
      .   PLY_EXX(MVSIZ,*),PLY_EYY(MVSIZ,*),PLY_EXY(MVSIZ,*), 
      .   PLY_EXZ(MVSIZ,*),PLY_EYZ(MVSIZ,*),PLY_F(MVSIZ,5,*),ETIMP(MVSIZ)
@@ -213,6 +215,7 @@ C-----------------------------------------------
       TYPE (FAILWAVE_STR_) ,TARGET :: FAILWAVE 
       TYPE (MATPARAM_STRUCT_) , DIMENSION(NUMMAT) ,TARGET :: MATPARAM_TAB
       TYPE (NLOCAL_STR_) :: NLOC_DMG 
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -267,7 +270,7 @@ c----
       INTEGER, DIMENSION(:) ,POINTER  :: FLD_IDX,FOFF,OFFLY,ITABLE,VARTMP
       my_real, DIMENSION(:) ,POINTER  :: UVAR,UVARF,UELR,UELR1,DAM,
      .   DFMAX,TDEL ,OFFL,UVARV,UPARAM,UPARAMF,EPS1,EPS2,DEPS1,DEPS2,
-     .   DIRDMG,DIR_ORTH,ZZ,THLY
+     .   DIRDMG,DIR_ORTH,ZZ,THLY,DAMINI
       TYPE(MATPARAM_STRUCT_) , POINTER :: MATPARAM
 c----
       LOGICAL :: LOGICAL_USERL_AVAIL
@@ -322,7 +325,7 @@ C
         IF(IPM(222,IMAT) > 0) IPRONY=1
       ENDDO
 C
-!     ZCFAC computation is only usefull for CZFORC3 and CZFORC3_CRK routines
+!     ZCFAC computation is only useful for CZFORC3 and CZFORC3_CRK routines
       FLAG_ZCFAC=.FALSE.
       IF( (JHBE>=21.AND.JHBE<=29).OR.(IMPL_S>0)) FLAG_ZCFAC=.TRUE.
       FLAG_ETIMP=.FALSE.
@@ -1002,7 +1005,7 @@ C------------------------------------------
      4                 DEPSXX   ,DEPSYY  ,DEPSXY   ,DEPSYZ     ,DEPSZX     ,
      5        LBUF%SIG(IJ1),LBUF%SIG(IJ2),LBUF%SIG(IJ3),LBUF%SIG(IJ4),LBUF%SIG(IJ5),
      6                 SIGNXX   ,SIGNYY  ,SIGNXY   ,SIGNYZ     ,SIGNZX     ,
-     7                 LBUF%DSUM)
+     7                 LBUF%DSUM,LBUF%TSAIWU)
           ELSEIF (ILAW == 19) THEN
 
             CALL SIGEPS19C(
@@ -1011,7 +1014,7 @@ C------------------------------------------
      .            EPSXX     ,EPSYY     ,EPSXY     ,EPSYZ     ,EPSZX     ,
      .            LBUF%SIG(IJ1),LBUF%SIG(IJ2),LBUF%SIG(IJ3),LBUF%SIG(IJ4),LBUF%SIG(IJ5),
      .            SIGNXX    ,SIGNYY    ,SIGNXY    ,SIGNYZ    ,SIGNZX    ,
-     .            GBUF%SIGI ,LSENSOR   ,SENSOR    )
+     .            GBUF%SIGI ,SENSOR_TAB)
 
           ELSEIF (ILAW == 22) THEN
             CALL SIGEPS22C(
@@ -1067,7 +1070,7 @@ C------------------------------------------
      D        ISRATE      ,UVARV    ,ISHPLYXFEM  ,IPT      ,LBUF%SEQ  ,
      E        PLY_EXX     ,PLY_EYY  ,PLY_EXY     ,PLY_EXZ  ,PLY_EYZ   ,
      F        PLY_F       ,LBUF%PLA ,LBUF%DAM    ,LBUF%CRAK,GBUF%IERR ,
-     G        IOFF_DUCT   ,IFAILURE ,PLY_ID      ,IPG      )
+     G        IOFF_DUCT   ,IFAILURE ,PLY_ID      ,IPG      ,LBUF%TSAIWU)
           ELSEIF (IGTYP == 9) THEN
 !           INTEGRATION BY POINTS (through thickness)
             CALL SIGEPS25CP(
@@ -1077,7 +1080,8 @@ C------------------------------------------
      4                      DEPSXX  ,DEPSYY ,DEPSXY   ,DEPSYZ  ,DEPSZX ,
      5        LBUF%SIG(IJ1),LBUF%SIG(IJ2),LBUF%SIG(IJ3),LBUF%SIG(IJ4),LBUF%SIG(IJ5),
      6                      SIGNXX  ,SIGNYY ,SIGNXY   ,SIGNYZ  ,SIGNZX ,
-     7                      IMAT    ,WPLAR  ,IOFF_DUCT,LBUF%PLA,ISRATE )
+     7                      IMAT    ,WPLAR  ,IOFF_DUCT,LBUF%PLA,ISRATE ,
+     8                      LBUF%TSAIWU)
            ENDIF ! IF (IGTYP)
 C        
        ELSEIF (ILAW == 34) THEN
@@ -1121,7 +1125,8 @@ C
      A          VARTMP ,OFF    ,NGL    ,IPM     ,IMAT     ,
      B          ETSE   ,GS     ,SIGY   ,EPSPL   ,ISRATE   ,
      C          DPLA   ,G_IMP  ,SIGKSI  ,SHF      ,HARDM  ,
-     D          YLDFAC ,LBUF%SIGB,INLOC ,VARNL(1,IT)) 
+     D          YLDFAC ,LBUF%SIGB,INLOC ,VARNL(1,IT),LBUF%DMG,
+     E          LBUF%PLANL) 
           ELSEIF (ILAW == 42) THEN
            CALL SIGEPS42C(
      1         JLT    , NUPARAM, NUVAR   , NFUNC , IFUNC , NPF   ,
@@ -1274,8 +1279,8 @@ C
      A        SSP     ,VISCMX  ,THKN    ,LBUF%PLA ,UVAR    ,
      B        OFF     ,NGL     ,PM      ,MATLY(JMLY),ETSE  ,
      C        SHF     ,SIGY    ,EPSPL   ,LBUF%ANG ,
-     D        ALDT    ,LSENSOR ,SENSOR  ,ISMSTR   ,TABLE  ,
-     E        GBUF%OFF)                          
+     D        ALDT    ,SENSOR_TAB,ISMSTR,TABLE    ,GBUF%OFF)                          
+             
 c
           ELSEIF (ILAW == 60) THEN
            IF (IGTYP /= 10.AND.IGTYP /= 11 .AND.IGTYP /= 17) THEN
@@ -1750,6 +1755,7 @@ c---
               IRUPT  =  FBUF%FLOC(IFL)%ILAWF                                
               DAM    => FBUF%FLOC(IFL)%DAM
               DFMAX  => FBUF%FLOC(IFL)%DAMMX 
+              DAMINI => FBUF%FLOC(IFL)%DAMINI
               TDEL   => FBUF%FLOC(IFL)%TDEL   
               FLD_IDX=> FBUF%FLOC(IFL)%INDX
               FOFF   => FBUF%FLOC(IFL)%OFF
@@ -2002,7 +2008,7 @@ c
      2               TT        ,NGL       ,IPG       ,ILAYER    ,IT        ,
      3               SIGNXX    ,SIGNYY    ,SIGNXY    ,SIGNYZ    ,SIGNZX    ,
      4               OFF       ,FOFF ,PTHKF(ILAYER,IFL),DMG_FLAG,DMG_LOC_SCALE ,
-     5               DFMAX     ,TDEL      )
+     5               DFMAX     ,TDEL      ,DT1C      )
 c
               CASE (23)     !    Tabulated failure model
                 IF (IXFEM == 0) THEN
@@ -2210,21 +2216,18 @@ c
      4            SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,              
      5            EL_PLA   ,EL_TEMP  ,SIGY     ,FOFF     ,DFMAX    ,
      6            TDEL     ,IPT      ,IPG      ,DMG_FLAG ,DMG_LOC_SCALE,
-     7            PTHKF(ILAYER,IFL))
+     7            PTHKF(ILAYER,IFL)  ,DAMINI   ,AREA     ,INLOC    ,
+     8            NPG      )
 c
-              CASE (99)     !    Syazwan failure model
-                DO I=JFT,JLT
-                  COPY_PLA(I) = LBUF%PLA(I)
-                ENDDO
+              CASE (43)     !    Syazwan failure model
+c
                 CALL FAIL_SYAZWAN_C(
-     1          JLT      ,NVARF   ,
-     2          TT       ,UPARAMF ,NGL      ,IPT      ,MPT      ,
-     3          SIGNXX   ,SIGNYY  ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,
-     4          EPSXX    ,EPSYY   ,EPSXY    ,EPSYZ    ,EPSZX    ,
-     5          DPLA     ,EPSPL   ,UVARF    ,PTHKF(ILAYER,IFL)  ,UELR1    ,
-     6          OFF      ,OFFL    ,DFMAX    ,TDEL     ,NFUNC1   ,
-     7          IFUNC1   ,EL_LEN  ,FOFF     ,IPG      ,COPY_PLA ,
-     8          DMG_FLAG ,DMG_LOC_SCALE,NPF ,TF)
+     1            JLT      ,UPARAMF  ,NUPAR    ,UVARF    ,NVARF    ,
+     2            TT       ,NGL      ,IPT      ,DPLA     ,EL_PLA   ,
+     3            SIGNXX   ,SIGNYY   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,
+     4            EPSXX    ,EPSYY    ,EPSXY    ,EPSYZ    ,EPSZX    ,
+     5            DFMAX    ,NFUNC1   ,IFUNC1   ,EL_LEN   ,FOFF     ,
+     6            IPG      ,DMG_FLAG ,DMG_LOC_SCALE,NPF  ,TF       )
 c  
 c-------------
               END SELECT
@@ -2303,7 +2306,7 @@ c------------------------------------------------
                 MOM(1:NEL,2) = MOM(1:NEL,2) + WMC(1:NEL) *SIGNYY(1:NEL)*DMG_LOC_SCALE(1:NEL)   
                 MOM(1:NEL,3) = MOM(1:NEL,3) + WMC(1:NEL) *SIGNXY(1:NEL)*DMG_LOC_SCALE(1:NEL)  
               ENDIF
-            CASE (2)  ! internal dammage model within law15         
+            CASE (2)  ! internal damage model within law15         
               FOR(1:NEL,1) = FOR(1:NEL,1) + THLY(1:NEL)*SIGDMG(1:NEL,1)
               FOR(1:NEL,2) = FOR(1:NEL,2) + THLY(1:NEL)*SIGDMG(1:NEL,2)   
               FOR(1:NEL,3) = FOR(1:NEL,3) + THLY(1:NEL)*SIGDMG(1:NEL,3)  
@@ -2345,7 +2348,7 @@ c
                         TENS(JFT:JLT,4) = SIGNYZ(JFT:JLT)*DMG_LOC_SCALE(JFT:JLT)                               
                         TENS(JFT:JLT,5) = SIGNZX(JFT:JLT)*DMG_LOC_SCALE(JFT:JLT)                 
               ENDIF       
-            CASE (2)  ! internal dammage model within law15         
+            CASE (2)  ! internal damage model within law15         
               TENS(JFT:JLT,1) = SIGDMG(JFT:JLT,1)
               TENS(JFT:JLT,2) = SIGDMG(JFT:JLT,2)   
               TENS(JFT:JLT,3) = SIGDMG(JFT:JLT,3)  

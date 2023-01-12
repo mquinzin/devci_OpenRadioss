@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ST_QAPRINT_MODEL_TOOLS        source/output/qaprint/st_qaprint_model_tools.F
 Chd|-- called by -----------
@@ -36,7 +36,7 @@ Chd|====================================================================
      .           IBOX      ,IPMAS     ,NOM_SECT ,NSTRF ,SECBUF    ,
      .           SKEW      ,ISKWN     ,XFRAME   ,NPC   ,PLD       ,
      .           TABLE     ,NPTS      ,IACTIV   ,FACTIV,SENSOR_TAB,
-     .           LSENSOR   ,SENSOR    ,FUNC2D)
+     .           FUNC2D)
 C============================================================================
 C   M o d u l e s
 C-----------------------------------------------
@@ -70,8 +70,6 @@ C-----------------------------------------------
       TYPE (ADMAS_)  ,DIMENSION(NODMAS) ,INTENT(IN) :: IPMAS
       INTEGER, INTENT(IN) :: NPTS,NPC(*)
       INTEGER,INTENT(IN) :: NOM_SECT(SNOM_SECT),NSTRF(SNSTRF)
-      INTEGER ,DIMENSION(NSENSI,*)  ,INTENT(IN) :: LSENSOR
-      my_real ,DIMENSION(NSENSR,*)  ,INTENT(IN) :: SENSOR
       my_real,INTENT(IN) :: SECBUF(SSECBUF)  
       INTEGER, INTENT(IN) :: ISKWN(LISKN,*)
       my_real, INTENT(IN) :: SKEW(LSKEW,*)
@@ -612,43 +610,9 @@ C-----------------------------------------------
       IF (MYQAKEY('SENSOR') ) THEN
 C
         DO ISEN=1,NSENSOR
-          ITRS(ISEN) = LSENSOR(1,ISEN)
+          ITRS(ISEN) = SENSOR_TAB(ISEN)%SENS_ID
         ENDDO 
         CALL MY_ORDERS(0,WORK,ITRS,INDEXS,NSENSOR,1)
-C
-        DO ISEN=1,NSENSOR
-          IAD = INDEXS(ISEN)
-          OPT_ID = LSENSOR(1,IAD)
-          IF (OPT_ID > 0 .and. LSENSOR(2,IAD) >= 0 .and. SENSOR_TAB(IAD)%TYPE < 0) THEN
-            CALL QAPRINT('OLD SENSOR_NO_NAME', OPT_ID, 0.0_8)
-C
-            WRITE(VARNAME,'(A)') 'SENSOR_ID'     
-            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),LSENSOR(1,IAD),0.0_8)
-            WRITE(VARNAME,'(A)') 'SENSOR_TYPE'     
-            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),LSENSOR(2,IAD),0.0_8)
-c
-            DO I=3,NSENSI
-              INTVAL = LSENSOR(I,IAD)
-              IF (INTVAL /= 0) THEN
-C               VARNAME: variable name in ref.extract (without blanks)
-                WRITE(VARNAME,'(A,I0)') 'LSENSOR_',I      
-                CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),INTVAL,0.0_8)
-              END IF
-            END DO
-c
-            DO I=1,NSENSR
-              FVAL = SENSOR(I,IAD)
-              IF (FVAL /= ZERO) THEN
-C               VARNAME: variable name in ref.extract (without blanks)
-                WRITE(VARNAME,'(A,I0)') 'RSENSOR_',I      
-                CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),0,FVAL)
-              END IF
-            END DO
-          END IF
-c
-        ENDDO
-c       
-c       new sensor data structure   
 C
         DO ISEN=1,NSENSOR
           IAD = INDEXS(ISEN)
@@ -656,8 +620,25 @@ C
           IF (OPT_ID > 0 .and. SENSOR_TAB(IAD)%TYPE >= 0) THEN
             CALL QAPRINT('NEW SENSOR_NO_NAME', OPT_ID, 0.0_8)
 c
+            WRITE(VARNAME,'(A)') 'SENSOR_ID'    
+            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),SENSOR_TAB(IAD)%SENS_ID,0.0_8)
             WRITE(VARNAME,'(A)') 'SENSOR_TYPE'    
             CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),SENSOR_TAB(IAD)%TYPE,0.0_8)
+            WRITE(VARNAME,'(A)') 'TDELAY'   
+            TEMP_DOUBLE = SENSOR_TAB(IAD)%TDELAY
+            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),0,TEMP_DOUBLE)
+            WRITE(VARNAME,'(A)') 'TMIN'
+            TEMP_DOUBLE = SENSOR_TAB(IAD)%TMIN  
+            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),0,TEMP_DOUBLE)
+            WRITE(VARNAME,'(A)') 'TCRIT' 
+            TEMP_DOUBLE = SENSOR_TAB(IAD)%TCRIT  
+            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),0,TEMP_DOUBLE)
+            WRITE(VARNAME,'(A)') 'TSTART' 
+            TEMP_DOUBLE = SENSOR_TAB(IAD)%TSTART   
+            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),0,TEMP_DOUBLE)
+            WRITE(VARNAME,'(A)') 'VALUE'  
+            TEMP_DOUBLE = SENSOR_TAB(IAD)%VALUE
+            CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),0,TEMP_DOUBLE)
             WRITE(VARNAME,'(A)') 'STATUS'    
             CALL QAPRINT(VARNAME(1:LEN_TRIM(VARNAME)),SENSOR_TAB(IAD)%STATUS,0.0_8)
             WRITE(VARNAME,'(A)') 'NPARI'    

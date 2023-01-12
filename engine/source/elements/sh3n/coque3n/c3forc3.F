@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  C3FORC3                       source/elements/sh3n/coque3n/c3forc3.F
 Chd|-- called by -----------
@@ -71,6 +71,7 @@ Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.
 Chd|        FAILWAVE_MOD                  ../common_source/modules/failwave_mod.F
 Chd|        MATPARAM_DEF_MOD              ../common_source/modules/matparam_def_mod.F
 Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
@@ -92,7 +93,7 @@ Chd|====================================================================
      F           JTHE     ,TEMP     ,FTHE    ,FTHESKY  ,IEXPAN   ,
      G           GRESAV   ,GRTH     ,IGRTH   ,
      H           MSTG     ,DMELTG   ,JSMS    ,TABLE    ,IPARG    ,
-     I           IXFEM    ,LSENSOR  ,SENSOR  ,PTG      ,IBORDNODE,
+     I           IXFEM    ,SENSOR_TAB,PTG      ,IBORDNODE,
      J           ELCUTC   ,INOD_CRK ,IEL_CRK ,NODENR   ,IADTG_CRK,
      K           NODEDGE  ,CRKNODIAD,KNOD2ELC,CONDN    ,
      L           CONDNSKY ,STACK    ,ISUBSTACK,XFEM_STR,CRKEDGE  ,
@@ -108,6 +109,7 @@ C-----------------------------------------------
       USE MATPARAM_DEF_MOD       
       USE NLOCAL_REG_MOD          
       USE DRAPE_MOD      
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -142,7 +144,7 @@ C-----------------------------------------------
      .        JSMS,ISUBSTACK
       INTEGER NPF(*),IXTG(NIXTG,*),IADTG(3,*),IGEO(NPROPGI,*),IPM(*),
      .   IPARTTG(*),ITASK,JTHE,IEXPAN,GRTH(*),IGRTH(*),IPARG(*),ITAB(*),
-     .   IXFEM,LSENSOR(NSENSI,*),IBORDNODE(*),
+     .   IXFEM,IBORDNODE(*),
      .   ELCUTC(2,*),INOD_CRK(*),NODENR(*),IEL_CRK(*),IADTG_CRK(3,*),
      .   NODEDGE(2,*),CRKNODIAD(*),KNOD2ELC(*),XEDGE3N(3,*)
       my_real 
@@ -156,8 +158,7 @@ C-----------------------------------------------
      .   M21(MVSIZ), M22(MVSIZ), M23(MVSIZ),
      .   M31(MVSIZ), M32(MVSIZ), M33(MVSIZ),
      .   FZERO(3,3,*),TEMP(*),FTHE(*),FTHESKY(*),GRESAV(*),MSTG(*),
-     .   DMELTG(*),SENSOR(NSENSR,*), PTG(3,*),CONDN(*),CONDNSKY(*)
- 
+     .   DMELTG(*),PTG(3,*),CONDN(*),CONDNSKY(*)
 
 !       SP issue :
       REAL(kind=8), DIMENSION(*), INTENT(in), TARGET :: XDP
@@ -172,6 +173,7 @@ C-----------------------------------------------
       TYPE (GRP_PARAM_STRUCT_) :: GROUP_PARAM
       TYPE (DRAPE_) :: DRAPE_T3
       TYPE (MATPARAM_STRUCT_) , DIMENSION(NUMMAT) :: MATPARAM_TAB
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -340,8 +342,8 @@ C
      .             X1G      ,X2G      ,X3G      ,Y1G      ,Y2G      ,
      .             Y3G      ,Z1G      ,Z2G      ,Z3G      ,XDP      )
 C
-C------Change local system (objective) but only for strain,stress computes 
-C------to avoid many modifs especially complicated treatements like free shear locking   
+C------Change local system (objective) but only for strain,stress computes
+C------to avoid many modifs especially complicated treatments like free shear locking
 c
       CALL C3EVEC3(ELBUF_STR,DIR_A    ,DIR_B   ,JFT      ,JLT      , 
      .             IREP     ,E1X0     ,E1Y0    ,E1Z0     ,E2X0     , 
@@ -484,10 +486,10 @@ C--------------------------
      F   TEMPEL    ,DIE       ,JTHE      ,IEXPAN    ,GBUF%TEMP ,
      G   IBID      ,BID       ,
      H   BID       ,BID       ,BID       ,BID       ,BID       ,
-     I   BID       ,BID       ,BID       ,E1X0       ,E1Y0       ,
-     J   E1Z0       ,E2X0       ,E2Y0       ,E2Z0       ,E3X0       ,
-     K   E3Y0       ,E3Z0       ,NG        ,TABLE     ,IXFEM     ,
-     L   BID       ,LSENSOR   ,SENSOR    ,BID       ,ELCRKINI  ,
+     I   BID       ,BID       ,BID       ,E1X0      ,E1Y0       ,
+     J   E1Z0      ,E2X0      ,E2Y0      ,E2Z0      ,E3X0       ,
+     K   E3Y0      ,E3Z0      ,NG        ,TABLE     ,IXFEM     ,
+     L   BID       ,SENSOR_TAB,BID       ,ELCRKINI  ,
      M   DIR1_CRK  ,DIR2_CRK  ,ALDT      ,
      N   ISMSTR    ,IR        ,IS        ,NLAY      ,NPT       ,
      O   IXLAY     ,IXEL      ,ISUBSTACK ,STACK     ,

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 #include "my_real.inc"
 Chd|====================================================================
 Chd|  FINTER                        source/tools/curve/finter.F   
@@ -70,7 +70,7 @@ Chd|        FORCE                         source/loads/general/force.F
 Chd|        FORCEFINGEO                   source/loads/general/forcefingeo.F
 Chd|        FORCEPINCH                    source/loads/general/forcepinch.F
 Chd|        FRICTIONPARTS_MODEL_ISOT      source/interfaces/int07/frictionparts_model.F
-Chd|        FVBAG1                        source/airbag/fvbag.F         
+Chd|        FVBAG1                        source/airbag/fvbag1.F        
 Chd|        FVINJT6                       source/airbag/fvinjt6.F       
 Chd|        FVINJT8                       source/airbag/fvinjt8.F       
 Chd|        FV_UP_SWITCH                  source/airbag/fv_up_switch.F  
@@ -321,11 +321,11 @@ C-----------------------------------------------
                                 !   ---------------------
                         ENDDO
                         !       -----------------------------                
-                        !       second shot : (b) classical interpokation with reduced interval
+                        !       second shot : (b) classical interpolation with reduced interval
 
                         !   ------------------------
                         !   INFINITE LOOP DETECTED
-                        !   the dichotomy failed to reduce the inteval, back to old treatment
+                        !   the dichotomy failed to reduce the interval, back to old treatment
                         IF( COUNTER == -1 ) THEN
                                 FIRST = 1
                                 LAST = POINT_NBR 

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_MAT25                 source/materials/mat/mat025/hm_read_mat25.F
 Chd|-- called by -----------
@@ -82,7 +82,7 @@ c
       INTEGER, INTENT(OUT)                         :: ISRATE
       my_real, DIMENSION(100)       ,INTENT(OUT)   :: PARMAT     
       my_real, DIMENSION(NPROPM)    ,INTENT(OUT)   :: PM     
-      TYPE(MLAW_TAG_)               ,INTENT(OUT)   :: MTAG
+      TYPE(MLAW_TAG_)               ,INTENT(INOUT) :: MTAG
       TYPE(MATPARAM_STRUCT_) ,INTENT(INOUT) :: MATPARAM
 c
       INTEGER :: MAXUPARAM,NUPARAM
@@ -104,6 +104,11 @@ C-----------------------------------------------
      .   WPLAMXT2,EPS1C1,EPS2C1,SIGRSC1,WPLAMXC1,EPS1C2,EPS2C2,
      .   SIGRSC2,WPLAMXC2,EPS1T12,EPS2T12,SIGRST12,WPLAMXT12,WPLAREF,
      .   EPSF1,EPSF2,RATIO,D11,D22,D12,DMIN,FAC,FSCAL_UNIT
+      ! -------------------------
+      ! Simple precision issue 
+      REAL(kind=8) :: SIGYT1_DB,SIGYC1_DB,SIGYT2_DB,SIGYC2_DB,SIGYT12_DB,SIGYC12_DB
+      REAL(kind=8) :: F1_DB,F2_DB,F11_DB,F22_DB,F33_DB,F12_DB,FT1_DB
+      ! -------------------------
 C=======================================================================
       IS_ENCRYPTED   = .FALSE.
       IS_AVAILABLE = .FALSE.
@@ -617,14 +622,35 @@ C----------------------------------------
      .               C1=TITR,
      .               C2='SIGYC12')
       ENDIF      
-C
-      F1  = ONE / SIGYT1 - ONE / SIGYC1
-      F2  = ONE / SIGYT2 - ONE / SIGYC2
-      F11 = ONE / MIN(EP20,(SIGYT1*SIGYC1))
-      F22 = ONE / MIN(EP20,(SIGYT2*SIGYC2))
-      F33 = ONE / MIN(EP20,(SIGYT12*SIGYC12))
-      F12 = -ALPHA/(TWO*SQRT(MIN(EP20,SIGYT1*SIGYC1*SIGYT2*SIGYC2)))    
-      FT1 = F11*F22 - FOUR*F12**2
+
+      ! -------------------------
+      ! Simple precision issue : if SIGYT1/... are not defined 
+      ! in the material card, the default value is 1.D+20
+      ! some computation can lead to NaN in simple precision
+      SIGYT1_DB = SIGYT1
+      SIGYC1_DB = SIGYC1
+      SIGYT2_DB = SIGYT2
+      SIGYC2_DB = SIGYC2
+      SIGYT12_DB = SIGYT12
+      SIGYC12_DB = SIGYC12
+
+      F1_DB  = ONE / SIGYT1_DB - ONE / SIGYC1_DB
+      F2_DB  = ONE / SIGYT2_DB - ONE / SIGYC2_DB
+      F11_DB = ONE / MAX(EM20,MIN(EP20,(SIGYT1_DB*SIGYC1_DB)))
+      F22_DB = ONE / MAX(EM20,MIN(EP20,(SIGYT2_DB*SIGYC2_DB)))
+      F33_DB = ONE / MAX(EM20,MIN(EP20,(SIGYT12_DB*SIGYC12_DB)))
+      F12_DB = -ALPHA/(TWO*SQRT(MAX(EM20,MIN(EP20,SIGYT1_DB*SIGYC1_DB*SIGYT2_DB*SIGYC2_DB))))    
+      FT1_DB = F11_DB*F22_DB - FOUR*F12_DB**2
+
+      F1 = F1_DB
+      F2 = F2_DB
+      F11 = F11_DB
+      F22 = F22_DB  
+      F33 = F33_DB 
+      F12 = F12_DB  
+      FT1 = FT1_DB 
+      ! -------------------------
+
       WRITE(IOUT,1650) F1,F2,F11,F22,F33,F12
 c------------------------------------------------------------
       PM(54)=F1
@@ -726,18 +752,20 @@ CC    Formulation for solid elements time step computation.
 c
 C---- Definition des variables internes (stockage elementaire)
 c
-      MTAG%G_IERR  = 1  ! tag element for projection error message
-      MTAG%G_GAMA  = 6  
-      MTAG%G_PLA   = 1    
-      MTAG%G_EPSD  = 1    
-      MTAG%G_DAMDL = 1    
+      MTAG%G_IERR   = 1  ! tag element for projection error message
+      MTAG%G_GAMA   = 6  
+      MTAG%G_PLA    = 1    
+      MTAG%G_EPSD   = 1    
+      MTAG%G_DAMDL  = 1    
 c
-      MTAG%L_GAMA  = 6  
-      MTAG%L_PLA   = 1
-      MTAG%L_EPSD  = 1
-      MTAG%L_DAM   = 2
-      MTAG%L_CRAK  = 2
-      MTAG%L_STRA  = 6
+      MTAG%L_GAMA   = 6  
+      MTAG%L_PLA    = 1
+      MTAG%L_EPSD   = 1
+      MTAG%L_DAM    = 2
+      MTAG%L_CRAK   = 2
+      MTAG%L_STRA   = 6
+      MTAG%G_TSAIWU = 1
+      MTAG%L_TSAIWU = 1
 c-----------
       CALL INIT_MAT_KEYWORD(MATPARAM,"ELASTO_PLASTIC")
       CALL INIT_MAT_KEYWORD(MATPARAM,"COMPRESSIBLE")

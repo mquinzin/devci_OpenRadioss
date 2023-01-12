@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_GET_INT_ARRAY_2INDEXES     source/devtools/hm_reader/hm_get_int_array_2indexes.F
 Chd|-- called by -----------
@@ -113,27 +113,6 @@ C--------------------------------------------------
 C--------------------------------------------------
       CALL CPP_GET_INTV_2INDEX(NAME(1:LEN_TRIM(NAME)),LEN_TRIM(NAME),IVAL,INDEX1,SUB_ID,
      .                        IS_AVAILABLE,VALUE_TYPE,INDEX2)
-C--------------------------------------------------
-C      ID OFFSETS FOR //SUBMODEL 
-C--------------------------------------------------
-      IF(SUB_ID /= 0 .AND. IVAL /= 0)THEN
-        IF(VALUE_TYPE == 1)THEN
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_EL
-        ELSEIF(VALUE_TYPE == 2)THEN
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_NOD
-        ELSEIF(VALUE_TYPE == 3)THEN
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_PART
-        ELSEIF(VALUE_TYPE == 4)THEN
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_MAT
-        ELSEIF(VALUE_TYPE == 5)THEN
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_PROP
-        ELSEIF(VALUE_TYPE == 6)THEN
-c          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_SUBMOD
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_DEF
-        ELSEIF(VALUE_TYPE == 7)THEN
-          IVAL = IVAL + LSUBMODEL(SUB_ID)%OFF_DEF
-        ENDIF
-      ENDIF
 C--------------------------------------------------
       RETURN
 C

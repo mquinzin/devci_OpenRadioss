@@ -1,31 +1,32 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  WRITE_SENSOR_TAB              source/tools/sensor/write_sensor_tab.F
 Chd|-- called by -----------
 Chd|        DDSPLIT                       source/restart/ddsplit/ddsplit.F
 Chd|-- calls ---------------
 Chd|        WRITE_DB                      source/restart/ddsplit/wrrest.F
+Chd|        WRITE_I_C                     source/output/tools/write_routines.c
 Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|====================================================================
       SUBROUTINE WRITE_SENSOR_TAB(SENSOR_TAB,NSENSOR,NODLOCAL,LEN_AM)
@@ -47,7 +48,8 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER I,ISEN,LEN,IAD,NFIX,NPARI,NPARR,NVAR,NS
+      INTEGER I,ISEN,LEN,IAD,NFIX,NPARI,NPARR,NVAR,N1,N2,TYP
+      INTEGER, DIMENSION(:), ALLOCATABLE :: LTEMP
       my_real, DIMENSION(:), ALLOCATABLE :: RBUF
       TYPE (SENSOR_STR_) ,POINTER :: SENSOR
 C=======================================================================
@@ -55,16 +57,32 @@ C=======================================================================
 c
       DO ISEN=1,NSENSOR
         SENSOR => SENSOR_TAB(ISEN)
+        TYP   = SENSOR%TYPE 
         NPARI = SENSOR%NPARI
         NPARR = SENSOR%NPARR
         NVAR  = SENSOR%NVAR
+        ALLOCATE (LTEMP(NPARI))
+        LTEMP(1:NPARI) = SENSOR%IPARAM(1:NPARI)
 c       update node system N° after renumbering for sensors using nodes
-        IF (SENSOR%TYPE == 16) THEN  ! /sens/dist_surf
-          SENSOR%IPARAM(1) = NODLOCAL(SENSOR%IPARAM(1))
+        IF (TYP == 2) THEN   ! /sens/disp
+          N1 = NODLOCAL(SENSOR%IPARAM(1))
+          N2 = NODLOCAL(SENSOR%IPARAM(2))
+          LTEMP(1) = N1
+          LTEMP(2) = N2
+        ELSE IF (TYP == 13) THEN  ! /sens/work
+          N2 = SENSOR%IPARAM(2)
+          N1 = NODLOCAL(SENSOR%IPARAM(1))
+          IF (N2 > 0) THEN
+            N2 = NODLOCAL(SENSOR%IPARAM(2))
+          END IF
+          LTEMP(1) = N1
+          LTEMP(2) = N2
+        ELSE IF (TYP == 15) THEN  ! /sens/dist_surf
+          LTEMP(1) = NODLOCAL(SENSOR%IPARAM(1))
           IF (SENSOR%IPARAM(2) == 0) THEN
-            SENSOR%IPARAM(3) = NODLOCAL(SENSOR%IPARAM(3))
-            SENSOR%IPARAM(4) = NODLOCAL(SENSOR%IPARAM(4))
-            SENSOR%IPARAM(5) = NODLOCAL(SENSOR%IPARAM(5))
+            LTEMP(3) = NODLOCAL(SENSOR%IPARAM(3))
+            LTEMP(4) = NODLOCAL(SENSOR%IPARAM(4))
+            LTEMP(5) = NODLOCAL(SENSOR%IPARAM(5))
           END IF
         END IF        
 c        
@@ -87,7 +105,7 @@ c
 c
         IF (NPARI > 0) THEN
           DO I = 1,NPARI
-            RBUF(IAD+I) = SENSOR%IPARAM(I)
+            RBUF(IAD+I) = LTEMP(I)
           END DO
           IAD = IAD + NPARI
         END IF
@@ -106,7 +124,16 @@ c
 c
         CALL WRITE_DB (RBUF,LEN)
         DEALLOCATE (RBUF)
-        LEN_AM = LEN_AM + LEN
+        DEALLOCATE (LTEMP)
+
+        IF (TYP==29.OR.TYP==30.OR.TYP==31)THEN
+          CALL WRITE_I_C(SENSOR%INTEGER_USERPARAM,NSENPARI)
+          CALL WRITE_I_C(SENSOR%INTEGER_USERBUF,ISENBUF)
+
+          CALL WRITE_DB (SENSOR%FLOAT_USERPARAM,NSENPARR)
+          CALL WRITE_DB (SENSOR%FLOAT_USERBUF,LSENBUF)
+
+        ENDIF
 c
       END DO
 c-----------

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_EXCH2_A_PON              source/mpi/forces/spmd_exch2_a_pon.F
 Chd|-- called by -----------
@@ -41,15 +41,15 @@ Chd|====================================================================
      5   FR_NBCC1,IADSDP_PXFEM,IADRCP_PXFEM, ISENDP_PXFEM,
      6   IRECVP_PXFEM,LENR1  ,LENS1 ,IADSDP_CRK,IADRCP_CRK,
      7   ISENDP_CRK,IRECVP_CRK, FSKYD,CRKNODIAD,CRKSKY,
-     8   FORNEQSKY,NFACNIT  ,LENC  ,
-     9   FCONT   ,H3D_DATA)
+     8   FORNEQSKY,NFACNIT  ,LENC  ,FCONT   ,H3D_DATA,
+     9   FNCONT   ,FTCONT   )
 C--------------------------------------
        USE PLYXFEM_MOD
        USE FSKYI_MOD
        USE CRACKXFEM_MOD
        USE PLYXFEM_MOD
        USE HEAT_MOD
-      USE H3D_MOD
+       USE H3D_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -93,8 +93,9 @@ C-----------------------------------------------
      .        LENC 
       my_real
      .        FSKY(8,LSKY),FSKYV(LSKY,8),FSKYM(*),
-     .        FFSKY(3,LSKY),FSKYD(*),FORNEQSKY(3*NFACNIT,*),
-     .        FCONT(3,*)
+     .        FFSKY(3,LSKY),FSKYD(*),FORNEQSKY(3*NFACNIT,*)
+      my_real  , INTENT(INOUT) :: FCONT(3,NUMNOD),FNCONT(3,NUMNOD),
+     .        FTCONT(3,NUMNOD)
       TYPE(XFEM_SKY_), DIMENSION(*) :: CRKSKY
       TYPE(H3D_DATABASE) :: H3D_DATA
 C-----------------------------------------------
@@ -129,7 +130,7 @@ C === Allocate local arrays
       ALLOCATE(ADSKYI(0:NUMNOD+1))
 
       ALLOCATE(RBUF(SIZE*LENR + 4*NPLYMAX*LENR1 +
-     .        (17*NLEVMAX+1)*LENR1+ NSPMD + 3*NFACNIT*LENR+3*LENC))
+     .        (17*NLEVMAX+1)*LENR1+ NSPMD + 3*NFACNIT*LENR+LENC))
 
       ALLOCATE(FSKYIF(NFSKYI,NISKY))
       ALLOCATE(FSKYT(NISKY))
@@ -167,7 +168,10 @@ C
           IF(ICRACK3D > 0) SIZ = SIZ + 
      .                      (17*NLEVMAX+1)*FR_NBCC1(2,I)
           SIZ = SIZ + 3*NFACNIT*FR_NBCC(2,I)               !NITSCHE METHOD
-          IF(LENC > 0) SIZ = SIZ + 3*(IAD_ELEM(1,I+1)-IAD_ELEM(1,I))    !Output max contact forces
+          IF(ANIM_V(26)+H3D_DATA%N_VECT_CONT_MAX /=0.AND.NINTSTAMP==0) 
+     .         SIZ = SIZ + 3*(IAD_ELEM(1,I+1)-IAD_ELEM(1,I))    !Output max contact forces
+          IF(H3D_DATA%N_VECT_PCONT_MAX /=0.AND.NINTSTAMP==0) 
+     .         SIZ = SIZ + 6*(IAD_ELEM(1,I+1)-IAD_ELEM(1,I))    !Output max contact pressure    
           MSGTYP = MSGOFF
           NBIRECV = NBIRECV + 1
           IRINDEX(NBIRECV) = I
@@ -507,7 +511,7 @@ C tag a 0 de itagx sur noeud frontiere
       DEALLOCATE(FSKYT)
       DEALLOCATE(ISKYFT)
       ALLOCATE(SBUF(SIZE*LENS + 4*NPLYMAX*LENS1 +
-     .        (17*NLEVMAX+1)*LENS1+ NSPMD+ 3*NFACNIT*LENS+3*LENC))
+     .        (17*NLEVMAX+1)*LENS1+ NSPMD+ 3*NFACNIT*LENS+LENC))
 
 
 C
@@ -1359,6 +1363,21 @@ C --- /CONT/MAX output
 
       ENDIF
 
+C --- /PCONT/MAX output
+      IF(H3D_DATA%N_VECT_PCONT_MAX /=0.AND.NINTSTAMP==0) THEN
+#include      "vectorize.inc"
+          DO J=IAD_ELEM(1,I),IAD_ELEM(1,I+1)-1
+             NOD = FR_ELEM(J)
+             SBUF(L  ) =  FNCONT(1,NOD)
+             SBUF(L+1) =  FNCONT(2,NOD)
+             SBUF(L+2) =  FNCONT(3,NOD)
+             SBUF(L+3) =  FTCONT(1,NOD)
+             SBUF(L+4) =  FTCONT(2,NOD)
+             SBUF(L+5) =  FTCONT(3,NOD)
+             L = L + 6
+          END DO
+      ENDIF
+
 C partie interface : calcul et envoi du nb de noeuds a envoyer
         nbi = 0
         IF(NISKYF/=0) THEN
@@ -1387,8 +1406,11 @@ C
      .            (IADSDP_CRK(I+1)-IADSDP_CRK(I))*
      .                                    (17*NLEVMAX+1)   + 1
         ENDIF
-        SIZ = SIZ + (IADSDP(I+1)-IADSDP(I))*3*NFACNIT              
-        IF(LENC > 0) SIZ = SIZ + 3*(IAD_ELEM(1,I+1)-IAD_ELEM(1,I))    !Output max contact forces
+        SIZ = SIZ + (IADSDP(I+1)-IADSDP(I))*3*NFACNIT    
+        IF(ANIM_V(26)+H3D_DATA%N_VECT_CONT_MAX /=0.AND.NINTSTAMP==0) 
+     .         SIZ = SIZ + 3*(IAD_ELEM(1,I+1)-IAD_ELEM(1,I))    !Output max contact forces
+        IF(H3D_DATA%N_VECT_PCONT_MAX /=0.AND.NINTSTAMP==0) 
+     .         SIZ = SIZ + 6*(IAD_ELEM(1,I+1)-IAD_ELEM(1,I))    !Output max contact forces         
 C
         MSGTYP = MSGOFF
         CALL MPI_ISEND(
@@ -2219,6 +2241,21 @@ C --- /CONT/MAX output
              FCONT(2,NOD) =  FCONT(2,NOD) + RBUF(L+1)
              FCONT(3,NOD) =  FCONT(3,NOD) + RBUF(L+2) 
              L = L + 3
+          END DO
+       ENDIF
+
+C --- /PCONT/MAX output
+      IF(H3D_DATA%N_VECT_PCONT_MAX /=0.AND.NINTSTAMP==0) THEN
+#include      "vectorize.inc"
+          DO J=IAD_ELEM(1,I),IAD_ELEM(1,I+1)-1
+             NOD = FR_ELEM(J)
+             FNCONT(1,NOD) =  FNCONT(1,NOD) + RBUF(L)  
+             FNCONT(2,NOD) =  FNCONT(2,NOD) + RBUF(L+1)
+             FNCONT(3,NOD) =  FNCONT(3,NOD) + RBUF(L+2) 
+             FTCONT(1,NOD) =  FTCONT(1,NOD) + RBUF(L+3)  
+             FTCONT(2,NOD) =  FTCONT(2,NOD) + RBUF(L+4)
+             FTCONT(3,NOD) =  FTCONT(3,NOD) + RBUF(L+5) 
+             L = L + 6
           END DO
        ENDIF
 

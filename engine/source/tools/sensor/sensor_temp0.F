@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SENSOR_TEMP0                  source/tools/sensor/sensor_temp0.F
 Chd|-- called by -----------
@@ -97,8 +97,8 @@ C=======================================================================
         !   --------------------------
         !   loop over the sensor temp
         DO IJK=1,COMM_SENS17%NUM_SENS
-          ISENS = COMM_SENS17%ID_SENS(IJK)     ! id of sensor temp
-          IF (SENSOR(ISENS)%STATUS == 3) CYCLE   ! already activated
+          ISENS = COMM_SENS17%ID_SENS(IJK)       ! id of sensor temp
+          IF (SENSOR(ISENS)%STATUS == 1) CYCLE   ! already activated
 c
           IF (TT == ZERO) SENSOR(ISENS)%VAR(2) = EP20   ! initialize Temp min
           IGN    = SENSOR(ISENS)%IPARAM(1)
@@ -188,7 +188,7 @@ c
               DIM_FOR_MEAN = 1
           ENDIF
           !   ----------------
-          !   initialiaze the buffer
+          !   initialize the buffer
           INDEX_MEAN = 0
           DO IJK=1,COMM_SENS17%NUM_SENS
               ISENS = COMM_SENS17%ID_SENS(IJK)

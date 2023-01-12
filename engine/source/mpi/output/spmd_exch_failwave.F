@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_FAILWAVE_BOUNDARIES      source/mpi/output/spmd_exch_failwave.F
 Chd|-- called by -----------
@@ -172,7 +172,7 @@ C=======================================================================
       LOC_PROC = ISPMD + 1
 
 C--------------------------------------------------------------------
-C 1. SEND MAXLEV (Stacked informations to the others)
+C 1. SEND MAXLEV (Stacked information to the others)
 C--------------------------------------------------------------------
       SIZ = FAILWAVE%FWAVE_IAD(NSPMD+1)-FAILWAVE%FWAVE_IAD(1)
       ALLOCATE(RBUFI(SIZ))
@@ -225,7 +225,7 @@ c--------------------------------------------------------------------
         ENDIF
       ENDDO
 c--------------------------------------------------------------------
-c     Receive buffer & compute recieve_size
+c     Receive buffer & compute receive_size
 c-------------------------------------------------------------------
       RECV_SIZ(1:NSPMD)=0
 
@@ -255,7 +255,7 @@ c-------------------------------------------------------------------
 
 
 C---------------------------------------------------------------
-C Prepare & send Stacked informations
+C Prepare & send Stacked information
 C ---------------------------------------------------------------
       IAD_SEND(1)=1
       IAD_RECV(1)=1
@@ -321,7 +321,7 @@ C            print*,'isend=',L
 
 C wait & unstack
 c--------------------------------------------------------------------
-c     Receive buffer & compute recieve_size
+c     Receive buffer & compute receive_size
 c-------------------------------------------------------------------
       RECV_SIZ(1:NSPMD)=0
 

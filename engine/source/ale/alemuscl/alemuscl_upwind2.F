@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ALEMUSCL_UPWIND2              source/ale/alemuscl/alemuscl_upwind2.F
 Chd|-- called by -----------
@@ -35,7 +35,7 @@ Chd|====================================================================
      .     N4_VOIS, ITAB, NV46, ITRIMAT, SEGVAR)
 C-----------------------------------------------
 C   D e s c r i p t i o n
-C   This subroutines performs the followind steps: 
+C   This subroutines performs the following steps: 
 C     1 - compute a gradient for volumicfraction ALPH
 C         (calls GRADIENT_RECONSTRUCTION)
 C     2 - reconstruct a value for volumic fraction on each edge of the mesh
@@ -107,11 +107,11 @@ C-----------------------------------------------
          IAD2 = ALE_CONNECT%ee_connect%iad_connect(II)
          !!! Element centroid
          YK = ELCENTER(2, II) ; ZK = ELCENTER(3, II) 
-         !!! Neighboors
+         !!! Neighbors
          DO KK = 1, NV46
             !!! Only for outgoing fluxes
             IF (FLUX(KK, II) > ZERO) THEN
-               !!! Storing neighboor indexes
+               !!! Storing neighbor indexes
                NEIGHBOOR_LIST(KK) = ALE_CONNECT%ee_connect%connected(IAD2 + KK - 1)
                FACE_NEIGHBOOR(KK) = KK
                IF (NEIGHBOOR_LIST(KK) <= 0) THEN
@@ -142,7 +142,7 @@ C-----------------------------------------------
                FLUX(KK, II) = ALPHAK * FLUX(KK, II)
                IF (NEIGHBOOR_LIST(KK) > 0)THEN
                  IF (NEIGHBOOR_LIST(KK) <= NUMELQ) THEN
-                    !!! The opposite of the flux goes to the neighboord
+                    !!! The opposite of the flux goes to the neighbor
                     FLUX(FACE_NEIGHBOOR(KK), NEIGHBOOR_LIST(KK)) = -FLUX(KK, II)
                  ELSE
                     !!! No idea what I'm doing ... cf. ALE51_ANTIDIFF3

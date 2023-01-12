@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS57C                     source/materials/mat/mat057/sigeps57c.F
 Chd|-- called by -----------
@@ -69,7 +69,7 @@ C NPT     |  1      | I | R | NUMBER OF LAYERS OR INTEGRATION POINTS
 C IPT     |  1      | I | R | LAYER OR INTEGRATION POINT NUMBER   
 C IFLAG   |  *      | I | R | GEOMETRICAL FLAGS   
 C TF      |  *      | F | R | FUNCTION ARRAY 
-C NGL     | NEL     | I | R | ELEMEMT NUMBER
+C NGL     | NEL     | I | R | ELEMENT NUMBER
 C SHF     | NEL     | F | R | SHEAR FACTOR
 C---------+---------+---+---+--------------------------------------------
 C TIME    |  1      | F | R | CURRENT TIME
@@ -99,7 +99,7 @@ C SIGVXX  | NEL     | F | W | VISCOUS STRESS XX
 C SIGVYY  | NEL     | F | W | VISCOUS STRESS YY
 C ...     |         |   |   |
 C SOUNDSP | NEL     | F | W | SOUND SPEED (NEEDED FOR TIME STEP)
-C VISCMAX | NEL     | F | W | MAXIMUN DAMPING MODULUS(NEEDED FOR TIME STEP)
+C VISCMAX | NEL     | F | W | MAXIMUM DAMPING MODULUS(NEEDED FOR TIME STEP)
 C---------+---------+---+---+--------------------------------------------
 C THK     | NEL     | F |R/W| THICKNESS
 C PLA     | NEL     | F |R/W| PLASTIC STRAIN
@@ -447,7 +447,7 @@ C------Matrix C : S=C:E-------
        MC(J,4)=A2(I)*NORM
        MD(J)=H(I)*NORM
        DG(J)=ZERO
-C------Xij: increament of plastic strains----
+C------Xij: increment of plastic strains----
        XXX(J)=ZERO
        XYY(J)=ZERO
        XXY(J)=ZERO
@@ -474,7 +474,7 @@ C----to optimize with HK=0--
          SIGNYY(I) =SYY(J)*NORM1
          SIGNXY(I) =SXY(J)*NORM1
          PLA(I) = PLA(I) + ALPHA(J)
-c       X_ij are inverse signes        
+c       X_ij are inverse signs
          NU31=ONE-NU(I)/(ONE-NU(I))    
          IF (INLOC == 0) THEN     
            DEZZ = NU31*(XXX(J)+XYY(J))

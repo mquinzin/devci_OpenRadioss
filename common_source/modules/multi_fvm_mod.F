@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MULTI_FVM_MOD                 modules/multi_fvm_mod.F       
 Chd|-- called by -----------
@@ -249,7 +249,7 @@ Chd|====================================================================
       INTEGER :: IEBCSLGTH
       INTEGER :: NBMAT
       LOGICAL :: IS_USED                  !card /MAT/LAW151 used in input file
-      LOGICAL :: IS_ASSOCIATED_TO_A_PART  !card /MAT/LAW151 can be used in input file but not necessarly associated to a given PART
+      LOGICAL :: IS_ASSOCIATED_TO_A_PART  !card /MAT/LAW151 can be used in input file but not necessarily associated to a given PART
       LOGICAL :: ARE_ALL_PARTS_151        !check if all PART are associated with law151 (otherwise mixed scheme)
       LOGICAL :: IS_RESTART
       INTEGER :: MUSCL
@@ -266,7 +266,7 @@ C     Compression coefficient for phase advection
       my_real, DIMENSION(:, :), ALLOCATABLE :: BFRAC
       INTEGER, POINTER, DIMENSION(:) :: pCNEL, pADDCNEL, pADDTMPL
 
-      ! Indicates wether we run in 3D (SYM = 0), or 2D (SYM = 1 planar case, SYM = 2 cylindrical case)
+      ! Indicates whether we run in 3D (SYM = 0), or 2D (SYM = 1 planar case, SYM = 2 cylindrical case)
       INTEGER :: SYM
       ! Low mach options for WATER / AIR applications
       LOGICAL :: LOWMACH_OPT

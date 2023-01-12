@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  RDRESB                        source/output/restart/rdresb.F
 Chd|-- called by -----------
@@ -850,7 +850,7 @@ C----------------------------------
 C----------------------------------
 C     LECTURE DES VARIABLES REELLES
 C--------------------------------------
-C      warning to radioss developpers :
+C      warning to radioss developers :
 C      IF(LVARREA>LMXVREA)THEN
 C        WRITE(*,*) ' ** RADIOSS INTERNAL ERROR'
 C        CALL ARRET(7)
@@ -1161,6 +1161,24 @@ C   ----------------------------------------------------------------------
          ELSE
            CALL READ_DB(FCONT_MAX, 3*NUMNOD)
          ENDIF
+      ENDIF
+      IF(IFCONTPMAX >0)THEN
+         CALL READ_DB(FNCONT_MAX, 3*SPCONT_MAX)
+         CALL READ_DB(FTCONT_MAX, 3*SPCONT_MAX)
+      ENDIF
+      IF(IFCONT2MAX >0)THEN
+         CALL READ_DB(FCONT2_MAX, 3*NUMNOD)
+      ENDIF
+      IF(IFCONTP2MAX >0)THEN
+         CALL READ_DB(FNCONT2_MAX, 3*NUMNOD)
+         CALL READ_DB(FTCONT2_MAX, 3*NUMNOD)
+      ENDIF
+      IF(IFCONT2MIN >0)THEN
+         CALL READ_DB(FCONT2_MIN, 3*NUMNOD)
+      ENDIF
+      IF(IFCONTP2MIN >0)THEN
+         CALL READ_DB(FNCONT2_MIN, 3*NUMNOD)
+         CALL READ_DB(FTCONT2_MIN, 3*NUMNOD)
       ENDIF
 C--------------------------------------
 C  Interface friction buffer (Reals )
@@ -2676,40 +2694,48 @@ C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER K,I,ELSZ,NDSZ
 C-----------------------------------------------
-      CALL READ_I_C(NPLYPART,1)
-      ALLOCATE(INDX_PLY(NPLYPART))
-      CALL READ_I_C(INDX_PLY,NPLYPART)
-
-      ALLOCATE(PLYSHELL(NPLYMAX))
-      ALLOCATE(PLYNOD(NPLYMAX))
-
-      DO K=1,NPLYMAX
-        CALL READ_I_C(ELSZ,1)
-        PLYSHELL(K)%PLYNUMSHELL=ELSZ
-        ALLOCATE(PLYSHELL(K)%SHID(ELSZ))
-        ALLOCATE(PLYSHELL(K)%SHELLIPT(ELSZ))
-        ALLOCATE(PLYSHELL(K)%SHELLID(ELSZ))
-
-        CALL READ_I_C(PLYSHELL(K)%SHID,     ELSZ)
-        CALL READ_I_C(PLYSHELL(K)%SHELLIPT, ELSZ)
-        CALL READ_I_C(PLYSHELL(K)%SHELLID,  ELSZ)
-
-
-        CALL READ_I_C(NDSZ,1)
-        PLYNOD(K)%PLYNUMNODS=NDSZ
-        ALLOCATE(PLYNOD(K)%NODES(NDSZ))
-        ALLOCATE(PLYNOD(K)%PLYNODID(NDSZ))
-
-        CALL READ_I_C(PLYNOD(K)%NODES,    NDSZ)
-        CALL READ_I_C(PLYNOD(K)%PLYNODID, NDSZ)
-      ENDDO
-
-      ALLOCATE(PLYSIZG(NPLYMAX))
-      CALL READ_I_C(PLYSIZG,NPLYMAX)
-C
-      ALLOCATE (IDPID_PLY(NPLYPART))
-      CALL READ_I_C(IDPID_PLY,NPLYPART)
-
+      IF(IPLYXFEM == 0) THEN
+! Those array be used as dummy argument
+! they MUST be allocated in all cases
+        ALLOCATE(INDX_PLY(0))
+        ALLOCATE(PLYSHELL(0))
+        ALLOCATE(PLYNOD(0))
+      ELSE
+        CALL READ_I_C(NPLYPART,1)
+        ALLOCATE(INDX_PLY(NPLYPART))
+        CALL READ_I_C(INDX_PLY,NPLYPART)
+       
+        ALLOCATE(PLYSHELL(NPLYMAX))
+        ALLOCATE(PLYNOD(NPLYMAX))
+       
+        DO K=1,NPLYMAX
+          CALL READ_I_C(ELSZ,1)
+          PLYSHELL(K)%PLYNUMSHELL=ELSZ
+          ALLOCATE(PLYSHELL(K)%SHID(ELSZ))
+          ALLOCATE(PLYSHELL(K)%SHELLIPT(ELSZ))
+          ALLOCATE(PLYSHELL(K)%SHELLID(ELSZ))
+       
+          CALL READ_I_C(PLYSHELL(K)%SHID,     ELSZ)
+          CALL READ_I_C(PLYSHELL(K)%SHELLIPT, ELSZ)
+          CALL READ_I_C(PLYSHELL(K)%SHELLID,  ELSZ)
+       
+       
+          CALL READ_I_C(NDSZ,1)
+          PLYNOD(K)%PLYNUMNODS=NDSZ
+          ALLOCATE(PLYNOD(K)%NODES(NDSZ))
+          ALLOCATE(PLYNOD(K)%PLYNODID(NDSZ))
+       
+          CALL READ_I_C(PLYNOD(K)%NODES,    NDSZ)
+          CALL READ_I_C(PLYNOD(K)%PLYNODID, NDSZ)
+        ENDDO
+       
+        ALLOCATE(PLYSIZG(NPLYMAX))
+        CALL READ_I_C(PLYSIZG,NPLYMAX)
+C      
+        ALLOCATE (IDPID_PLY(NPLYPART))
+        CALL READ_I_C(IDPID_PLY,NPLYPART)
+      ENDIF
+      RETURN
       END
 C centrifugal force
 Chd|====================================================================
@@ -2869,137 +2895,150 @@ C-----------------------------------------------
       INTEGER I,J,K,NN,LEN,ELSZ,NDSZ,NENR,ELSZC,ELSZTG,NCRKXFE_G,
      .        CRKNUMNODS
 C=======================================================================
-      CALL READ_I_C(NCRKPART,1)
-      CALL READ_I_C(NCRKXFE_G,1)
-      ALLOCATE(INDX_CRK(NCRKPART))
-      CALL READ_I_C(INDX_CRK,NCRKPART)
-C
-      ALLOCATE(CRKSHELL(NLEVMAX))
-      ALLOCATE(CRKNOD(NLEVMAX))
-      ALLOCATE(CRKLVSET(NLEVMAX))
-      ALLOCATE(CRKAVX(NLEVMAX))
-      ALLOCATE(CRKSKY(NLEVMAX))
-C
-      DO K=1,NLEVMAX
-        CALL READ_I_C(ELSZC  ,1)
-        CALL READ_I_C(ELSZTG ,1)
-        CALL READ_I_C(ELSZ   ,1)
-c
-c------ CRKSHELL
-        CRKSHELL(K)%CRKNUMSHELL = ELSZ
-        CRKSHELL(K)%CRKNUMSH4   = ELSZC
-        CRKSHELL(K)%CRKNUMSH3   = ELSZTG
-C
-        ALLOCATE(CRKSHELL(K)%CRKSHELLID(ELSZ))
-        ALLOCATE(CRKSHELL(K)%ELTYPE(ELSZ))
-        CALL READ_I_C(CRKSHELL(K)%CRKSHELLID  ,ELSZ)
-        CALL READ_I_C(CRKSHELL(K)%ELTYPE      ,ELSZ)
-c------ CRKNOD
-        LEN = 4*ELSZ
-        ALLOCATE(CRKNOD(K)%XFECRKNODID(LEN))
-        ALLOCATE(CRKNOD(K)%XFENODES(LEN))
-        CALL READ_I_C(CRKNOD(K)%XFECRKNODID ,LEN)
-        CALL READ_I_C(CRKNOD(K)%XFENODES    ,LEN)
-c------ CRKSHELL
-        LEN = 4*ELSZ
-        ALLOCATE(CRKSHELL(K)%XNODEL(4  ,ELSZ))
-        CALL READ_I_C(CRKSHELL(K)%XNODEL,  LEN)
-c------ CRKLVSET
-        LEN = LCNECRKXFEM
-        ALLOCATE(CRKLVSET(K)%ENR0(2,LEN))
-        ALLOCATE(CRKLVSET(K)%AREA(ELSZ))
-        CALL READ_I_C(CRKLVSET(K)%ENR0(1,1:LEN) ,LEN)
-        CALL READ_I_C(CRKLVSET(K)%ENR0(2,1:LEN) ,LEN)
-        CALL READ_DB (CRKLVSET(K)%AREA          ,ELSZ)
-c------ CRKAVX
-        LEN = LCNECRKXFEM
-        ALLOCATE(CRKAVX(K)%A(3,LEN))
-        ALLOCATE(CRKAVX(K)%AR(3,LEN))
-        ALLOCATE(CRKAVX(K)%V(3,LEN))
-        ALLOCATE(CRKAVX(K)%VR(3,LEN))
-        ALLOCATE(CRKAVX(K)%X(3,LEN))
-        ALLOCATE(CRKAVX(K)%U(3,LEN))
-        LEN = LCNECRKXFEM*3
-        CALL READ_DB(CRKAVX(K)%A   ,LEN)
-        CALL READ_DB(CRKAVX(K)%AR  ,LEN)
-        CALL READ_DB(CRKAVX(K)%V   ,LEN)
-        CALL READ_DB(CRKAVX(K)%VR  ,LEN)
-        CALL READ_DB(CRKAVX(K)%X   ,LEN)
-        CALL READ_DB(CRKAVX(K)%U   ,LEN)
-        LEN = 4*ELSZ
-        ALLOCATE(CRKAVX(K)%XX(3,LEN))
-        CALL READ_DB(CRKAVX(K)%XX,  3*LEN)
-c------ CRKSKY
-        ALLOCATE(CRKSKY(K)%FSKY(8,LCNECRKXFEM))
-        CALL READ_DB(CRKSKY(K)%FSKY,  8*LCNECRKXFEM)
-c------ CRKNOD
-        LEN = 4*ELSZ
-        ALLOCATE(CRKNOD(K)%NOD2IAD(LEN))
-        CALL READ_I_C(CRKNOD(K)%NOD2IAD,  LEN)
-        CALL READ_I_C(CRKNUMNODS, 1)
-        CRKNOD(K)%CRKNUMNODS = CRKNUMNODS
-c
-      ENDDO ! K=1,NLEVMAX
-c
-c---  read XFEM_PHANTOM  ----------------------------
-c
-
-      NENR = INT(IENRNOD/NLEVMAX)
-      ALLOCATE(XFEM_PHANTOM(NXLAYMAX))
-      DO K=1,NXLAYMAX
-        ALLOCATE(XFEM_PHANTOM(K)%ELCUT(ELSZ))
-        ALLOCATE(XFEM_PHANTOM(K)%IFI(LCNECRKXFEM))
-        ALLOCATE(XFEM_PHANTOM(K)%TAGXP(5,NCRKXFE,IENRNOD))  ! IENRNOD -> NENR
-        ALLOCATE(XFEM_PHANTOM(K)%ITRI(2,ELSZ))
-c
-        CALL READ_I_C(XFEM_PHANTOM(K)%ELCUT    ,ELSZ)
-        CALL READ_I_C(XFEM_PHANTOM(K)%IFI      ,LCNECRKXFEM)
-        CALL READ_I_C(XFEM_PHANTOM(K)%TAGXP    ,NCRKXFE*IENRNOD*5)
-        CALL READ_I_C(XFEM_PHANTOM(K)%ITRI     ,ELSZ*2)
-      END DO
-c
-c---  read CRKEDGE  ----------------------------
-c
-      LEN = NUMEDGES
-      ALLOCATE(CRKEDGE(NXLAYMAX))
-      DO K=1,NXLAYMAX
-        ALLOCATE(CRKEDGE(K)%LAYCUT(ELSZ))
-        ALLOCATE(CRKEDGE(K)%IEDGEC(4,ELSZC))
-        ALLOCATE(CRKEDGE(K)%IEDGETG(3,ELSZTG))
-        ALLOCATE(CRKEDGE(K)%EDGEICRK(NUMEDGES))
-        ALLOCATE(CRKEDGE(K)%EDGEIFI(2,NUMEDGES))
-        ALLOCATE(CRKEDGE(K)%EDGEENR(2,NUMEDGES))
-        ALLOCATE(CRKEDGE(K)%EDGETIP(2,NUMEDGES))
-        ALLOCATE(CRKEDGE(K)%IBORDEDGE(NUMEDGES))
-        ALLOCATE(CRKEDGE(K)%ICUTEDGE(NUMEDGES))
-        ALLOCATE(CRKEDGE(K)%RATIO(NUMEDGES))
-c
-        CALL READ_I_C(CRKEDGE(K)%LAYCUT     ,ELSZ)
-        CALL READ_I_C(CRKEDGE(K)%IEDGEC     ,ELSZC*4)
-        CALL READ_I_C(CRKEDGE(K)%IEDGETG    ,ELSZTG*3)
-        CALL READ_I_C(CRKEDGE(K)%EDGEICRK   ,NUMEDGES)
-        CALL READ_I_C(CRKEDGE(K)%EDGEIFI    ,NUMEDGES*2)
-        CALL READ_I_C(CRKEDGE(K)%EDGEENR    ,NUMEDGES*2)
-        CALL READ_I_C(CRKEDGE(K)%EDGETIP    ,NUMEDGES*2)
-        CALL READ_I_C(CRKEDGE(K)%IBORDEDGE  ,NUMEDGES)
-        CALL READ_I_C(CRKEDGE(K)%ICUTEDGE   ,NUMEDGES)
-        CALL READ_DB (CRKEDGE(K)%RATIO      ,NUMEDGES)
-      END DO
-c-----------------------------
-      ALLOCATE(XEDGE4N(4,ELSZC))
-      ALLOCATE(XEDGE3N(3,ELSZTG))
-      CALL READ_I_C(XEDGE4N, 4*ELSZC)
-      CALL READ_I_C(XEDGE3N, 3*ELSZTG)
-c-----------------------------
-      LEN = 2*(NUMELC+NUMELTG)
-      CALL READ_I_C(ELCUTC,LEN)
-      LEN = NCRKXFE
-      CALL READ_I_C(NODENR,LEN)
-      LEN = NCRKXFE
-      CALL READ_I_C(KXFENOD2ELC,LEN)
-      LEN = NUMNOD*IENRNOD
-      CALL READ_I_C(ENRTAG,LEN)
-C---
+      IF(ICRACK3D == 0) THEN
+        ALLOCATE(INDX_CRK(0))
+        ALLOCATE(CRKSHELL(0))
+        ALLOCATE(CRKNOD(0))
+        ALLOCATE(CRKLVSET(0))
+        ALLOCATE(CRKAVX(0))
+        ALLOCATE(CRKSKY(0))
+        ALLOCATE(XFEM_PHANTOM(0))
+        ALLOCATE(CRKEDGE(0))
+        ALLOCATE(XEDGE4N(4,0))
+        ALLOCATE(XEDGE3N(3,0))
+      ELSE
+        CALL READ_I_C(NCRKPART,1)
+        CALL READ_I_C(NCRKXFE_G,1)
+        ALLOCATE(INDX_CRK(NCRKPART))
+        CALL READ_I_C(INDX_CRK,NCRKPART)
+C      
+        ALLOCATE(CRKSHELL(NLEVMAX))
+        ALLOCATE(CRKNOD(NLEVMAX))
+        ALLOCATE(CRKLVSET(NLEVMAX))
+        ALLOCATE(CRKAVX(NLEVMAX))
+        ALLOCATE(CRKSKY(NLEVMAX))
+C      
+        DO K=1,NLEVMAX
+          CALL READ_I_C(ELSZC  ,1)
+          CALL READ_I_C(ELSZTG ,1)
+          CALL READ_I_C(ELSZ   ,1)
+c      
+c-------- CRKSHELL
+          CRKSHELL(K)%CRKNUMSHELL = ELSZ
+          CRKSHELL(K)%CRKNUMSH4   = ELSZC
+          CRKSHELL(K)%CRKNUMSH3   = ELSZTG
+C      
+          ALLOCATE(CRKSHELL(K)%CRKSHELLID(ELSZ))
+          ALLOCATE(CRKSHELL(K)%ELTYPE(ELSZ))
+          CALL READ_I_C(CRKSHELL(K)%CRKSHELLID  ,ELSZ)
+          CALL READ_I_C(CRKSHELL(K)%ELTYPE      ,ELSZ)
+c-------- CRKNOD
+          LEN = 4*ELSZ
+          ALLOCATE(CRKNOD(K)%XFECRKNODID(LEN))
+          ALLOCATE(CRKNOD(K)%XFENODES(LEN))
+          CALL READ_I_C(CRKNOD(K)%XFECRKNODID ,LEN)
+          CALL READ_I_C(CRKNOD(K)%XFENODES    ,LEN)
+c-------- CRKSHELL
+          LEN = 4*ELSZ
+          ALLOCATE(CRKSHELL(K)%XNODEL(4  ,ELSZ))
+          CALL READ_I_C(CRKSHELL(K)%XNODEL,  LEN)
+c-------- CRKLVSET
+          LEN = LCNECRKXFEM
+          ALLOCATE(CRKLVSET(K)%ENR0(2,LEN))
+          ALLOCATE(CRKLVSET(K)%AREA(ELSZ))
+          CALL READ_I_C(CRKLVSET(K)%ENR0(1,1:LEN) ,LEN)
+          CALL READ_I_C(CRKLVSET(K)%ENR0(2,1:LEN) ,LEN)
+          CALL READ_DB (CRKLVSET(K)%AREA          ,ELSZ)
+c-------- CRKAVX
+          LEN = LCNECRKXFEM
+          ALLOCATE(CRKAVX(K)%A(3,LEN))
+          ALLOCATE(CRKAVX(K)%AR(3,LEN))
+          ALLOCATE(CRKAVX(K)%V(3,LEN))
+          ALLOCATE(CRKAVX(K)%VR(3,LEN))
+          ALLOCATE(CRKAVX(K)%X(3,LEN))
+          ALLOCATE(CRKAVX(K)%U(3,LEN))
+          LEN = LCNECRKXFEM*3
+          CALL READ_DB(CRKAVX(K)%A   ,LEN)
+          CALL READ_DB(CRKAVX(K)%AR  ,LEN)
+          CALL READ_DB(CRKAVX(K)%V   ,LEN)
+          CALL READ_DB(CRKAVX(K)%VR  ,LEN)
+          CALL READ_DB(CRKAVX(K)%X   ,LEN)
+          CALL READ_DB(CRKAVX(K)%U   ,LEN)
+          LEN = 4*ELSZ
+          ALLOCATE(CRKAVX(K)%XX(3,LEN))
+          CALL READ_DB(CRKAVX(K)%XX,  3*LEN)
+c-------- CRKSKY
+          ALLOCATE(CRKSKY(K)%FSKY(8,LCNECRKXFEM))
+          CALL READ_DB(CRKSKY(K)%FSKY,  8*LCNECRKXFEM)
+c-------- CRKNOD
+          LEN = 4*ELSZ
+          ALLOCATE(CRKNOD(K)%NOD2IAD(LEN))
+          CALL READ_I_C(CRKNOD(K)%NOD2IAD,  LEN)
+          CALL READ_I_C(CRKNUMNODS, 1)
+          CRKNOD(K)%CRKNUMNODS = CRKNUMNODS
+c      
+        ENDDO ! K=1,NLEVMAX
+c      
+c---    read XFEM_PHANTOM  ----------------------------
+c      
+       
+        NENR = INT(IENRNOD/NLEVMAX)
+        ALLOCATE(XFEM_PHANTOM(NXLAYMAX))
+        DO K=1,NXLAYMAX
+          ALLOCATE(XFEM_PHANTOM(K)%ELCUT(ELSZ))
+          ALLOCATE(XFEM_PHANTOM(K)%IFI(LCNECRKXFEM))
+          ALLOCATE(XFEM_PHANTOM(K)%TAGXP(5,NCRKXFE,IENRNOD))  ! IENRNOD -> NENR
+          ALLOCATE(XFEM_PHANTOM(K)%ITRI(2,ELSZ))
+c      
+          CALL READ_I_C(XFEM_PHANTOM(K)%ELCUT    ,ELSZ)
+          CALL READ_I_C(XFEM_PHANTOM(K)%IFI      ,LCNECRKXFEM)
+          CALL READ_I_C(XFEM_PHANTOM(K)%TAGXP    ,NCRKXFE*IENRNOD*5)
+          CALL READ_I_C(XFEM_PHANTOM(K)%ITRI     ,ELSZ*2)
+        END DO
+c      
+c---    read CRKEDGE  ----------------------------
+c      
+        LEN = NUMEDGES
+        ALLOCATE(CRKEDGE(NXLAYMAX))
+        DO K=1,NXLAYMAX
+          ALLOCATE(CRKEDGE(K)%LAYCUT(ELSZ))
+          ALLOCATE(CRKEDGE(K)%IEDGEC(4,ELSZC))
+          ALLOCATE(CRKEDGE(K)%IEDGETG(3,ELSZTG))
+          ALLOCATE(CRKEDGE(K)%EDGEICRK(NUMEDGES))
+          ALLOCATE(CRKEDGE(K)%EDGEIFI(2,NUMEDGES))
+          ALLOCATE(CRKEDGE(K)%EDGEENR(2,NUMEDGES))
+          ALLOCATE(CRKEDGE(K)%EDGETIP(2,NUMEDGES))
+          ALLOCATE(CRKEDGE(K)%IBORDEDGE(NUMEDGES))
+          ALLOCATE(CRKEDGE(K)%ICUTEDGE(NUMEDGES))
+          ALLOCATE(CRKEDGE(K)%RATIO(NUMEDGES))
+c      
+          CALL READ_I_C(CRKEDGE(K)%LAYCUT     ,ELSZ)
+          CALL READ_I_C(CRKEDGE(K)%IEDGEC     ,ELSZC*4)
+          CALL READ_I_C(CRKEDGE(K)%IEDGETG    ,ELSZTG*3)
+          CALL READ_I_C(CRKEDGE(K)%EDGEICRK   ,NUMEDGES)
+          CALL READ_I_C(CRKEDGE(K)%EDGEIFI    ,NUMEDGES*2)
+          CALL READ_I_C(CRKEDGE(K)%EDGEENR    ,NUMEDGES*2)
+          CALL READ_I_C(CRKEDGE(K)%EDGETIP    ,NUMEDGES*2)
+          CALL READ_I_C(CRKEDGE(K)%IBORDEDGE  ,NUMEDGES)
+          CALL READ_I_C(CRKEDGE(K)%ICUTEDGE   ,NUMEDGES)
+          CALL READ_DB (CRKEDGE(K)%RATIO      ,NUMEDGES)
+        END DO
+c-------------------------------
+        ALLOCATE(XEDGE4N(4,ELSZC))
+        ALLOCATE(XEDGE3N(3,ELSZTG))
+        CALL READ_I_C(XEDGE4N, 4*ELSZC)
+        CALL READ_I_C(XEDGE3N, 3*ELSZTG)
+c-------------------------------
+        LEN = 2*(NUMELC+NUMELTG)
+        CALL READ_I_C(ELCUTC,LEN)
+        LEN = NCRKXFE
+        CALL READ_I_C(NODENR,LEN)
+        LEN = NCRKXFE
+        CALL READ_I_C(KXFENOD2ELC,LEN)
+        LEN = NUMNOD*IENRNOD
+        CALL READ_I_C(ENRTAG,LEN)
+C--- 
+      ENDIF
       RETURN
       END
 

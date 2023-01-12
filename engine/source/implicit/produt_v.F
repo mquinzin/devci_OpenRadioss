@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 C---------------------r={x}^t{y}---
 Chd|====================================================================
 Chd|  PRODUT_V                      source/implicit/produt_v.F    
@@ -370,7 +370,7 @@ C-----------------------------
 C--------------------------------------------
       RETURN
       END
-C-------------produit {w}=[K]{v} using only trangle-upper----
+C-------------produce {w}=[K]{v} using only upper-triangle----
 Chd|====================================================================
 Chd|  MAV_LT                        source/implicit/produt_v.F    
 Chd|-- called by -----------
@@ -485,7 +485,7 @@ C
 C--------------------------------------------
       RETURN
       END
-C-------------produit {w}=[LT_K]{v}+[LT_I]{v} using only trangle-upper----
+C-------------produce {w}=[LT_K]{v}+[LT_I]{v} using only upper-triangle----
 Chd|====================================================================
 Chd|  MAV_LT2                       source/implicit/produt_v.F    
 Chd|-- called by -----------
@@ -597,7 +597,7 @@ C  ------LT_I
 C--------------------------------------------
       RETURN
       END
-C------spmd----produit {w}=[LT_K]{v}+[LT_I]{v} using only trangle-upper----
+C------spmd----produce {w}=[LT_K]{v}+[LT_I]{v} using only upper-triangle----
 Chd|====================================================================
 Chd|  MAV_LTP                       source/implicit/produt_v.F    
 Chd|-- called by -----------
@@ -1216,7 +1216,7 @@ C------for int24 + Istif=6
              IGSTI =IPARI(34,N)
              NREBOU=IPARI(53,N)
              IF (ITY==24.AND.IGSTI==6.AND.NREBOU<0) THEN
-C---------divergence supprime the treatement , line-serach doesn't change stif            
+C---------divergence removes the treatment , line-search doesn't change stif
               IF (IMCONV<-1) THEN
                IPARI(53,N) = -NREBOU
               ELSEIF (IMCONV>=0) THEN
@@ -1240,7 +1240,7 @@ c           CALL CP_INTBUF(BUFIN_C,INBUF_C ,BUFIN,INBUF ,IPARI )
 C--------------------------------------------
       RETURN
       END
-C-------------produit {w}=[K]{v} using only trangle-upper----
+C-------------produce {w}=[K]{v} using only upper-triangle----
 Chd|====================================================================
 Chd|  MAV_LT_H                      source/implicit/produt_v.F    
 Chd|-- called by -----------
@@ -1301,7 +1301,7 @@ C---------------------
 C--------------------------------------------
       RETURN
       END
-C------Hybrid----produit {w}=[LT_K]{v}+[LT_I]{v} using only trangle-upper----
+C------Hybrid----produce {w}=[LT_K]{v}+[LT_I]{v} using only upper-triangle----
 Chd|====================================================================
 Chd|  MAV_LTH0                      source/implicit/produt_v.F    
 Chd|-- called by -----------
@@ -1454,7 +1454,7 @@ C
 C--------------------------------------------
       RETURN
       END
-C------Hybrid----produit {w}=[LT_K]{v}+[LT_I]{v} using only trangle-upper----
+C------Hybrid----produce {w}=[LT_K]{v}+[LT_I]{v} using only upper-triangle----
 Chd|====================================================================
 Chd|  MAV_LTH                       source/implicit/produt_v.F    
 Chd|-- called by -----------

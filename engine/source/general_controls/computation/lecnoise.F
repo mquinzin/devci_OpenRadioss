@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  LECNOISE                      source/general_controls/computation/lecnoise.F
 Chd|-- called by -----------
@@ -262,12 +262,12 @@ C-------ivers date------------
        CALL WRITE_C_C(ITITLE,80)
        CALL EOR_C(80)
       ENDIF
-C-------HIERARCHIE INFO------------
-      IWA(1)=1      
-      IWA(2)=1      
-      IWA(3)=1      
-      IWA(4)=1      
-      IWA(5)=1      
+C-------HIERARCHY INFO------------
+      IWA(1)=1
+      IWA(2)=1
+      IWA(3)=1
+      IWA(4)=1
+      IWA(5)=1
       IWA(6)=1
       CALL WRTDES(IWA,IWA,6,ITFORM,0)
 C 1 VARIABLE GLOBALE
@@ -354,7 +354,7 @@ C-------GEO DESCRIPTION------------
        CALL WRITE_C_C(ITIT40,40)
        CALL EOR_C(44)
       ENDIF
-C-------HIERARCHIE DESCRIPTION------------
+C-------HIERARCHY DESCRIPTION------------
       CH40=ROOTNAM
       READ(CH40,'(10A4)')TIT40
       DO I=1,40

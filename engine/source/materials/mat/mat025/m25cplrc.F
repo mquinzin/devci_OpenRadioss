@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  M25CPLRC                      source/materials/mat/mat025/m25cplrc.F
 Chd|-- called by -----------
@@ -39,7 +39,7 @@ Chd|====================================================================
      7                    OUTV    ,SEQ_OUTP,ISHPLYXFEM,LY_EXX,LY_EYY,
      8                    LY_EXY  ,SIGPLY  ,SIGPE   ,PLY_ID  ,NEL   ,
      9                    SIGNXX  ,SIGNYY  ,SIGNXY  ,SIGNYZ  ,SIGNZX,
-     A                    IPG     )
+     A                    IPG     ,TSAIWU  )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -79,7 +79,7 @@ C     REAL
      .   OFFPLY(*),SIGY(*),ETSE(*),SEQ_OUTP(*), 
      .   LY_EXX(*), LY_EYY(*), LY_EXY(*), SIGPLY(NEL,3),SIGPE(MVSIZ,5),
      .   SIGNXX(MVSIZ),SIGNYY(MVSIZ),SIGNXY(MVSIZ),SIGNYZ(MVSIZ),
-     .   SIGNZX(MVSIZ)
+     .   SIGNZX(MVSIZ),TSAIWU(MVSIZ)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -664,6 +664,7 @@ C---------------------------------------------------------------
            WVEC(I)=F1(I) *T1(I)       + F2(I) *T2(I) +
      .             F11(I)*T1(I)*T1(I) + F22(I)*T2(I)*T2(I) +
      .             F33(I)*T3(I)*T3(I) + TWO*F12(I)*T1(I)*T2(I)
+           TSAIWU(I) = MIN(WVEC(I)/FYLD(I),ONE)
 !!c    equiv crit for output
 !!           SEQ_OUTP(I) = WVEC(I)
  100     CONTINUE
@@ -742,11 +743,12 @@ C
  120    CONTINUE
       ELSEIF(JYEILD == JLT) THEN
 C------------------------------------------------------------
-C MODIFID TSIA HILL CRITERIA        
-C ----------------------------------------------------------
+C MODIFIED TSIA HILL CRITERIA
+C -----------------------------------------------------------
         DO I=JFT,JLT
            WVEC(I)= F11(I)*T1(I)*T1(I) + F22(I)*T2(I)*T2(I) +
      .              F33(I)*T3(I)*T3(I) + F12(I)*T1(I)*T2(I)
+           TSAIWU(I) = MIN(WVEC(I)/FYLD(I),ONE)
 !!c    equiv crit for output
 !!           SEQ_OUTP(I) = WVEC(I)
         ENDDO
@@ -812,8 +814,8 @@ C
       
       ELSE
 C------------------------------------------------------------
-C MODIFID TSIA HILL CRITERIA     OR TSAI-WU CRITERIA   
-C ----------------------------------------------------------        
+C MODIFIED TSIA HILL CRITERIA     OR TSAI-WU CRITERIA
+C -----------------------------------------------------------
         DO I=JFT,JLT
           IF(IYEILD(I) > 0) THEN
              WVEC(I)= F11(I)*T1(I)*T1(I) + F22(I)*T2(I)*T2(I)+
@@ -823,6 +825,7 @@ C ----------------------------------------------------------
      .                 F11(I)*T1(I)*T1(I) + F22(I)*T2(I)*T2(I) +
      .                 F33(I)*T3(I)*T3(I) + TWO*F12(I)*T1(I)*T2(I)
            ENDIF
+           TSAIWU(I) = MIN(WVEC(I)/FYLD(I),ONE)
 !!c    equiv crit for output
 !!           SEQ_OUTP(I) = WVEC(I)
         ENDDO      

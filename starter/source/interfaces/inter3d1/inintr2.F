@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ININTR2                       source/interfaces/inter3d1/inintr2.F
 Chd|-- called by -----------
@@ -51,7 +51,7 @@ Chd|====================================================================
      .                   MWA     ,IKINE  ,I2NSNT  ,IN    ,
      .                   STIFN   ,STIFINT,NOM_OPT,INOD_PXFEM,MS_PLY,
      .                   INTBUF_TAB,STIFINTR,ITAGND,ICNDS10,MS_B,IN_B,
-     .                   NSTRF   ,ITAGCYC)
+     .                   NSTRF   ,ITAGCYC,IRBE2  ,IRBE3  ,LRBE3 )
 C-----------------------------------------------
 C   M o d u l e s
 C----------------------------------------------- 
@@ -71,9 +71,13 @@ C-----------------------------------------------
 #include      "scr05_c.inc"
 #include      "scr17_c.inc"
 #include      "warn_c.inc"
+#include      "tabsiz_c.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
+      INTEGER , DIMENSION(NRBE2L,NRBE2), INTENT(IN) :: IRBE2
+      INTEGER , DIMENSION(NRBE3L,NRBE3), INTENT(IN) :: IRBE3
+      INTEGER , DIMENSION(SLRBE3), INTENT(IN) :: LRBE3
       INTEGER IPARI(NPARI,*), IXS(*), IXQ(*),
      .    IXC(*), INTC(*), ITAB(*), NPBY(*), LPBY(*), MWA(*),
      .    IKINE(*), I2NSNT,INOD_PXFEM(*),ITAGND(*),ICNDS10(3,*),
@@ -170,7 +174,9 @@ C
 C
 C     SWITCH INTERF 2 AVEC CONDITION CINEMATIQUE => METHODE PENALITE
 C
-      CALL ITAGSL2(IPARI,NOM_OPT,ITAB,IKINE,INTBUF_TAB,ITAGND,ICNDS10,NSTRF,ITAGCYC)
+      CALL ITAGSL2(IPARI ,NOM_OPT,ITAB  ,IKINE  ,INTBUF_TAB,
+     .                   ITAGND,ICNDS10,NSTRF ,ITAGCYC,IRBE2     ,
+     .                   IRBE3 ,LRBE3  )
 C
 C LIMITATION RIGIDITE ANCRAGE
 C

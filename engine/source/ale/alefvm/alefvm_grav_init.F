@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ALEFVM_GRAV_INIT              source/ale/alefvm/alefvm_grav_init.F
 Chd|-- called by -----------
@@ -27,9 +27,10 @@ Chd|        ALEMAIN                       source/ale/alemain.F
 Chd|-- calls ---------------
 Chd|        FINTER                        source/tools/curve/finter.F   
 Chd|        ALEFVM_MOD                    ../common_source/modules/alefvm_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE ALEFVM_GRAV_INIT(
-     1                          AGRV, IGRV, LGRAV, SENSOR, LSENSOR,
+     1                          AGRV, IGRV, LGRAV, SENSOR_TAB,
      2                          IXS , ITASK, NPC , TF    ,SKEW    ,
      3                          ITAB )
 C-----------------------------------------------
@@ -37,7 +38,7 @@ C   D e s c r i p t i o n
 C-----------------------------------------------
 C 'alefvm' is related to a collocated scheme (built from FVM and based on Godunov scheme)
 C  which was temporarily introduced for experimental option /INTER/TYPE22 (FSI coupling with cut cell method)
-C This cut cell method is not completed, abandonned, and is not an official option.
+C This cut cell method is not completed, abandoned, and is not an official option.
 C There is no other use for this scheme which is automatically enabled when /INTER/TYPE22 is defined (INT22>0 => IALEFVM=1).
 C
 C This subroutine is treating an uncut cell.
@@ -45,6 +46,7 @@ C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE ALEFVM_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -75,16 +77,17 @@ C finite volume scheme (IALEFVM==1)
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
-      INTEGER :: IXS(NIXS,*), IGRV(NIGRV,*), ITASK, LSENSOR(NSENSI,*),LGRAV(*),NPC(*),ITAB(*)
+      INTEGER :: IXS(NIXS,*), IGRV(NIGRV,*), ITASK,LGRAV(*),NPC(*),ITAB(*)
       my_real :: AGRV(LFACGRV,*),TF(*)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER          :: I, J, K, K1, K2, K3, NL, NN, ISK, IFUNC, N2
       INTEGER          :: IADF,IADL,ISENS,N1,NVERTEX,INOd,II
-      my_real          :: TS,AA,FCX,FCY,VV,A0, SENSOR(NSENSR,*),DYDX,GAMA,TFEXTT
+      my_real          :: TS,AA,FCX,FCY,VV,A0,DYDX,GAMA,TFEXTT
       my_real          :: M_CELL(MVSIZ),ACCEL(3,MVSIZ),SKEW(LSKEW,*)
       my_real,EXTERNAL :: FINTER      
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   P r e - C o n d i t i o n s
 C-----------------------------------------------      
@@ -112,12 +115,12 @@ C-----------------------------------------------
 
         ISENS=0
         DO K=1,NSENSOR
-          IF(IGRV(6,NL)==LSENSOR(1,K))ISENS=K
+          IF(IGRV(6,NL)==SENSOR_TAB(K)%SENS_ID) ISENS=K  ! do it in starter !!!
         ENDDO
         IF(ISENS==0)THEN
           TS  = TT
         ELSE
-          TS  = TT-SENSOR(2,ISENS)
+          TS  = TT-SENSOR_TAB(ISENS)%TSTART
           IF(TS<0.0)CYCLE
         ENDIF
 

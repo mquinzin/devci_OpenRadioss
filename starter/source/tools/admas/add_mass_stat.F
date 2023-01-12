@@ -1,33 +1,34 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ADD_MASS_STAT                 source/tools/admas/add_mass_stat.F
 Chd|-- called by -----------
 Chd|        LECTUR                        source/starter/lectur.F       
 Chd|-- calls ---------------
 Chd|        FIND_DT_TARGET                ../common_source/tools/time_step/find_dt_target.F
+Chd|        MYQSORT                       ../common_source/tools/sort/myqsort.F
 Chd|        PLOT_CURVE                    ../common_source/sortie/plot_curve.F
-Chd|        TRIRAP                        ../common_source/tools/sort/trirap.F
+Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        PLOT_CURVE_MOD                ../common_source/modules/plot_curve_mod.F
 Chd|====================================================================
       SUBROUTINE ADD_MASS_STAT(MS,IN,STIFN,STIFR,ITAB,TOTMAS)
@@ -35,6 +36,7 @@ C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE PLOT_CURVE_MOD
+      USE MESSAGE_MOD
 C-----------------------------------------------
 C     TRI DES DT NODAUX ET IMPRESSIONS
 C-----------------------------------------------
@@ -58,10 +60,13 @@ C-----------------------------------------------
 #include      "com06_c.inc"
 #include      "units_c.inc"
 #include      "scr18_c.inc"
+#include      "my_allocate.inc"
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER I,N,COMPT,K,NVAL
+      INTEGER :: IERROR
+      INTEGER, DIMENSION(:), ALLOCATABLE :: PERM
       my_real, DIMENSION(NUMNOD*2),TARGET ::
      .   DT
       my_real, DIMENSION(:),POINTER ::
@@ -73,6 +78,7 @@ C-------------------------------------------------------------------------------
 C     DUPLICATED FROM OUTRIN - STATS ON ADDED MASS + TARGET NODAL TIME STEP ESTIMATION
 C--------------------------------------------------------------------------------------
 C
+      MY_ALLOCATE(PERM,NUMNOD)
       MASS0_START = TOTMAS
       DTSCA = ZEP9
 C
@@ -94,13 +100,17 @@ C
 
       DO I=1,NUMNOD
         TMP(I)=I
+        PERM(I) = I
         IF (DT(I) < EP30) THEN
           SUMM = SUMM + MS(I)
           SUMK = SUMK + STIFN(I)
         ENDIF
       ENDDO
 C
-      CALL TRIRAP(NUMNOD,DT,NUMNOD)
+      CALL MYQSORT(NUMNOD,DT,PERM,IERROR)
+      TMP(1:NUMNOD) = PERM(1:NUMNOD)
+
+      DEALLOCATE( PERM )
 C
       NVAL = 20
       DO I=1,20

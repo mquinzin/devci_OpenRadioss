@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FAIL_INIEVO_S                 source/materials/fail/inievo/fail_inievo_s.F
 Chd|-- called by -----------
@@ -29,7 +29,9 @@ Chd|        USERMAT_SOLID                 source/materials/mat_share/usermat_sol
 Chd|-- calls ---------------
 Chd|        JACOBIEW_V                    source/materials/mat_share/jacobview_v.F
 Chd|        TABLE_VINTERP                 source/tools/curve/table_tools.F
+Chd|        FCRIT                         source/materials/mat/mat081/sigeps81.F
 Chd|        INTERFACE_TABLE_MOD           share/modules/table_mod.F     
+Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
       SUBROUTINE FAIL_INIEVO_S (
@@ -39,10 +41,11 @@ Chd|====================================================================
      4     SIGNXX   ,SIGNYY   ,SIGNZZ   ,SIGNXY   ,SIGNYZ   ,SIGNZX   ,            
      5     PLA      ,TEMP     ,SIGY     ,OFF      ,DFMAX    ,
      6     TDELE    ,DMG_SCALE,UELR     ,IPG      ,NPG      ,
-     7     LOFF     )
+     7     LOFF     ,DAMINI   ,VOL      ,INLOC    )
 C---------+---------+---+---+--------------------------------------------
       USE TABLE_MOD
       USE INTERFACE_TABLE_MOD
+      USE MESSAGE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -60,21 +63,23 @@ C-----------------------------------------------
 #include      "com01_c.inc"
 #include      "scr18_c.inc"
 #include      "tabsiz_c.inc"
+#include      "my_allocate.inc"
 C-----------------------------------------------
 C   I N P U T   A r g u m e n t s
 C-----------------------------------------------
       INTEGER, INTENT(IN) :: 
-     .        NEL,NUPARAM,NUVAR,NGL(NEL),NPG,IPG
+     .        NEL,NUPARAM,NUVAR,NGL(NEL),NPG,IPG,
+     .        INLOC
       my_real, INTENT(IN) ::
      .        TIME,UPARAM(NUPARAM),ALDT(NEL),
      .        DPLA(NEL),EPSP(NEL),TEMP(NEL),
      .        SIGNXX(NEL),SIGNYY(NEL),SIGNZZ(NEL),
      .        SIGNXY(NEL),SIGNYZ(NEL),SIGNZX(NEL),
-     .        PLA(NEL),SIGY(NEL)
+     .        PLA(NEL),SIGY(NEL),VOL(NEL)
       my_real, INTENT(INOUT) :: 
      .        UVAR(NEL,NUVAR),DFMAX(NEL),TDELE(NEL),
      .        DMG_SCALE(NEL),OFF(NEL),UELR(NEL),
-     .        LOFF(NEL)
+     .        LOFF(NEL),DAMINI(NEL)
       TYPE (TTABLE), INTENT(IN), DIMENSION(NTABLE) :: TABLE 
 C!-----------------------------------------------
 C!   VARIABLES FOR FUNCTION INTERPOLATION 
@@ -88,9 +93,10 @@ C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER I,J,INDX(NEL),NINDX,FAILIP,IPOS(NEL,2),
-     .        NROT(NEL),NINIEVO
+     .        NROT(NEL),NINIEVO,ILEN
       INTEGER, DIMENSION(:), ALLOCATABLE :: 
-     .        INITYPE,EVOTYPE,EVOSHAP,COMPTYP,TAB_ID,TAB_EL
+     .        INITYPE,EVOTYPE,EVOSHAP,COMPTYP,TAB_ID,
+     .        TAB_EL,FCRIT 
       my_real, DIMENSION(:), ALLOCATABLE :: 
      .        SR_REF,FSCALE,INI_P1,EL_REF,ELSCAL,
      .        DISP,ENER,ALPHA2
@@ -110,35 +116,60 @@ C!--------------------------------------------------------------
       !=======================================================================
       ! Recovering failure criterion parameters
       NINIEVO = UPARAM(1)
-      FAILIP  = NINT(UPARAM(3))
-      ALLOCATE(INITYPE(NINIEVO),EVOTYPE(NINIEVO),EVOSHAP(NINIEVO),COMPTYP(NINIEVO))
-      ALLOCATE(TAB_ID(NINIEVO) ,SR_REF(NINIEVO) ,FSCALE(NINIEVO) ,INI_P1(NINIEVO))
-      ALLOCATE(TAB_EL(NINIEVO) ,EL_REF(NINIEVO) ,ELSCAL(NINIEVO) )
-      ALLOCATE(DISP(NINIEVO)   ,ENER(NINIEVO)   ,ALPHA2(NINIEVO) )      
+      ILEN    = INT(UPARAM(3))
+      IF (INLOC > 0) ILEN = 1
+      FAILIP  = MIN(NINT(UPARAM(4)),NPG)
+      MY_ALLOCATE(INITYPE,NINIEVO)
+      MY_ALLOCATE(EVOTYPE,NINIEVO)
+      MY_ALLOCATE(EVOSHAP,NINIEVO)
+      MY_ALLOCATE(COMPTYP,NINIEVO)
+      MY_ALLOCATE(TAB_ID ,NINIEVO)
+      MY_ALLOCATE(SR_REF ,NINIEVO)
+      MY_ALLOCATE(FSCALE ,NINIEVO)
+      MY_ALLOCATE(INI_P1 ,NINIEVO)
+      MY_ALLOCATE(TAB_EL ,NINIEVO)
+      MY_ALLOCATE(EL_REF ,NINIEVO)
+      MY_ALLOCATE(ELSCAL ,NINIEVO)
+      MY_ALLOCATE(DISP   ,NINIEVO)
+      MY_ALLOCATE(ENER   ,NINIEVO)
+      MY_ALLOCATE(ALPHA2 ,NINIEVO)     
       DO J = 1,NINIEVO
-        INITYPE(J) = UPARAM(5  + 14*(J-1))
-        EVOTYPE(J) = UPARAM(6  + 14*(J-1))
-        EVOSHAP(J) = UPARAM(7  + 14*(J-1))
-        COMPTYP(J) = UPARAM(8  + 14*(J-1))
-        TAB_ID(J)  = NINT(UPARAM(9 + 14*(J-1)))
-        SR_REF(J)  = UPARAM(10 + 14*(J-1))
-        FSCALE(J)  = UPARAM(11 + 14*(J-1))
-        INI_P1(J)  = UPARAM(12 + 14*(J-1))
-        TAB_EL(J)  = NINT(UPARAM(13 + 14*(J-1)))
-        EL_REF(J)  = UPARAM(14 + 14*(J-1))
-        ELSCAL(J)  = UPARAM(15 + 14*(J-1)) 
-        DISP(J)    = UPARAM(16 + 14*(J-1))
-        ALPHA2(J)  = UPARAM(17 + 14*(J-1))
-        ENER(J)    = UPARAM(18 + 14*(J-1))
+        INITYPE(J) = UPARAM(6  + 14*(J-1))
+        EVOTYPE(J) = UPARAM(7  + 14*(J-1))
+        EVOSHAP(J) = UPARAM(8  + 14*(J-1))
+        COMPTYP(J) = UPARAM(9  + 14*(J-1))
+        TAB_ID(J)  = NINT(UPARAM(10 + 14*(J-1)))
+        SR_REF(J)  = UPARAM(11 + 14*(J-1))
+        FSCALE(J)  = UPARAM(12 + 14*(J-1))
+        INI_P1(J)  = UPARAM(13 + 14*(J-1))
+        TAB_EL(J)  = NINT(UPARAM(14 + 14*(J-1)))
+        EL_REF(J)  = UPARAM(15 + 14*(J-1))
+        ELSCAL(J)  = UPARAM(16 + 14*(J-1)) 
+        DISP(J)    = UPARAM(17 + 14*(J-1))
+        ALPHA2(J)  = UPARAM(18 + 14*(J-1))
+        ENER(J)    = UPARAM(19 + 14*(J-1))
       ENDDO 
 c
-      ! At initial time, save the element size 
-      IF (UVAR(1,1) == ZERO) UVAR(1:NEL,1) = ALDT(1:NEL)
+      ! Element characteristic length computation 
+      !  -> Initial values 
+      IF (UVAR(1,1) == ZERO) THEN 
+        ! -> Critical timestep formulation
+        IF (ILEN == 1) THEN 
+          UVAR(1:NEL,1) = ALDT(1:NEL)
+        ! -> Geometric formulation
+        ELSE
+          DO I = 1,NEL
+            UVAR(I,1) = EXP(THIRD*LOG(VOL(I)))
+          ENDDO
+        ENDIF
+      ENDIF
       L0(1:NEL) = UVAR(1:NEL,1)
       ! Positive stress triaxiality bounded plastic strain
       EPSMOD(1:NEL) = UVAR(1:NEL,2)
       ! Damage initiation and evolution variable
-      ALLOCATE(DMGINI(NEL,NINIEVO),DMGEVO(NEL,NINIEVO))
+      MY_ALLOCATE2D(DMGINI,NEL,NINIEVO)
+      MY_ALLOCATE2D(DMGEVO,NEL,NINIEVO)
+      MY_ALLOCATE(FCRIT,NEL)
       DO J = 1,NINIEVO
         DO I=1,NEL
           ! Initiation damage
@@ -147,6 +178,8 @@ c
           DMGEVO(I,J) = UVAR(I,4+(J-1)*3)
         ENDDO
       ENDDO
+      ! Criterion number leading to element deletion
+      FCRIT(1:NEL) = 0
 c      
       !====================================================================
       ! - LOOP OVER THE ELEMENT TO COMPUTE THE STRESS STATE QUANTITIES
@@ -233,7 +266,7 @@ c
           DEV_PR(I,1) = DEV_PR(I,2)
           DEV_PR(I,2) = R_INTER
         ENDIF       
-        ALPHA(I) = DEV_PR(I,3)/MAX(DEV_PR(I,1),EM20) 
+        ALPHA(I) = DEV_PR(I,3)/SIGN(MAX(ABS(DEV_PR(I,1)),EM20),DEV_PR(I,1))
 c
       ENDDO
 c    
@@ -249,7 +282,7 @@ c
           ! Plastic strain vs shear influence (theta)
           CASE(2)
             DO I = 1,NEL
-              XVEC(I,1) = (SVM(I) + INI_P1(J)*P(I))/MAX(MAXSHEAR(I),EM20)
+              XVEC(I,1) = (SVM(I) + INI_P1(J)*P(I))/MAX(MAXSHEAR(I),EM08)
             ENDDO
           ! MSFLD / FLD
           CASE(3,4)
@@ -257,7 +290,7 @@ c
           ! Normalized principal stress
           CASE(5)
             DO I = 1,NEL
-              XVEC(I,1) = (SVM(I) + INI_P1(J)*P(I))/MAX(SIGPMAJ(I),EM20)
+              XVEC(I,1) = (SVM(I) + INI_P1(J)*P(I))/MAX(SIGPMAJ(I),EM08)
             ENDDO
         END SELECT
         XVEC(1:NEL,2)   = EPSP(1:NEL)/SR_REF(J)
@@ -273,13 +306,13 @@ c
               XVEC(1:NEL,2) = TRIAX(1:NEL)
             CASE(2)
               DO I = 1,NEL
-                XVEC(I,2) = (SVM(I) + INI_P1(J)*P(I))/MAX(MAXSHEAR(I),EM20)
+                XVEC(I,2) = (SVM(I) + INI_P1(J)*P(I))/MAX(MAXSHEAR(I),EM08)
               ENDDO
             CASE(3,4)
               XVEC(1:NEL,2) = ALPHA(1:NEL)
             CASE(5)
               DO I = 1,NEL
-                XVEC(I,2) = (SVM(I) + INI_P1(J)*P(I))/MAX(SIGPMAJ(I),EM20)
+                XVEC(I,2) = (SVM(I) + INI_P1(J)*P(I))/MAX(SIGPMAJ(I),EM08)
               ENDDO            
           END SELECT
           IPOS(1:NEL,1:2) = 1
@@ -300,14 +333,14 @@ c
           CASE(3)
             IF (NINT(INI_P1(J))>0) THEN  
               DO I = 1,NEL
-                IF ((DPLA(I) > ZERO).AND.(DMGINI(I,J)<ONE).AND.(LOFF(I) == ONE)) THEN 
+                IF (((EPSMOD(I)-UVAR(I,2)) > ZERO).AND.(DMGINI(I,J)<ONE).AND.(LOFF(I) == ONE)) THEN 
                   DMGINI(I,J) = DMGINI(I,J) + (EPSMOD(I)-UVAR(I,2))/MAX(EPSF(I),EM20)
                   DMGINI(I,J) = MIN(DMGINI(I,J),ONE)
                 ENDIF
               ENDDO
             ELSE
               DO I = 1,NEL
-                IF ((DPLA(I) > ZERO).AND.(DMGINI(I,J)<ONE).AND.(LOFF(I) == ONE)) THEN 
+                IF (((EPSMOD(I)-UVAR(I,2)) > ZERO).AND.(DMGINI(I,J)<ONE).AND.(LOFF(I) == ONE)) THEN 
                   DMGINI(I,J) = MAX(DMGINI(I,J),EPSMOD(I)/MAX(EPSF(I),EM20))
                   DMGINI(I,J) = MIN(DMGINI(I,J),ONE)
                 ENDIF
@@ -343,6 +376,7 @@ c
      .               (LOFF(I) == ONE).AND.(DMGEVO(I,J)<ONE)) THEN   
                     DMGEVO(I,J) = DMGEVO(I,J) + L0(I)*DPLA(I)/DISP(J)
                     DMGEVO(I,J) = MIN(ONE,DMGEVO(I,J))
+                    IF (DMGEVO(I,J) >= ONE) FCRIT(I) = J
                   ENDIF
                 ENDDO
               ! Exponential shape
@@ -357,6 +391,7 @@ c
      .                                           DPLA(I)*L0(I)/DISP(J)
                     IF (DMGEVO(I,J) > 0.999D0) DMGEVO(I,J) = ONE
                     DMGEVO(I,J) = MIN(ONE,DMGEVO(I,J))
+                    IF (DMGEVO(I,J) >= ONE) FCRIT(I) = J
                   ENDIF
                 ENDDO
             END SELECT
@@ -372,6 +407,7 @@ c
                     YLD0 = UVAR(I,5+(J-1)*3)
                     DMGEVO(I,J) = DMGEVO(I,J) + DPLA(I)*L0(I)*YLD0/(TWO*ENER(J))
                     DMGEVO(I,J) = MIN(ONE,DMGEVO(I,J))
+                    IF (DMGEVO(I,J) >= ONE) FCRIT(I) = J
                   ENDIF
                 ENDDO
               ! Exponential shape
@@ -383,6 +419,7 @@ c
                     DMGEVO(I,J) = ONE - EXP(-(UVAR(I,5+(J-1)*3))/ENER(J))
                     IF (DMGEVO(I,J) > 0.999D0) DMGEVO(I,J) = ONE
                     DMGEVO(I,J) = MIN(ONE,DMGEVO(I,J))
+                    IF (DMGEVO(I,J) >= ONE) FCRIT(I) = J
                   ENDIF
                 ENDDO
               END SELECT
@@ -393,6 +430,7 @@ c
      .           (LOFF(I) == ONE).AND.(DMGEVO(I,J)<ONE)) THEN
                 DMGEVO(I,J) = DMGINI(I,J)
                 DMGEVO(I,J) = MIN(ONE,DMGEVO(I,J))
+                IF (DMGEVO(I,J) >= ONE) FCRIT(I) = J
               ENDIF
             ENDDO
         END SELECT
@@ -422,7 +460,7 @@ c
       NINDX = 0
       INDX(1:NEL) = 0
       DO I = 1,NEL
-        IF (LOFF(I) == ONE) THEN 
+        IF ((LOFF(I) == ONE).AND.(OFF(I) > ZERO)) THEN 
           DFMAX(I) = MAX(DMGMAX(I),DMGMUL(I))
           IF (DFMAX(I) >= ONE) THEN 
             NINDX       = NINDX + 1
@@ -448,9 +486,12 @@ c
       !====================================================================
       ! Positive stress triaxiality bounded plastic strain
       UVAR(1:NEL,2) = EPSMOD(1:NEL)
+      DAMINI(1:NEL) = ZERO
       DO J = 1,NINIEVO
         ! Checking element failure and recovering user variable
         DO I=1,NEL
+          ! Damage initiation output
+          DAMINI(I) = MAX(DMGINI(I,J),DAMINI(I))
           ! Initiation damage
           UVAR(I,3+(J-1)*3) = DMGINI(I,J)
           ! Evolution damage
@@ -458,7 +499,26 @@ c
         ENDDO
       ENDDO
 c
-      ! Table deallocation
+      !====================================================================
+      ! - PRINTOUT DATA ABOUT FAILED ELEMENTS
+      !====================================================================
+      IF (NINDX > 0) THEN 
+        DO J=1,NINDX
+          I = INDX(J)     
+#include "lockon.inc"
+          WRITE(IOUT, 1000) NGL(I),FCRIT(I),IPG,TIME
+          WRITE(ISTDO,1000) NGL(I),FCRIT(I),IPG,TIME
+          IF (OFF(I) == ZERO) THEN 
+            WRITE(IOUT, 2000) NGL(I),TIME
+            WRITE(ISTDO,2000) NGL(I),TIME
+          ENDIF
+#include "lockoff.inc"
+        END DO
+      END IF    
+c
+      !====================================================================
+      ! - TABLES DEALLOCATION
+      !====================================================================
       IF (ALLOCATED(INITYPE)) DEALLOCATE(INITYPE)
       IF (ALLOCATED(EVOTYPE)) DEALLOCATE(EVOTYPE)
       IF (ALLOCATED(EVOSHAP)) DEALLOCATE(EVOSHAP)
@@ -473,27 +533,13 @@ c
       IF (ALLOCATED(DISP))    DEALLOCATE(DISP)
       IF (ALLOCATED(ENER))    DEALLOCATE(ENER)
       IF (ALLOCATED(ALPHA2))  DEALLOCATE(ALPHA2)
-c
-      !====================================================================
-      ! - PRINTOUT DATA ABOUT FAILED ELEMENTS
-      !====================================================================
-      IF (NINDX > 0) THEN 
-        DO J=1,NINDX
-          I = INDX(J)     
-#include "lockon.inc"
-          WRITE(IOUT, 1000) NGL(I),IPG,TIME
-          WRITE(ISTDO,1000) NGL(I),IPG,TIME
-          IF (OFF(I) == ZERO) THEN 
-            WRITE(IOUT, 2000) NGL(I),TIME
-            WRITE(ISTDO,2000) NGL(I),TIME
-          ENDIF
-#include "lockoff.inc"
-        END DO
-      END IF                          
+      IF (ALLOCATED(DMGINI))  DEALLOCATE(DMGINI)
+      IF (ALLOCATED(DMGEVO))  DEALLOCATE(DMGEVO)
+      IF (ALLOCATED(FCRIT))   DEALLOCATE(FCRIT)                      
 c-----------------------------------------------------------------------
- 1000 FORMAT(1X,'FOR SOLID ELEMENT NUMBER el#',I10,
-     .          ' FAILURE (INIEVO) AT GAUSS POINT ',I5,
-     .          ' AT TIME :',1PE12.4)     
+ 1000 FORMAT(1X,'FOR SOLID ELEMENT NUMBER ',I10,
+     .          ' FAILURE (INIEVO) WITH CRITERION NUMBER ',I3,
+     .          ' AT GAUSS POINT ',I5,' AT TIME :',1PE12.4)     
  2000 FORMAT(1X,'-- RUPTURE OF SOLID ELEMENT :',I10,
      .          ' AT TIME :',1PE12.4)     
 c

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  H3D_NODAL_VECTOR              source/output/h3d/h3d_results/h3d_nodal_vector.F
 Chd|-- called by -----------
@@ -38,14 +38,16 @@ Chd|====================================================================
      .                  INFO1    , INFO2       , IS_WRITTEN_NODE, H3D_PART   , IPARTC   ,
      .                  IPARTTG  , IXC         , IXTG           , TEMP       , IFLOW    ,
      .                  RFLOW    , IXS         , IXQ            , NV46,MONVOL, VOLMON   ,
-     .                  DIAG_SMS    , MS             , PDAMA2     , X        , 
+     .                  DIAG_SMS , MS          , PDAMA2         , X          , 
      .                  STIFR    , STIFN       , A              , D          , V        , 
      .                  CONT     , FCONTG      , FINT           , FEXT       , KEYWORD  ,
      .                  FNCONT   , FNCONTG     , FTCONT         , FTCONTG    , FNCONT2  , 
      .                  DR       , DXANCG      , FANREAC        , FCLUSTER   , MCLUSTER ,
      .                  VR       , FOPT        , NPBY           , IXUR       , VGAZ     ,
-     .                  IPARI    , IGRNOD      , WEIGHT         ,NODGLOB     ,FCONT_MAX , 
-     .                  FNCONTP2 , FTCONTP2    ) 
+     .                  IPARI    , IGRNOD      , WEIGHT         , NODGLOB    , FCONT_MAX, 
+     .                  FNCONTP2 , FTCONTP2    , AR             , IPARTSP    , IPARTR   ,
+     .                  IPARTP   , IPARTT      , IPARTS         , IPARTQ     ,KXSP      ,
+     .                  IXR      , IXP         , IXT            , N_H3D_PART_LIST ) 
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -65,6 +67,7 @@ C-----------------------------------------------
 #include      "mvsiz_p.inc"
 #include      "com01_c.inc"
 #include      "com04_c.inc"
+#include      "com09_c.inc"
 #include      "intstamp_c.inc"
 #include      "scr01_c.inc"
 #include      "scr03_c.inc"
@@ -75,6 +78,7 @@ C-----------------------------------------------
 #include      "param_c.inc"
 #include      "rnur_c.inc"
 #include      "task_c.inc"
+#include      "sphcom.inc"
 #include      "spmd_c.inc"
 #include      "sms_c.inc"
 C-----------------------------------------------
@@ -96,6 +100,12 @@ C-----------------------------------------------
      .   IXUR(NIXUR,*),IPARI(NPARI,*),WEIGHT(*),NODGLOB(*)
       CHARACTER*ncharline KEYWORD
       TYPE (GROUP_)  , DIMENSION(NGRNOD) :: IGRNOD
+      my_real , INTENT(IN) :: AR(3,NUMNOD)
+      INTEGER ,INTENT(IN) :: IPARTSP(NUMSPH),IPARTR(NUMELR),IPARTP(NUMELP),
+     .                       IPARTT(NUMELT),IPARTS(NUMELS),IPARTQ(NUMELQ)
+      INTEGER ,INTENT(IN) :: KXSP(NISP,NUMSPH),IXR(NIXR,NUMELR),IXP(NIXP,NUMELP),
+     .                       IXT(NIXT,NUMELT)
+      INTEGER ,INTENT(IN) :: N_H3D_PART_LIST
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -108,25 +118,75 @@ C
 c
       DO  I=1,NUMNOD 
         NODE_ID(I) = ITAB(I)
+        IOK_PART(I) = 0
+        IS_WRITTEN_NODE(I) = 0
       ENDDO
-
-      DO I=1,NUMELC
-        IF( H3D_PART(IPARTC(I)) == 1) THEN
-          DO J=2,5
-            IOK_PART(IXC(J,I)) = 1
-          ENDDO
-        ENDIF
-      ENDDO
+C
+      IF(N_H3D_PART_LIST .NE. 0)THEN
+        DO I=1,NUMSPH
+          IF ( H3D_PART(IPARTSP(I)) == 1) THEN
+            IF(KXSP(2,I) > 0 )IOK_PART(KXSP(2,I)) = 1
+          ENDIF
+        ENDDO
 c
-      DO I=1,NUMELTG
-        IF( H3D_PART(IPARTTG(I)) == 1) THEN
-          DO J=2,4
-            IOK_PART(IXTG(J,I)) = 1
-          ENDDO
-        ENDIF
-      ENDDO
-      IOK_PART(1:NUMNOD) = 1
-
+        DO I=1,NUMELR
+          IF ( H3D_PART(IPARTR(I)) == 1) THEN
+            DO J=2,4
+              IF(IXR(J,I) > 0 )IOK_PART(IXR(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELP
+          IF ( H3D_PART(IPARTP(I)) == 1) THEN
+            DO J=2,4
+              IF(IXP(J,I) > 0 )IOK_PART(IXP(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELT
+          IF ( H3D_PART(IPARTT(I)) == 1) THEN
+            DO J=2,4
+              IF(IXT(J,I) > 0 )IOK_PART(IXT(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELC
+          IF ( H3D_PART(IPARTC(I)) == 1) THEN
+            DO J=2,5
+              IF(IXC(J,I) > 0 )IOK_PART(IXC(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELTG
+          IF ( H3D_PART(IPARTTG(I)) == 1) THEN
+            DO J=2,4
+              IF(IXTG(J,I) > 0 )IOK_PART(IXTG(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELS
+          IF ( H3D_PART(IPARTS(I)) == 1) THEN
+            DO J=2,9
+              IF(IXS(J,I) > 0 )IOK_PART(IXS(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+c
+        DO I=1,NUMELQ
+          IF ( H3D_PART(IPARTQ(I)) == 1) THEN
+            DO J=2,5
+              IF(IXQ(J,I) > 0 )IOK_PART(IXQ(J,I)) = 1
+            ENDDO
+          ENDIF
+        ENDDO
+      ELSE
+        IOK_PART(1:NUMNOD) = 1
+      ENDIF
 C
 C--------------------------------------------------
       IF(KEYWORD == 'VEL') THEN
@@ -159,7 +219,7 @@ C--------------------------------------------------
      .                                    VALUE)
         ENDDO
 C--------------------------------------------------
-      ELSEIF(KEYWORD == 'CONT'.AND.KEYWORD /= 'CONT/MAX')THEN
+      ELSEIF(KEYWORD == 'CONT'.AND.KEYWORD /= 'CONT/TMAX')THEN
 C--------------------------------------------------
        IF(NINTSTAMP==0)THEN
          DO I=1,NUMNOD
@@ -180,7 +240,7 @@ C--------------------------------------------------
          ENDDO
        END IF
 C------------------------------------------------------------------------------
-      ELSEIF(KEYWORD == 'CONT/MAX')THEN
+      ELSEIF(KEYWORD == 'CONT/TMAX')THEN
 C------------------------------------------------------------------------------
        IF(NINTSTAMP==0.OR.NSPMD==1)THEN
          DO I=1,NUMNOD
@@ -193,9 +253,9 @@ C------------------------------------------------------------------------------
        ELSE
          DO I=1,NUMNOD
             K=NODGLOB(I)
-            VALUE(1) = CONT(1,I) + FCONTG(1,K)
-            VALUE(2) = CONT(2,I) + FCONTG(2,K)
-            VALUE(3) = CONT(3,I) + FCONTG(3,K)
+            VALUE(1) = FCONT_MAX(1,K)
+            VALUE(2) = FCONT_MAX(2,K)
+            VALUE(3) = FCONT_MAX(3,K)
             CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
      .                                    VALUE)
          ENDDO
@@ -346,6 +406,30 @@ C--------------------------------------------------
      .                                    VALUE)
           ENDDO  
         ENDIF
+
+C------------------------------------------------------------------------------
+      ELSEIF(KEYWORD == 'MAXPCONT/NORMAL')THEN
+C------------------------------------------------------------------------------
+       IF(NINTSTAMP==0.OR.NSPMD==1)THEN
+         DO I=1,NUMNOD
+            VALUE(1) = FNCONT_MAX(3*(I-1)+1)
+            VALUE(2) = FNCONT_MAX(3*(I-1)+2)
+            VALUE(3) = FNCONT_MAX(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+         ENDDO
+       ELSE
+         DO I=1,NUMNOD
+            K=NODGLOB(I)
+            VALUE(1) = FNCONT_MAX(3*(K-1)+1)
+            VALUE(2) = FNCONT_MAX(3*(K-1)+2)
+            VALUE(3) = FNCONT_MAX(3*(K-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+         ENDDO
+       ENDIF
+
+
 C--------------------------------------------------
       ELSEIF(KEYWORD == 'PCONT/TANGENT') THEN
 C--------------------------------------------------
@@ -367,6 +451,28 @@ C--------------------------------------------------
      .                                    VALUE)
           ENDDO  
         ENDIF
+C------------------------------------------------------------------------------
+      ELSEIF(KEYWORD == 'MAXPCONT/TANGENT')THEN
+C------------------------------------------------------------------------------
+       IF(NINTSTAMP==0.OR.NSPMD==1)THEN
+         DO I=1,NUMNOD
+            VALUE(1) = FTCONT_MAX(3*(I-1)+1)
+            VALUE(2) = FTCONT_MAX(3*(I-1)+2)
+            VALUE(3) = FTCONT_MAX(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+         ENDDO
+       ELSE
+         DO I=1,NUMNOD
+            K=NODGLOB(I)
+            VALUE(1) = FTCONT_MAX(3*(K-1)+1)
+            VALUE(2) = FTCONT_MAX(3*(K-1)+2)
+            VALUE(3) = FTCONT_MAX(3*(K-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+         ENDDO
+       ENDIF
+
 C--------------------------------------------------
       ELSEIF(KEYWORD == 'CONT2') THEN
 C--------------------------------------------------
@@ -394,6 +500,66 @@ C--------------------------------------------------
             VALUE(1) = FTCONTP2(1,I)
             VALUE(2) = FTCONTP2(2,I)
             VALUE(3) = FTCONTP2(3,I)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO 
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'CONT2/TMAX') THEN
+C--------------------------------------------------
+          DO I=1,NUMNOD
+            VALUE(1) = FCONT2_MAX(3*(I-1)+1)
+            VALUE(2) = FCONT2_MAX(3*(I-1)+2)
+            VALUE(3) = FCONT2_MAX(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO 
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'CONT2/TMIN') THEN
+C--------------------------------------------------
+          DO I=1,NUMNOD
+            VALUE(1) = FCONT2_MIN(3*(I-1)+1)
+            VALUE(2) = FCONT2_MIN(3*(I-1)+2)
+            VALUE(3) = FCONT2_MIN(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO 
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'MAXPCONT2/NORMAL') THEN
+C--------------------------------------------------
+          DO I=1,NUMNOD
+            VALUE(1) = FNCONT2_MAX(3*(I-1)+1)
+            VALUE(2) = FNCONT2_MAX(3*(I-1)+2)
+            VALUE(3) = FNCONT2_MAX(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO 
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'MAXPCONT2/TANGENT') THEN
+C--------------------------------------------------
+          DO I=1,NUMNOD
+            VALUE(1) = FTCONT2_MAX(3*(I-1)+1)
+            VALUE(2) = FTCONT2_MAX(3*(I-1)+2)
+            VALUE(3) = FTCONT2_MAX(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO 
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'MINPCONT2/NORMAL') THEN
+C--------------------------------------------------
+          DO I=1,NUMNOD
+            VALUE(1) = FNCONT2_MIN(3*(I-1)+1)
+            VALUE(2) = FNCONT2_MIN(3*(I-1)+2)
+            VALUE(3) = FNCONT2_MIN(3*(I-1)+3)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO 
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'MINPCONT2/TANGENT') THEN
+C--------------------------------------------------
+          DO I=1,NUMNOD
+            VALUE(1) = FTCONT2_MIN(3*(I-1)+1)
+            VALUE(2) = FTCONT2_MIN(3*(I-1)+2)
+            VALUE(3) = FTCONT2_MIN(3*(I-1)+3)
             CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
      .                                    VALUE)
           ENDDO 
@@ -516,6 +682,18 @@ C--------------------------------------------------
           CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
      .                                    VALUE)
         ENDDO
+C--------------------------------------------------
+      ELSEIF(KEYWORD == 'AROT') THEN
+C--------------------------------------------------
+        IF(IRODDL/=0) THEN
+          DO I=1,NUMNOD
+            VALUE(1) = AR(1,I)
+            VALUE(2) = AR(2,I)
+            VALUE(3) = AR(3,I)
+            CALL H3D_WRITE_VECTOR(IOK_PART,IS_WRITTEN_NODE,NODAL_VECTOR,I,0,0,
+     .                                    VALUE)
+          ENDDO
+        ENDIF 
 C--------------------------------------------------
 
 

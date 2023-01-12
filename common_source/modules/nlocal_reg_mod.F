@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  NLOCAL_REG_MOD                modules/nlocal_reg_mod.F      
 Chd|-- called by -----------
@@ -133,9 +133,9 @@ c
         integer, DIMENSION(:)   , ALLOCATABLE :: ADDCNE   ! (0:NNOD+1) Addresses of non-local nodes in the FSKY vector
         integer, DIMENSION(:)   , ALLOCATABLE :: CNE      ! ADDCNE(NNOD+1)-1 Element attached to nodes in the FSKY vector
         integer, DIMENSION(:)   , ALLOCATABLE :: PROCNE   ! LCNE_NL Number of the processor on which the element is located
-        integer, DIMENSION(:,:) , ALLOCATABLE :: IADS     ! Adresses sky for solids non-local elements
-        integer, DIMENSION(:,:) , ALLOCATABLE :: IADC     ! Adresses sky for shells non-local elements
-        integer, DIMENSION(:,:) , ALLOCATABLE :: IADTG    ! Adresses sky for triangle shells non-local elements
+        integer, DIMENSION(:,:) , ALLOCATABLE :: IADS     ! Addresses sky for solids non-local elements
+        integer, DIMENSION(:,:) , ALLOCATABLE :: IADC     ! Addresses sky for shells non-local elements
+        integer, DIMENSION(:,:) , ALLOCATABLE :: IADTG    ! Addresses sky for triangle shells non-local elements
         my_real, DIMENSION(:)   , ALLOCATABLE :: MASS     ! (L_NLOC)  Non-local mass
         my_real, DIMENSION(:)   , ALLOCATABLE :: MASS0    ! (L_NLOC)  Non-local mass initial
         my_real, DIMENSION(:,:) , ALLOCATABLE :: FNL      ! (L_NLOC,NTHREAD)  Non-local force/accelerations
@@ -151,7 +151,7 @@ c
         integer, DIMENSION(:)   , ALLOCATABLE :: FR_ELEM  ! (TOTAL_NODES) Non-local FR_ELEM vector for SPMD boundaries
 C       SPMD PON BOUNDARIES
         integer, DIMENSION(:)   , ALLOCATABLE :: ISENDSP  ! Skyline PON Send index
-        integer, DIMENSION(:)   , ALLOCATABLE :: IRECSP   ! Skyline PON Recieve index
+        integer, DIMENSION(:)   , ALLOCATABLE :: IRECSP   ! Skyline PON Receive index
 
 ! --------------------------------   
 !       communication for parith/on 

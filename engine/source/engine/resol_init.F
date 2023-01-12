@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  RESOL_INIT                    source/engine/resol_init.F    
 Chd|-- called by -----------
@@ -56,6 +56,7 @@ Chd|        S10CNDS_DIM                   source/elements/solid/solide10/s10cndf
 Chd|        S10CNDS_INI                   source/elements/solid/solide10/s10cndf.F
 Chd|        S10CND_INI                    source/elements/solid/solide10/s10cndf.F
 Chd|        SECT_INI                      source/tools/sect/sectio.F    
+Chd|        SENSOR_SORT                   source/tools/sensor/sensor_sort.F
 Chd|        SPMD_ANIM_PLY_INIT            source/mpi/anim/spmd_anim_ply_init.F
 Chd|        SPMD_FAILWAVE_BOUNDARIES      source/mpi/output/spmd_exch_failwave.F
 Chd|        SPMD_MAX_I                    source/mpi/implicit/imp_spmd.F
@@ -70,6 +71,7 @@ Chd|        ECND_MOD                      share/modules/ecdn_mod.F
 Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.F
 Chd|        FAILWAVE_MOD                  ../common_source/modules/failwave_mod.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        H3D_INC_MOD                   share/modules/h3d_inc_mod.F   
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        INTER_SORTING_MOD             share/modules/inter_sorting_mod.F
@@ -78,6 +80,7 @@ Chd|        OUTMAX_MOD                    ../common_source/modules/outmax_mod.F
 Chd|        PBLAST_MOD                    ../common_source/modules/pblast_mod.F
 Chd|        PINCHTYPE_MOD                 ../common_source/modules/pinchtype_mod.F
 Chd|        PLYXFEM_MOD                   share/modules/plyxfem_mod.F   
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|====================================================================
       SUBROUTINE RESOL_INIT(
@@ -135,7 +138,7 @@ Chd|====================================================================
      r  ADSKY_CRKXFEM,PROCNE_CRKXFEM,ISENDP_CRKXFEM,IRECVP_CRKXFEM,
      s  IADSDP_CRKXFEM,IADRCP_CRKXFEM ,INT24USE,NDAMA2  ,
      t  IGROUPC  ,IGROUPTG ,IGROUPS ,IGROUPFLG ,DMINT2  ,IRBKIN_L,
-     u  NRBYKIN_L,KINDRBY  ,ELBUF_TAB ,SENSOR,DD_R2R_ELEM,
+     u  NRBYKIN_L,KINDRBY  ,ELBUF_TAB ,SENSOR_TAB,DD_R2R_ELEM,
      v  SDD_R2R_ELEM ,KINET, WEIGHT_MD,DMSPH ,IOLDSECT,LBUFIDEL24,
      w  INTBUF_TAB   ,NUMSPH_GLO_R2R, FLG_SPHINOUT_R2R,I15K,
      y  CONDN    ,CONDNSKY ,KXFENOD2ELC  ,ELCUTC ,NODEDGE,
@@ -165,6 +168,8 @@ C-----------------------------------------------
       USE INTER_SORTING_MOD
       USE STACK_MOD
       USE OUTMAX_MOD
+      USE SENSOR_MOD
+      USE H3D_INC_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -185,6 +190,7 @@ C-----------------------------------------------
 #include      "scr02_c.inc"
 #include      "scr03_c.inc"
 #include      "scr05_c.inc"
+#include      "scr06_c.inc"
 #include      "scr07_c.inc"
 #include      "scr12_c.inc"
 #include      "scr14_c.inc"
@@ -286,7 +292,7 @@ C-----------------------------------------------
      .   MSCND(*), INCND(*), FTHE(*), FTHESKY(*),FTHESKYI(*), MCP(*),
      .   MS0(*), ADMSMS(*), MCPC(*), MCPTG(*), DIAG_SMS(*),
      .   DMELC(*), DMELTG(*), DMELS(*), DMELTR(*), DMELP(*), DMELRT(*),
-     .   RES_SMS(3,*),RBY(NRBY,*), DMINT2(4,I2NSN25), SENSOR(NSENSR,*),
+     .   RES_SMS(3,*),RBY(NRBY,*), DMINT2(4,I2NSN25),
      .   DMSPH(*),CONDN(*),CONDNSKY ,TAB_MAT(NGROUP),FORNEQS(3,*)
       my_real
      .   FXBFP(*), FXBEFW(*), FXBEDP(*), FXBGRP(*), FXBGRW(*),IN0(*)
@@ -301,6 +307,7 @@ C
       TYPE (XFEM_EDGE_)   , DIMENSION(*)           :: CRKEDGE
       TYPE(H3D_DATABASE) :: H3D_DATA
       TYPE (PINCH) :: PINCH_DATA
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
       TYPE (GROUP_)  , DIMENSION(NGRQUAD) :: IGRQUAD
@@ -324,6 +331,7 @@ C-----------------------------------------------
      .        L1,L2,ISECTR,NFR,IC,ICR,NISUB, NI25,NBR
       INTEGER JD(50),KD(50),JFI,KFI,NMN,II,NINOUT,NNO,NEL,IFLGADM,
      .        NAD_SMS(NUMNOD),MAD_SMS(NUMNOD),N,JJ,KK, NFT, ISOLNOD,NBS
+      INTEGER, DIMENSION(NSENSOR) :: INDEX_SENSOR
       INTEGER, DIMENSION(:), ALLOCATABLE :: ISEND,IRECV
       INTEGER :: ITIED
       my_real
@@ -406,6 +414,9 @@ C---------RBE2----
           R3SIZE = 0
           R2SIZE = 0
         ENDIF
+c       sensor sorting
+        CALL SENSOR_SORT(SENSOR_TAB ,INDEX_SENSOR)
+c        
 C Initialisation IRBE2
         CALL RBE2_INIT(IRBE2   ,LRBE2   ,NMRBE2 ,FR_RBE2 ,FR_RBE2M,NFR)
 C
@@ -417,7 +428,7 @@ C
      5       LINDIDEL,LBUFIDEL,IRLEN20 ,ISLEN20 ,IRLEN20T,
      6       ISLEN20T,NBINT20 ,IRLEN20E,ISLEN20E,FR_RBY  ,
      7       FR_RBY6 ,NPBY    ,IRBKIN_L,
-     8       NRBYKIN_L,KINDRBY,SENSOR  ,LBUFIDEL24, INTBUF_TAB,
+     8       NRBYKIN_L,KINDRBY,SENSOR_TAB,LBUFIDEL24, INTBUF_TAB,
      9       SORT_COMM)
 C
         IF(IDEL7NG>0.OR.IRAD2R>0.OR.IALEMUSCL>0.OR.PDEL>0) THEN
@@ -544,6 +555,12 @@ C
             DT2OLD= MIN(DT2OLD,DTIN/ONEP1)
           ENDIF
         ENDIF
+        IF(ANIM_V(26)+H3D_DATA%N_VECT_CONT_MAX >0) IFCONTMAX=1
+        IF(H3D_DATA%N_VECT_PCONT_MAX >0) IFCONTPMAX=1
+        IF(H3D_DATA%N_VECT_CONT2_MAX >0) IFCONT2MAX=1
+        IF(H3D_DATA%N_VECT_PCONT2_MAX >0) IFCONTP2MAX=1
+        IF(H3D_DATA%N_VECT_CONT2_MIN >0) IFCONT2MIN=1
+        IF(H3D_DATA%N_VECT_PCONT2_MIN >0) IFCONTP2MIN=1
 C------------------------
 C      PARAL. ARITH.
 C------------------------
@@ -1147,12 +1164,11 @@ C-----------------------
          CALL SPMD_SUB_BOUNDARIES(NLOC_DMG,IAD_ELEM,FR_ELEM)
        ENDIF
 C       
-       IF (NUMSKINP > 0) THEN
-         DO I=1,NLOADP_B
-           NBS = PBLAST_TAB(I)%SIZ
-           ALLOCATE (PBLAST_TAB(I)%PRES(NBS))
-         ENDDO
-       END IF
+       DO I=1,NLOADP_B
+         NBS = PBLAST_TAB(I)%SIZ
+         ALLOCATE (PBLAST_TAB(I)%PRES(NBS))
+         PBLAST_TAB(I)%PRES(1:NBS)=ZERO
+       ENDDO
 C-----------------------
 C DT_DC OF TSH
 C-----------------------

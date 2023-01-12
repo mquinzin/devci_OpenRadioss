@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ELBUFDEF_MOD                  modules/elbufdef_mod.F        
 Chd|-- called by -----------
@@ -309,8 +309,8 @@ Chd|        FORINT                        engine/source/elements/forint.F
 Chd|        FORINTC                       engine/source/elements/forintc.F
 Chd|        FORINTP                       engine/source/elements/forintp.F
 Chd|        FORINTS                       engine/source/elements/forints.F
-Chd|        FVBAG0                        engine/source/airbag/fvbag.F  
-Chd|        FVBAG1                        engine/source/airbag/fvbag.F  
+Chd|        FVBAG0                        engine/source/airbag/fvbag0.F 
+Chd|        FVBAG1                        engine/source/airbag/fvbag1.F 
 Chd|        FVBAG2                        engine/source/airbag/fvbag2.F 
 Chd|        FVVENT0                       engine/source/airbag/fvvent0.F
 Chd|        FV_UP_SWITCH                  engine/source/airbag/fv_up_switch.F
@@ -329,6 +329,8 @@ Chd|        GET_T3LSYS                    engine/source/output/sta/sta_c_get_t3l
 Chd|        GPSSTRAIN_SKIN                engine/source/output/anim/generate/tensgpstrain.F
 Chd|        GPSTRA_SOLID                  engine/source/output/outmaxsubr.F
 Chd|        GPS_SOLID                     engine/source/output/outmaxsubr.F
+Chd|        H3D_FLD_STRAIN                engine/source/output/h3d/h3d_results/h3d_fld_strain.F
+Chd|        H3D_FLD_TSH                   engine/source/output/h3d/h3d_results/h3d_fld_tsh.F
 Chd|        H3D_NODAL_SCALAR              engine/source/output/h3d/h3d_results/h3d_nodal_scalar.F
 Chd|        H3D_NODAL_TENSOR              engine/source/output/h3d/h3d_results/h3d_nodal_tensor.F
 Chd|        H3D_NODAL_VECTOR              engine/source/output/h3d/h3d_results/h3d_nodal_vector.F
@@ -761,6 +763,7 @@ C
         integer  G_MAXEPS 
         INTEGER  G_BETAORTH
         integer  G_AMU
+        INTEGER  G_TSAIWU
 c---
 C    - 1D - elem (TRUSS, BEAM, SPRING) 
         integer  G_AREA
@@ -1014,6 +1017,7 @@ c---
         my_real, DIMENSION(:) , POINTER ::   PLANL
         my_real, DIMENSION(:) , POINTER ::   EPSDNL            
         my_real, DIMENSION(:) , POINTER ::   DMGSCL
+        my_real, DIMENSION(:) , POINTER ::   TSAIWU
       END TYPE L_BUFEL_                             
 
       TYPE BUF_PROP_
@@ -1068,6 +1072,7 @@ c-------  layer variables
         integer  NVAR
         integer  LF_DAM
         integer  LF_DAMMX
+        integer  LF_DAMINI
         integer  LF_TDEL
         integer  LF_INDX
         integer  LF_OFF
@@ -1076,6 +1081,7 @@ c-------  layer variables
         my_real, DIMENSION(:)  , POINTER ::  DAM
         my_real, DIMENSION(:)  , POINTER ::  VAR 
         my_real, DIMENSION(:)  , POINTER ::  DAMMX 
+        my_real, DIMENSION(:)  , POINTER ::  DAMINI
         my_real, DIMENSION(:)  , POINTER ::  TDEL
       END TYPE FAIL_LOC_
 
@@ -1176,6 +1182,7 @@ c-------
         integer  L_PLANL
         integer  L_EPSDNL
         integer  L_DMGSCL
+        INTEGER  L_TSAIWU
 c-------  layer variables     
         my_real, DIMENSION(:) , POINTER ::   DMG
         my_real, DIMENSION(:) , POINTER ::   GAMA

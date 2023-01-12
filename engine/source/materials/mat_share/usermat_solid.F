@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  USERMAT_SOLID                 source/materials/mat_share/usermat_solid.F
 Chd|-- called by -----------
@@ -216,7 +216,7 @@ C-----------------------------------------------
       my_real, DIMENSION(NEL), TARGET  :: LE_MAX
 C----
       my_real, DIMENSION(:), POINTER  :: UPARAM,UPARAMF,UVARF,DFMAX,TDEL,EL_TEMP, 
-     .                                   YLDFAC,DAM,EL_LEN,DMG_SCALE,EL_PLA
+     .                                   YLDFAC,DAM,EL_LEN,DMG_SCALE,EL_PLA,DAMINI
       TYPE(ULAWINTBUF)                :: USERBUF
       TYPE(L_BUFEL_)  ,POINTER        :: LBUF, LBUF1, LBUF2    
       TYPE(G_BUFEL_)  ,POINTER        :: GBUF      
@@ -1243,7 +1243,8 @@ c----
           UVARF   => FBUF%FLOC(IR)%VAR     
           IRUPT    = FBUF%FLOC(IR)%ILAWF   
           NVARF    = FBUF%FLOC(IR)%NVAR    
-          DFMAX   => FBUF%FLOC(IR)%DAMMX   
+          DFMAX   => FBUF%FLOC(IR)%DAMMX  
+          DAMINI  => FBUF%FLOC(IR)%DAMINI    
           TDEL    => FBUF%FLOC(IR)%TDEL   
           NPAR    =  IPM(112+IP, MX)   
           IADBUF  =  IPM(114+IP ,MX)
@@ -1465,7 +1466,7 @@ c  --- Biquadratic failure model
      5        DPLA     ,EPSP1    ,TSTAR    ,UVARF    ,OFF,IP   ,
      6        DFMAX    ,TDEL     ,EL_LEN   )    
           ELSEIF (IRUPT == 33) THEN                                
-c  --- Mullins Ogden-Roxburgh dammage model                                  
+c  --- Mullins Ogden-Roxburgh damage model                                  
               CALL FAIL_MULLINS_OR_S(
      1        LLT      ,NPAR     ,NVARF    ,NPF      ,TF       ,
      2        TT       ,DT1      ,UPARAMF,NGL , 
@@ -1546,7 +1547,7 @@ C---- Inievo failure model
      5          S1       ,S2       ,S3       ,S4       ,S5       ,S6       ,               
      6          EL_PLA   ,EL_TEMP  ,SIGY     ,OFF      ,DFMAX    ,
      7          TDEL     ,DMG_SCALE,GBUF%UELR,IPG      ,NPG      ,
-     8          LBUF%OFF )   
+     8          LBUF%OFF ,DAMINI   ,GBUF%VOL ,INLOC    )   
 c             
           ENDIF
         ENDDO ! IR = 1,NFAIL

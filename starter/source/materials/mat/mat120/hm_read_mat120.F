@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_MAT120                source/materials/mat/mat120/hm_read_mat120.F
 Chd|-- called by -----------
@@ -86,8 +86,8 @@ C-----------------------------------------------
       my_real ,INTENT(INOUT)          :: PM(NPROPM),PARMAT(100),UPARAM(MAXUPARAM)
       CHARACTER*nchartitle,INTENT(IN) :: TITR
       TYPE(SUBMODEL_DATA),INTENT(IN)  :: LSUBMODEL(*)
-      TYPE(MLAW_TAG_), INTENT(OUT)    :: MTAG
-      TYPE(MATPARAM_STRUCT_) ,INTENT(OUT) :: MATPARAM
+      TYPE(MLAW_TAG_), INTENT(INOUT)  :: MTAG
+      TYPE(MATPARAM_STRUCT_) ,INTENT(INOUT) :: MATPARAM
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -287,7 +287,7 @@ c-----------------------------------------------------------------------
      & 5X,'REFERENCE THICKNESS . . . . . . . . . .=',1PG20.13/    
      & 5X,'YIELD CRITERION FLAG  . . . . . . . . .=',I3)
  1300 FORMAT(
-     & 5X,'YIELD FUNCTON TABLE IDENTIFIER. . . . .=',I10/
+     & 5X,'YIELD FUNCTION TABLE IDENTIFIER . . . .=',I10/
      & 5X,'SCALE FACTOR FOR STRAIN RATE. . . . . .=',1PG20.13/
      & 5X,'SCALE FACTOR FOR YLD FUNCTION . . . . .=',1PG20.13)
  1400 FORMAT(

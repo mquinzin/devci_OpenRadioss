@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SZFORC3                       source/elements/solid/solidez/szforc3.F
 Chd|-- called by -----------
@@ -80,6 +80,7 @@ Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.
 Chd|        MATPARAM_DEF_MOD              ../common_source/modules/matparam_def_mod.F
 Chd|        MMAIN_MOD                     source/materials/mat_share/mmain.F
 Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
       SUBROUTINE SZFORC3(ELBUF_TAB,NG      ,
@@ -99,7 +100,7 @@ Chd|====================================================================
      E                   FTHESKY  ,IEXPAN  ,GRESAV  ,GRTH   ,IGRTH  , 
      F                   MSSA     ,DMELS   ,TABLE   ,IGEO   ,XDP    ,
      G                   CONDN    ,CONDNSKY  ,
-     H                   D        ,TAGPRT_SMS,SENSOR  ,LSENSOR  ,IOUTPRT  ,
+     H                   D        ,TAGPRT_SMS,SENSOR_TAB,IOUTPRT  ,
      I                   NALE     ,NLOC_DMG  ,MATPARAM_TAB,H3D_STRAIN)
 C-----------------------------------------------
 C   M o d u l e s
@@ -110,6 +111,7 @@ C-----------------------------------------------
       USE NLOCAL_REG_MOD
       USE ALE_CONNECTIVITY_MOD
       USE MATPARAM_DEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -142,7 +144,7 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER IXS(NIXS,*),IPARG(NPARG,*), NPF(*),IADS(8,*),
      .        IPARTS(*),IPM(NPROPMI,*),ITASK,IMATVIS,GRTH(*),IGRTH(*),
-     .        IGEO(*), TAGPRT_SMS(*),LSENSOR(NSENSI,*)            
+     .        IGEO(*), TAGPRT_SMS(*)        
       INTEGER NELTST,ITYPTST,OFFSET,NEL ,ICP, NDDIM,
      .        NVC,ISTRAIN,IEXPAN,NG,NPTS,IOUTPRT,NALE(*),H3D_STRAIN
 
@@ -165,7 +167,7 @@ C-----------------------------------------------
      .   F18(MVSIZ),F28(MVSIZ),F38(MVSIZ),
      .   TEMP(*), FTHE(*), FTHESKY(*),
      .   QMV(12,*),GRESAV(*), MSSA(*), DMELS(*),
-     .   CONDN(*),CONDNSKY(*),D(*),SENSOR(NSENSR,*)
+     .   CONDN(*),CONDNSKY(*),D(*)
 
  
       TYPE (TTABLE) TABLE(*)
@@ -173,6 +175,7 @@ C-----------------------------------------------
       TYPE (NLOCAL_STR_)  , TARGET :: NLOC_DMG 
       TYPE(t_ale_connectivity), INTENT(IN) :: ALE_CONNECT
       TYPE(MATPARAM_STRUCT_)  , DIMENSION(NUMMAT) :: MATPARAM_TAB
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -560,7 +563,7 @@ C Compute regularized non local variable in Gauss point
         ENDDO
       ENDIF
 C
-      IF(IBOLTP /= 0) CALL BOLTST(IBOLTP,IP,BPRELD,LBUF%SIG,TT,NEL,SENSOR,LSENSOR)
+      IF(IBOLTP /= 0) CALL BOLTST(IBOLTP,IP,BPRELD,LBUF%SIG,TT,NEL,SENSOR_TAB)
 C
 C Compute stresses according to the material law
       CALL MMAIN(ELBUF_TAB,NG     ,PM     ,GEO     ,FV      ,ALE_CONNECT,

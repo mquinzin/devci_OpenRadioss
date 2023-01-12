@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 
 #define TO1D(i,j,k,s1,s2) i+(j-1)*s1+(k-1)*s1*s2
 Chd|====================================================================
@@ -37,6 +37,7 @@ Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TRI25EBOX                     share/modules/tri25ebox.F     
 Chd|        TRI7BOX                       share/modules/tri7box.F       
 Chd|====================================================================
@@ -47,7 +48,7 @@ Chd|====================================================================
      4   IRLEN17 ,IXS    ,IXS16   ,
      5   IGRBRIC ,TEMP   ,IFLAG   ,IRLEN7T ,ISLEN7T ,
      6   IRLEN20 ,ISLEN20,IRLEN20T,ISLEN20T,IRLEN20E,
-     7   ISLEN20E,IKINE  ,DIAG_SMS,SENSOR  ,INTBUF_TAB,INT24E2EUSE,
+     7   ISLEN20E,IKINE  ,DIAG_SMS,SENSOR_TAB,INTBUF_TAB,INT24E2EUSE,
      8   FORNEQS ,MULTI_FVM)
 C-----------------------------------------------
 C   M o d u l e s
@@ -58,6 +59,7 @@ C-----------------------------------------------
       USE INTBUFDEF_MOD
       USE GROUPDEF_MOD
       USE MULTI_FVM_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -99,12 +101,12 @@ C-----------------------------------------------
      .        IXS(NIXS,*), IXS16(8,*),IKINE(*),INT24E2EUSE
       my_real
      .        X(3,*), V(3,*), MS(*), TEMP(*),
-     .        DT2PREV, DIAG_SMS(*), SENSOR(NSENSR,*),
-     .        FORNEQS(3,*)
+     .        DT2PREV, DIAG_SMS(*),FORNEQS(3,*)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
       TYPE(MULTI_FVM_STRUCT), INTENT(INOUT) :: MULTI_FVM
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l  V a r i a b l e s
 C-----------------------------------------------
@@ -240,8 +242,8 @@ C Attention aux interfaces inactives
                IF(NTY == 7.OR.NTY == 11.OR.NTY == 24.OR.
      .            NTY == 21.OR.NTY == 5.OR.NTY == 19 .OR.
      .            NTY == 25) ISENS = IPARI(64,NIN)  
-               IF(ISENS/=0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
-                  TS = SENSOR(2,ISENS)
+               IF (ISENS > 0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
+                  TS = SENSOR_TAB(ISENS)%TSTART
                   IF (TS>TT-DT2)  INTERACT = 0
                ELSE
                   STARTT = INTBUF_TAB(NIN)%VARIABLES(3)

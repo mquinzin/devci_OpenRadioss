@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  XFORC28                       source/elements/xelem/xforc28.F
 Chd|-- called by -----------
@@ -107,7 +107,7 @@ C         I     :     VARIABLE INDEX(1 for first function)
 C         IM    :     MATERIAL NUMBER
 C         KFUNC :     ONLY FUNCTION ARE YET AVAILABLE.
 C         THIS FUNCTION RETURN THE USER STORED FUNCTION NUMBER(function 
-C         refered by users materials).
+C         referred by users materials).
 C         SEE LECM28 FOR CORRESPONDING ID STORAGE.
 C-------------------------------------------------------------------------
 C my_real PARAMI = GET_U_GEO(I,IP)
@@ -180,7 +180,7 @@ C-----------------------------------------------
      .  EPSMOY, DF1, DF2, XN, FXOLD, EPSTOT, EPSMIN, EPSMAX, DEPS,
      .  RHO, XM, XKM, XKS, XCM, DTC, DTK, FACT, FFAC,XFAC  
 C-----------------------------------------------
-C       initial total lenght UVAR(NB1:NB1)
+C       initial total length UVAR(NB1:NB1)
         NB1=1
 C       previous elongation  UVAR(NB2:NB2)
         NB2=NB1+1
@@ -191,7 +191,7 @@ C       initial nodes masses UVARN(MB1:MB1+NX-1)
 C       forces into strands UVARN(MB2:MB2+NX-1)
 C       using UVARN(MB2:MB2+NX-2) only.
         MB2=MB1+NX
-C       strands initial lenght UVARN(MB3:MB3+NX-1)
+C       strands initial length UVARN(MB3:MB3+NX-1)
 C       using UVARN(MB3:MB3+NX-2) only.
         MB3=MB2+NX
 C       strands elongations UVARN(MB4:MB4+NX-1)
@@ -206,7 +206,7 @@ C       already broken only returns mass & null stiffness.
 C-----------------------------------------------
 C       FORCE & PLASTIC DISPLACEMENT,
 C-----------------------------------------------
-C       ACTUAL LENGHT.
+C       ACTUAL LENGTH.
         L=0.0
         DO K=1,NX-1
           LNEXT=
@@ -464,7 +464,7 @@ C         CHECK NSTRAND STIFNESS AND DAMPING..
           IF(MASS(K)<=EM15)THEN
 #include "lockon.inc"
              WRITE(IOUT,*)
-     .' ** ERROR NSTRAND : NULL STRAND LENGHT, ELEMENT=',
+     .' ** ERROR NSTRAND : NULL STRAND LENGTH, ELEMENT=',
      .        UID
 #include "lockoff.inc"
             GOTO 999

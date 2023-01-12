@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       module QA_OUT_MOD
 
 !#if CPP_mach == CPP_p4win64 
@@ -147,7 +147,7 @@ C     Get possible defined env variable QAKEY
       subroutine qagetqakeyenv ()
 #include "implicit_f.inc"
         integer QAKEY_ENV_len, QAKEY_ENV_status, QAKEY_SPECIFIC_len, QAKEY_SPECIFIC_status, i, j, k
-C       lentgth is (64 chars + 1 comma)*16 occurence - last comma (no comma at the end) = 1039
+C       length is (64 chars + 1 comma)*16 occurrence - last comma (no comma at the end) = 1039
         character(LEN=1039)  QAKEY_ENV, QAKEY_SPECIFIC
         character(64) temp_qakey
         integer QAPRINT_LIMIT_ENV_len, QAPRINT_LIMIT_ENV_status
@@ -489,7 +489,7 @@ C       If the value (double precision) variable is 0.0 we consider using the id
 !>    @purpose 
 !>      close QA extract file
 !>    @ingroup utl_qa 
-!>    Care when routine is called from Fortan (because of binding)
+!>    Care when routine is called from Fortran (because of binding)
       subroutine qaclose ( ) bind ( C, name="qaclose_" )
 #include "implicit_f.inc"
       integer i

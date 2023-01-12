@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_SENSORS               source/tools/sensor/hm_read_sensors.F
 Chd|-- called by -----------
@@ -94,7 +94,6 @@ C-----------------------------------------------
 #include      "scr17_c.inc"
 #include      "com01_c.inc"
 #include      "com04_c.inc"
-#include      "scr_usens_c.inc"
 #include      "units_c.inc"
 #include      "sysunit.inc"
 #include      "submod_c.inc"
@@ -131,17 +130,12 @@ C-----------------------------------------------
       CHARACTER TITR*nchartitle,KEY*40,MESS*40
       INTEGER ,DIMENSION(NSENSOR)    :: SID
       TYPE (SENSOR_STR_)    ,POINTER :: SENSOR_PTR
-      INTEGER ,DIMENSION(:) ,POINTER :: LSENS_PTR
-      my_real ,DIMENSION(:) ,POINTER :: RSENS_PTR
       DATA MESS/'SENSOR DEFINITION                       '/
 C=======================================================================
 c     Initialize sensor data structure
 c---------------------------------------------
 c
       CALL SENSOR_TAB_INIT(SENSOR_TAB,NSENSOR)
-c      
-      LSENSOR(2,1:NSENSOR) = -1       ! initialize sensor type to -1
-      SENSOR (2,1:NSENSOR) = INFINITY ! Tstart
 c
 c--------------------------------------------------
 c     START READING SENSOR OPTION CARDS
@@ -159,8 +153,6 @@ c
 c---------------------------------------------------
 c
       DO ISEN = 1,HM_NSENS
-        LSENS_PTR  => LSENSOR(:,ISEN)
-        RSENS_PTR  => SENSOR (:,ISEN)
         SENSOR_PTR => SENSOR_TAB(ISEN)
 c            
         CALL HM_OPTION_READ_KEY(LSUBMODEL,
@@ -168,8 +160,6 @@ c
      .                          OPTION_TITR = TITR  ,
      .                          UNIT_ID     = UNIT_ID   ,
      .                          KEYWORD2    = KEY   )
-c
-        LSENSOR(1,ISEN) = SENS_ID    ! save sensor ID in old structure (for qaprint)
 c--------------------------------------------------
 c       CHECK IF UNIT_ID EXISTS
 c--------------------------------------------------
@@ -191,86 +181,86 @@ c-----------------------
         SELECT CASE(KEY)
 c-----------------------
           CASE ('TIME' ,'TYPE0')
-            CALL READ_SENSOR_TIME(SENSOR_PTR ,SENS_ID  , 
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)  
+            CALL READ_SENSOR_TIME(SENSOR_PTR ,SENS_ID  ,UNITAB   ,LSUBMODEL)  
 c
           CASE ('ACCE' ,'TYPE1')
             CALL READ_SENSOR_ACC(SENSOR_PTR ,SENS_ID  ,TITR     , 
-     .           LSENS_PTR ,RSENS_PTR  ,LACCELM  ,UNITAB   ,LSUBMODEL)  
+     .           LACCELM  ,UNITAB   ,LSUBMODEL)  
 c
           CASE ('DIST' ,'TYPE2')
             CALL READ_SENSOR_DISP(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,ITABM1   ,UNITAB   ,LSUBMODEL)   
+     .           ITABM1   ,UNITAB   ,LSUBMODEL)   
 c
           CASE ('SENS' ,'TYPE3')
-            CALL READ_SENSOR_SENS(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+            CALL READ_SENSOR_SENS(SENSOR_PTR ,SENS_ID  ,UNITAB   ,LSUBMODEL)
 c
           CASE ('AND' ,'TYPE4')
-            CALL READ_SENSOR_AND(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+            CALL READ_SENSOR_AND(SENSOR_PTR ,SENS_ID  ,UNITAB   ,LSUBMODEL)
 c
           CASE ('OR' ,'TYPE5')
-            CALL READ_SENSOR_OR(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+            CALL READ_SENSOR_OR(SENSOR_PTR ,SENS_ID  ,UNITAB   ,LSUBMODEL)
 c
           CASE ('INTER' ,'TYPE6')
             CALL READ_SENSOR_CONTACT(SENSOR_PTR ,SENS_ID  ,TITR     ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+     .           UNITAB   ,LSUBMODEL)
 c
           CASE ('RWALL' ,'TYPE7')
             CALL READ_SENSOR_RWALL(SENSOR_PTR ,SENS_ID  ,TITR     ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+     .           UNITAB   ,LSUBMODEL)
 c
           CASE ('NOT' ,'TYPE8')
-            CALL READ_SENSOR_NOT(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+            CALL READ_SENSOR_NOT(SENSOR_PTR ,SENS_ID  ,UNITAB   ,LSUBMODEL)
 c
           CASE ('VEL' ,'TYPE9')
             CALL READ_SENSOR_VEL(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,ITABM1   ,UNITAB   ,LSUBMODEL)   
+     .           ITABM1   ,UNITAB   ,LSUBMODEL)   
 c
           CASE ('GAUGE' ,'TYPE10')            
             CALL READ_SENSOR_GAUGE(SENSOR_PTR ,SENS_ID  ,TITR     ,
-     .           LGAUGE   ,LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+     .           LGAUGE   ,UNITAB   ,LSUBMODEL)
 c
           CASE ('RBODY' ,'TYPE11')
             CALL READ_SENSOR_RBODY(SENSOR_PTR ,SENS_ID  ,TITR     ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+     .           UNITAB   ,LSUBMODEL)
 c
           CASE ('SECT' ,'TYPE12')
             CALL READ_SENSOR_SECT(SENSOR_PTR ,SENS_ID  ,TITR     ,
-     .           LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)
+     .           UNITAB   ,LSUBMODEL)
 c
           CASE ('WORK' ,'TYPE13')
             CALL READ_SENSOR_WORK(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,ITABM1   ,UNITAB   ,LSUBMODEL)   
+     .           ITABM1   ,UNITAB   ,LSUBMODEL)   
 c
           CASE ('ENERGY' ,'TYPE14')
             CALL READ_SENSOR_ENERGY(SENSOR_PTR ,SENS_ID  ,TITR     ,
-     .           IPART   ,SUBSET   ,LSENS_PTR ,RSENS_PTR  ,UNITAB  ,
-     .           LSUBMODEL)
+     .           IPART   ,SUBSET   ,UNITAB  ,LSUBMODEL)
 c
           CASE ('DIST_SURF' ,'TYPE15')
             CALL READ_SENSOR_DIST_SURF(SENSOR_PTR ,SENS_ID  ,
-     .           LSENS_PTR ,RSENS_PTR  ,ITABM1   ,UNITAB   ,LSUBMODEL)   
+     .           ITABM1   ,UNITAB   ,LSUBMODEL)   
 c
           CASE ('HIC' ,'TYPE16')
             CALL READ_SENSOR_HIC(SENSOR_PTR ,SENS_ID  ,TITR     , 
-     .           LSENS_PTR ,RSENS_PTR  ,LACCELM  ,UNITAB   ,LSUBMODEL)  
+     .           LACCELM  ,UNITAB   ,LSUBMODEL)  
 c
           CASE ('TEMP')
             CALL READ_SENSOR_TEMP(SENSOR_PTR  ,SENS_ID     ,TITR     , 
-     .           IGRNOD   ,LSENS_PTR ,RSENS_PTR  ,UNITAB   ,LSUBMODEL)   
+     .           IGRNOD   ,UNITAB   ,LSUBMODEL)   
 c
           CASE ('NIC_NIJ')
             CALL READ_SENSOR_NIC(
-     .           SENSOR_PTR  ,SENS_ID    ,TITR     , 
-     .           LSENS_PTR   ,RSENS_PTR  ,ISKWN    ,UNITAB   ,LSUBMODEL)   
+     .           SENSOR_PTR  ,SENS_ID    ,TITR     ,ISKWN    , 
+     .           UNITAB      ,LSUBMODEL  )   
 c
           CASE ('USER1' ,'USER2','USER3')
-            CALL READ_SENSOR_USER(LSENSOR   ,SENSOR    ,HM_NSENS,ISEN    ,TITR,
-     .           UNITAB    ,LSUBMODEL       ,KEY       ,UNIT_ID ,SENS_ID )
+
+            SENSOR_PTR%TSTART = INFINITY
+
+            CALL READ_SENSOR_USER( HM_NSENS,ISEN    ,TITR,
+
+     .           UNITAB    ,LSUBMODEL       ,KEY       ,UNIT_ID ,SENS_ID ,
+     .           SENSOR_PTR)
+            SENSOR_PTR%SENS_ID = SENS_ID
 c---
           CASE DEFAULT
             CALL ANCMSG(MSGID=43, ANMODE=ANINFO, MSGTYPE=MSGERROR,
@@ -284,9 +274,7 @@ c-------------------------------------
 c     Recherche des ID doubles  : activate this code when lecsen is removed
 c-------------------------------------
       DO I = 1,NSENSOR
-        IF (LSENSOR(1,I) > 0) THEN
-          SID(I) = LSENSOR(1,I)
-        ELSE IF (SENSOR_TAB(I)%SENS_ID > 0)  THEN
+        IF (SENSOR_TAB(I)%SENS_ID > 0)  THEN
           SID(I) = SENSOR_TAB(I)%SENS_ID
         END IF
       END DO

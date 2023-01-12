@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HIST1                         source/output/th/hist1.F      
 Chd|-- called by -----------
@@ -284,7 +284,7 @@ C       2EME RECORD : FAC_MASS,FAC_LENGTH,FAC_TIME
           CALL EOR_C(12)
         ENDIF
       END IF      
-C-------HIERARCHIE INFO------------
+C-------HIERARCHY INFO------------
       IWA(1)=NPART+NTHPART
       IWA(2)=NUMMAT
       IWA(3)=NUMGEO
@@ -428,7 +428,7 @@ C-------GEO DESCRIPTION------------
          CALL EOR_C(4+LTITL)
         ENDIF
       ENDDO
-C-------HIERARCHIE DESCRIPTION------------
+C-------HIERARCHY DESCRIPTION------------
       DO N=1,NSUBS
 !!        NVAR=ISUBTH(NVSUBTH,N)
 !!        IAD =ISUBTH(NVSUBTH+1,N)

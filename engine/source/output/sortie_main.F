@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SORTIE_MAIN                   source/output/sortie_main.F   
 Chd|-- called by -----------
@@ -32,6 +32,8 @@ Chd|        ANI_PCONT21                   source/output/anim/generate/ani_pcont.
 Chd|        CNDMASI2                      source/elements/solid/solide10/s10cndf.F
 Chd|        ECRIT                         source/output/ecrit.F         
 Chd|        ENG_QAPRINT_DRIVER            source/output/qaprint/eng_qaprint_driver.F
+Chd|        FCONT2_MAX_OUTPUT             source/output/h3d/h3d_results/fcont2_max_output.F
+Chd|        FCONT2_MIN_OUTPUT             source/output/h3d/h3d_results/fcont2_min_output.F
 Chd|        FCONT_MAX_OUTPUT              source/output/h3d/h3d_results/fcont_max_output.F
 Chd|        FLUXSW                        source/fluid/fluxsw.F         
 Chd|        GENANI                        source/output/anim/generate/genani.F
@@ -59,6 +61,7 @@ Chd|        H3D_MOD                       share/modules/h3d_mod.F
 Chd|        INOUTFILE_MOD                 ../common_source/modules/inoutfile_mod.F
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        OUTMAX_MOD                    ../common_source/modules/outmax_mod.F
 Chd|        PINCHTYPE_MOD                 ../common_source/modules/pinchtype_mod.F
 Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
@@ -72,7 +75,7 @@ Chd|====================================================================
      6            FINT      ,FEXT        ,FOPT       ,ANIN      ,LPBY     ,         
      7            NPBY      ,NSTRF       ,RWBUF      ,NPRW      ,IXUR     ,         
      8            TANI      ,INOISE      ,BUFNOIS    ,RBY       ,NEFLSW   ,         
-     9            NNFLSW    ,CRFLSW      ,FLSW       ,LOUT      ,                   
+     9            NNFLSW    ,CRFLSW      ,FLSW       ,LOUT      ,                
      B            FSAV      ,SKEW        ,ELBUF_TAB  ,CLUSTER   ,                   
      C            VR        ,IN          ,WEIGHT     ,FCLUSTER  ,MCLUSTER ,         
      D            DD_IAD    ,DMAS        ,DINER      ,ACCELM    ,GAUGE,             
@@ -80,44 +83,42 @@ Chd|====================================================================
      F            IGRNOD    ,SUBSET      ,ITHGRP     ,ITHBUF    ,         
      G            NOM_OPT   ,AR          ,IGRSURF    ,BUFSF     ,IDATA    ,         
      H            RDATA     ,KXX         ,IXX        ,BUFMAT    ,BUFGEO   ,         
-     I            KXSP      ,                   
-     J            IXSP      ,NOD2SP      ,SPBUF      ,                    
-     L            DR        ,        
-     M            FSAVD      ,   
-     N            IXRI      ,RIVET       ,ISKWN      ,IFRAME    ,XFRAME   ,         
-     O            IXS10     ,IXS20       ,IXS16      ,ITHGRPA,                      
-     P            ITHBUFA   ,ITHGRPB     ,ITHBUFB,                                 
-     Q            ITHGRPC   ,ITHBUFC     ,ITHGRPD,                                 
-     R            ITHBUFD   ,ITHGRPE     ,ITHBUFE,                                 
-     S            ITHGRPF   ,ITHBUFF     ,ITHGRPG,                                 
-     T            ITHBUFG   ,ITHGRPH     ,ITHBUFH,                                 
-     U            ITHGRPI   ,ITHBUFI     ,NDMA       ,MONVOL    ,VOLMON   ,         
-     V            IPM       ,IGEO        ,NODGLOB    ,IAD_ELEM  ,FR_ELEM  ,         
-     W            FR_RBY2   ,IAD_RBY2    ,FR_WALL    ,FR_SEC    ,FXBIPM   ,FXBRPM,  
-     X            NDIN      ,FXBDEP      ,FXBVIT     ,FXBACC    ,IFLOW,             
-     Y            RFLOW     ,IPARTL      ,NPARTL     ,IACCP     ,NACCP,             
-     Z            FASOLFR   ,FNCONT      ,FTCONT     ,IPARTH    ,         
-     a            FR_MV     ,IPART_STATE ,SH4TREE    ,SH3TREE   ,TEMP,              
-     b            THKE      ,ERR_THK_SH4 ,ERR_THK_SH3,                             
-     c            INOD_PXFEM,FTHREAC     ,NODREAC    ,CPTREAC   ,GRESAV   ,         
-     d            DIAG_SMS  ,SH4TRIM     ,SH3TRIM    ,FNCONT2   ,XMOM_SMS ,         
-     e            IRBE2     ,IRBE3       ,LRBE2      ,LRBE3     ,FR_RBE2  ,         
-     f            FR_RBE3M  ,IAD_RBE2    ,DXANCG     ,IEL_PXFEM ,ZI_PLY   ,         
-     g            VGAZ      ,FCONTG      ,FNCONTG    ,FTCONTG   ,FANREAC  ,         
-     h            INOD_CRK  ,IEL_CRK     ,ELCUTC     ,IADC_CRK  ,PDAMA2   ,         
-     i            RES_SMS     ,LSENSOR    ,SENSOR    ,SENSOR_TAB,                   
-     j            QFRICINT  ,IGAUP       ,NGAUP      ,WEIGHT_MD ,NCONT    ,         
-     k            INDEXCONT ,NODGLOBXFE  ,NODEDGE    ,XFEM_TAB  ,           
-     l            NV46      ,RTHBUF      ,KXIG3D     ,IXIG3D    ,KNOT     ,
-     m            WIGE      ,NERCVOIS    ,NESDVOIS   ,LERCVOIS  ,LESDVOIS ,
-     n            CRKEDGE   ,STACK       ,ISPHIO     ,VSPHIO    ,ICODE    ,
-     o            INDX_CRK  ,XEDGE4N     ,XEDGE3N    ,SPH2SOL   ,STIFN    ,
-     p            STIFR     ,DRAPE_Q4, DRAPE_T3       ,MS_2D     ,MULTI_FVM,
-     q            SEGQUADFR ,H3D_DATA    ,ISKEW      ,PSKIDS    ,ISKWP    ,
-     r            KNOTLOCPC ,KNOTLOCEL   ,PINCH_DATA ,TAG_SKINS6,IRUNN_BIS, 
-     s            TF        ,NPC         ,IPART_DYNAIN,FCONT_MAX,MDS_MATID,
-     t            FNCONTP2  ,FTCONTP2    ,IBCL        ,ILOADP   ,LLOADP   ,
-     u            LOADP     ,TAGNCONT    ,LOADP_HYD_INTER,FORC  ) 
+     I            KXSP      ,IXSP        ,NOD2SP     ,SPBUF     ,DR        ,                    
+     J            FSAVD     ,                                                                          
+     L            IXRI      ,RIVET       ,ISKWN      ,IFRAME    ,XFRAME   ,                
+     M            IXS10     ,IXS20       ,IXS16      ,ITHGRPA,                      
+     N            ITHBUFA   ,ITHGRPB     ,ITHBUFB,                                 
+     O            ITHGRPC   ,ITHBUFC     ,ITHGRPD,                                 
+     P            ITHBUFD   ,ITHGRPE     ,ITHBUFE,                                 
+     Q            ITHGRPF   ,ITHBUFF     ,ITHGRPG,                                 
+     R            ITHBUFG   ,ITHGRPH     ,ITHBUFH,                                 
+     S            ITHGRPI   ,ITHBUFI     ,NDMA       ,MONVOL    ,VOLMON   ,         
+     T            IPM       ,IGEO        ,NODGLOB    ,IAD_ELEM  ,FR_ELEM  ,         
+     U            FR_RBY2   ,IAD_RBY2    ,FR_WALL    ,FR_SEC    ,FXBIPM   ,FXBRPM,  
+     V            NDIN      ,FXBDEP      ,FXBVIT     ,FXBACC    ,IFLOW,             
+     W            RFLOW     ,IPARTL      ,NPARTL     ,IACCP     ,NACCP,             
+     X            FASOLFR   ,FNCONT      ,FTCONT     ,IPARTH    ,         
+     Y            FR_MV     ,IPART_STATE ,SH4TREE    ,SH3TREE   ,TEMP,              
+     Z            THKE      ,ERR_THK_SH4 ,ERR_THK_SH3,                             
+     a            INOD_PXFEM,FTHREAC     ,NODREAC    ,CPTREAC   ,GRESAV   ,         
+     b            DIAG_SMS  ,SH4TRIM     ,SH3TRIM    ,FNCONT2   ,XMOM_SMS ,         
+     c            IRBE2     ,IRBE3       ,LRBE2      ,LRBE3     ,FR_RBE2  ,         
+     d            FR_RBE3M  ,IAD_RBE2    ,DXANCG     ,IEL_PXFEM ,ZI_PLY   ,         
+     e            VGAZ      ,FCONTG      ,FNCONTG    ,FTCONTG   ,FANREAC  ,         
+     f            INOD_CRK  ,IEL_CRK     ,ELCUTC     ,IADC_CRK  ,PDAMA2   ,         
+     g            RES_SMS   ,SENSOR_TAB,                   
+     h            QFRICINT  ,IGAUP       ,NGAUP      ,WEIGHT_MD ,NCONT    ,         
+     i            INDEXCONT ,NODGLOBXFE  ,NODEDGE    ,XFEM_TAB  ,           
+     j            NV46      ,RTHBUF      ,KXIG3D     ,IXIG3D    ,KNOT     ,
+     k            WIGE      ,NERCVOIS    ,NESDVOIS   ,LERCVOIS  ,LESDVOIS ,
+     l            CRKEDGE   ,STACK       ,ISPHIO     ,VSPHIO    ,ICODE    ,
+     m            INDX_CRK  ,XEDGE4N     ,XEDGE3N    ,SPH2SOL   ,STIFN    ,
+     n            STIFR     ,DRAPE_Q4, DRAPE_T3       ,MS_2D     ,MULTI_FVM,
+     o            SEGQUADFR ,H3D_DATA    ,ISKEW      ,PSKIDS    ,ISKWP    ,
+     p            KNOTLOCPC ,KNOTLOCEL   ,PINCH_DATA ,TAG_SKINS6,IRUNN_BIS, 
+     q            TF        ,NPC         ,IPART_DYNAIN,FCONT_MAX,MDS_MATID,
+     r            FNCONTP2  ,FTCONTP2    ,IBCL        ,ILOADP   ,LLOADP   ,
+     s            LOADP     ,TAGNCONT    ,LOADP_HYD_INTER,FORC  ) 
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -140,6 +141,7 @@ C-----------------------------------------------
       USE DRAPE_MOD
       USE SENSOR_MOD
       USE ALE_CONNECTIVITY_MOD
+      USE OUTMAX_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -204,7 +206,7 @@ C-----------------------------------------------
      .   IRBE2(*),IRBE3(*),LRBE2(*),LRBE3(*),
      .   FR_RBE2(*),FR_RBE3M(*),IEL_PXFEM(*),
      .   INOD_CRK(*),IEL_CRK(*),ELCUTC(2,*),XEDGE4N(4,*),XEDGE3N(3,*),
-     .   IADC_CRK(*),LSENSOR(NSENSI,*), IGAUP(*), NGAUP(*),
+     .   IADC_CRK(*),IGAUP(*), NGAUP(*),
      .   WEIGHT_MD(*),NODGLOBXFE(*),NODEDGE(2,*),NV46,KXIG3D(*),
      .   IXIG3D(*),NERCVOIS(*),NESDVOIS(*),LERCVOIS(*),LESDVOIS(*),
      .   ISPHIO(NISPHIO,*),ICODE(*),SPH2SOL(*),SEGQUADFR(*),
@@ -227,7 +229,7 @@ C-----------------------------------------------
      .   ERR_THK_SH4(*),ERR_THK_SH3(*),FTHREAC(*),
      .   GRESAV(*), DIAG_SMS(*), FNCONT2(3,*), XMOM_SMS(3,*),
      .   FCONTG(*), FNCONTG(*), FTCONTG(*),FANREAC(*),PDAMA2(*),
-     .   RES_SMS(*),SENSOR(NSENSR,*),QFRICINT(*), GAUGE(*),
+     .   RES_SMS(*),QFRICINT(*), GAUGE(*),
      .   FCLUSTER(*),MCLUSTER(*),RTHBUF(*),WIGE(*),KNOT(*),VSPHIO(*),
      .   STIFN(*),STIFR(*),MS_2D(*),PSKIDS(*),KNOTLOCPC(*),KNOTLOCEL(*),
      .   FNCONTP2(3,*)  ,FTCONTP2(3,*)  
@@ -301,7 +303,7 @@ C       ECRITURE LISTING
 C-----------------------
 C      IF(T1S==TT) THEN
 C-------should use relative velocity for dynamic condensed nodes (Nd of S10)
-       IF (NS10E>0) THEN
+       IF (NS10E > 0) THEN
         LENG = 3*NUMNOD
         ALLOCATE(VMCDN(LENG))
         VMCDN(1:LENG)=V(1:LENG)
@@ -311,19 +313,18 @@ C-------should use relative velocity for dynamic condensed nodes (Nd of S10)
         CALL ECRIT(PARTSAV  ,MS      ,VMCDN  ,IN       ,VR     , 
      2             RBY      ,NPBY    ,DMAS   ,DINER    ,WEIGHT ,
      3             A        ,AR      ,FXBIPM ,FXBRPM   ,MONVOL ,
-     4             XMOM_SMS ,LSENSOR , SENSOR,QFRICINT ,IPARI  ,
+     4             XMOM_SMS ,SENSOR_TAB,QFRICINT ,IPARI  ,
      5             WEIGHT_MD,TFEXTH ,IFLAG   ,MS_2D, MULTI_FVM ,
-     6             MAS_ND   ,KEND   ,H3D_DATA,SENSOR_TAB)
+     6             MAS_ND   ,KEND   ,H3D_DATA)
         DEALLOCATE(VMCDN)
        ELSE
-        BID = ZERO       
+        BID = ZERO
         CALL ECRIT(PARTSAV  ,MS      ,V      ,IN       ,VR     , 
      2             RBY      ,NPBY    ,DMAS   ,DINER    ,WEIGHT ,
      3             A        ,AR      ,FXBIPM ,FXBRPM   ,MONVOL ,
-     4             XMOM_SMS ,LSENSOR ,SENSOR ,QFRICINT ,IPARI  ,
+     4             XMOM_SMS ,SENSOR_TAB,QFRICINT ,IPARI  ,
      5             WEIGHT_MD,TFEXTH  ,IFLAG  ,MS_2D, MULTI_FVM ,
-     6             BID      ,BID     ,H3D_DATA,SENSOR_TAB)
-
+     6             BID      ,BID     ,H3D_DATA)
        ENDIF
 C---------------------------------------
 C       CALCUL DU FLUX ET DE LA ROTATION
@@ -356,14 +357,16 @@ C       Compute contact pressures from normal + tangential contact forces.
 C       Tied Contact : Inter type2
 C----------------------
       IFLAG_ANIPCONT = 0
-      IF((ANIM_V(12)+OUTP_V(12)+H3D_DATA%N_VECT_PCONT /=0.OR.
+      IF(((ANIM_V(12)+OUTP_V(12)+H3D_DATA%N_VECT_PCONT /=0.OR.
      .   ANIM_V(27)+H3D_DATA%N_VECT_PCONT2 /=0.)
      .    .AND.
      .   (TT>=TANIM.OR.TT>=TOUTP.OR.TT>=H3D_DATA%TH3D .OR.
      .  MANIM==4 .OR.MANIM==5 .OR.MANIM==6 .OR.MANIM==7.OR.
      .  MANIM==8 .OR.MANIM==9 .OR.MANIM==10.OR.MANIM==11.OR.
      .  MANIM==12.OR.MANIM==13.OR.MANIM==14.OR.MANIM==15.OR.
-     .  H3D_DATA%MH3D/=0))THEN
+     .  H3D_DATA%MH3D/=0))
+     .   .OR.H3D_DATA%N_VECT_PCONT_MAX>0
+     .   .OR.H3D_DATA%N_VECT_PCONT2_MAX>0)THEN
         IF(NINTSTAMP==0)THEN
           CALL ANI_PCONT(IXS ,IXC    ,IXTG    ,FASOLFR  ,X      ,
      .               FNCONT  ,FTCONT,IAD_ELEM ,FR_ELEM  ,WEIGHT ,
@@ -378,11 +381,29 @@ C----------------------
         END IF
       END IF
 
-C------------------------------------------
-C       Compute maximum contact FCONT_MAX
-C------------------------------------------
+C------------------------------------------------------
+C       Compute maximum contact force and pressure
+C----------------------------------------------------
       IF(ANIM_V(26)+H3D_DATA%N_VECT_CONT_MAX /=0) THEN
          CALL FCONT_MAX_OUTPUT(CONT,FCONTG,NODGLOB,FCONT_MAX,WEIGHT)
+      ENDIF 
+      IF(H3D_DATA%N_VECT_PCONT_MAX /=0) THEN
+         CALL FCONT_MAX_OUTPUT(FNCONT,FNCONTG,NODGLOB,FNCONT_MAX,WEIGHT)
+         CALL FCONT_MAX_OUTPUT(FTCONT,FTCONTG,NODGLOB,FTCONT_MAX,WEIGHT)
+      ENDIF 
+      IF(H3D_DATA%N_VECT_CONT2_MAX /=0) THEN
+         CALL FCONT2_MAX_OUTPUT(FNCONT2,FCONT2_MAX,WEIGHT)
+      ENDIF 
+      IF(H3D_DATA%N_VECT_PCONT2_MAX /=0) THEN
+         CALL FCONT2_MAX_OUTPUT(FNCONTP2,FNCONT2_MAX,WEIGHT)
+         CALL FCONT2_MAX_OUTPUT(FTCONTP2,FTCONT2_MAX,WEIGHT)
+      ENDIF 
+      IF(H3D_DATA%N_VECT_CONT2_MIN /=0) THEN
+         CALL FCONT2_MIN_OUTPUT(FNCONT2,FCONT2_MIN,WEIGHT)
+      ENDIF 
+      IF(H3D_DATA%N_VECT_PCONT2_MAX /=0) THEN
+         CALL FCONT2_MIN_OUTPUT(FNCONTP2,FNCONT2_MIN,WEIGHT)
+         CALL FCONT2_MIN_OUTPUT(FTCONTP2,FTCONT2_MIN,WEIGHT)
       ENDIF 
 
 C-----------------------------------------------
@@ -705,8 +726,8 @@ c
      1             SH4TREE    ,SH3TREE   ,H3D_DATA    ,MULTI_FVM   ,SUBSET    ,
      2             PSKIDS     ,TAG_SKINS6,TF          ,NPC         ,FCONT_MAX ,
      3             MDS_MATID  ,FNCONTP2  ,FTCONTP2    ,IBCL        ,ILOADP    ,
-     4             LLOADP     ,LOADP     ,SENSOR      ,LSENSOR     ,TAGNCONT  ,
-     5             LOADP_HYD_INTER,XFRAME,FORC        )
+     4             LLOADP     ,LOADP     ,SENSOR_TAB  ,TAGNCONT    ,
+     5             LOADP_HYD_INTER,XFRAME,FORC        ,AR          )
       ENDIF
       IF(TT>=H3D_DATA%TH3D) H3D_DATA%TH3D = H3D_DATA%TH3D + H3D_DATA%DTH3D
       IF ((TSTOP< H3D_DATA%TH3D).AND.(H3D_DATA%TH3D < TSTOP+EM06*TSTOP)
@@ -929,7 +950,7 @@ C         to avoid double points
             ENDIF
             ITHFLAG = 1
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                 IXS  ,ELBUF,WA(N2),IPARG,
+     2                 IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                 FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,                                 
      5                 PARTSAV,ACCELM,LOUT ,
      6                 IPARI,WEIGHT,IPART,IGRSURF,
@@ -937,8 +958,8 @@ C         to avoid double points
      8                 KXX   ,IXR,
      9                 KXSP  ,NOD2SP ,SPBUF ,
      B                 NPARTSAV,AR   ,VR    ,DR,
-     D                 FSAVD ,IXRI   ,RIVET  ,
-     E                 ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
+     D                 FSAVD ,IXRI   ,RIVET  ,IXP      ,
+     E                 ISKWN ,IFRAME ,XFRAME ,IXC      ,IXQ ,
      F                 DTHIS1(1), THIS1(1), IFIL, NTHGRP1(1),IXTG ,
      G                 IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
      H                 FXBACC ,IPARTL,NPARTL, IACCP , NACCP ,
@@ -959,14 +980,14 @@ C         to avoid double points
             IFILABF = 12
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,                               
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB,                               
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(2), TABFIS(2),IFILABF,NTHGRP1(1),IXTG,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1022,7 +1043,7 @@ C
             ENDIF
             ITHFLAG = 2
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                 IXS  ,ELBUF,WA(N2),IPARG,
+     2                 IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                 FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                 PARTSAV,ACCELM,LOUT ,
      6                 IPARI,WEIGHT,IPART,IGRSURF,
@@ -1030,7 +1051,7 @@ C
      8                 KXX   ,IXR,
      9                 KXSP  ,NOD2SP ,SPBUF ,
      B                 NPARTSAV,AR   ,VR    ,DR,
-     D                 FSAVD ,IXRI   ,RIVET  ,
+     D                 FSAVD ,IXRI   ,RIVET  ,IXP ,
      E                 ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                 DTHIS1(2), THIS1(2), IFIL, NTHGRP1(2),IXTG ,
      G                 IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1049,14 +1070,14 @@ C
             IFILABF = 13
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPB,ITHBUFB,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(3), TABFIS(3),IFILABF,NTHGRP1(2),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1114,7 +1135,7 @@ C
             ENDIF
             ITHFLAG = 3
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                 IXS  ,ELBUF,WA(N2),IPARG,
+     2                 IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                 FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                 PARTSAV,ACCELM,LOUT ,
      6                 IPARI,WEIGHT,IPART,IGRSURF,
@@ -1122,7 +1143,7 @@ C
      8                 KXX   ,IXR,
      9                 KXSP  ,NOD2SP ,SPBUF ,
      B                 NPARTSAV,AR   ,VR    ,DR,
-     D                 FSAVD ,IXRI   ,RIVET  ,
+     D                 FSAVD ,IXRI   ,RIVET  , IXP , 
      E                 ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                 DTHIS1(3), THIS1(3), IFIL, NTHGRP1(3),IXTG ,
      G                 IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1142,14 +1163,14 @@ C
             IFILABF = 14
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(4), TABFIS(4),IFILABF,NTHGRP1(1),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1203,7 +1224,7 @@ C
             ENDIF
             ITHFLAG = 4
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                 IXS  ,ELBUF,WA(N2),IPARG,
+     2                 IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                 FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                 PARTSAV,ACCELM,LOUT ,
      6                 IPARI,WEIGHT,IPART,IGRSURF,
@@ -1211,7 +1232,7 @@ C
      8                 KXX   ,IXR,
      9                 KXSP  ,NOD2SP ,SPBUF ,
      B                 NPARTSAV,AR   ,VR    ,DR,
-     D                 FSAVD ,IXRI   ,RIVET  ,
+     D                 FSAVD ,IXRI   ,RIVET  , IXP,
      E                 ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                 DTHIS1(4), THIS1(4), IFIL, NTHGRP1(4),IXTG ,
      G                 IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1232,14 +1253,14 @@ C
             IFILABF = 15
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(5), TABFIS(5),IFILABF,NTHGRP1(1),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1292,7 +1313,7 @@ C
             ENDIF
             ITHFLAG = 5
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                IXS  ,ELBUF,WA(N2),IPARG,
+     2                IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
@@ -1300,7 +1321,7 @@ C
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  , IXP , 
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                DTHIS1(5), THIS1(5), IFIL, NTHGRP1(5),IXTG ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1320,14 +1341,14 @@ C
             IFILABF = 16
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(6), TABFIS(6),IFILABF,NTHGRP1(1),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1380,7 +1401,7 @@ C
             ENDIF
             ITHFLAG = 6
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                IXS  ,ELBUF,WA(N2),IPARG,
+     2                IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
@@ -1388,7 +1409,7 @@ C
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  , IXP , 
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                DTHIS1(6), THIS1(6), IFIL, NTHGRP1(6),IXTG ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1409,14 +1430,14 @@ C
             IFILABF = 17
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(7), TABFIS(7),IFILABF,NTHGRP1(1),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1470,7 +1491,7 @@ C
              ENDIF
             ITHFLAG = 7
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                IXS  ,ELBUF,WA(N2),IPARG,
+     2                IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
@@ -1478,7 +1499,7 @@ C
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  ,IXP , 
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                DTHIS1(7), THIS1(7), IFIL, NTHGRP1(7),IXTG ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1498,14 +1519,14 @@ C
             IFILABF = 18
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(8), TABFIS(8),IFILABF,NTHGRP1(1),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1559,7 +1580,7 @@ C
             ENDIF
             ITHFLAG = 8
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                IXS  ,ELBUF,WA(N2),IPARG,
+     2                IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
@@ -1567,7 +1588,7 @@ C
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  , IXP , 
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                DTHIS1(8), THIS1(8), IFIL, NTHGRP1(8),IXTG ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1587,14 +1608,14 @@ C
             IFILABF = 19
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPA,ITHBUFA,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(9), TABFIS(9),IFILABF,NTHGRP1(1),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1647,7 +1668,7 @@ C
             ENDIF
             ITHFLAG = 9
             CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                IXS  ,ELBUF,WA(N2),IPARG,
+     2                IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
@@ -1655,7 +1676,7 @@ C
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  ,IXP , 
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ ,
      F                DTHIS1(9), THIS1(9), IFIL, NTHGRP1(9),IXTG   ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1674,14 +1695,14 @@ C
             IFILABF = 20
             CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                  IXS  ,ELBUF,WA(N2),IPARG,
-     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                  FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                  PARTSAV,ACCELM,LOUT ,
      6                  IPARI,WEIGHT,IPART,IGRSURF,
      7                  ITHGRPI,ITHBUFI,SUBSET,GEO  ,
      8                  KXX   ,IXR,
      9                  KXSP  ,NOD2SP ,SPBUF ,
      B                  NPARTSAV,AR   ,VR    ,DR,
-     D                  FSAVD ,IXRI   ,RIVET  ,
+     D                  FSAVD ,IXRI   ,RIVET  , IXP ,
      E                  ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                  DTABF(10),TABFIS(10),IFILABF,NTHGRP1(9),IXTG   ,
      G                  IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1733,7 +1754,7 @@ C
         ENDIF
         ITHFLAG = 10
         CALL HIST2(PM   ,D    ,X     ,V   ,A    ,
-     2                IXS  ,ELBUF,WA(N2),IPARG,
+     2                IXS  ,ELBUF,WA(N2),IPARG,SENSOR_TAB,
      4                FSAV ,FLSW ,SKEW,ELBUF_TAB,CLUSTER,
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
@@ -1741,7 +1762,7 @@ C
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  , IXP , 
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                DTHIS ,   THIS,IFIL  , NTHGRP,IXTG   ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,
@@ -1762,14 +1783,14 @@ C
           IFILABF = 11
           CALL ABFHIST2(PM   ,D    ,X     ,V   ,A    ,
      2                IXS  ,ELBUF,WA(N2),IPARG,
-     4                FSAV ,FLSW ,SKEW,ELBUF_TAB,
+     4                FSAV ,FLSW ,SKEW,ELBUF_TAB,SENSOR_TAB, 
      5                PARTSAV,ACCELM,LOUT ,
      6                IPARI,WEIGHT,IPART,IGRSURF,
      7                ITHGRP,ITHBUF,SUBSET,GEO  ,
      8                KXX   ,IXR,
      9                KXSP  ,NOD2SP ,SPBUF ,
      B                NPARTSAV,AR   ,VR    ,DR,
-     D                FSAVD ,IXRI   ,RIVET  ,
+     D                FSAVD ,IXRI   ,RIVET  , IXP ,
      E                ISKWN ,IFRAME ,XFRAME,IXC    ,IXQ,
      F                DTABF(1), TABFIS(1),IFILABF,NTHGRP,IXTG   ,
      G                IGEO   ,IPM   ,FXBIPM, FXBDEP, FXBVIT,

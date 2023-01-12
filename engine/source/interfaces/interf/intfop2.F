@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  INTFOP2                       source/interfaces/interf/intfop2.F
 Chd|-- called by -----------
@@ -47,6 +47,7 @@ Chd|        INTBUF_FRIC_MOD               share/modules/intbuf_fric_mod.F
 Chd|        INTSTAMP_MOD                  share/modules/intstamp_mod.F  
 Chd|        METRIC_MOD                    ../common_source/modules/metric_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE INTFOP2(
      1       IPARI     ,X          ,A          ,IGROUPS   ,ALE_CONNECTIVITY,
@@ -64,7 +65,7 @@ Chd|====================================================================
      E       ISLEN20   ,IRLEN20T   ,ISLEN20T   ,IRLEN20E  ,ISLEN20E        ,
      F       MSKYI_SMS ,ISKYI_SMS  ,NODNX_SMS  ,INT18ADD  ,FCONTG          ,
      G       FNCONTG   ,FTCONTG    ,NODGLOB    ,MS0       ,NPC             ,
-     H       WA        ,SENSOR     ,QFRICINT   ,NCONT     ,INDEXCONT       ,
+     H       WA        ,SENSOR_TAB ,QFRICINT   ,NCONT     ,INDEXCONT       ,
      I       TAGCONT   ,INOD_PXFEM ,MS_PLY     ,WAGAP     ,ELBUF_TAB       ,
      J       CONDN     ,CONDNSKYI  ,INTBUF_TAB ,NV46      ,
      K       DIMFB      ,FBSAV6    ,STABSEN_   ,
@@ -86,6 +87,7 @@ C-----------------------------------------------
       USE METRIC_MOD
       USE GROUPDEF_MOD
       USE ALE_CONNECTIVITY_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -149,7 +151,7 @@ C-----------------------------------------------
      .   VISCN(*), FNCONT(3,*),FTCONT(3,*),RCONTACT(*),TEMP(*),
      .   FTHESKYI(LSKYI),PM(NPROPM,*),FTHE(*),
      .   ACONTACT(*), PCONTACT(*), MSKYI_SMS(*),
-     .   FCONTG(3,*),FNCONTG(3,*),FTCONTG(3,*),WA(*), SENSOR(NSENSR,*),
+     .   FCONTG(3,*),FNCONTG(3,*),FTCONTG(3,*),WA(*),
      .   QFRICINT(*),MS_PLY(*),WAGAP(*),CONDN(*),CONDNSKYI(LSKYI),
      .   WIGE(*),KNOT(*),PSKIDS(*),FORNEQS(3,*),KNOTLOCPC(*),KNOTLOCEL(*),
      .   APINCH(3,*),STIFPINCH(*),T2FAC_SMS(*)
@@ -163,6 +165,7 @@ C-----------------------------------------------
       TYPE(H3D_DATABASE) :: H3D_DATA
       TYPE(INTBUF_FRIC_STRUCT_) INTBUF_FRIC_TAB(*)
       TYPE(t_ale_connectivity), INTENT(IN) :: ALE_CONNECTIVITY
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
 C-----------------------------------------------  
@@ -221,8 +224,8 @@ C
         ISENS = 0
         IF(NTY == 7.OR.NTY == 11.OR.NTY == 21.OR.NTY == 24.OR.NTY == 25)
      .      ISENS = IPARI(64,N) ! INTERFACE SENSOR NUMBER
-        IF(ISENS/=0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
-           TS = SENSOR(2,ISENS)
+        IF (ISENS > 0) THEN    ! IF INTERFACE IS ACTIVATED BY SENSOR 
+           TS = SENSOR_TAB(ISENS)%TSTART
         ELSE
            TS = TT
         ENDIF
@@ -618,7 +621,7 @@ C
      J  CONDNSKYI  ,QFRICINT    ,TAGNCONT    ,KLOADPINTER,LOADPINTER   ,
      K  LOADP_HYD_INTER,DGAPLOADINT,S_LOADPINTER)
 
-          IAD=IAD+NUM_IMP(N)
+         IF(IMPL_S == 1) IAD=IAD+NUM_IMP(N)
 C-----------------------------------------------------------------------
         ELSE
 C-----------------------------------------------------------------------

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HIST2                         source/output/th/hist2.F      
 Chd|-- called by -----------
@@ -48,6 +48,7 @@ Chd|        THPOUT                        source/output/th/thpout.F
 Chd|        THQUAD                        source/output/th/thquad.F     
 Chd|        THRES                         source/output/th/thres.F      
 Chd|        THRNUR                        source/output/th/thrnur.F     
+Chd|        THSENS                        source/output/th/thsens.F     
 Chd|        THSOL                         source/output/th/thsol.F      
 Chd|        THSPH                         source/output/th/thsph.F      
 Chd|        THSURF                        source/output/th/thsurf.F     
@@ -61,28 +62,29 @@ Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
 Chd|        PINCHTYPE_MOD                 ../common_source/modules/pinchtype_mod.F
 Chd|        SEATBELT_MOD                  ../common_source/modules/seatbelt_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|        TH_MOD                        share/modules/th_mod.F        
 Chd|====================================================================
-      SUBROUTINE HIST2(PM      ,D         ,X        ,V        ,A        ,
-     2                 IXS     ,BUFEL     ,WA       ,IPARG    ,
-     4                 FSAV    ,FLSW      ,SKEW     ,ELBUF_TAB,CLUSTER  ,
+      SUBROUTINE HIST2(PM      ,D         ,X        ,V        ,A         ,
+     2                 IXS     ,BUFEL     ,WA       ,IPARG    ,SENSOR_TAB,
+     4                 FSAV    ,FLSW      ,SKEW     ,ELBUF_TAB,CLUSTER   ,
      5                 PARTSAV ,ACCELM    ,LOUT     ,
      6                 IPARI   ,WEIGHT    ,IPART    ,IGRSURF  ,
      7                 ITHGRP  ,ITHBUF    ,SUBSET   ,GEO      ,
      8                 KXX     ,IXR       ,
      9                 KXSP    ,NOD2SP    ,SPBUF    ,
      B                 NPARTSAV,AR        ,VR       ,DR       ,
-     D                 FSAVD   ,LRIVET    ,RIVET    ,
-     E                 ISKWN   ,IFRAME    ,XFRAME   ,IXC      ,IXQ      ,
-     F                 DTHIS0  ,THIS0     ,IFIL     ,NTHGRP2  ,IXTG     ,
-     G                 IGEO    ,IPM       ,FXBIPM   ,FXBDEP   ,FXBVIT   ,
-     H                 FXBACC  ,IPARTL    ,NPARTL   ,IACCP    ,NACCP    ,
+     D                 FSAVD   ,LRIVET    ,RIVET    ,IXP      ,
+     E                 ISKWN   ,IFRAME    ,XFRAME   ,IXC      ,IXQ       ,
+     F                 DTHIS0  ,THIS0     ,IFIL     ,NTHGRP2  ,IXTG      ,
+     G                 IGEO    ,IPM       ,FXBIPM   ,FXBDEP   ,FXBVIT    ,
+     H                 FXBACC  ,IPARTL    ,NPARTL   ,IACCP    ,NACCP     ,
      I                 IPARTH  ,NPARTH    ,NVPARTH  ,
-     J                 NVSUBTH ,MONVOL    ,VOLMON   ,FR_MV    ,TEMP,INOD,
+     J                 NVSUBTH ,MONVOL    ,VOLMON   ,FR_MV    ,TEMP,INOD ,
      K                 FTHREAC ,NODREAC   ,GRESAV   ,GAUGE    ,
-     L                 IGAUP   ,NGAUP     ,ITTYP    ,WEIGHT_MD,SIZE_MES ,
-     M                 RTHBUF  ,THKE      ,STACK    ,ISPHIO   ,VSPHIO   ,
+     L                 IGAUP   ,NGAUP     ,ITTYP    ,WEIGHT_MD,SIZE_MES  ,
+     M                 RTHBUF  ,THKE      ,STACK    ,ISPHIO   ,VSPHIO    ,
      N                 ITHFLAG ,PINCH_DATA,MULTI_FVM,W)
 C-----------------------------------------------
 C   M o d u l e s
@@ -95,6 +97,7 @@ C-----------------------------------------------
       USE PINCHTYPE_MOD
       USE MULTI_FVM_MOD
       USE SEATBELT_MOD  
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -152,13 +155,15 @@ C-----------------------------------------------
      .   RIVOFF(NRIVET), FXBDEP(*), FXBVIT(*), FXBACC(*), VOLMON(*),
      .   TEMP(*),FTHREAC(*),GRESAV(NPSAV,*), GAUGE(LLGAUGE,NBGAUGE),RTHBUF(*),
      .   VSPHIO(*), W(3,NUMNOD)
+      INTEGER, DIMENSION(NIXP,NUMELP) ,INTENT(IN):: IXP
       TYPE (ELBUF_STRUCT_), DIMENSION(NGROUP) :: ELBUF_TAB
       TYPE (CLUSTER_) ,DIMENSION(NCLUSTER)    :: CLUSTER
       TYPE (STACK_PLY) :: STACK
       TYPE (SUBSET_) , DIMENSION(NSUBS) :: SUBSET
       TYPE (SURF_)   , DIMENSION(NSURF) :: IGRSURF
       TYPE (PINCH) :: PINCH_DATA
-      TYPE(MULTI_FVM_STRUCT), INTENT(IN) :: MULTI_FVM   
+      TYPE (MULTI_FVM_STRUCT), INTENT(IN) :: MULTI_FVM   
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) ,INTENT(IN) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -790,7 +795,7 @@ C-------------------------------------------------------
 !   TH optimization for beam elements
         !   initialization of local array
         WA_POUT(ID_HIST)%WA_REAL( 1:WA_POUT_SIZE(ID_HIST) ) = ZERO
-        CALL THPOUT(IPARG , NTHGRP2  , ITHGRP ,
+        CALL THPOUT(IPARG , NTHGRP2  , ITHGRP , GEO,  IXP,  
      .              ITHBUF, ELBUF_TAB, WA_POUT(ID_HIST)%WA_REAL   )
         !   send WA_POUT to PROC0
         IF(NSPMD>1) THEN
@@ -1269,7 +1274,17 @@ C-----------------------------
               ENDDO
               IF(II>0)CALL WRTDES(WA,WA,II,ITTYP,1)
             ENDIF
-          ENDIF
+c
+          ELSEIF (ITYP == 120) THEN
+C-----------------------------
+C           SENSOR
+C-----------------------------
+            CALL THSENS (SENSOR_TAB,NSENSOR,
+     .           IAD    ,IAD+NN-1 ,IADV   ,IADV+NVAR-1,ITHBUF   ,
+     .           WA     ,ITTYP    )
+C
+c----
+          ENDIF  ! ITYP
        ENDDO
 C-------------------------------------------------------
 C     SECTIONS FLUIDES
@@ -1418,6 +1433,4 @@ C             Aout, Aout1, Uout, Mout, Hout
       END DO
       RETURN
       END
-
-
 

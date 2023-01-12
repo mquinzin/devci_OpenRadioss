@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  W_ELBUF_STR                   source/elements/elbuf/w_elbuf_str.F
 Chd|-- called by -----------
@@ -71,7 +71,7 @@ C-----------------------------------------------
      .   G_FORPGPINCH,G_MOMPGPINCH,G_EPGPINCHXZ,G_EPGPINCHYZ,G_EPGPINCHZZ,
      .   G_SKEW_ID,G_GAMA_R,G_SLIPRING_ID,G_SLIPRING_STRAND,G_RETRACTOR_ID,G_RINGSLIP,
      .   G_ADD_NODE,G_UPDATE,G_INTVAR,G_BETAORTH,G_AMU,G_SLIPRING_FRAM_ID,G_FRAM_FACTOR,
-     .   G_TM_YIELD,G_TM_SEQ,G_TM_EINT,G_TM_DMG,G_TM_SIG,G_TM_STRA 
+     .   G_TM_YIELD,G_TM_SEQ,G_TM_EINT,G_TM_DMG,G_TM_SIG,G_TM_STRA,G_TSAIWU
       INTEGER  ! layer variables
      .   LY_DMG,LY_GAMA,LY_DIRA,LY_DIRB,LY_CRKDIR,LY_PLAPT,LY_SIGPT,LY_SMSTR,
      .   LY_HOURG,LY_UELR,LY_UELR1,LY_OFFPG,LY_OFF,LEN_PLAPT,LEN_SIGPT
@@ -85,9 +85,9 @@ C-----------------------------------------------
      .   L_DAM,L_DSUM,L_DGLO,L_EPE,L_EPC,L_XST,L_SSP,L_Z,L_FRAC,L_VISC,
      .   L_THK,L_FOR,L_MOM,L_EPS,L_SMSTR,L_BFRAC,L_DMG,L_FORTH,L_EINTTH,
      .   L_SEQ,L_SIGPLY,L_JAC_I,L_FAC_YLD,L_ABURN,L_MU,L_PLANL,L_EPSDNL,
-     .   L_DMGSCL,L_PIJ,L_VOL0DP,L_DPR
+     .   L_DMGSCL,L_TSAIWU,L_PIJ,L_VOL0DP,L_DPR
       INTEGER  ! failure variables
-     .   LF_DAM,LF_DAMMX,LF_TDEL,LF_INDX,LF_OFF
+     .   LF_DAM,LF_DAMMX,LF_DAMINI,LF_TDEL,LF_INDX,LF_OFF
       INTEGER sum
       my_real,
      .   ALLOCATABLE, DIMENSION (:)  :: RBUF_L
@@ -244,7 +244,7 @@ c
               RBUF_L(L_REL+1) = LY_OFF
                    L_REL = L_REL+1
 c
-c          print*,'    layer var lenghts: l_rel=',l_rel
+c          print*,'    layer var lengths: l_rel=',l_rel
 c-------      write local variable lengths (BUFLY%NVAR_LOC = 48)
 c
               L_OFF    = BUFLY%L_OFF    
@@ -306,6 +306,7 @@ c
               L_PLANL  = BUFLY%L_PLANL
               L_EPSDNL = BUFLY%L_EPSDNL
               L_DMGSCL = BUFLY%L_DMGSCL
+              L_TSAIWU = BUFLY%L_TSAIWU
               L_PIJ    = BUFLY%L_PIJ
               L_VOL0DP = BUFLY%L_VOL0DP
 c---
@@ -427,6 +428,8 @@ c---
                 L_REL = L_REL + 1
               RBUF_L(L_REL+1) = L_DMGSCL
                 L_REL = L_REL + 1
+              RBUF_L(L_REL+1) = L_TSAIWU
+                L_REL = L_REL + 1                
               RBUF_L(L_REL+1) = L_PIJ
                 L_REL = L_REL + 1
               RBUF_L(L_REL+1) = L_VOL0DP
@@ -624,6 +627,8 @@ c
                 L_REL = L_REL+NEL*L_EPSDNL
               RBUF_L(L_REL+1:L_REL+NEL*L_DMGSCL) = LBUF%DMGSCL(1:NEL*L_DMGSCL)
                 L_REL = L_REL+NEL*L_DMGSCL
+              RBUF_L(L_REL+1:L_REL+NEL*L_TSAIWU) = LBUF%TSAIWU(1:NEL*L_TSAIWU)
+                L_REL = L_REL+NEL*L_TSAIWU
               RBUF_L(L_REL+1:L_REL+NEL*L_PIJ) = LBUF%PIJ(1:NEL*L_PIJ)
                 L_REL = L_REL+NEL*L_PIJ
 C------ DP of VOL0DP                
@@ -677,6 +682,7 @@ c
                     NUVAR = FLOC%NVAR
                     LF_DAM  = FLOC%LF_DAM
                     LF_DAMMX= FLOC%LF_DAMMX
+                    LF_DAMINI = FLOC%LF_DAMINI
                     LF_TDEL = FLOC%LF_TDEL
                     LF_INDX = FLOC%LF_INDX
                     LF_OFF  = FLOC%LF_OFF
@@ -688,6 +694,8 @@ c
                     RBUF_L(L_REL+1)=LF_DAM
                       L_REL = L_REL+1
                     RBUF_L(L_REL+1)=LF_DAMMX
+                      L_REL = L_REL+1
+                    RBUF_L(L_REL+1)=LF_DAMINI
                       L_REL = L_REL+1
                     RBUF_L(L_REL+1)=LF_TDEL
                       L_REL = L_REL+1
@@ -705,6 +713,9 @@ c
                     RBUF_L(L_REL+1:L_REL+NEL*LF_DAMMX)
      .                                           = FLOC%DAMMX(1:NEL*LF_DAMMX)
                       L_REL = L_REL+NEL*LF_DAMMX
+                    RBUF_L(L_REL+1:L_REL+NEL*LF_DAMINI)
+     .                                           = FLOC%DAMINI(1:NEL*LF_DAMINI)
+                      L_REL = L_REL+NEL*LF_DAMINI
                     RBUF_L(L_REL+1:L_REL+NEL*LF_TDEL)
      .                                           = FLOC%TDEL(1:NEL*LF_TDEL)
                       L_REL = L_REL + NEL*LF_TDEL
@@ -926,6 +937,7 @@ C
           G_MU    = GBUF%G_MU
           G_PLANL = GBUF%G_PLANL
           G_EPSDNL = GBUF%G_EPSDNL
+          G_TSAIWU = GBUF%G_TSAIWU
           G_TEMPG  = GBUF%G_TEMPG
           G_COR_NF = GBUF%G_COR_NF
           G_COR_FR = GBUF%G_COR_FR
@@ -1112,6 +1124,8 @@ C
              L_REL = L_REL + 1    
            RBUF_L(L_REL+1) =  G_EPSDNL  
              L_REL = L_REL + 1    
+           RBUF_L(L_REL+1) =  G_TSAIWU
+             L_REL = L_REL + 1
            RBUF_L(L_REL+1) =  G_TEMPG      
              L_REL = L_REL + 1                                     
            RBUF_L(L_REL+1) =  G_COR_NF       
@@ -1244,7 +1258,7 @@ c---
            RBUF_L(L_REL+1) =  G_TM_STRA
              L_REL = L_REL + 1
 c
-c          print*,'    global lenghts=',l_rel
+c          print*,'    global lengths=',l_rel
           sum = l_rel
 c
 c         ! write global variables for each element

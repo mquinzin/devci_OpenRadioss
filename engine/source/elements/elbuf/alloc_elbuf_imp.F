@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ALLOC_ELBUF_IMP               source/elements/elbuf/alloc_elbuf_imp.F
 Chd|-- called by -----------
@@ -79,7 +79,7 @@ C-----------------------------------------------
      .   L_THK,L_FOR,L_MOM,L_SMSTR,L_BFRAC,L_DMG,L_FORTH,L_EINTTH,L_SEQ,
      .   L_SIGPLY,L_FAC_YLD,L_ABURN,L_MU
       INTEGER  ! failure variables
-     .   LF_DAM,LF_DAMMX,LF_TDEL,LF_INDX,LF_OFF
+     .   LF_DAM,LF_DAMMX,LF_DAMINI,LF_TDEL,LF_INDX,LF_OFF
       TYPE(BUF_LAY_)  , POINTER :: BUFLY,BUFLY_IMP
       TYPE(G_BUFEL_)  , POINTER :: GBUF
       TYPE(L_BUFEL_)  , POINTER :: LBUF
@@ -248,6 +248,7 @@ c
          BUFLY_IMP%L_PLANL   = BUFLY%L_PLANL
          BUFLY_IMP%L_EPSDNL  = BUFLY%L_EPSDNL
          BUFLY_IMP%L_DMGSCL  = BUFLY%L_DMGSCL
+         BUFLY_IMP%L_TSAIWU  = BUFLY%L_TSAIWU
 c
          IF (IGTYP == 51 .OR. IGTYP == 52) THEN
            NPTT = ELBUF_TAB(NG)%BUFLY(IL)%NPTT
@@ -317,6 +318,7 @@ c
             ALLOCATE(LBUF%PLANL(NEL*BUFLY%L_PLANL)  ,STAT=ERR)
             ALLOCATE(LBUF%EPSDNL(NEL*BUFLY%L_EPSDNL)  ,STAT=ERR)
             ALLOCATE(LBUF%DMGSCL(NEL*BUFLY%L_DMGSCL)  ,STAT=ERR)
+            ALLOCATE(LBUF%TSAIWU(NEL*BUFLY%L_TSAIWU)  ,STAT=ERR)
            ENDDO                                                                    
           ENDDO                                                                     
          ENDDO                                                                      
@@ -365,6 +367,8 @@ c-------------------------------
      .            ELBUF_TAB(NG)%BUFLY(IL)%FAIL(IR,IS,IT)%FLOC(K)%LF_DAM 
                  LF_DAMMX=
      .            ELBUF_TAB(NG)%BUFLY(IL)%FAIL(IR,IS,IT)%FLOC(K)%LF_DAMMX 
+                 LF_DAMINI=
+     .            ELBUF_TAB(NG)%BUFLY(IL)%FAIL(IR,IS,IT)%FLOC(K)%LF_DAMINI
                  LF_TDEL=
      .            ELBUF_TAB(NG)%BUFLY(IL)%FAIL(IR,IS,IT)%FLOC(K)%LF_TDEL 
                  LF_INDX=
@@ -376,6 +380,7 @@ c-------------------------------
                  ALLOCATE(FLOC%VAR(NEL*NUVAR), STAT=ERR)  
                  ALLOCATE(FLOC%DAM(NEL*LF_DAM), STAT=ERR)  
                  ALLOCATE(FLOC%DAMMX(NEL*LF_DAMMX), STAT=ERR)  
+                 ALLOCATE(FLOC%DAMINI(NEL*LF_DAMINI), STAT=ERR)
                  ALLOCATE(FLOC%TDEL(NEL*LF_TDEL), STAT=ERR)  
                  ALLOCATE(FLOC%INDX(NEL*LF_INDX), STAT=ERR)  
                  ALLOCATE(FLOC%OFF(NEL*LF_OFF)  , STAT=ERR)  
@@ -492,6 +497,7 @@ C
         ELBUF_IMP(NG)%GBUF%G_MU     = GBUF%G_MU    
         ELBUF_IMP(NG)%GBUF%G_PLANL  = GBUF%G_PLANL  
         ELBUF_IMP(NG)%GBUF%G_EPSDNL = GBUF%G_EPSDNL
+        ELBUF_IMP(NG)%GBUF%G_TSAIWU = GBUF%G_TSAIWU
         ELBUF_IMP(NG)%GBUF%G_BPRELD  = GBUF%G_BPRELD    
         ELBUF_IMP(NG)%GBUF%G_COR_NF  = GBUF%G_COR_NF   
         ELBUF_IMP(NG)%GBUF%G_COR_FR = GBUF%G_COR_FR  

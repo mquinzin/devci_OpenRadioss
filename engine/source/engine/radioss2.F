@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  RADIOSS2                      source/engine/radioss2.F      
 Chd|-- called by -----------
@@ -140,6 +140,7 @@ Chd|        RESTMOD                       share/modules/restart_mod.F
 Chd|        SCRATCHFILE_MOD               share/modules/scratchfiles_mod.F
 Chd|        SEGVAR_MOD                    share/modules/segvar_mod.F    
 Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
+Chd|        SENSOR_VARIABLE_MOD           share/modules/sensor_mod.F    
 Chd|        SOLTOSPH_MOD                  share/modules/soltosph_mod.F  
 Chd|        STACK_MOD                     share/modules/stack_mod.F     
 Chd|        TABLE_GLOB_MOD                share/modules/table_glob_mod.F
@@ -187,6 +188,7 @@ C-----------------------------------------------
       USE MDS_RESTART_MOD
       USE SEGVAR_MOD
       USE SCRATCHFILE_MOD
+      USE SENSOR_VARIABLE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -228,7 +230,6 @@ C-----------------------------------------------
 #include      "scr20_c.inc"
 #include      "scr23_c.inc"
 #include      "scr_fac_c.inc"
-#include      "scr_usens_c.inc"
 #include      "chrasc_c.inc"
 #include      "ascchr_c.inc"
 #include      "chara_c.inc"
@@ -333,7 +334,7 @@ C Madymo Stuff
       TYPE (H3D_DATABASE) :: H3D_DATA
       TYPE(MATPARAM_STRUCT_)  , DIMENSION(:), ALLOCATABLE :: MATPARAM_TAB     ! NUMMAT
       TYPE(GRP_PARAM_STRUCT_) , DIMENSION(:), ALLOCATABLE :: GROUP_PARAM_TAB  ! NGROUP
-      TYPE (SENSOR_STR_)       ,DIMENSION(:) , ALLOCATABLE :: SENSOR_TAB       ! NSENSOR
+
       TYPE (PINCH)  :: PINCH_DATA
       TYPE(DRAPE_) :: DRAPE_Q4,DRAPE_T3
 C      
@@ -374,7 +375,7 @@ C------------------------------------------------------------------
 #include      "machine.inc"
 C=======================================================================
 C------------------------------------------------
-C     Init Timer (from begining of radioss2 (reading timer)
+C     Init Timer (from beginning of radioss2 (reading timer)
 C------------------------------------------------    
       ISTDO=6
       CALL INI_MSG()
@@ -482,7 +483,6 @@ C------------------------------------------------------------------
       NBVELP = 6
       NRVOLU=24
       LFACLOAD =12
-      ISECTOR = 0
       NSENSI = 15
       NSENSR = 223
       LKJNI = 6
@@ -839,7 +839,7 @@ C
        TMP_NAME=OUTFILE_NAME(1:OUTFILE_NAME_LEN)//FILNAM(1:LEN)
        !    ---------------------------------
 C
-C restart file writen with binary format ieee
+C restart file written with binary format ieee
 C
       DO I=1,LEN_TMP_NAME
         IFILNAM(I)=ICHAR(TMP_NAME(I:I))
@@ -1323,11 +1323,11 @@ C   thermal bc
       IF(NFXFLUX > 0)  CALL FXFLUXRREST(IBFFLUX, FBFFLUX)
       IF(NFXTEMP > 0)  CALL FXTEMPRREST(IBFTEMP, FBFTEMP)
       IF (IPLYXFEM > 0) THEN
-      CALL PLYXFEM_RREST(MS_PLY,ZI_PLY,INOD_PXFEM,IEL_PXFEM,
+        CALL PLYXFEM_RREST(MS_PLY,ZI_PLY,INOD_PXFEM,IEL_PXFEM,
      .                        ICODE_PLY,ISKEW_PLY,MSZ2)
-        CALL  PLYXFEM_RRESTANIM()
-        CALL  PLYXFEM_RAVUPLY()
       ENDIF
+      CALL  PLYXFEM_RRESTANIM()
+      IF(IPLYXFEM > 0) CALL  PLYXFEM_RAVUPLY()
       IF(NLOADC   > 0) CALL CFIELDREST(CFIELD)
       IF(NLOADP   > 0) CALL LOADPREST(LOADP)
 C--------------------------------------------
@@ -1337,7 +1337,7 @@ C--------------------------------------------
          CALL READ_DB(DGAPLOADINT, NINTER*NLOADP_HYD )
       ENDIF
       IF(ICRACK3D > 0) CALL CRKXFEM_RREST(INOD_CRKXFEM,IEL_CRKXFEM,NODLEVXF)
-      IF(ICRACK3D > 0) CALL CRKXFEM_RRESTANIM()
+      CALL CRKXFEM_RRESTANIM()
       IF(IALEFVM  > 0) CALL READ_DB(FCELL ,6*NUMELS)
       IF(IALELAG  > 0) CALL ALELAG_RREST()
 C--------------------------------------
@@ -1544,7 +1544,7 @@ C------------------------------------------------
       CALL LECTUR(  ICODE ,  ISKEW ,  ISKWN ,  IXTG  ,   IXS ,
      2              IXQ ,    IXC ,    IXT ,    IXP ,     IXR ,
      3              ITAB ,   ITABM1  ,NPC,     IPARG,    IGRV ,
-     4              LGRAV ,IPARI,   LSENSOR  ,
+     4              LGRAV ,IPARI,
      5              NPBY ,   LPBY    ,ILINK,   LLINK  ,LINALE ,
      6              NEFLSW , NNFLSW , ICUT ,   IAF(IF01),
      7              X  ,     V  ,     VR  ,    MS   ,IN  ,
@@ -1557,7 +1557,8 @@ C------------------------------------------------
      E              IPM   ,H3D_DATA, MULTI_FVM,FLAG_CST_AMS,
      F              IGRPART,TAG_SKINS6,ICFIELD,LCFIELD,TAGSLV_RBY,
      G              IPART_DYNAIN,MDS_LABEL,MDS_OUTPUT_TABLE,MDS_NMAT,
-     H              MAX_DEPVAR,MDS_NDEPSVAR,STACK,IBCL,ILOADP,LLOADP)
+     H              MAX_DEPVAR,MDS_NDEPSVAR,STACK,IBCL,ILOADP,LLOADP,
+     I              SENSOR_TAB)
 
 C------------------------------------------------
 C Close & Delete scratch file
@@ -1610,7 +1611,7 @@ C------------------------------------------------
 C     ABF file check if external abf program available & initpipes 
 C------------------------------------------------
 C
-C number of writen abf_files .abf, _a.abf .....
+C number of written abf_files .abf, _a.abf .....
       IF (ISPMD==0) THEN
 C
       NB_OF_FILES = 1

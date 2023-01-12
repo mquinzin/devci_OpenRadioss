@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  M12LAW                        source/materials/mat/mat012/m12law.F
 Chd|-- called by -----------
@@ -40,7 +40,8 @@ Chd|====================================================================
      8                   DEFP ,NGL  ,SEQ_OUTPUT  ,NEL  ,EOSTYP,
      9                   RHO0 ,AMU  ,AMU2  ,ESPE ,DF   ,
      A                   PSH  ,PNEW ,DPDM  ,DPDE ,RHO  ,
-     B                   TEMP ,ECOLD,BUFMAT,NPC  ,TF)
+     B                   TEMP ,ECOLD,BUFMAT,NPC  ,TF   ,
+     C                   TSAIWU)
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -72,7 +73,8 @@ C-----------------------------------------------
      .   VNEW(MVSIZ), DVOL(MVSIZ), SSP(MVSIZ), 
      .   D1(MVSIZ), D2(MVSIZ), D3(MVSIZ),D4(MVSIZ),D5(MVSIZ),D6(MVSIZ),
      .   SOLD1(MVSIZ), SOLD2(MVSIZ), SOLD3(MVSIZ), SOLD4(MVSIZ),
-     .   SOLD5(MVSIZ), SOLD6(MVSIZ),SIGY(*),DEFP(*),SEQ_OUTPUT(*)
+     .   SOLD5(MVSIZ), SOLD6(MVSIZ),SIGY(*),DEFP(*),SEQ_OUTPUT(*),
+     .   TSAIWU(MVSIZ)
       my_real
      .   RHO0(NEL), AMU(NEL)  , AMU2(NEL), ESPE(NEL), DF(NEL) ,
      .   PSH(NEL) , PNEW(NEL) , DPDM(NEL), DPDE(NEL), RHO(NEL),
@@ -509,6 +511,7 @@ C---------------------
      .    + TWO*F12(I)*T1(I)*T2(I) + TWO*F13(I)*T1(I)*T3(I)
      .    + TWO*F23(I)*T2(I)*T3(I)
          DAM(I,4)=WVEC(I)
+         TSAIWU(I)=MIN(WVEC(I)/SIGMY(I),ONE)
 !!        CRITERION / (EQUIVALENT STRESS) FOR OUTPUT - TSAI-WU -
 !!         SEQ_OUTPUT(I) = WVEC(I)
       ENDDO

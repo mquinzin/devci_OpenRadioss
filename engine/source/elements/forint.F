@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FORINT                        source/elements/forint.F      
 Chd|-- called by -----------
@@ -78,35 +78,33 @@ Chd|====================================================================
      3    ELBUF     ,WA        ,VAL2       ,VEUL      ,FV        ,
      4    STIFN     ,STIFR     ,FSKY       ,TF        ,BUFMAT    ,
      5    PARTSAV   ,D         ,DR         ,EANI      ,ELBUF_TAB ,
-     6    TANI      ,FANI      ,FSAV       ,SENSOR    ,NLOC_DMG  ,
+     6    TANI      ,FANI      ,FSAV       ,SENSOR_TAB,NLOC_DMG  ,
      7    SKEW      ,ANIN      ,DT2T       ,BUFGEO    ,ITAB      ,
      8    IADS      ,IADQ      ,IADT       ,IADP      ,MATPARAM_TAB,
-     9    IADR      ,IPARG     ,ALE_CONNECT,NPC       ,SENSOR_TAB,
+     9    IADR      ,IPARG     ,ALE_CONNECT,NPC       ,
      A    IXS       ,IXQ       ,IXT        ,IXP       ,
      B    IXR       ,NELTST    ,IPARI      ,
-     C    LSENSOR   ,ITYPTST   ,NSTRF      ,IPART     ,
+     C    ITYPTST   ,NSTRF      ,IPART     ,
      D    IPARTS    ,IPARTQ    ,IPARTT     ,IPARTP    ,
-     E    IPARTR    ,IPARTUR   ,FR_WAVE    ,IXUR      ,
+     E    IPARTR    ,IPARTUR   ,FR_WAVE    ,IXUR      ,RBY       ,
      F    IADUR     ,SECFCUM   ,AGRAV      ,IGRV      ,LGRAV     ,
-     G    RBY       ,
-     H    IXS10     ,
-     I    IXS20     ,IADS10    ,IADS20     ,IXS16     ,IADS16    ,
-     J    W16       ,FSKYM     ,MSNF       ,IGEO      ,IPM       ,
-     K    XSEC      ,ITASK     ,
-     M                                                 TEMP      ,
-     N    FTHE      ,FTHESKY               ,IGROUNC   ,NGROUNC   ,
-     O    GRESAV    ,GRTH      ,IGRTH      ,XDP       ,MSSA      ,
-     P    DMELS     ,MSTR      ,DMELTR     ,MSP       ,DMELP     ,
-     Q    MSRT      ,DMELRT    ,TABLE      ,VF        ,AF        ,
-     R    DF        ,WF        ,FFSKY      ,AFGLOB    ,NBSDVOIS  ,
-     S    NERCVOIS  ,NESDVOIS  ,LERCVOIS   ,LESDVOIS  ,PHI1      ,
-     T    PHI2      ,MSF       ,NODFT      ,NODLT     ,
-     U    FLG_KJ2   ,POR       ,ICONTACT   ,IFOAM     ,VARNOD    ,
-     V    KXIG3D    ,IXIG3D    ,KNOT       ,WIGE      ,CONDN     ,
-     W    CONDNSKY  ,DIMFB     , FBSAV6    ,STABSEN   ,TABSENSOR ,
-     Y    TAGPRT_SMS,ITAGND    ,MS_2D      ,NALE      ,STRESSMEAN,
-     Z    KNOTLOCPC ,KNOTLOCEL ,SUBSET     ,FLAG_SLIPRING_UPDATE,FLAG_RETRACTOR_UPDATE,
-     1    H3D_DATA) 
+     G    IXS10     ,
+     H    IXS20     ,IADS10    ,IADS20     ,IXS16     ,IADS16    ,
+     I    W16       ,FSKYM     ,MSNF       ,IGEO      ,IPM       ,
+     J    XSEC      ,ITASK     ,TEMP       ,
+     K    FTHE      ,FTHESKY               ,IGROUNC   ,NGROUNC   ,
+     M    GRESAV    ,GRTH      ,IGRTH      ,XDP       ,MSSA      ,                                                                  
+     N    DMELS     ,MSTR      ,DMELTR     ,MSP       ,DMELP     ,
+     O    MSRT      ,DMELRT    ,TABLE      ,VF        ,AF        ,
+     P    DF        ,WF        ,FFSKY      ,AFGLOB    ,NBSDVOIS  ,
+     Q    NERCVOIS  ,NESDVOIS  ,LERCVOIS   ,LESDVOIS  ,PHI1      ,
+     R    PHI2      ,MSF       ,NODFT      ,NODLT     ,
+     S    FLG_KJ2   ,POR       ,ICONTACT   ,IFOAM     ,VARNOD    ,
+     T    KXIG3D    ,IXIG3D    ,KNOT       ,WIGE      ,CONDN     ,
+     U    CONDNSKY  ,DIMFB     , FBSAV6    ,STABSEN   ,TABSENSOR ,
+     V    TAGPRT_SMS,ITAGND    ,MS_2D      ,NALE      ,STRESSMEAN,
+     W    KNOTLOCPC ,KNOTLOCEL ,SUBSET     ,FLAG_SLIPRING_UPDATE,FLAG_RETRACTOR_UPDATE,
+     Y    H3D_DATA) 
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -163,7 +161,7 @@ C-----------------------------------------------
      .   IPARTS(*) ,IPARTQ(*) ,IPARTT(*) ,IPARTP(*) ,
      .   IPARTR(*) ,IPARTUR(*) ,
      .   IADS(8,*),IADQ(4,*),IADT(2,*),
-     .   IADP(2,*),IADR(3,*),LSENSOR(NSENSI,*),
+     .   IADP(2,*),IADR(3,*),
      .   NELTST,ITYPTST,IXUR(*),IADUR(4,*),
      .   IXS10(6,*),IXS20(12,*),IADS10(6,*),IADS20(12,*),
      .   IXS16(8,*),IADS16(8,*),ITASK,IGROUNC(*),
@@ -179,7 +177,7 @@ C-----------------------------------------------
      .   FSAV(NTHVKI,*) ,WA(*),
      .   FV(*),VAL2(*),RBY(*),
      .   FANI(3,*) ,PARTSAV(*)    ,STIFN(*) ,STIFR(*),ANIN(*)    ,
-     .   FSKY(*)  ,SENSOR(NSENSR,*),TANI(*),EANI(*),BUFGEO(*),
+     .   FSKY(*),TANI(*),EANI(*),BUFGEO(*),
      .   DT2T, SECFCUM(7,NUMNOD,NSECT),W16(*), FSKYM(*),
      .   MSNF(*),XSEC(4,3,NSECT),
      .   TEMP(*),FTHE(*), FTHESKY(*),
@@ -209,11 +207,11 @@ C-----------------------------------------------
      .   L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12,L13,L14,L15,L16,
      .   L17,L18,L19,L20,L21,L22,L23,L24,L25,L26,L27,L28,L29,L30,
      .   ICP,ICS,IMATVIS,IEXPAN,NPTS,MPT,NPTT,NPTR,NPT0,IG,OFF_IGRTH,
-     .   NCTRL,DIM6,IPARSENS,ISECT,GAMA(6),PX,PY,PZ,ISENS_ENERGY,TYP
+     .   NCTRL,DIM6,IPARSENS,ISECT,GAMA(6),PX,PY,PZ,ISENS_ENERGY
       my_real
      .   BID,QMVBID
       my_real
-     .   VOLN(MVSIZ)  !local array to get rid of equivalence statments
+     .   VOLN(MVSIZ)  !local array to get rid of equivalence statements
       my_real,
      .   ALLOCATABLE, DIMENSION(:,:) :: FX,FY,FZ,MX,MY,MZ
       TYPE(G_BUFEL_) ,POINTER :: GBUF
@@ -251,8 +249,7 @@ C  IOUTPRT for bilan assemblage, not need for spring which call *bilan each cycl
 !
       ISENS_ENERGY = 0
       DO I=1,NSENSOR
-        TYP = LSENSOR(2,I)
-        IF (TYP == 14) ISENS_ENERGY = 1 ! save internal/kinetic energy (PARTSAV)
+        IF (SENSOR_TAB(I)%TYPE == 14) ISENS_ENERGY = 1 ! save internal/kinetic energy (PARTSAV)
       ENDDO ! DO I=1,NSENSOR
 C
        OFF_IGRTH = 0
@@ -279,7 +276,7 @@ c------------------------
       DO IG = 1, NGROUNC
         NG = IGROUNC(IG)         
         NGR_SENSOR = NG   
-C       temporaly used to avoid pass KTBUF_STR everywhere              
+C       temporarily used to avoid pass KTBUF_STR everywhere
         NG_IMP = NG
 
         IF (IPARG(8,NG)==1) GOTO 250                                 
@@ -337,7 +334,7 @@ C----6---------------------------------------------------------------7---------8
           ENDIF                            
 !
           IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .     CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTS(NF1) ,SUBSET ,IPRI)
+     .     CALL SENSOR_ENERGY_PART(IPARTS(NF1) ,SUBSET ,IPRI)
 C---------
           IF(ISOLNOD==4.AND.(ISROT==0.OR.ISROT==3))THEN                            
 C---------
@@ -355,8 +352,7 @@ C---------
      B        TEMP    ,FTHE      ,FTHESKY  ,IEXPAN     ,GRESAV  ,
      C        GRTH    ,IGRTH(NF1),MSSA(NF1),DMELS(NF1) ,TABLE   ,
      D        XDP     ,VARNOD    ,VOLN     ,CONDN      ,CONDNSKY,
-     E        D          ,SENSOR  ,
-     F        LSENSOR ,IPRI      ,MATPARAM_TAB,IBID)
+     E        D       ,SENSOR_TAB,IPRI      ,MATPARAM_TAB,IBID)
 C
             IF (NSECT > 0) THEN 
               K0=NSTRF(25)                                             
@@ -400,7 +396,7 @@ c---------
      B       STIFR  ,D   ,GRESAV  ,GRTH        ,IGRTH(OFF_IGRTH+NF1),  
      C       TABLE  ,MSSA(NF1),DMELS(NF1),IGEO ,XDP,
      D       VOLN    ,CONDN    ,CONDNSKY  , VARNOD, 
-     E       ITAGND  ,SENSOR   ,LSENSOR   ,IPRI     ,MATPARAM_TAB,IBID)                        
+     E       ITAGND  ,SENSOR_TAB,IPRI     ,MATPARAM_TAB,IBID)                        
 c
             IF(NSECT>0)THEN 
               K0=NSTRF(25)                                             
@@ -485,7 +481,6 @@ c
      I         GRTH     ,IGRTH(OFF_IGRTH+NF1),TABLE      ,IGEO       ,
      J         VOLN     ,CONDN    ,CONDNSKY  ,
      K         ITASK    ,IPRI     ,MATPARAM_TAB,IBID) 
-!,SENSOR   ,LSENSOR  
 c
               IF(NSECT>0)THEN
                K0=NSTRF(25)
@@ -715,8 +710,7 @@ C------------------------- Isolid=19 for Salim
      D         TEMP       ,FTHE     ,FTHESKY  ,IEXPAN     ,GRESAV    ,
      E         GRTH       ,IGRTH(NF1),MSSA(NF1),DMELS(NF1),TABLE     ,
      F         IGEO       ,XDP      ,VOLN      ,CONDN    ,CONDNSKY   ,
-     G         D         ,SENSOR     ,
-     H         LSENSOR    ,IPRI     ,MATPARAM_TAB,IBID)
+     G         D          ,IPRI     ,MATPARAM_TAB,IBID)
             ELSE
 C-------------------------
 C             SOLID HE8<->HE8
@@ -737,8 +731,7 @@ C-------------------------
      D         TEMP       ,FTHE     ,FTHESKY  ,IEXPAN     ,GRESAV    ,
      E         GRTH       ,IGRTH(NF1),MSSA(NF1),DMELS(NF1),TABLE     ,
      F         IGEO       ,XDP      ,VOLN      ,CONDN    ,CONDNSKY   ,
-     G         D         ,SENSOR     ,
-     H         LSENSOR    ,IPRI     ,MATPARAM_TAB,IBID)
+     G         D         ,SENSOR_TAB,IPRI     ,MATPARAM_TAB,IBID)
             ENDIF !(IPARG(36,NG)==3)   (IMPL_S /= 0)
 c
             IF (NSECT > 0) THEN
@@ -805,8 +798,8 @@ c
      I         ITASK     ,ISTRA   ,TEMP    ,FTHE,
      J         FTHESKY  ,IEXPAN    ,IGEO    ,NPT     ,GRESAV  ,
      K         GRTH     ,IGRTH(NF1),MSSA(NF1),DMELS(NF1),TABLE,
-     L         XDP      ,VOLN      ,CONDN    ,CONDNSKY,SENSOR ,
-     M         LSENSOR  ,IPRI      ,MATPARAM_TAB,IBID)
+     L         XDP      ,VOLN      ,CONDN    ,CONDNSKY,SENSOR_TAB,
+     M         IPRI      ,MATPARAM_TAB,IBID)
 C
             IF (NSECT > 0) THEN
               K0=NSTRF(25)
@@ -881,8 +874,7 @@ c            IF (NPTR==0) NPTR=IINT
      J         FTHESKY    ,IEXPAN    ,IGEO     ,NPT0       ,GRESAV     ,
      K         GRTH       ,IGRTH(NF1),MSSA(NF1),DMELS(NF1) ,TABLE      ,
      L         XDP        ,VOLN      ,CONDN    ,CONDNSKY   ,
-     M         D        ,SENSOR     ,LSENSOR    ,
-     N         IPRI       ,MATPARAM_TAB,IBID)
+     M         D          ,SENSOR_TAB,IPRI       ,MATPARAM_TAB,IBID)
 C
             IF (NSECT > 0) THEN
               K0=NSTRF(25)
@@ -914,7 +906,7 @@ C----6---------------------------------------------------------------7---------8
           ELSEIF(IGTYP>=29)THEN
 !
             IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .       CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTS(NF1) ,SUBSET ,IPRI)
+     .       CALL SENSOR_ENERGY_PART(IPARTS(NF1) ,SUBSET ,IPRI)
 C-------------------------
 C           USER SOLID PROPERTY
 C-------------------------
@@ -954,7 +946,7 @@ C
      E         FTHESKY ,IEXPAN  ,GRESAV  ,GRTH    ,IGRTH(NF1),
      F         MSSA(NF1),DMELS(NF1),TABLE,IGEO    ,XDP    ,
      G         CONDN     ,CONDNSKY  ,
-     H         D         ,TAGPRT_SMS,SENSOR     ,LSENSOR    ,IPRI      ,
+     H         D         ,TAGPRT_SMS,SENSOR_TAB,IPRI      ,
      I         NALE      ,NLOC_DMG  ,MATPARAM_TAB,IBID)
 C
             ELSE
@@ -986,10 +978,9 @@ C-------------------------
      J        VF           ,AF         ,DF        ,WF          ,FFSKY     ,        
      K        AFGLOB       ,MSF        ,IPARG(1,NG) ,XDP        ,
      M        POR          ,ICONTACT   ,IFOAM     ,VOLN        ,CONDN     ,
-     N        CONDNSKY     ,AGRAV      ,IGRV      ,LGRAV       ,SENSOR    ,
-     O        LSENSOR      ,SKEW       ,
-     P        NALE         ,D          ,IPRI        ,NLOC_DMG       ,MATPARAM_TAB,
-     Q        IBID)
+     N        CONDNSKY     ,AGRAV      ,IGRV      ,LGRAV       ,SENSOR_TAB,
+     O        SKEW         ,NALE       ,D         ,IPRI        ,NLOC_DMG  ,
+     Q        MATPARAM_TAB ,IBID       )
 
             ENDIF
 C
@@ -1067,7 +1058,7 @@ C----6---------------------------------------------------------------7---------8
              OFF_IGRTH = NUMELS
 !
           IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .     CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTQ(NF1) ,SUBSET ,IPRI)
+     .     CALL SENSOR_ENERGY_PART(IPARTQ(NF1) ,SUBSET ,IPRI)
           IF(JHBE==17 .OR. (N2D==1.AND.JHBE==22)) THEN
           
             CALL Q4FORC2(
@@ -1103,7 +1094,7 @@ C----6---------------------------------------------------------------7---------8
 C
 !
           IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .     CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTT(NF1) ,SUBSET ,IPRI)
+     .     CALL SENSOR_ENERGY_PART(IPARTT(NF1) ,SUBSET ,IPRI)
 c
           CALL TFORC3(ELBUF_TAB(NG),
      1 JFT         ,JLT         ,PM          ,GEO         ,IXT        ,
@@ -1149,7 +1140,7 @@ C----6---------------------------------------------------------------7---------8
 C
 !
           IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .     CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTP(NF1) ,SUBSET ,IPRI)
+     .     CALL SENSOR_ENERGY_PART(IPARTP(NF1) ,SUBSET ,IPRI)
           CALL PFORC3(ELBUF_TAB(NG),
      1       JFT           ,JLT         ,NEL    ,MTN  ,ISMSTR,
      2      PM         ,IXP(1,NF1),X       ,
@@ -1162,7 +1153,7 @@ C
      9      IPM        ,BUFMAT    ,NPT     ,NPC     ,TF     ,
      A      GRESAV     ,GRTH      ,IGRTH(OFF_IGRTH+NF1),MSP(NF1),DMELP(NF1),
      C      IPRI       ,ITASK     ,JTHE    ,TEMP     ,FTHE      ,
-     D      FTHESKY    ,IEXPAN    ,H3D_DATA)
+     D      FTHESKY    ,IEXPAN    ,H3D_DATA,IN      )
 C
              IF (NSECT > 0) THEN
               K0=NSTRF(25)
@@ -1198,7 +1189,7 @@ C----6---------------------------------------------------------------7---------8
              OFF_IGRTH = NUMELS+NUMELQ+NUMELC+NUMELT+NUMELP
 c
           IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .     CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTR(NF1) ,SUBSET ,IPRI)
+     .     CALL SENSOR_ENERGY_PART(IPARTR(NF1) ,SUBSET ,IPRI)
          IF(IGTYP == 23) THEN
               CALL R23FORC3(ELBUF_TAB(NG),
      1      JFT        ,JLT         ,NEL          ,MTN       ,IGEO      ,
@@ -1206,7 +1197,7 @@ c
      3      XDP       ,A          ,NPC         ,TF           ,SKEW      ,
      4      FLG_KJ2   ,VR         ,AR          ,V            ,DT2T      ,
      5      NELTST    ,ITYPTST    ,STIFN       ,STIFR        ,MS        ,
-     6      IN        ,FSKY       ,IADR        ,SENSOR       ,LSENSOR   ,
+     6      IN        ,FSKY       ,IADR        ,SENSOR_TAB   ,
      7      OFFSET    ,  ANIN       ,PARTSAV     ,IPARTR(NF1)  ,TANI(K1)  ,
      8      FR_WAVE   ,BUFMAT     ,BUFGEO      ,PM           ,RBY       ,
      9      FX(1,1)   , FX(1,2)    ,FY(1,1)     ,FY(1,2)      ,FZ(1,1)   ,
@@ -1217,18 +1208,18 @@ c
      E      H3D_DATA)
          ELSE
           CALL RFORC3(ELBUF_TAB(NG),
-     1      JFT        ,JLT         ,NEL          ,MTN       ,IGEO      ,
-     2      GEO        ,IXR(1,NF1)  ,X            ,TABLE     ,XDP        ,
-     3      A          ,NPC         ,TF           ,SKEW      ,FLG_KJ2    ,
-     4      VR         ,AR          ,V            ,DT2T      ,NELTST     ,
-     5      ITYPTST     ,STIFN        ,STIFR     ,MS        ,IN         ,
-     6      FSKY        ,IADR        ,SENSOR     ,LSENSOR   , OFFSET    ,
-     7      ANIN        ,PARTSAV     ,IPARTR(NF1) ,TANI(K1) , FR_WAVE   ,
-     8      BUFMAT      ,BUFGEO      ,PM          ,RBY      , FX(1,1)   ,
-     9      FX(1,2)     ,FY(1,1)     ,FY(1,2)     ,FZ(1,1)  ,FZ(1,2)    ,
+     1      JFT        ,JLT         ,NEL         ,MTN       ,IGEO      ,
+     2      GEO        ,IXR(1,NF1)  ,X           ,TABLE     ,XDP        ,
+     3      A          ,NPC         ,TF          ,SKEW      ,FLG_KJ2    ,
+     4      VR         ,AR          ,V           ,DT2T      ,NELTST     ,
+     5      ITYPTST    ,STIFN       ,STIFR       ,MS         ,IN         ,
+     6      FSKY       ,IADR        ,SENSOR_TAB  ,OFFSET    ,
+     7      ANIN       ,PARTSAV     ,IPARTR(NF1) ,TANI(K1)  , FR_WAVE   ,
+     8      BUFMAT     ,BUFGEO      ,PM          ,RBY       , FX(1,1)   ,
+     9      FX(1,2)    ,FY(1,1)     ,FY(1,2)     ,FZ(1,1)   ,FZ(1,2)    ,
      A      MX(1,1)    ,MX(1,2)     ,MY(1,1)      ,MY(1,2)  ,MZ(1,1)   ,
      B      MZ(1,2)    ,GRESAV      ,GRTH ,IGRTH(OFF_IGRTH+NF1),MSRT(NF1) ,
-     C      DMELRT(NF1), ITASK       ,H3D_DATA    ,SENSOR_TAB)
+     C      DMELRT(NF1), ITASK       ,H3D_DATA    )
              
          ENDIF
 C
@@ -1272,7 +1263,7 @@ c              K = 1+2*(NSECT+NRBODY+NRWALL)
             PZ = IGEO(43,IPARG(62,NG))
 !
           IF (ISENS_ENERGY == 1 .AND. IPRI == 0)
-     .     CALL SENSOR_ENERGY_PART(LSENSOR ,IPARTS(NF1) ,SUBSET ,IPRI)
+     .     CALL SENSOR_ENERGY_PART(IPARTS(NF1) ,SUBSET ,IPRI)
 
             CALL IG3DUFORC3(ELBUF_TAB,   NG,
      1           JFT     ,JLT     ,NFT     ,NEL     ,IXS      ,

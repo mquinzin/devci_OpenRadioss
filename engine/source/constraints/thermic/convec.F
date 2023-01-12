@@ -1,35 +1,40 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  CONVEC                        source/constraints/thermic/convec.F
 Chd|-- called by -----------
 Chd|        RESOL                         source/engine/resol.F         
 Chd|-- calls ---------------
 Chd|        FINTER                        source/tools/curve/finter.F   
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE CONVEC (IBCV  ,FCONV    ,NPC   ,TF    , X      ,
-     1                   TEMP   , SENSOR   ,LSENSOR ,FTHE   ,IAD ,
+     1                   TEMP   , SENSOR_TAB ,FTHE   ,IAD ,
      2                   FTHESKY)
+C-----------------------------------------------
+C   M o d u l e s
+C-----------------------------------------------
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -48,18 +53,16 @@ C-----------------------------------------------
 #include      "parit_c.inc"
 #include      "scr_thermal_c.inc"
 #include      "thermal_c.inc"
-C-----------------------------------------------
-C   E x t e r n a l  F u n c t i o n s
-C-----------------------------------------------
 C-----------------------------------------------,
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER NPC(*),IAD(4,*)
-      INTEGER IBCV(NICONV,*),LSENSOR(NSENSI,*)
+      INTEGER IBCV(NICONV,*)
 C     REAL
       my_real
-     .   FCONV(LFACTHER,*), TF(*), X(3,*), SENSOR(NSENSR,*),
+     .   FCONV(LFACTHER,*), TF(*), X(3,*), 
      .   FTHESKY(LSKY), TEMP(*), FTHE(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) ,INTENT(IN) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -101,9 +104,9 @@ C
          IF(ISENS == 0)THEN
             TS = TT*THEACCFACT - STARTT
          ELSE 
-            STARTT = STARTT + SENSOR(2,ISENS)
-            STOPT  = STOPT  + SENSOR(2,ISENS)           
-            TS = TT*THEACCFACT -(STARTT + SENSOR(2,ISENS))      
+            STARTT = STARTT + SENSOR_TAB(ISENS)%TSTART
+            STOPT  = STOPT  + SENSOR_TAB(ISENS)%TSTART       
+            TS = TT*THEACCFACT -(STARTT + SENSOR_TAB(ISENS)%TSTART)      
          ENDIF       
 C
          IF(TT*THEACCFACT < STARTT) CYCLE
@@ -199,9 +202,9 @@ C-------------------------
           IF(ISENS == 0)THEN
              TS = TT*THEACCFACT - STARTT
           ELSE 
-             STARTT = STARTT + SENSOR(2,ISENS)
-             STOPT  = STOPT  + SENSOR(2,ISENS)          
-             TS = TT*THEACCFACT -(STARTT + SENSOR(2,ISENS))      
+             STARTT = STARTT + SENSOR_TAB(ISENS)%TSTART
+             STOPT  = STOPT  + SENSOR_TAB(ISENS)%TSTART      
+             TS = TT*THEACCFACT -(STARTT + SENSOR_TAB(ISENS)%TSTART)      
           ENDIF       
           IFLAG = 1
           IF(TT*THEACCFACT < STARTT)  IFLAG = 0

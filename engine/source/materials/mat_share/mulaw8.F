@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  MULAW8                        source/materials/mat_share/mulaw8.F
 Chd|-- called by -----------
@@ -137,7 +137,7 @@ C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER NPAR,IADBUF,NFUNC,I,J,II,IPT,JPT,IR,IP,ISRATE,
      .  IFUNC(MAXFUNC),IDUM1,IFAIL(MVSIZ),MATF(MVSIZ),IC,IFLAG,
-     .  NVARF,NVARF_MAX,MX, IEXPAN8,JJ(6)
+     .  NVARF,NVARF_MAX,MX, IEXPAN8,JJ(6),INLOC
       my_real 
      .C1(MVSIZ),PNEW(MVSIZ),PP(MVSIZ),DEFP(MVSIZ),
      .EP1(MVSIZ),EP2(MVSIZ),EP3(MVSIZ),EP4(MVSIZ),EP5(MVSIZ),EP6(MVSIZ),
@@ -169,6 +169,7 @@ C-----------------------------------------------
       CHARACTER IUSER_KEY*ncharline
 C=======================================================================
       MX = MAT(LFT)
+      INLOC  = IPM(253,MX)
       NPAR   = IPM(9,MX)
       IADBUF = IPM(7,MX)
       NFUNC  = IPM(10,MX)
@@ -530,7 +531,7 @@ C-------------------
      9    SSPP     ,VIS      ,UVAR     ,OFF      ,NGL      ,IPT   ,
      A    IPM      ,MAT      ,EPSD     ,IPLA     ,SIGY     ,LBUF%PLA,
      B    DPLA     ,ET       ,BIDON    ,BIDON    ,AMU      ,CST1  ,
-     C    NVARTMP  ,VARTMP   ,LBUF%SIGB)
+     C    NVARTMP  ,VARTMP   ,LBUF%SIGB,LBUF%DMG ,INLOC    ,LBUF%PLANL)
 c
           DEFP(1:LLT)   =  LBUF%PLA(1:LLT)
 c

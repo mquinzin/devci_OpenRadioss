@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 
 Chd|====================================================================
 Chd|  SPMD_EXCH_I24                 source/mpi/interfaces/spmd_exch_i24.F
@@ -448,8 +448,8 @@ C               2/ This Edge is impacting, eg fictive node has IRTLM not NULL
 C
 C     Note for Parallelism - at this Stage Remote nodes & nodes on Marter processor are merged.
 C     Fictive nodes (& secnd surface IRTS) are only affected to 1 SPMD Domain. They can only be
-C     either Local or remote (not neighbourg in term of SPMD domain).
-C     One can start to merge here and spred the info to the neighboug domains.
+C     either Local or remote (not neighbour in term of SPMD domain).
+C     One can start to merge here and spread the info to the neighboug domains.
       IF(INT24E2EUSE == 1)THEN
          DO NI=1,NBINTC
 	    NIN = INTLIST(NI)
@@ -889,7 +889,7 @@ C--------------keep  STIF_OLDFI(NIN)%P(1,
                     IRTLM_FI(NIN)%P(1,IDEB(NIN)+K)=BBUFR(IADR(P)+L)
                     IRTLM_FI(NIN)%P(2,IDEB(NIN)+K)=BBUFR(IADR(P)+L+1)
                     TIME_SFI(NIN)%P(IDEB(NIN)+K)=BBUFR(IADR(P)+L+2)
-C Same initialiation than in i24optcd :
+C Same initialization than in i24optcd :
 C           copy SECND_FRFI(1,2,3) into SECND_FRFI(4,5,6) & Flush SECND_FRFI to zero
                     SECND_FRFI(NIN)%P(1,IDEB(NIN)+K)=ZERO
                     SECND_FRFI(NIN)%P(2,IDEB(NIN)+K)=ZERO
@@ -912,7 +912,7 @@ C           copy SECND_FRFI(1,2,3) into SECND_FRFI(4,5,6) & Flush SECND_FRFI to 
                     IRTLM_FI(NIN)%P(1,IDEB(NIN)+K)=BBUFR(IADR(P)+L)
                     IRTLM_FI(NIN)%P(2,IDEB(NIN)+K)=BBUFR(IADR(P)+L+1)
                     TIME_SFI(NIN)%P(IDEB(NIN)+K)=BBUFR(IADR(P)+L+2)
-C Same initialiation than in i24optcd :
+C Same initialization than in i24optcd :
 C           copy SECND_FRFI(1,2,3) into SECND_FRFI(4,5,6) & Flush SECND_FRFI to zero
                     SECND_FRFI(NIN)%P(1,IDEB(NIN)+K)=ZERO
                     SECND_FRFI(NIN)%P(2,IDEB(NIN)+K)=ZERO

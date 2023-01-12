@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS38                      source/materials/mat/mat038/sigeps38.F
 Chd|-- called by -----------
@@ -372,7 +372,7 @@ C PRINCIPAL STRAINS FORMULATION
             ENDDO
           ENDDO
         ELSE
-C           Eigenvalues needed to be calcultated in double precision
+C           Eigenvalues needed to be calculated in double precision
 C           for a simple precision executing
           IF (IRESP==1) THEN
             CALL VALPVECDP_V(AV,EARV,DIRPRV,NEL)
@@ -682,7 +682,7 @@ C AND UNLOADING FOLLOW THE SAME PATH
 C CASE OF IUNLOAD==0 ( UNLOAD BETWEEN THE IUNLOAD CURVE (UPPER LIMIT)
 C AND THE FIRST CURVE (LOWER LIMIT )- STATIC- 
 C IF UNLOADING CURVES ARE SPECIFIED THEY WILL BE USED FOR INTERPOLATION
-C OTHERWISE STARTER INITILIZES THEM TO THE DEFAULT CURVE NUMBER I.E. THE
+C OTHERWISE STARTER INITIALIZES THEM TO THE DEFAULT CURVE NUMBER I.E. THE
 C FIRST LOADING (STATIC) CURVE
                DO L=1,NFUNC1
                 IF(EDOT0(I,J)<=EDOT(L)) GOTO 10

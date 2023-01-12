@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_MAT36                 source/materials/mat/mat036/hm_read_mat36.F
 Chd|-- called by -----------
@@ -143,6 +143,16 @@ Card3
       CALL HM_GET_FLOATV('MAT_EFIB'     ,EINF    ,IS_AVAILABLE, LSUBMODEL, UNITAB)
       CALL HM_GET_FLOATV('MAT_C'        ,CE      ,IS_AVAILABLE, LSUBMODEL, UNITAB)
 C-----------------------------------------------
+      ! Poisson's ratio check
+      IF (NU < ZERO .OR. NU >= HALF) THEN
+        CALL ANCMSG(MSGID=49,
+     .              MSGTYPE=MSGERROR,
+     .              ANMODE=ANINFO_BLIND_2,
+     .              R1=NU,
+     .              I1=ID,
+     .              C1=TITR)
+      ENDIF
+c
       IF(NRATE > 100)THEN
         CALL ANCMSG(MSGID=215, MSGTYPE=MSGERROR, ANMODE=ANINFO,
      .               I1=36,
@@ -234,7 +244,7 @@ c-----------------------------------------------
      .              C2=TITR)
       END IF
 C      
-      IF (EPSR1 == ZERO .AND. EPSR1 == ZERO .AND. EPSF == ZERO) THEN
+      IF (EPSR1 == ZERO .AND. EPSR2 == ZERO .AND. EPSF == ZERO) THEN
         IF (EPSMAX == ZERO) THEN
           IFAIL = 0
         ELSE
@@ -247,6 +257,10 @@ c     IFAIL = 0 => no failure at all inside material
 c     IFAIL = 1 => only failure vs max plastic strain
 c     IFAIL = 2 => failure + damage vs principal tensile strain
 c
+      IF (IFAIL > 0) THEN 
+        MTAG%G_DMG = 1
+        MTAG%L_DMG = 1        
+      ENDIF
       IF (EPSMAX== ZERO) EPSMAX= INFINITY
       IF (EPSR1 == ZERO) EPSR1 = INFINITY
       IF (EPSR2 == ZERO) EPSR2 = TWO*INFINITY

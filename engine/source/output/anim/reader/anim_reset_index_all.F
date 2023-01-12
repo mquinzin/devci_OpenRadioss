@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ANIM_RESET_INDEX_ALL          source/output/anim/reader/anim_reset_index_all.F
 Chd|-- called by -----------
@@ -215,6 +215,32 @@ C
           ENDDO
         ENDDO
       ENDIF ! IF (IDAMAFULL == 1)
+!---    
+      IF (ITSAIWUALL == 1) THEN
+!   ...TSAIWU/ALL
+        IDX = 14597 + 4*MX_PLY_ANIM
+        DO I=1,100
+          ANIM_CE(IDX + I) = 0
+        ENDDO
+      ELSEIF (ITSAIWUALL == 2) THEN 
+!   ...TSAIWU/ALL/ALL
+        IDX = 14897 + 4*MX_PLY_ANIM
+        DO I=1,100
+          DO J=1,10
+            IUS = 10*(I-1)+J
+            ANIM_CE(IDX + IUS) = 0
+          ENDDO
+        ENDDO
+      ENDIF
+
+      IF (ITSAIWUFULL > 0) THEN
+!   ...TSAIWU/N1/ALL
+        IDX = 14897 + 4*MX_PLY_ANIM
+        DO J=1,10
+          IUS = 10*(ITSAIWUFULL-1) + J
+          ANIM_CE(IDX + IUS) = 0
+        ENDDO        
+      ENDIF ! IF (IWPLAFULL == 1)
 C-----------------------------------------------
       RETURN
       END

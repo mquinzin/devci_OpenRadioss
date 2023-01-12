@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_TRIA                  source/elements/reader/hm_read_tria.F
 Chd|-- called by -----------
@@ -116,8 +116,7 @@ C-----------------------------------------------
       my_real
      .   BID,FAC_L
       INTEGER I, J, I1, I2, ID,IDS,IPID,MT,N,MID,PID,UID,JC,STAT,IPARTTG_TMP
-      INTEGER INDEX_PART,OFF_DEF(NSUBMOD),OFF_NOD(NSUBMOD),OFF_EL(NSUBMOD),
-     .        OFF_PART(NSUBMOD)
+      INTEGER INDEX_PART
       CHARACTER*40 MESS
       DATA MESS /'2D TRIANGULAR ELEMENT DEFINITION '/
       INTEGER ISH3N,KK,IFLAGUNIT
@@ -129,15 +128,6 @@ C-----------------------------------------------
       INTEGER USR2SYS
       INTEGER NINTRN
 C=======================================================================
-C--------------------------------------------------
-C      HM OFFSETS IDs
-C--------------------------------------------------
-      DO I=1,NSUBMOD
-        OFF_DEF(I) = LSUBMODEL(I)%OFF_DEF
-        OFF_NOD(I) = LSUBMODEL(I)%OFF_NOD
-        OFF_EL(I) = LSUBMODEL(I)%OFF_EL
-        OFF_PART(I) = LSUBMODEL(I)%OFF_PART
-      ENDDO
 C--------------------------------------------------
 C      ALLOCS & INITS
 c      use NUMELTG0 IN PLACE OF NUMELTG ( NBADMESH routine is modifying NUMELTG )
@@ -177,9 +167,6 @@ C--------------------------------------------------
       DO WHILE (KK <= 6)       
         DO N=1,NUMELTG0 
           IPARTTG_TMP = TMP_IPARTTG(N)
-          IF(SUB_TRIA(N) /= 0)THEN
-            IF(TMP_IPARTTG(N) /= 0) IPARTTG_TMP = TMP_IPARTTG(N) + OFF_PART(SUB_TRIA(N)) 
-          ENDIF
 
           IF( IPART(4,INDEX_PART) /= IPARTTG_TMP)THEN  
             DO J=1,NPART                            
@@ -197,15 +184,7 @@ C--------------------------------------------------
             ENDDO
             IPARTTG(I) = TMP_IPARTTG(N)
 C--------------------------------------------------
-C      SUBMODEL OFFSET
-C--------------------------------------------------
             IF(SUB_TRIA(N) /= 0)THEN
-              IF(IPARTTG(I) /= 0) IPARTTG(I) = IPARTTG(I) + OFF_PART(SUB_TRIA(N)) 
-              IF(IXTG(NIXTG,I) /= 0) IXTG(NIXTG,I) = IXTG(NIXTG,I) + OFF_EL(SUB_TRIA(N))
-              DO J=2,4
-                IF(IXTG(J,I) /= 0) IXTG(J,I) = IXTG(J,I) + OFF_NOD(SUB_TRIA(N))
-              ENDDO
-              IF(UID_TRIA(N) /= 0) UID_TRIA(N) = UID_TRIA(N) + OFF_DEF(SUB_TRIA(N))
               IF(UID_TRIA(N) == 0 .AND. LSUBMODEL(SUB_TRIA(N))%UID /= 0) 
      .             UID_TRIA(N) = LSUBMODEL(SUB_TRIA(N))%UID
             ENDIF

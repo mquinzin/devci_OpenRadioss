@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  R23FORC3                      source/elements/spring/r23forc3.F
 Chd|-- called by -----------
@@ -30,6 +30,7 @@ Chd|        R23LAW113                     source/elements/spring/r23law113.F
 Chd|        R23LAW114                     source/elements/spring/r23law114.F
 Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.F
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|        TABLE_MOD                     share/modules/table_mod.F     
 Chd|====================================================================
       SUBROUTINE R23FORC3(ELBUF_STR,
@@ -38,7 +39,7 @@ Chd|====================================================================
      3                  XDP      ,F        ,NPF     ,TF      ,SKEW    ,
      4                  FLG_KJ2  ,VR       ,AR      ,V       ,DT2T    ,
      5                  NELTST   ,ITYPTST  ,STIFN   ,STIFR   ,MS      ,
-     6                  IN       ,FSKY     ,IADR    ,SENSOR  ,LSENSOR ,
+     6                  IN       ,FSKY     ,IADR    ,SENSOR_TAB,
      7                  OFFSET   ,ANIM     ,PARTSAV ,IPARTR  ,TANI    ,
      8                  FR_WAVE  ,BUFMAT   ,BUFGEO  ,PM      ,RBY     ,
      9                  FX1      ,FX2      ,FY1     ,FY2     ,FZ1     ,
@@ -53,6 +54,7 @@ C-----------------------------------------------
       USE ELBUFDEF_MOD
       USE TABLE_MOD
       USE H3D_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -75,14 +77,14 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
-      INTEGER IXR(NIXR,*), NPF(*),IADR(3,*),LSENSOR(NSENSI,*),IPARTR(*),
+      INTEGER IXR(NIXR,*), NPF(*),IADR(3,*),IPARTR(*),
      .        IGEO(NPROPGI,*),JFT,JLT,NELTST ,ITYPTST,OFFSET,
      .        NEL,MTN,GRTH(*),IGRTH(*),FLG_KJ2,IPM(NPROPMI,*),FLAG_SLIPRING_UPDATE,
      .        FLAG_RETRACTOR_UPDATE
       my_real DT2T ,
      .   GEO(NPROPG,*),X(*),F(*),TF(*),SKEW(LSKEW,*),FSKY(*),
      .   VR(*), V(*), AR(*), STIFN(*),STIFR(*),MS(*), IN(*),
-     .   SENSOR(NSENSR,*),ANIM(*),PARTSAV(*),TANI(15,*),
+     .   ANIM(*),PARTSAV(*),TANI(15,*),
      .   FR_WAVE(*),BUFMAT(*),BUFGEO(*),PM(*),RBY(*),
      .   FX1(MVSIZ),FY1(MVSIZ),FZ1(MVSIZ),
      .   FX2(MVSIZ),FY2(MVSIZ),FZ2(MVSIZ),
@@ -94,6 +96,7 @@ C-----------------------------------------------
 C
       TYPE (ELBUF_STRUCT_), TARGET :: ELBUF_STR
       TYPE(H3D_DATABASE) :: H3D_DATA
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -107,7 +110,7 @@ C=======================================================================
      3                  XDP      ,F        ,NPF     ,TF      ,SKEW    ,
      4                  FLG_KJ2  ,VR       ,AR      ,V       ,DT2T    ,
      5                  NELTST   ,ITYPTST  ,STIFN   ,STIFR   ,MS      ,
-     6                  IN       ,FSKY     ,IADR    ,SENSOR  ,LSENSOR ,
+     6                  IN       ,FSKY     ,IADR    ,SENSOR_TAB,
      7                  OFFSET   ,ANIM     ,PARTSAV ,IPARTR  ,TANI    ,
      8                  FR_WAVE  ,BUFMAT   ,BUFGEO  ,PM      ,RBY     ,
      9                  FX1      ,FX2      ,FY1     ,FY2     ,FZ1     ,
@@ -123,7 +126,7 @@ C=======================================================================
      3                  XDP      ,F        ,NPF     ,TF      ,SKEW    ,
      4                  FLG_KJ2  ,VR       ,AR      ,V       ,DT2T    ,
      5                  NELTST   ,ITYPTST  ,STIFN   ,STIFR   ,MS      ,
-     6                  IN       ,FSKY     ,IADR    ,SENSOR  ,LSENSOR ,
+     6                  IN       ,FSKY     ,IADR    ,SENSOR_TAB,
      7                  OFFSET   ,ANIM     ,PARTSAV ,IPARTR  ,TANI    ,
      8                  FR_WAVE  ,BUFMAT   ,BUFGEO  ,PM      ,RBY     ,
      9                  FX1      ,FX2      ,FY1     ,FY2     ,FZ1     ,
@@ -139,7 +142,7 @@ C=======================================================================
      3                  XDP      ,F        ,NPF     ,TF      ,SKEW    ,
      4                  FLG_KJ2  ,VR       ,AR      ,V       ,DT2T    ,
      5                  NELTST   ,ITYPTST  ,STIFN   ,STIFR   ,MS      ,
-     6                  IN       ,FSKY     ,IADR    ,SENSOR  ,LSENSOR ,
+     6                  IN       ,FSKY     ,IADR    ,SENSOR_TAB,
      7                  OFFSET   ,ANIM     ,PARTSAV ,IPARTR  ,TANI    ,
      8                  FR_WAVE  ,BUFMAT   ,BUFGEO  ,PM      ,RBY     ,
      9                  FX1      ,FX2      ,FY1     ,FY2     ,FZ1     ,

@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  HM_READ_MAT90                 source/materials/mat/mat090/hm_read_mat90.F
 Chd|-- called by -----------
@@ -218,27 +218,27 @@ c-----------------
 !---
  1000 FORMAT(
      & 5X,40H  TABULATED NON LINEAR VISCO ELASTIC LAW,/,
-     & 5X,40H  ----------------------------- --------,//)
+     & 5X,40H  --------------------------------------,//)
  1001 FORMAT(/
      & 5X,A,/,
      & 5X,'MATERIAL NUMBER . . . . . . . . . . . .=',I10/,
      & 5X,'MATERIAL LAW. . . . . . . . . . . . . .=',I10/)
  1100 FORMAT(
-     & 5X,'INITIAL DENSITY . . . . . . . . . . . .=',1PG20.13/)  
+     & 5X,'INITIAL DENSITY . . . . . . . . . . . .=',1PG20.13/)
  1150 FORMAT(
      & 5X,'INITIAL YOUNG''S MODULUS. . . . . . . .=',1PG20.13/,
      & 5X,'POISSON''S RATIO. . . . . . . . . . . .=',1PG20.13/)
  1200 FORMAT(
      & 5X,'STRAIN RATE COEFFICIENT . . . . . . . .=',1PG20.13/,
-     & 5X,'FLAG FOR FILTRING STRAIN RATE       . .=',I10/,
+     & 5X,'FLAG FOR FILTERING STRAIN RATE  . . . .=',I10/,
      & 5X,'SHAPE FACTOR FOR UNLOADING  . . . . . .=',1PG20.13/,
-     & 5X,'HYSTERETIC UNLOADING FACTOR  . . . . . =',1PG20.13/,
-     & 5X,'EXPONANT FACTOR FOR UNLOADING  . . .  .=',1PG20.13/)
+     & 5X,'HYSTERETIC UNLOADING FACTOR . . . . . .=',1PG20.13/,
+     & 5X,'EXPONANT FACTOR FOR UNLOADING . . . . .=',1PG20.13/)
  1300 FORMAT(
-     & 5X,'LOADING STRESS FUNCTION NUMBER.. . . . . =',I10/,
+     & 5X,'LOADING STRESS FUNCTION NUMBER  . . . .=',I10/,
      & 5X,'STRAIN RATE . . . . . . . . . . . . . .=',1PG20.13/,
      & 5X,'SCALE FACTOR. . . . . . . . . . . . . .=',1PG20.13/)
  1500 FORMAT(
      & 5X,'PRESSURE DEPENDENT YIELD FUNCTION . . .=',I10/
-     & 5X,'PRESSURE SCALE FACTOR. . . . . . . . . =',1PG20.13)     
+     & 5X,'PRESSURE SCALE FACTOR . . . . . . . . .=',1PG20.13)
       END

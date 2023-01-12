@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SPMD_I7ITIED_CAND             source/mpi/interfaces/spmd_i7itied_cand.F
 Chd|-- called by -----------
@@ -124,13 +124,13 @@ C-----------------------------------------------
 !              1     NSNFI(1)%P(1)       NSNFI(1)%P(1)+NSNFI(1)%P(3)
 !              
 !                          
-!       lenght for the nth proc = SUM( NSNFI%P(n) ) for all NINTER interfaces
-!       total lenght the nth proc = SUM( NSNFI%P( 1-->NSPMD ) ) for all NINTER interfaces
+!       length for the nth proc = SUM( NSNFI%P(n) ) for all NINTER interfaces
+!       total length the nth proc = SUM( NSNFI%P( 1-->NSPMD ) ) for all NINTER interfaces
 !
 !
 !       to initialize the buffer, the I_STOCK candidate nodes are scanned
 !       if a candidate node is a remote node (--> CAND_N > NSN) AND its CAND_F value
-!       is non-zero, then this node must be transmited to the SI proc
+!       is non-zero, then this node must be transmitted to the SI proc
 !       for a remote node, CAND_N = NSN + SUM( NSNFI(NIN)%P(p)) + ii
 !       ii is the local index of the node
 !       --> so ii = CAND_N - NSN - SUM( NSNFI(NIN)%P(p)) is sent to the local proc SI
@@ -144,8 +144,8 @@ C-----------------------------------------------
 !              <----------->   <------->   <--------->
 !              |   |   |   | * |   |  |  * |  |        |* ...
 !       inter :  8   10  11       1  ...
-!       lenght for the nth proc = SUM( NSNSI%P(n) ) for all NINTER interfaces
-!       total lenght the nth proc = SUM( NSNSI%P( 1-->NSPMD ) ) for all NINTER interfaces
+!       length for the nth proc = SUM( NSNSI%P(n) ) for all NINTER interfaces
+!       total length the nth proc = SUM( NSNSI%P( 1-->NSPMD ) ) for all NINTER interfaces
 !
 !
 

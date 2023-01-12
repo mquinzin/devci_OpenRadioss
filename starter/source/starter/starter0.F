@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  STARTER0                      source/starter/starter0.F     
 Chd|-- called by -----------
@@ -178,7 +178,7 @@ C--------------------------------------------------------
 C     LAM MAX LENGTH REAL ARRAY
 C     LMA MAX LENGTH INTEGER ARRAY
 C------------------------------------------------
-C     MACHINE.INC CONTAINT MACHINES SPECIFICATIONS
+C     MACHINE.INC CONTAINS MACHINE SPECIFICATIONS
 C     (MALLOC,IGFORM,TYPE MACHINE...)
 C------------------------------------------------
 #include      "machine.inc"
@@ -655,24 +655,19 @@ C-------------------------------------------------------------------
 C Runnumber is taken from input name or previous treatments
       IRUN = RUNN
       CALL TRACE_IN1(ERR_MSG,LEN_TRIM(ERR_MSG))
+      ALLOCATE(LSUBMODEL(LSUBMOD))
       CALL FREFORM(MULTI_FVM,LSUBMODEL,ISUB_HIERARCHY,TRALL_MAXVAL,DETONATORS)
+      IF(ALLOCATED(LSUBMODEL)) DEALLOCATE(LSUBMODEL)
+
 C------------------------------------------------
 C Build model in memory (Radioss format)
 C------------------------------------------------
       IF (GOT_INPUT == 1 .AND. IS_DYNA == 0)THEN
         CALL STARTIME(16,1)
         CALL CPP_BUILD_MODEL(FNAME,LFNAME,EDI_RES)
+        CALL CPP_APPLY_SUBMODEL_OFFSETS()
         CALL STOPTIME(16,1)
       ENDIF
-C------------------------------------------------
-C Write list of replaced parameters
-C------------------------------------------------
-      IF(IPID /= 0 .AND. GOT_HSTP_READ == 0) THEN
-        CLOSE(IOUT)
-        CALL CPP_PRINT_PARAMETERS(FILNAM,ROOTLEN+9+OUTFILE_NAME_LEN)
-        OPEN(UNIT=IOUT,FILE=FILNAM(1:ROOTLEN+9+OUTFILE_NAME_LEN),
-     .    ACCESS='SEQUENTIAL',FORM='FORMATTED',STATUS='UNKNOWN',POSITION="APPEND") 
-      ENDIF 
 C-------------------------------------------------------------------
 C     Keyword mapping header output ( DYNA to RADIOSS)
 C-------------------------------------------------------------------
@@ -692,6 +687,15 @@ C------------------------------------------------
 C Output errors/warning message (input reading phase)
 C------------------------------------------------
       IF (GOT_INPUT == 1) CALL HM_MESSAGES(IS_DYNA)
+C------------------------------------------------
+C Write list of replaced parameters
+C------------------------------------------------
+      IF(IPID /= 0 .AND. GOT_HSTP_READ == 0) THEN
+        CLOSE(IOUT)
+        CALL CPP_PRINT_PARAMETERS(FILNAM,ROOTLEN+9+OUTFILE_NAME_LEN)
+        OPEN(UNIT=IOUT,FILE=FILNAM(1:ROOTLEN+9+OUTFILE_NAME_LEN),
+     .    ACCESS='SEQUENTIAL',FORM='FORMATTED',STATUS='UNKNOWN',POSITION="APPEND") 
+      ENDIF 
 C------------------------------------------------
 C count submodels & dimension LSUBMODEL structure 
 C------------------------------------------------
@@ -736,10 +740,8 @@ C-------------------------------------------------------------------
 c Count number of translated shell elements
       NB_SEATBELT_SHELLS = 0
       CALL HM_COUNT_2D_ELEMENT_SEATBELT(NB_SEATBELT_SHELLS,LSUBMODEL)
-      IF(NB_SEATBELT_SHELLS > 0)  THEN
-        ALLOCATE (SEATBELT_CONVERTED_ELEMENTS(3,NB_SEATBELT_SHELLS),STAT=stat)
-        SEATBELT_CONVERTED_ELEMENTS(1:3,1:NB_SEATBELT_SHELLS) = 0
-      ENDIF
+      ALLOCATE (SEATBELT_CONVERTED_ELEMENTS(3,NB_SEATBELT_SHELLS),STAT=stat)
+      SEATBELT_CONVERTED_ELEMENTS(1:3,1:NB_SEATBELT_SHELLS) = 0
       IF (STAT /= 0) CALL ANCMSG(MSGID=268,ANMODE=ANINFO,
      .                             MSGTYPE=MSGERROR,
      .                         C1='SEATBELT_CONVERTED_ELEMENTS')

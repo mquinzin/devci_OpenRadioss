@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  SIGEPS25CP                    source/materials/mat/mat025/sigeps25cp.F
 Chd|-- called by -----------
@@ -34,7 +34,8 @@ Chd|====================================================================
      4                      DEPSXX ,DEPSYY ,DEPSXY   ,DEPSYZ ,DEPSZX ,
      5                      SIGOXX ,SIGOYY ,SIGOXY   ,SIGOYZ ,SIGOZX ,
      6                      SIGNXX ,SIGNYY ,SIGNXY   ,SIGNYZ ,SIGNZX ,
-     7                      IMAT   ,WPLAR  ,IOFF_DUCT,PLA    ,ISRATE )
+     7                      IMAT   ,WPLAR  ,IOFF_DUCT,PLA    ,ISRATE ,
+     8                      TSAIWU )
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -66,7 +67,8 @@ C     REAL
      .   DEPSXX(MVSIZ),DEPSYY(MVSIZ),DEPSXY(MVSIZ),DEPSYZ(MVSIZ),
      .   DEPSZX(MVSIZ),SIGOXX(NEL),SIGOYY(NEL),SIGOXY(NEL),
      .   SIGOYZ(NEL),SIGOZX(NEL),SIGNXX(NEL),SIGNYY(NEL),SIGNXY(NEL),
-     .   SIGNYZ(NEL),SIGNZX(NEL),WPLAR(MVSIZ),OFF_OLD(MVSIZ),PLA(NEL)
+     .   SIGNYZ(NEL),SIGNZX(NEL),WPLAR(MVSIZ),OFF_OLD(MVSIZ),PLA(NEL),
+     .   TSAIWU(NEL)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -145,7 +147,7 @@ C=======================================================================
      6                 G23    ,G31    ,DE     ,EPSPL  ,ISRATE ,YLD    ,
      7                 DEPSXX ,DEPSYY ,DEPSXY ,DEPSYZ ,DEPSZX ,SIGOXX ,
      8                 SIGOYY ,SIGOXY ,SIGOYZ ,SIGOZX ,SIGNXX ,SIGNYY ,
-     9                 SIGNXY ,SIGNYZ ,SIGNZX )
+     9                 SIGNXY ,SIGNYZ ,SIGNZX ,TSAIWU )
 !
         DO I=JFT,JLT
           WPLAR(I) = MAX(WPLAR(I),WWPLA(I))

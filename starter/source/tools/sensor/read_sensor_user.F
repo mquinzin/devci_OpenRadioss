@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  READ_SENSOR_USER              source/tools/sensor/read_sensor_user.F
 Chd|-- called by -----------
@@ -36,8 +36,9 @@ Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F   
 Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
 Chd|====================================================================
-      SUBROUTINE READ_SENSOR_USER(LSENSOR  ,SENSOR    ,HM_NSENSOR,ISEN    ,TITLE  ,
-     .                            UNITAB   ,LSUBMODEL ,KEY       ,UNIT_ID ,SENS_ID)
+      SUBROUTINE READ_SENSOR_USER(HM_NSENSOR,ISEN    ,TITLE  ,
+     .                            UNITAB   ,LSUBMODEL ,KEY       ,UNIT_ID ,SENS_ID,
+     .                            SENSOR_PTR)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------  
@@ -64,11 +65,9 @@ C-----------------------------------------------
 #include      "com01_c.inc"
 #include      "com04_c.inc"
 #include      "param_c.inc"
-#include      "scr_usens_c.inc"
 #include      "sysunit.inc"
 #include      "scr15_c.inc"
 #include      "userlib.inc"
-!
 #include      "submod_c.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
@@ -76,10 +75,9 @@ C-----------------------------------------------
       INTEGER ,INTENT(IN) :: HM_NSENSOR,UNIT_ID ,SENS_ID,ISEN
       CHARACTER(LEN=ncharkey) :: KEY
       CHARACTER(LEN=nchartitle) :: TITLE
-      INTEGER ,DIMENSION(NSENSI,NSENSOR)  ,INTENT(INOUT) :: LSENSOR
-      my_real ,DIMENSION(NSENSR,NSENSOR)  ,INTENT(INOUT) :: SENSOR
       TYPE (UNIT_TYPE_),INTENT(IN) ::UNITAB
       TYPE (SUBMODEL_DATA) ,DIMENSION(NSUBMOD) :: LSUBMODEL
+      TYPE (SENSOR_STR_)   ,INTENT(OUT)        :: SENSOR_PTR
 C-----------------------------------------------
 C   E x t e r n a l   F u n c t i o n s
 C-----------------------------------------------
@@ -139,9 +137,6 @@ c--------------------------------------------------
 !
       IF (NLINES > 1) THEN
 !
-        LSENSOR(1,ISEN)= SENS_ID
-        LSENSOR(2,ISEN)= TYP
-        LSENSOR(3,ISEN)= 0
 !
         IF ((TYP>28.AND.TYP<38).AND. .NOT.(ALREADY_DONE) ) CALL SENSOR_USER_ALLOC(ALREADY_DONE)
 !
@@ -150,6 +145,22 @@ c---------------------------------------
 C--------------------------------
 C         USER SENSOR
 C--------------------
+
+          ! Allocate Userbuffer Sensors
+          ALLOCATE(SENSOR_PTR%INTEGER_USERBUF(ISENBUF))
+          ALLOCATE(SENSOR_PTR%FLOAT_USERBUF(LSENBUF))
+
+          ALLOCATE(SENSOR_PTR%INTEGER_USERPARAM(NSENPARI))
+          ALLOCATE(SENSOR_PTR%FLOAT_USERPARAM(NSENPARR))
+
+          ! Initialize to Zero
+          SENSOR_PTR%INTEGER_USERBUF(1:ISENBUF)=0
+          SENSOR_PTR%FLOAT_USERBUF(1:LSENBUF)=ZERO
+
+          SENSOR_PTR%INTEGER_USERPARAM(1:NSENPARI)=0
+          SENSOR_PTR%FLOAT_USERPARAM(1:NSENPARR)=ZERO
+
+
           IF (USERL_AVAIL==1 .AND. (TYP==29.OR.TYP==30.OR.TYP==31)) THEN
 !
             WRITE(CSENS,'(I4.4)')TYP
@@ -160,8 +171,9 @@ C--------------------
             J=1
             CALL HM_GET_STRING_INDEX('arraydatalines', RLINE, J, ncharline, IS_AVAILABLE)
             READ(RLINE,ERR=999,FMT=FMT_F)TDEL
+
 C           global activation time
-            SENSOR(1,ISEN) = TDEL
+            SENSOR_PTR%TDELAY  = TDEL
 !
            ! Read & Dump in scratch file
             DO J=2,NLINES
@@ -171,40 +183,48 @@ C           global activation time
             CLOSE(UNIT=30)
           ENDIF ! IF (TYP>=29.AND.TYP<=31)
 !
+
           WRITE (IOUT,'(A,I10)') ' SENSOR ID = ', SENS_ID
+
+
+          SENSOR_PTR%TYPE    = TYP   ! TYP initialization is need for callback routines
+
           IF(TYP == 29)THEN
-            WRITE (IOUT,'(A,/,A,I10)')
-     .      ' TYPE 29 SENSOR : USER1'
-          WRITE (IOUT,'(A,1PG20.13)')
-     .    ' TIME DELAY BEFORE ACTIVATION . . . . .',TDEL
-            SENSOR (2,ISEN)=1E30
-            SENSOR (2+LSENBUF,ISEN)=1E30
+
+            WRITE (IOUT,'(A,/,A,I10)') ' TYPE 29 SENSOR : USER1'
+            WRITE (IOUT,'(A,1PG20.13)') ' TIME DELAY BEFORE ACTIVATION . . . . .',TDEL
+
+            SENSOR_PTR%TSTART  = INFINITY
+
             IF (USERL_AVAIL==1)THEN
               CALL ST_USERLIB_LECSEN(TYP,ROOTNAM,ROOTLEN)
               CALL USER_OUTPUT(IOUT,TYP,ROOTNAM,ROOTLEN,1)
             ENDIF
+
           ELSEIF(TYP == 30)THEN
-            WRITE (IOUT,'(A,/,A,I10)')
-     .      ' TYPE 30 SENSOR : USER2'
-          WRITE (IOUT,'(A,1PG20.13)')
-     .    ' TIME DELAY BEFORE ACTIVATION . . . . .',TDEL
-            SENSOR (2,ISEN)=INFINITY
-            SENSOR (2+LSENBUF,ISEN)=INFINITY
+
+            WRITE (IOUT,'(A,/,A,I10)') ' TYPE 30 SENSOR : USER2'
+            WRITE (IOUT,'(A,1PG20.13)') ' TIME DELAY BEFORE ACTIVATION . . . . .',TDEL
+
+            SENSOR_PTR%TSTART  = INFINITY
+
             IF (USERL_AVAIL==1)THEN
               CALL ST_USERLIB_LECSEN(TYP,ROOTNAM,ROOTLEN)
               CALL USER_OUTPUT(IOUT,TYP,ROOTNAM,ROOTLEN,1)
             ENDIF
+
           ELSEIF(TYP == 31)THEN
-            WRITE (IOUT,'(A,/,A,I10)')
-     .      ' TYPE 31 SENSOR : USER3'
-          WRITE (IOUT,'(A,1PG20.13)')
-     .    ' TIME DELAY BEFORE ACTIVATION . . . . .',TDEL
-            SENSOR (2,ISEN)=1E30
-            SENSOR (2+LSENBUF,ISEN)=1E30
+
+            WRITE (IOUT,'(A,/,A,I10)') ' TYPE 31 SENSOR : USER3'
+            WRITE (IOUT,'(A,1PG20.13)') ' TIME DELAY BEFORE ACTIVATION . . . . .',TDEL
+
+            SENSOR_PTR%TSTART  = INFINITY
+
             IF (USERL_AVAIL==1)THEN
               CALL ST_USERLIB_LECSEN(TYP,ROOTNAM,ROOTLEN)
               CALL USER_OUTPUT(IOUT,TYP,ROOTNAM,ROOTLEN,1)
             ENDIF
+
           ENDIF
         ELSE
             CALL ANCMSG(MSGID=43,
@@ -214,6 +234,14 @@ C           global activation time
      .                  I1=SENS_ID,
      .                  C1=TITLE)
         ENDIF ! IF (TYP>=29.AND.TYP<=31)
+
+        SENSOR_PTR%TYPE    = TYP
+        SENSOR_PTR%SENS_ID = SENS_ID
+        SENSOR_PTR%STATUS  = 0
+        SENSOR_PTR%TDELAY  = TDEL
+        SENSOR_PTR%TSTART  = INFINITY
+        SENSOR_PTR%TCRIT   = INFINITY
+        SENSOR_PTR%TMIN    = ZERO
 !
       ELSE
 !   error TBD

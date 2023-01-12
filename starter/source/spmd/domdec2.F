@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  DOMDEC2                       source/spmd/domdec2.F         
 Chd|-- called by -----------
@@ -41,22 +41,22 @@ Chd|        SENSOR_MOD                    share/modules1/sensor_mod.F
 Chd|        SKEW_MOD                      share/modules1/skew_mod.F     
 Chd|====================================================================
       SUBROUTINE DOMDEC2(
-     1   DD_IAD ,IPARI,IB    ,NPBY  ,
-     2   LPBY   ,IXRI ,IBVEL ,LBVEL ,
-     3   IPARG  ,CEL    ,IXS  ,IXS10 ,IXS20 ,
-     4   IXS16  ,IXQ    ,IXC  ,IXT   ,IXP   ,
-     5   IXR    ,IXUR   ,IXTG ,IXTG6 ,T_MONVOL,
-     6   IGRSURF,ADSKY ,LCNE  ,GEO   ,
-     7   NPRW   ,LPRW   ,LCNI2 ,ADSKYI2,CEPI2,
-     8   CELI2  ,I2NSNT ,ISKN  ,ISKWP,NSKWP  ,
-     9   LSENSOR,ISENSP ,NSENSP,IACCP,NACCP  ,
-     A   LACCELM, IBCV  ,IRBE3 ,LRBE3 ,FRONT_RM,
-     B   IRBYM  ,LCRBYM ,CEP   ,IBCR  ,IRBE2 ,
-     C   LRBE2  ,CEPSP  ,CELSPH,ILOADP,LLOADP,
-     D   LGAUGE ,IGAUP  ,NGAUP ,INTBUF_TAB,IBFFLUX,
-     E   ICNDS10,ITAGND ,IGEO  ,TAG_SKN,MULTIPLE_SKEW,
-     F   IBFV   ,IBCSCYC,LBCSCYC,R_SKEW,IPM,
-     G   SENSOR_TAB)
+     1   DD_IAD ,IPARI  ,IB     ,NPBY  ,
+     2   LPBY   ,IXRI   ,IBVEL  ,LBVEL ,
+     3   IPARG  ,CEL    ,IXS    ,IXS10 ,IXS20 ,
+     4   IXS16  ,IXQ    ,IXC    ,IXT   ,IXP   ,
+     5   IXR    ,IXUR   ,IXTG   ,IXTG6 ,T_MONVOL,
+     6   IGRSURF,ADSKY  ,LCNE   ,GEO   ,
+     7   NPRW   ,LPRW   ,LCNI2  ,ADSKYI2,CEPI2,
+     8   CELI2  ,I2NSNT ,ISKN   ,ISKWP,NSKWP  ,
+     9   ISENSP ,NSENSP ,IACCP  ,NACCP  ,
+     A   LACCELM,IBCV   ,IRBE3  ,LRBE3 ,FRONT_RM,
+     B   IRBYM  ,LCRBYM ,CEP    ,IBCR  ,IRBE2 ,
+     C   LRBE2  ,CEPSP  ,CELSPH ,ILOADP,LLOADP,
+     D   LGAUGE ,IGAUP  ,NGAUP  ,INTBUF_TAB,IBFFLUX,
+     E   ICNDS10,ITAGND ,IGEO   ,TAG_SKN,MULTIPLE_SKEW,
+     F   IBFV   ,IBCSCYC,LBCSCYC,R_SKEW,IPM     ,
+     G   SENSOR_TAB, SCEP)
 C
 C-----------------------------------------------
 C   M o d u l e s
@@ -102,17 +102,16 @@ C-----------------------------------------------
      .        IXS(NIXS,*),IXQ(NIXQ,*),IXC(NIXC,*),IXTG(NIXTG,*),
      .        IXT(NIXT,*),IXP(NIXP,*),IXR(NIXR,*),
      .        IXS10(6,*),IXS20(12,*),IXS16(8,*),IXTG6(4,*),IB(NIBCLD,*),
-     .        IXUR(NIXUR,*),I2NSNT,
+     .        IXUR(NIXUR,*),I2NSNT,ISKN(LISKN,*),ISKWP(*),NSKWP(*),
      .        ADSKY(0:*), LCNE, LCNI2, ADSKYI2(0:*),CEPI2(*),CELI2(*),
-     .        ISKN(LISKN,*),ISKWP(*),NSKWP(*), LSENSOR(NSENSI,*),
      .        ISENSP(2,*), NSENSP(*), IACCP(*), NACCP(*),
      .        LACCELM(3,*),IBCV(NICONV, *),IRBE3(NRBE3L,*), LRBE3(*),
-     .        FRONT_RM(NRBYM,NSPMD), IRBYM(NIRBYM,*) ,LCRBYM(*), CEP(*),
+     .        FRONT_RM(NRBYM,NSPMD), IRBYM(NIRBYM,*) ,LCRBYM(*), CEP(SCEP),
      .        IBCR(NIRADIA,*),IRBE2(NRBE2L,*), LRBE2(*),
      .        CEPSP(NUMSPH), CELSPH(NUMSPH),ILOADP(SIZLOADP,*),LLOADP(*),
      .        LGAUGE(3,*), IGAUP(*), NGAUP(*), IBFFLUX(NITFLUX,*),
      .        ICNDS10(3,*),ITAGND(*),IBFV(NIFV,*),IBCSCYC(4,*),LBCSCYC(2,*),
-     .        R_SKEW(*),IPM(NPROPMI,*)
+     .        R_SKEW(*),IPM(NPROPMI,*),SCEP
         INTEGER, DIMENSION(NPROPGI,*), INTENT(IN) :: IGEO
         INTEGER, DIMENSION(NUMSKW+NSUBMOD+1), INTENT(INOUT) :: TAG_SKN
         TYPE(SKEW_TYPE), DIMENSION(NUMSKW+1), INTENT(INOUT) :: MULTIPLE_SKEW
@@ -175,7 +174,7 @@ C-----------------------------------------------------
             ! dist-surf sensor : for plane defined by 3 nodes, 
             !                    add the 3 nodes and the reference node
             !                    on all spmd processors
-            IF (SENSOR_TAB(ISENS)%TYPE==16) THEN
+            IF (SENSOR_TAB(ISENS)%TYPE==15) THEN
                 ! -------------
                 ! reference node : %IPARAM(1)
                 N1 = SENSOR_TAB(ISENS)%IPARAM(1)
@@ -218,7 +217,7 @@ C skew global fixe
        DO P = 1, NSPMD
          NSKWP(P) = 0
        END DO        
-       IF(N2D==0)THEN
+       IF(N2D==0 .AND. SCEP > 0)THEN
         OFFSET = NUMELS + NUMELQ + NUMELC + NUMELT + NUMELP
 !       check if a SPRING is linked with a SKEW
         CALL CHECK_SKEW(IXR,IGEO,ISKN,CEP(OFFSET+1),ISKWP,NSKWP,TAG_SKN,MULTIPLE_SKEW,
@@ -1167,7 +1166,7 @@ C-----------------------------------------------------
          NSENSP(P) = 0
        END DO
        DO I=1,NSENSOR
-        TYP=LSENSOR(2,I)
+        TYP = SENSOR_TAB(I)%TYPE
         ISENSP(1,I) = 0
         ISENSP(2,I) = 0
 C
@@ -1177,7 +1176,7 @@ C
 C--------------------------------
 C         CAPTEUR - DEPLACEMENT
 C--------------------------------
-          N1 = LSENSOR(4,I)
+          N1 = SENSOR_TAB(I)%IPARAM(1)
           DO P = 1, NSPMD
             IF(NLOCAL(N1,P)==1)THEN
               ISENSP(1,I) = P
@@ -1186,7 +1185,7 @@ C--------------------------------
             END IF
           END DO
  500      CONTINUE
-          N2 = LSENSOR(5,I)
+          N2 = SENSOR_TAB(I)%IPARAM(2)
           DO P = 1, NSPMD
             IF(NLOCAL(N2,P)==1)THEN
               ISENSP(2,I) = P
@@ -1203,7 +1202,7 @@ C--------------------------------
         ELSEIF(TYP==8)THEN
 c
         ELSEIF(TYP==13)THEN  ! SENSOR WORK
-          N1 = LSENSOR(4,I)
+          N1 = SENSOR_TAB(I)%IPARAM(1)
           DO P = 1, NSPMD
             IF (NLOCAL(N1,P)==1) THEN
               ISENSP(1,I) = P
@@ -1211,7 +1210,7 @@ c
               EXIT
             END IF
           END DO
-          N2 = LSENSOR(5,I)
+          N2 = SENSOR_TAB(I)%IPARAM(2)
           IF (N2 > 0) THEN
             DO P = 1, NSPMD
               IF (NLOCAL(N2,P)==1) THEN
@@ -2817,7 +2816,7 @@ Chd|-- called by -----------
 Chd|        LECTUR                        source/starter/lectur.F       
 Chd|-- calls ---------------
 Chd|====================================================================
-      SUBROUTINE  DDPRINT(DDSTAT, DSMEMORY, MEMFLOW)
+      SUBROUTINE  DDPRINT(DDSTAT,  MEMFLOW)
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -2836,7 +2835,7 @@ C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER DDSTAT(50,*)
-      INTEGER(KIND=8) :: DSMEMORY(7,*), MEMFLOW(2,*)
+      INTEGER(KIND=8) :: MEMFLOW(2,*)
 C DDSTAT
 C 1 : NUMNOD Local
 C 2 : NELEM Local

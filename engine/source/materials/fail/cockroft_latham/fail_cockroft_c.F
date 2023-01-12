@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FAIL_COCKROFT_C               source/materials/fail/cockroft_latham/fail_cockroft_c.F
 Chd|-- called by -----------
@@ -64,7 +64,7 @@ C NPF     | *      | I | R | FUNCTION ARRAY
 C NPT0    | 1      | I | R | NUMBER OF LAYERS OR INTEGRATION POINTS
 C IPT     | 1      | I | R | LAYER OR INTEGRATION POINT NUMBER
 C TF      | *      | F | R | FUNCTION ARRAY
-C NGL     | NEL    | I | R | ELEMEMT NUMBER
+C NGL     | NEL    | I | R | ELEMENT NUMBER
 C---------+--------+---+---+-------------------------------------------
 C TIME    | 1      | F | R | CURRENT TIME
 C TIMESTEP| 1      | F | R | CURRENT TIME STEP
@@ -121,7 +121,7 @@ C-----------------------------------------------
 C Ex : ELEMENT IS OFF number if IPs due to Cockroft-Latham criteria reached P_thick
 C-----------------------------------------------
 C!      UVAR(I,1) contains previous equivalent strain value increment
-C!      UVAR(I,2) contains the Cockroft-Latham acumulated value
+C!      UVAR(I,2) contains the Cockroft-Latham accumulated value
 c!      UVAR(I,3) contains the previous first principal stress
        C0                  = UPARAM(1)
        EMA                 = UPARAM(2)

@@ -1,37 +1,38 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  FIND_DT_FOR_TARGETED_ADDED_MASSsource/time_step/find_dt_for_targeted_added_mass.F
 Chd|-- called by -----------
 Chd|        RESOL                         source/engine/resol.F         
 Chd|-- calls ---------------
 Chd|        FIND_DT_TARGET                ../common_source/tools/time_step/find_dt_target.F
+Chd|        MYQSORT                       ../common_source/tools/sort/myqsort.F
 Chd|        SPMD_GATHER_DTNODA            source/mpi/generic/spmd_gather_dtnoda.F
 Chd|        SPMD_GLOB_IMAX9               source/mpi/generic/spmd_glob_imax9.F
 Chd|        SPMD_GLOB_ISUM9               source/mpi/interfaces/spmd_th.F
 Chd|        SPMD_RBCAST                   source/mpi/generic/spmd_rbcast.F
-Chd|        TRIRAP                        ../common_source/tools/sort/trirap.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|====================================================================
       SUBROUTINE FIND_DT_FOR_TARGETED_ADDED_MASS(MS,STIFN,DTSCA,IGRP_USR,TARGET_DT,
      .                                           PERCENT_ADDMASS,PERCENT_ADDMASS_OLD,TOTMAS,WEIGHT,IGRNOD,
@@ -40,6 +41,7 @@ C-----------------------------------------------
 C   A n a l y s e   M o d u l e
 C-----------------------------------------------
       USE GROUPDEF_MOD
+      USE MESSAGE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -60,6 +62,7 @@ C-----------------------------------------------
 #include      "com06_c.inc"
 #include      "units_c.inc"
 #include      "task_c.inc"
+#include      "my_allocate.inc"
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -72,6 +75,8 @@ C-----------------------------------------------
       my_real, DIMENSION(:),POINTER ::
      .   TMP
       my_real SUMK,SUMM,TARGET_PERCENT
+      INTEGER :: IERROR
+      INTEGER, DIMENSION(:), ALLOCATABLE :: PERM
 C=======================================================================
 C
 C--------------------------------------------------------------------------------------
@@ -143,6 +148,7 @@ C
       IF (ISPMD == 0) THEN     
 C
         TMP => DT2_L(SIZG+1:SIZG*2)
+        MY_ALLOCATE( PERM,SIZG )
 C
 C  --- Sorting
 C
@@ -150,11 +156,15 @@ C
         SUMK = ZERO
         DO I=1,SIZG
           TMP(I)=I
+          PERM(I) = I
           SUMM = SUMM + MS_L(I)
           SUMK = SUMK + STF_L(I)
         ENDDO
 
-        CALL TRIRAP(SIZG,DT2_L,SIZG)
+        CALL MYQSORT(SIZG,DT2_L,PERM,IERROR)
+        TMP(1:SIZG) = PERM(1:SIZG)
+
+        DEALLOCATE( PERM )
 C
 C----- determination of target time step
 C

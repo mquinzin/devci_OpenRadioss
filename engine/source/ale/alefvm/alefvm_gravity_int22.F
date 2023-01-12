@@ -1,25 +1,25 @@
 Copyright>        OpenRadioss
-Copyright>        Copyright (C) 1986-2022 Altair Engineering Inc.
-Copyright>    
+Copyright>        Copyright (C) 1986-2023 Altair Engineering Inc.
+Copyright>
 Copyright>        This program is free software: you can redistribute it and/or modify
 Copyright>        it under the terms of the GNU Affero General Public License as published by
 Copyright>        the Free Software Foundation, either version 3 of the License, or
 Copyright>        (at your option) any later version.
-Copyright>    
+Copyright>
 Copyright>        This program is distributed in the hope that it will be useful,
 Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
 Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 Copyright>        GNU Affero General Public License for more details.
-Copyright>    
+Copyright>
 Copyright>        You should have received a copy of the GNU Affero General Public License
 Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-Copyright>    
-Copyright>    
-Copyright>        Commercial Alternative: Altair Radioss Software 
-Copyright>    
-Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss 
-Copyright>        software under a commercial license.  Contact Altair to discuss further if the 
-Copyright>        commercial version may interest you: https://www.altair.com/radioss/.    
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 Chd|====================================================================
 Chd|  ALEFVM_GRAVITY_INT22          source/ale/alefvm/alefvm_gravity_int22.F
 Chd|-- called by -----------
@@ -30,7 +30,7 @@ Chd|        I22BUFBRIC_MOD                ../common_source/modules/cut-cell-sear
 Chd|====================================================================
       SUBROUTINE ALEFVM_GRAVITY_INT22
      .                         (
-     1                          AGRV, IGRV, LGRAV, SENSOR, LSENSOR,
+     1                          AGRV, IGRV, LGRAV,
      2                          VOLN, IXS , ITASK, NPC   , TF     ,
      3                          SKEW, RHO , IAD22
      .                          )
@@ -39,7 +39,7 @@ C   D e s c r i p t i o n
 C-----------------------------------------------
 C 'alefvm' is related to a collocated scheme (built from FVM and based on Godunov scheme)
 C  which was temporarily introduced for experimental option /INTER/TYPE22 (FSI coupling with cut cell method)
-C This cut cell method is not completed, abandonned, and is not an official option.
+C This cut cell method is not completed, abandoned, and is not an official option.
 C There is no other use for this scheme which is automatically enabled when /INTER/TYPE22 is defined (INT22>0 => IALEFVM=1).
 C
 C This subroutine is treating an uncut cell.
@@ -78,14 +78,14 @@ C finite volume scheme (IALEFVM==1)
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
-      INTEGER :: IXS(NIXS,*), IGRV(NIGRV,*), ITASK, LSENSOR(NSENSI,*),LGRAV(*),NPC(*)
+      INTEGER :: IXS(NIXS,*), IGRV(NIGRV,*), ITASK,LGRAV(*),NPC(*)
       my_real :: VOLN(MVSIZ), AGRV(LFACGRV,*),TF(*),RHO(MVSIZ),IAD22(*)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER          :: I, J, K, K1, K2, K3, NL, NN, ISK, IFUNC, N2, IB, MNOD
       INTEGER          :: IADF,IADL,ISENS,N1,NVERTEX,INOd,II, NIN
-      my_real          :: TS,AA,FCX,FCY,VV,A0, SENSOR(NSENSR,*),DYDX,GAMA,TFEXTT
+      my_real          :: TS,AA,FCX,FCY,VV,A0,DYDX,GAMA,TFEXTT
       my_real          :: M_CELL(MVSIZ),ACCEL(3,MVSIZ),SKEW(LSKEW,*)
       my_real,EXTERNAL :: FINTER  
       LOGICAL          :: debug_outp
@@ -131,7 +131,7 @@ C-----------------------------------------------
       ENDDO!next I
       
       DO I=LFT,LLT
-        M_CELL(I)   = RHO(I)*VOLN(I) !Check if VOLN is the supercell volume. Should be unchaged since december 2015
+        M_CELL(I)   = RHO(I)*VOLN(I) !Check if VOLN is the supercell volume. Should be unchanged since december 2015
       ENDDO!next I
 
       DO I=LFT,LLT
