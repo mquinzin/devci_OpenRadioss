@@ -247,7 +247,7 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - build: starter_linux64_gf_db
+          - build: starter_linux64_gf
             precision: dp
             os: linux64
             binary: starter
@@ -257,7 +257,7 @@ jobs:
           #   os: linux64
           #   binary: starter
 
-          - build: engine_linux64_gf_ompi_db
+          - build: engine_linux64_gf_ompi
             precision: dp
             os: linux64
             binary: engine
