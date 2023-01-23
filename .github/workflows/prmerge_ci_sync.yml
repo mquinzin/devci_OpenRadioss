@@ -34,6 +34,8 @@ on:
         required: true
       DATE_MIN_CHECK_COMMITS:
         required: true
+      GITLAB_PAT:
+        required: true
 
 # When pushing in main or merging pull request in main
 #  ${{github.base_ref}} : <empty>
@@ -501,7 +503,7 @@ jobs:
           # Add remote link to github/main
           git remote add github ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}.git || echo "Remote origin already exist"
           git remote -v
-          
+
           # # Merge github commits into this branch and push on remote
           # git fetch github 
           # git merge github/main
