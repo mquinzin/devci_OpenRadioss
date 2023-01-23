@@ -503,7 +503,7 @@ jobs:
           git checkout from_github_main || git checkout -b from_github_main
 
           # Add remote link to github/main
-          git remote add github ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}.git || echo "Remote origin already exist"
+          git remote add github ${{ github.server_url }}/${{ github.repository }}.git || echo "Remote origin already exist"
           git remote -v
 
           # # Merge github commits into this branch and push on remote
