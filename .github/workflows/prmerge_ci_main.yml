@@ -906,6 +906,8 @@ jobs:
       DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
       GITLAB_PAT: "${{ secrets.GITLAB_PAT }}"
       GITLAB_REPO_URL: "${{ secrets.GITLAB_REPO_URL }}"
+    env:
+      GITHUB_SERVER_URL: $GITHUB_SERVER_URL
 
   # delivery:
   #   # needs: [qa_linux,qa_windows_no_container,build_tools_linux,build_tools_windows_no_container]
