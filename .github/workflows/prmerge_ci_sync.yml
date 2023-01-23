@@ -506,9 +506,9 @@ jobs:
           # Add remote link to github/main
           git remote remove github
           git remote add github $GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git || echo "Remote origin already exist"
-          git remote -v
+          # git remote -v
 
-          # # Merge github commits into this branch and push on remote
-          # git fetch github 
-          # git merge github/main
-          # git push --set-upstream origin from_github_main      
+          # Merge github commits into this branch and push on remote
+          git fetch github 
+          git merge github/main
+          git push --set-upstream origin from_github_main      
