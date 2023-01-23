@@ -905,6 +905,7 @@ jobs:
       TO_EMAIL: ${{ secrets.TO_EMAIL }} 
       DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
       GITLAB_PAT: "${{ secrets.GITLAB_PAT }}"
+      GITLAB_REPO_URL: "${{ secrets.GITLAB_REPO_URL }}"
 
   # delivery:
   #   # needs: [qa_linux,qa_windows_no_container,build_tools_linux,build_tools_windows_no_container]
