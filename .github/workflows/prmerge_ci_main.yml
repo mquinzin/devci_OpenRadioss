@@ -420,7 +420,7 @@ jobs:
   qa_linux:
     needs: build_linux
     # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
-    runs-on: ["qa_${{ matrix.os }}","dev"]
+    runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
     # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
     container: 
       image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:ompi411
@@ -438,8 +438,8 @@ jobs:
       STATUS_QA: 0
       SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
       # DEV ONLY # QA_NB_PROC: 2
-      # QA_NB_PROC: 4
-      QA_NB_PROC: 2
+      QA_NB_PROC: 4
+      # QA_NB_PROC: 2
       QA_NB_THREAD: 2
 
     strategy:
