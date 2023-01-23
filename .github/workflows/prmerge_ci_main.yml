@@ -906,7 +906,7 @@ jobs:
       DATE_MIN_CHECK_COMMITS: "${{ secrets.DATE_MIN_CHECK_COMMITS }}"
       GITLAB_PAT: "${{ secrets.GITLAB_PAT }}"
       GITLAB_REPO_URL: "${{ secrets.GITLAB_REPO_URL }}"
-    env:
+    with:
       GITHUB_SERVER_URL: $GITHUB_SERVER_URL
 
   # delivery:
