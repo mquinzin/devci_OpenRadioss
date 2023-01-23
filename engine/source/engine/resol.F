@@ -3144,7 +3144,7 @@ C       FUNCTIONS
 C----------------------------------
         IF(NFUNCT /= 0.AND.IALE+IEULER+ITHERM+NEBCS>0) THEN
             CALL TIMFUN(FV, NPC, TF)
-            IF(NEBCS/=0) THEN
+            IF(EBCS_TAB%nebcs_loc/=0) THEN
                 !!! Need to "extrapolate values" whenever current time
                 !!! is lower than minimum defined time function or greater than
                 !!! maximum defined time function
@@ -5814,7 +5814,8 @@ C--- COUPLAGE RADIOSS 2 RADIOSS
      1        IEXLNK   ,IGRNOD  ,D       ,V       ,VR     ,
      2        A        ,AR      ,MS      ,IN     ,STIFN   ,STIFR  ,
      3        R2R_ON   ,DD_R2R  ,WEIGHT ,IAD_ELEM,FR_ELEM ,RBY    ,
-     4        XDP, X,DD_R2R_ELEM , SDD_R2R_ELEM,OFF_SPH_R2R,NUMSPH_GLO_R2R)
+     4        XDP      ,X       ,DD_R2R_ELEM, SDD_R2R_ELEM,OFF_SPH_R2R,
+     5        NUMSPH_GLO_R2R,NLOC_DMG)
 C
           IF (FLG_SPHINOUT_R2R/=0) THEN
             DO I=1,NUMNOD
@@ -6020,8 +6021,8 @@ C------------Need to stop computation at Tstop for /DT/THERM----------
           DTREST = TREST*(ONE+EM10)
 
           IF(DTREST<DT2T) THEN
-             ILASTANIM = 1 
-             ILASTH3D = 1 
+             IF (DTANIM>ZERO) ILASTANIM = 1 
+             IF (H3D_DATA%DTH3D>ZERO) ILASTH3D = 1  
           ENDIF     
           DT2T = MIN(DT2TT,DTREST) 
           NELTST = NELTSTT
@@ -6464,7 +6465,7 @@ C--------------------------------------------------------------C
      .                    VR      ,A       ,AR      ,MS      ,IN      ,
      .                    XDP     ,D       ,R2R_ON  ,DD_R2R  ,WEIGHT  ,
      .                    IAD_ELEM,FR_ELEM ,STIFN   ,STIFR   ,DD_R2R_ELEM  ,
-     .                    SDD_R2R_ELEM)
+     .                    SDD_R2R_ELEM,NLOC_DMG)
 
          IF (IMONM > 0) CALL STOPTIME(54,1)  
         
@@ -7260,7 +7261,7 @@ C----------------------
 C  Activating valve (in/out or imposed velocity)
 C----------------------
 
-        IF(NEBCS>0)THEN
+        IF(EBCS_TAB%nebcs_loc>0)THEN
           IF (IMON>0) THEN
             CALL STARTIME(6,1)
             CALL STARTIME(2,1)
@@ -9085,7 +9086,6 @@ C===============================================================================
             ENDIF
         ENDIF
       ENDIF
-
 C========================================================================================
 C                                     NON PARALLEL SECTION (SMP)
 C========================================================================================
@@ -9806,6 +9806,11 @@ C
 
         !/LOAD/PBLAST
         CALL PBLAST_DEALLOCATE(PBLAST_TAB)
+
+C--     Rad2rad deallocation
+        IF(ALLOCATED(IADD_NL))          DEALLOCATE (IADD_NL)
+        IF(ALLOCATED(NBDOF_NL))         DEALLOCATE (NBDOF_NL)
+        IF(ALLOCATED(NLLNK))            DEALLOCATE (NLLNK)    
 
 C--     Seatblet stuctures deallocation
         IF (NSLIPRING > 0) THEN

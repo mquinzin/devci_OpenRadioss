@@ -3661,7 +3661,8 @@ C---  Premiere Passe -> comptage
      4           IADBUF,NALE_R2R,FLG_R2R_ERR ,
      5           STACK%PM ,IWORKSH  ,IGRBRIC ,IGRQUAD   ,IGRSH4N ,
      6           IGRSH3N  ,IGRTRUSS ,IGRBEAM ,IGRSPRING ,IGRNOD  ,
-     7           IGRSURF  ,IGRSLIN, LSUBMODEL,ALE_EULER ,IGEO)
+     7           IGRSURF  ,IGRSLIN, LSUBMODEL,ALE_EULER ,IGEO    ,
+     8           NLOC_DMG)
 C---
          ALLOCATE(IBUFTMP(IDX2)%ptr(SIBUFSSG+INNOD)   ,STAT=stat)
          IF (STAT /= 0) THEN
@@ -3687,7 +3688,8 @@ C---  Deuxieme Passe -> creation des interfaces
      4           IADBUF,NALE_R2R,FLG_R2R_ERR ,
      5           STACK%PM ,IWORKSH  ,IGRBRIC ,IGRQUAD   ,IGRSH4N ,
      6           IGRSH3N  ,IGRTRUSS ,IGRBEAM ,IGRSPRING ,IGRNOD  ,
-     7           IGRSURF  ,IGRSLIN, LSUBMODEL,ALE_EULER ,IGEO)
+     7           IGRSURF  ,IGRSLIN, LSUBMODEL,ALE_EULER ,IGEO    ,
+     8           NLOC_DMG)
 C--------------------------------------------
 C     MULTIDOMAINS - SPLIT DES TABLEAUX
 C--------------------------------------------
@@ -8349,7 +8351,7 @@ C
      U            MS_PLY0 ,ZI_PLY0    ,ITAGND_SHXFEM,ITAGSH  ,MCPC    ,
      W            MCPTG   ,XREFC      ,XREFTG    ,XREFS   ,MSSA    ,
      X            MSRT    ,IRBE2      ,LRBE2     ,USER_INIVOL  ,KVOL    , NBSUBMAT,
-     Y            IXS(PIXS10),IXS(PIXS16),IXS(PIXS20),TOTADDMAS,
+     Y            IXS10,IXS16,IXS20,TOTADDMAS,
      Z            IPMAS   ,STIFFN     ,MSZ20     ,ITAGN   ,SITAGE,
      1            ITAGE   ,IXR_KJ     ,ELBUF_TAB,
      2            NOM_OPT ,INOM_OPT(13),INOM_OPT(21),INOM_OPT(20),
@@ -10062,7 +10064,7 @@ C
      D    LGAUGE ,IGAUP   ,NGAUP  ,INTBUF_TAB,IBFFLUX ,
      E    ICNDS10,ITAGND  ,IGEO   ,TAG_SKN   ,MULTIPLE_SKEW,
      F    IBFV   ,IBCSCYC ,LBCSCYC,R_SKEW    ,IPM,
-     G    SENSOR_TAB, SCEP)
+     G    SENSOR_TAB, SCEP,EBCS_TAB)
 
 C      ELSE
 C       mise a 1 de front i.e. tous les noeuds sur Proc1, poids 1
@@ -10323,7 +10325,7 @@ C--------------------------------------------
      3      IXR    ,IXUR   ,IXTG   ,IXTG1   ,T_MONVOL  ,
      4      IGRSURF,IBCL   ,ADDCNE  ,CEP     ,
      5      ILEN   ,GEO    ,IBCV   ,IBCR    ,IBFFLUX ,
-     6      ILOADP ,LLOADP ,CEL    )
+     6      ILOADP ,LLOADP ,CEL    ,EBCS_TAB)
           IF(I2NSNT>0) THEN
             IF(LCNI2G>0) ALLOCATE(CNI2(LCNI2G))
             CALL FILLCNI2(
@@ -10694,7 +10696,6 @@ C
       DEALLOCATE( FACE_ELM_S )
       DEALLOCATE( FACE_ELM_Q )
       DEALLOCATE( FACE_ELM_TG )
-
 c     stop CPU timer for ddsplit
       CALL STOPTIME(3,1)
 

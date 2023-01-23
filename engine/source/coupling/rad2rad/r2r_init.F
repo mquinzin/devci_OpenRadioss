@@ -36,6 +36,7 @@ Chd|        GET_MASS_SPMD                 source/coupling/rad2rad/r2r_init.F
 Chd|        GET_NAME_C                    source/coupling/rad2rad/rad2rad_c.c
 Chd|        INIT_ACTIV_C                  source/coupling/rad2rad/rad2rad_c.c
 Chd|        INIT_LINK_C                   source/coupling/rad2rad/rad2rad_c.c
+Chd|        INIT_LINK_NL_C                source/coupling/rad2rad/rad2rad_c.c
 Chd|        INIT_LINK_SPMD                source/coupling/rad2rad/r2r_init.F
 Chd|        OPENFIFO_C                    source/coupling/rad2rad/rad2rad_c.c
 Chd|        OPENSEM_C                     source/coupling/rad2rad/rad2rad_c.c
@@ -44,6 +45,7 @@ Chd|        R2R_RBY                       source/coupling/rad2rad/r2r_init.F
 Chd|        SEND_FBUF_C                   source/coupling/rad2rad/rad2rad_c.c
 Chd|        SEND_IBUF_C                   source/coupling/rad2rad/rad2rad_c.c
 Chd|        SEND_MASS_C                   source/coupling/rad2rad/rad2rad_c.c
+Chd|        SEND_MASS_NL_C                source/coupling/rad2rad/rad2rad_c.c
 Chd|        SEND_MASS_RBY_C               source/coupling/rad2rad/rad2rad_c.c
 Chd|        SEND_MASS_RBY_SPMD            source/coupling/rad2rad/r2r_init.F
 Chd|        SEND_MASS_SPMD                source/coupling/rad2rad/r2r_init.F
@@ -54,6 +56,8 @@ Chd|        SPMD_EXCH_R2R_RBY             source/mpi/r2r/spmd_r2r.F
 Chd|        SPMD_IBCAST                   source/mpi/generic/spmd_ibcast.F
 Chd|        SPMD_R2R_SYNC                 source/mpi/r2r/spmd_r2r.F     
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
+Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
 Chd|        RAD2R_MOD                     share/modules/rad2r.F         
 Chd|====================================================================
       SUBROUTINE R2R_INIT(IEXLNK  ,ITAB,IGRNOD,X      ,
@@ -61,12 +65,14 @@ Chd|====================================================================
      3                    FR_ELEM,ADDCNEL,CNEL,IXC,IPARG,ICODT,ICODR,
      4                    IBFV,DX,RBY,NPBY,XDP,STIFN,STIFR,DD_R2R_ELEM,
      5                    SDD_R2R_ELEM,WEIGHT_MD,ILENXV,NUMSPH_GLO_R2R,
-     6                    FLG_SPHINOUT_R2R,IPARI)
+     6                    FLG_SPHINOUT_R2R,IPARI,NLOC_DMG)
 C----6---------------------------------------------------------------7---------8
 C   M o d u l e s
 C-----------------------------------------------
       USE RAD2R_MOD
       USE GROUPDEF_MOD
+      USE MESSAGE_MOD
+      USE NLOCAL_REG_MOD
 C-----------------------------------------------       
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -91,6 +97,7 @@ C-----------------------------------------------
 #include      "scr03_c.inc"
 #include      "task_c.inc"
 #include      "sphcom.inc"
+#include      "my_allocate.inc"
 C-----------------------------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
@@ -106,16 +113,19 @@ C     REAL
       DOUBLE PRECISION XDP(3,*)      
 !
       TYPE (GROUP_)  , TARGET, DIMENSION(NGRNOD)  :: IGRNOD
+      TYPE(NLOCAL_STR_), TARGET, INTENT(IN)  :: NLOC_DMG
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER I, J, IEX, IDP, IDG, NNG, OFC,NFTC,INFO,TYP,ITSK
       INTEGER OMP_GET_THREAD_NUM,NUM_SOCK,SIZE_TAG_RBY,LENR,SIZE
-      INTEGER NN,N,SUM,PPID,IDEL_LOC,NSN_GLOB
+      INTEGER NN,N,SUM,PPID,IDEL_LOC,NSN_GLOB,COMPT
+      INTEGER, DIMENSION(:), ALLOCATABLE :: NDOF_NL
       CHARACTER*35 ADDR
-
 C
       INTEGER, DIMENSION(:), POINTER :: GRNOD
+      INTEGER, POINTER, DIMENSION(:) :: IDXI,POSI
+      my_real, POINTER, DIMENSION(:) :: MSNL
 C******************************************************************************C
       INFO=NUMELS+NUMELQ+NUMELC
       NBK = 0
@@ -124,7 +134,7 @@ C******************************************************************************C
      .                     (IDTMIN(11)/=3).AND.(IDTMIN(11)/=8)) THEN
         ILENXV = ILENXV + 2
       ENDIF
-                  
+C             
       IF ((R2R_SIU==1).OR.(NSPMD==1)) THEN
 C------SPH+Multidomains--------------------->
        IF (R2R_SIU==1) THEN
@@ -148,6 +158,10 @@ C------Cas SMP initialization---------------c
        ALLOCATE(TYPLNK(NR2RLNK),RBYLNK(NR2RLNK),KINLNK(NR2RLNK))
        ALLOCATE(ADD_RBY(NR2RLNK))              
        ALLOCATE(SOCKET(NTHREAD))
+       MY_ALLOCATE(NLLNK,NR2RLNK)
+       MY_ALLOCATE(NBDOF_NL,NR2RLNK)
+       NBDOF_NL(1:NR2RLNK) = 0
+C
        DO I = 1, ROOTLEN
            IROOT(I) = ICHAR(ROOTNAM(I:I))
        END DO	
@@ -201,13 +215,13 @@ C----- get info for th
 C-----                     
        CALL SEND_IBUF_C(IRUN,1)         
        OFC=NUMELS+NUMELQ
-       
+C    
        DO IEX = 1, NR2RLNK
         IDG  = IEXLNK(1,IEX)
         IDP  = IEXLNK(2,IEX)
         NNG  = IGRNOD(IDG)%NENTITY
 	NFTC = 0
-!
+!   
         GRNOD => IGRNOD(IDG)%ENTITY
 !
         IF (IDP>NBK) NBK = IDP	
@@ -216,7 +230,8 @@ C------	determination of the type of the interface
 	CALL GET_IBUF_C(TYPLNK(IEX),1)
 	CALL GET_IBUF_C(MAIN_SIDE,1)
 	CALL GET_IBUF_C(RBYLNK(IEX),1)
-	CALL GET_IBUF_C(KINLNK(IEX),1)    
+	CALL GET_IBUF_C(KINLNK(IEX),1)
+	CALL GET_IBUF_C(NLLNK(IEX),1)
 	IF (RBYLNK(IEX)==1) THEN
 	   ADD_RBY(IEX) = SIZE_TAG_RBY
 	   SIZE_TAG_RBY = SIZE_TAG_RBY + NNG
@@ -236,8 +251,34 @@ C--------------Initialisation of arrays for rlinks/cyljoints------
 	ENDIF        
 C----------------------------------------------------------------------              	
 C------	
-        CALL INIT_LINK_C(IDP,NNG,ITAB,GRNOD,X,ADDCNEL,CNEL,IXC,
+        IF (NLLNK(IEX)==1) THEN
+C-------- Coupling of non local dof
+          IDXI => NLOC_DMG%IDXI(1:NUMNOD)
+          POSI => NLOC_DMG%POSI(1:NLOC_DMG%NNOD)
+          COMPT = 0
+          MY_ALLOCATE(NDOF_NL,NNG)
+          DO I=1,NNG
+            NN = IDXI(GRNOD(I))
+            NDOF_NL(I) = POSI(NN+1)-POSI(NN)
+            COMPT = COMPT + NDOF_NL(I)
+          ENDDO
+          NBDOF_NL(IEX) = COMPT
+          ALLOCATE(IADD_NL(COMPT))
+          COMPT = 0
+          DO I=1,NNG
+            NN = IDXI(GRNOD(I))
+            DO J=POSI(NN),POSI(NN+1)-1
+              COMPT = COMPT + 1
+              IADD_NL(COMPT) = J
+            ENDDO
+          ENDDO   
+          CALL INIT_LINK_NL_C(IDP,NNG,ITAB,GRNOD,X,NCPRI,DX,NDOF_NL,NBDOF_NL(IEX))
+          DEALLOCATE(NDOF_NL)
+        ELSE
+          CALL INIT_LINK_C(IDP,NNG,ITAB,GRNOD,X,ADDCNEL,CNEL,IXC,
      .        	OFC,INFO,TYPLNK(IEX),ICODT,ICODR,NCPRI,IRODDL,NBK,DX)
+        ENDIF
+C
        END DO
 !
        CALL INIT_ACTIV_C(R2R_ACTIV)
@@ -253,17 +294,21 @@ C----- Actualize  mass and inertia
 C
         R2RFX1 = ZERO
         R2RFX2 = ZERO
-	ALLOCATE (TAG_RBY(SIZE_TAG_RBY))
+	ALLOCATE (TAG_RBY(SIZE_TAG_RBY))     
         DO IEX = 1, NR2RLNK
           IDG  = IEXLNK(1,IEX)
           IDP  = IEXLNK(2,IEX)
           NNG  = IGRNOD(IDG)%NENTITY
           GRNOD => IGRNOD(IDG)%ENTITY
-	  IF (RBYLNK(IEX)==0) THEN
-             CALL SEND_MASS_C(IDP,NNG,GRNOD,MS,IN)
-	  ELSE 
-             CALL SEND_MASS_RBY_C(IDP,NNG,GRNOD,MS,IN,NPBY,
-     .        	NRBODY,RBY,TAG_RBY,ADD_RBY(IEX),NNPBY,NRBY)
+          IF (RBYLNK(IEX)==1) THEN
+            CALL SEND_MASS_RBY_C(IDP,NNG,GRNOD,MS,IN,NPBY,
+     .        	                 NRBODY,RBY,TAG_RBY,ADD_RBY(IEX),NNPBY,NRBY)        
+          ELSEIF (NLLNK(IEX)==1) THEN
+C---------- Coupling of non local dof
+            MSNL  => NLOC_DMG%MASS(1:NLOC_DMG%L_NLOC) 
+            CALL SEND_MASS_NL_C(IDP,NBDOF_NL(IEX),IADD_NL,MSNL)
+	  ELSE
+            CALL SEND_MASS_C(IDP,NNG,GRNOD,MS,IN)
           ENDIF     
         END DO
 C        
@@ -273,17 +318,20 @@ C
             IDP  = IEXLNK(2,IEX)
             NNG  = IGRNOD(IDG)%NENTITY
             GRNOD => IGRNOD(IDG)%ENTITY
-	    IF (RBYLNK(IEX)==0) THEN
-              CALL GET_MASS_C(IDP,NNG,GRNOD,MS,IN)
-	    ELSE   
+            IF (RBYLNK(IEX)==1) THEN  
               CALL GET_MASS_RBY_C(IDP,NNG,GRNOD,MS,IN,X,NPBY,
-     .        	NRBODY,RBY,NNPBY,NRBY)
+     .        	                  NRBODY,RBY,NNPBY,NRBY)
               CALL R2R_RBY(NNG,ITAB,GRNOD,X,MS,IN,NPBY,RBY,
-     .        	XDP,1,WEIGHT)     
-            ENDIF     
-          END DO        
+     .                     XDP,1,WEIGHT)
+            ELSEIF (NLLNK(IEX)==1) THEN
+C---------- Coupling of non local dof - mass not modifed - 
+              CALL SEND_IBUF_C(IDP,1) 
+	    ELSE
+              CALL GET_MASS_C(IDP,NNG,GRNOD,MS,IN)   
+            ENDIF  
+          END DO      
 C
-C---------------Synchronisation--------------------------------C
+C---------------Synchronisation (not needed for NL coupling)------C
           IF (NSPMD>1) THEN             
             IF (SDD_R2R_ELEM>0) THEN 
              SIZE =  3 + IRODDL*3         
@@ -327,7 +375,8 @@ C------Allocation of common arrays
        ALLOCATE(NBELN(NR2RLNK,NSPMD))
        ALLOCATE(DBNO(NR2RLNK),TCNELT(NR2RLNK),NBELT_R2R(NR2RLNK))
        ALLOCATE(TCNELTDB(NR2RLNK),OFFSET(NSPMD),NBELTN_R2R(NR2RLNK))     
-       ALLOCATE(RBYLNK(NR2RLNK),ADD_RBY(NR2RLNK),KINLNK(NR2RLNK))        
+       ALLOCATE(RBYLNK(NR2RLNK),ADD_RBY(NR2RLNK),KINLNK(NR2RLNK))
+       MY_ALLOCATE(NLLNK,NR2RLNK)        
 C--------------------------------------- 
                     
        DO I = 1, ROOTLEN
@@ -388,7 +437,8 @@ C------	determination of the type of interface and link
 	  CALL GET_IBUF_C(TYPLNK(IEX),1)
 	  CALL GET_IBUF_C(MAIN_SIDE,1)            
 	  CALL GET_IBUF_C(RBYLNK(IEX),1)
-   	  CALL GET_IBUF_C(KINLNK(IEX),1)              	  	  
+   	  CALL GET_IBUF_C(KINLNK(IEX),1)
+	  CALL GET_IBUF_C(NLLNK(IEX),1)              	  	  
 	ENDIF
 c------		
 	IF(NSPMD>1) THEN

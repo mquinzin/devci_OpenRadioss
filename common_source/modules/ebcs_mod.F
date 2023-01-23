@@ -25,7 +25,9 @@ Chd|  EBCS_MOD                      modules/ebcs_mod.F
 Chd|-- called by -----------
 Chd|        C_IEBCS                       starter/source/restart/ddsplit/c_iebcs.F
 Chd|        DDSPLIT                       starter/source/restart/ddsplit/ddsplit.F
+Chd|        DOMDEC2                       starter/source/spmd/domdec2.F 
 Chd|        EBCS_SET_TCARP                starter/source/boundary_conditions/ebcs/iniebcs_nrf_tcar.F
+Chd|        FILLCNE                       starter/source/spmd/domdec2.F 
 Chd|        HM_READ_EBCS_FLUXOUT          starter/source/boundary_conditions/ebcs/hm_read_ebcs_fluxout.F
 Chd|        HM_READ_EBCS_GRADP0           starter/source/boundary_conditions/ebcs/hm_read_ebcs_gradp0.F
 Chd|        HM_READ_EBCS_INIP             starter/source/boundary_conditions/ebcs/hm_read_ebcs_inip.F
@@ -46,9 +48,11 @@ Chd|        INIGRAV_PART_LIST             starter/source/initial_conditions/inig
 Chd|        INITIA                        starter/source/elements/initia/initia.F
 Chd|        LECTUR                        starter/source/starter/lectur.F
 Chd|        READ_EBCS                     starter/source/boundary_conditions/ebcs/read_ebcs.F
+Chd|        SPLIT_EBCS                    starter/source/boundary_conditions/ebcs/split_ebcs.F
 Chd|        STARTER0                      starter/source/starter/starter0.F
 Chd|        ST_QAPRINT_DRIVER             starter/source/output/qaprint/st_qaprint_driver.F
 Chd|        ST_QAPRINT_EBCS               starter/source/output/qaprint/st_qaprint_ebcs.F
+Chd|        W_PON                         starter/source/restart/ddsplit/w_pon.F
 Chd|        ALEMAIN                       engine/source/ale/alemain.F   
 Chd|        EBCCLAP                       engine/source/boundary_conditions/ebcs/ebcclap.F
 Chd|        EBCS0                         engine/source/boundary_conditions/ebcs/ebcs0.F
@@ -79,6 +83,17 @@ Chd|====================================================================
       USE MULTI_FVM_MOD
 #include "my_real.inc"
 
+      
+!     -----------------
+!     parith/on structure
+!     -----------------
+      type ebcs_parith_on
+            integer, dimension(:,:), allocatable :: elem_adress
+      end type
+      type(ebcs_parith_on), dimension(:), allocatable :: ebcs_parithon
+!     Generic ebcs type
+!     -----------------
+
 !     Generic ebcs type
 !     -----------------
       type, public :: t_ebcs
@@ -93,8 +108,10 @@ Chd|====================================================================
       integer, dimension(:), allocatable :: node_list
 !     element list
       integer, dimension(:, :), allocatable :: elem_list
-!     Id of the attached element
+!     Id of the attached element (local id)
       integer, dimension(:), allocatable :: ielem
+!     Id of the attached element (global id)
+      integer, dimension(:), allocatable :: global_ielem
 !     type of the attached element
       integer, dimension(:), allocatable :: itype
 !     iseg 
@@ -295,8 +312,10 @@ Chd|====================================================================
       type, public :: t_ebcs_tab
       integer :: nebcs
       class(t_ebcs_poly), dimension(:), allocatable :: tab
+      integer, dimension(:), allocatable :: my_typ
+      logical, dimension(:), allocatable :: need_to_compute
       logical :: is_created = .false.
-      integer :: nebcs_loc = 0, nebcs_fvm = 0
+      integer :: nebcs_loc = 0, nebcs_fvm = 0, nebcs_nrf = 0
       contains
       procedure, pass :: create, destroy, write_type_data, create_from_types
       procedure, nopass :: read_type_data
@@ -314,6 +333,7 @@ Chd|====================================================================
       if(allocated(this%node_list)) deallocate(this%node_list)
       if(allocated(this%elem_list)) deallocate(this%elem_list)
       if(allocated(this%ielem)) deallocate(this%ielem)
+      if(allocated(this%global_ielem)) deallocate(this%global_ielem)
       if(allocated(this%itype)) deallocate(this%itype)
       if(allocated(this%iseg)) deallocate(this%iseg)
       if(allocated(this%iface)) deallocate(this%iface)
@@ -358,9 +378,7 @@ Chd|====================================================================
       
       class (t_ebcs), pointer :: ebcs
 
-      this%nebcs = 0
       if (nebcs > 0) then
-         this%nebcs = nebcs
          allocate(this%tab(nebcs))
          this%is_created = .true.
          do ii = 1, nebcs
@@ -464,7 +482,6 @@ C All allocatable subobjects are deallocated here:
 !     Local
       integer :: ii, jj, nnode
       integer, dimension(:), allocatable :: tag_node
-
 !     tag surface nodes
       allocate(tag_node(0:numnod))
       tag_node(0:numnod) = 0
@@ -482,6 +499,7 @@ C All allocatable subobjects are deallocated here:
       enddo
 
       this%nb_node = nnode
+      if(allocated(this%node_list)) deallocate(this%node_list)
       allocate(this%node_list(nnode))
       
       nnode = 0
@@ -495,6 +513,7 @@ C All allocatable subobjects are deallocated here:
 
 !     keep track of elems
       this%nb_elem = nelem
+      if(allocated(this%elem_list)) deallocate(this%elem_list)
       allocate(this%elem_list(4, nelem))
       do ii = 1, nelem
          do jj = 1, 4
@@ -502,9 +521,12 @@ C All allocatable subobjects are deallocated here:
          enddo
       enddo
 !     Allocate members
-      allocate(this%ielem(nelem))
-      allocate(this%itype(nelem))
-      allocate(this%iseg(nelem))
+      if(.not.allocated(this%ielem)) allocate(this%ielem(nelem))
+
+      if(.not.allocated(this%itype)) allocate(this%itype(nelem))
+
+      if(.not.allocated(this%iseg)) allocate(this%iseg(nelem))
+
 !     memory deallocation
       deallocate(tag_node)
       end subroutine set_nodes_elems
@@ -545,7 +567,6 @@ C All allocatable subobjects are deallocated here:
       if(this%is_multifluid)integer_data(6) = 1
       integer_data(7) = 0
       if(this%has_ielem)integer_data(7) = 1
-
       if (this%debug_print) print*, "integer_data ", integer_data
 
       call write_i_c(integer_data, 7)
@@ -729,7 +750,6 @@ C All allocatable subobjects are deallocated here:
       if(integer_data(6) == 1)this%is_multifluid=.true.
       this%has_ielem=.false.
       if(integer_data(7) == 1)this%has_ielem=.true.
-
       if (this%debug_print) print*, "integer_data ", integer_data
 
 !     read node list
@@ -1459,6 +1479,5 @@ C All allocatable subobjects are deallocated here:
         call read_db(this%fvm_inlet_data%val_pres, 21)
       endif      
       end subroutine read_data_nrf    
-      
 
       end module ebcs_mod

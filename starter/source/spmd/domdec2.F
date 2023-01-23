@@ -32,6 +32,8 @@ Chd|        FRONTPLUS_RM                  source/spmd/node/frontplus.F
 Chd|        IFRONTPLUS                    source/spmd/node/frontplus.F  
 Chd|        SPLIT_JOINT                   source/constraints/general/cyl_joint/split_joint.F
 Chd|        NLOCAL                        source/spmd/node/ddtools.F    
+Chd|        ALE_EBCS_MOD                  ../common_source/modules/ale_ebcs_mod.F
+Chd|        EBCS_MOD                      ../common_source/modules/ebcs_mod.F
 Chd|        FRONT_MOD                     share/modules1/front_mod.F    
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
@@ -56,7 +58,7 @@ Chd|====================================================================
      D   LGAUGE ,IGAUP  ,NGAUP  ,INTBUF_TAB,IBFFLUX,
      E   ICNDS10,ITAGND ,IGEO   ,TAG_SKN,MULTIPLE_SKEW,
      F   IBFV   ,IBCSCYC,LBCSCYC,R_SKEW,IPM     ,
-     G   SENSOR_TAB, LEN_CEP)
+     G   SENSOR_TAB, LEN_CEP,EBCS_TAB)
 C
 C-----------------------------------------------
 C   M o d u l e s
@@ -68,6 +70,8 @@ C-----------------------------------------------
       USE SKEW_MOD
       USE MONVOL_STRUCT_MOD
       USE SENSOR_MOD
+      USE ALE_EBCS_MOD
+      USE EBCS_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -136,6 +140,7 @@ C-----------------------------------------------
 !                    new structure for SENSOR
 !       -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*
       TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
+      TYPE(T_EBCS_TAB), INTENT(INOUT) :: EBCS_TAB
 C-----------------------------------------------
 C   E x t e r n a l   F u n c t i o n s
 C-----------------------------------------------
@@ -155,6 +160,8 @@ C-----------------------------------------------
       INTEGER :: ISENS
       my_real
      .        ECT_AK,FR_AK
+      INTEGER :: IJK
+      INTEGER :: SURF_ID,NUMBER_NODE,NODE_ID
 C-----------------------------------------------------
 C   S o u r c e  L i n e s
 C-----------------------------------------------------
@@ -1567,6 +1574,32 @@ C--------------------------------------
         ENDDO
         ENDDO
       ENDIF
+
+!   -------------------------------------
+!   Euler boundary conditions : non-relecting frontier
+!   add 1 contribution per node of element
+!   ------------
+      IF(NEBCS>0) THEN
+        DO I=1,NEBCS
+            IF(EBCS_TAB%tab(I)%poly%type==10) THEN
+                SURF_ID = EBCS_TAB%tab(I)%poly%surf_id ! surface id
+                NUMBER_NODE = 4
+                IF(N2D/=0) NUMBER_NODE = 2
+                ! ------------
+                ! loop over the elements of the EBCS
+                DO J=1,EBCS_TAB%tab(I)%poly%nb_elem
+                    ! loop over the 4 nodes of the surfaces
+                    DO IJK=1,NUMBER_NODE
+                        NODE_ID = IGRSURF(SURF_ID)%NODES(J,IJK) + 1 
+                        ADSKY(NODE_ID) = ADSKY(NODE_ID) + 1
+                    ENDDO
+                ENDDO
+                ! ------------
+            ENDIF
+        ENDDO
+      ENDIF
+!   -------------------------------------
+
 C-----------------------------------------------
 C   CALCUL DES ADRESSES DU VECTEUR SKYLINE
 C-----------------------------------------------
@@ -1985,6 +2018,8 @@ Chd|        LECTUR                        source/starter/lectur.F
 Chd|-- calls ---------------
 Chd|        MY_ORDERS                     ../common_source/tools/sort/my_orders.c
 Chd|        NLOCAL                        source/spmd/node/ddtools.F    
+Chd|        ALE_EBCS_MOD                  ../common_source/modules/ale_ebcs_mod.F
+Chd|        EBCS_MOD                      ../common_source/modules/ebcs_mod.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
 Chd|        MONVOL_STRUCT_MOD             share/modules1/monvol_struct_mod.F
 Chd|====================================================================
@@ -1994,12 +2029,14 @@ Chd|====================================================================
      3   IXR    ,IXUR   ,IXTG ,IXTG6  ,T_MONVOL ,
      4   IGRSURF,IB   ,ADDCNE ,CEP    ,
      5   ILEN   ,GEO    ,IBCV ,IBCR   ,IBFFLUX,
-     6   ILOADP ,LLOADP ,CEL  )
+     6   ILOADP ,LLOADP ,CEL  ,EBCS_TAB)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------    
       USE GROUPDEF_MOD
       USE MONVOL_STRUCT_MOD
+      USE ALE_EBCS_MOD
+      USE EBCS_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -2034,6 +2071,7 @@ C-----------------------------------------------
      .        GEO(NPROPG,*)
       TYPE (SURF_)   , DIMENSION(NSURF)   :: IGRSURF
       TYPE(MONVOL_STRUCT_), DIMENSION(NVOLU), INTENT(IN) :: T_MONVOL
+      TYPE(T_EBCS_TAB), INTENT(INOUT) :: EBCS_TAB
 C-----------------------------------------------
 C   F u n c t i o n
 C-----------------------------------------------
@@ -2047,7 +2085,9 @@ C-----------------------------------------------
      .        ADSKY(0:NUMNOD+1), ITRI(ILEN), INDEX(2*ILEN),
      .        WORK(70000)
 c     .        ADSKY(0:1000000), ITRI(1000000), INDEX(2000000),
-      INTEGER :: NELEM
+      INTEGER :: IJK,NUMBER_NODE
+      INTEGER :: NELEM,ELEM_ID,NODE_ID
+      INTEGER :: SURF_ID ! surface id
 C-----------------------------------------------
 C   S o u r c e  L i n e s
 C-----------------------------------------------
@@ -2718,6 +2758,33 @@ C-----------------------------------------------
          OFF = OFF + ILOADP(1,NL)/4
         ENDDO
       ENDIF
+
+!   -------------------------------------
+!   Euler boundary conditions : non-relecting frontier
+!   ------------
+      IF(NEBCS>0) THEN
+        DO I=1,NEBCS
+            IF(EBCS_TAB%tab(I)%poly%type==10) THEN
+                SURF_ID = EBCS_TAB%tab(I)%poly%surf_id ! surface id
+                NUMBER_NODE = 4
+                IF(N2D/=0) NUMBER_NODE = 2
+                
+                ! ------------
+                ! loop over the elements of the EBCS
+                DO J=1,EBCS_TAB%tab(I)%poly%nb_elem
+                    ! loop over the 4 nodes of the surfaces
+                    ELEM_ID = EBCS_TAB%tab(I)%poly%ielem(J) ! element id
+                    DO IJK=1,NUMBER_NODE
+                        NODE_ID = IGRSURF(SURF_ID)%NODES(J,IJK) ! node id
+                        CNE(ADSKY(NODE_ID)) = ELEM_ID ! element id
+                        ADSKY(NODE_ID) = ADSKY(NODE_ID) + 1
+                    ENDDO
+                ENDDO
+                ! ------------
+            ENDIF
+        ENDDO
+      ENDIF
+!   -------------------------------------
 C
       RETURN
       END
@@ -2823,7 +2890,7 @@ C-----------------------------------------------
 #include      "implicit_f.inc"
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
-C-----------------------------------------------
+C----------------------------------------------- 
 #include      "com01_c.inc"
 #include      "com04_c.inc"
 #include      "commandline.inc"

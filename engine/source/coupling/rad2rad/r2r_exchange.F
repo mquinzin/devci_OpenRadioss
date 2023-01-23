@@ -33,23 +33,27 @@ Chd|        R2R_BLOCK_C                   source/coupling/rad2rad/rad2rad_c.c
 Chd|        R2R_SEM_C                     source/coupling/rad2rad/rad2rad_c.c
 Chd|        R2R_UNLOCK_THREADS_C          source/coupling/rad2rad/rad2rad_c.c
 Chd|        SEND_DATA_C                   source/coupling/rad2rad/rad2rad_c.c
+Chd|        SEND_DATA_NL_C                source/coupling/rad2rad/rad2rad_c.c
 Chd|        SEND_DATA_SPMD                source/coupling/rad2rad/r2r_exchange.F
 Chd|        SEND_IBUF_C                   source/coupling/rad2rad/rad2rad_c.c
 Chd|        SPMD_EXCH_R2R                 source/mpi/r2r/spmd_r2r.F     
 Chd|        SPMD_IBCAST                   source/mpi/generic/spmd_ibcast.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        NLOCAL_REG_MOD                ../common_source/modules/nlocal_reg_mod.F
 Chd|        RAD2R_MOD                     share/modules/rad2r.F         
 Chd|====================================================================
       SUBROUTINE R2R_EXCHANGE(
      1    IEXLNK   ,IGRNOD   ,DX       ,V        ,VR        ,      
      2    A        ,AR       ,MS       ,IN       ,STX       ,STR       ,                       
      3    R2R_ON   ,DD_R2R   ,WEIGHT   ,IAD_ELEM ,FR_ELEM   ,RBY       ,
-     4    XDP      ,X        ,DD_R2R_ELEM , SDD_R2R_ELEM, OFF_SPH_R2R,NUMSPH_GLO_R2R)                         
+     4    XDP      ,X        ,DD_R2R_ELEM , SDD_R2R_ELEM, OFF_SPH_R2R  ,
+     5    NUMSPH_GLO_R2R,NLOC_DMG)                         
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE RAD2R_MOD
       USE GROUPDEF_MOD
+      USE NLOCAL_REG_MOD
 C-----------------------------------------------      
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -87,12 +91,14 @@ C     REAL
       DOUBLE PRECISION XDP(3,*)               
 !
       TYPE (GROUP_)  , TARGET, DIMENSION(NGRNOD)  :: IGRNOD
+      TYPE(NLOCAL_STR_), TARGET, INTENT(IN)  :: NLOC_DMG
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER I,IEX,IDP,IDG,NNG,OLD_ACTIV,BID,LENR,SIZE,NTOP
 C
       INTEGER, DIMENSION(:), POINTER :: GRNOD
+      my_real, POINTER, DIMENSION(:) :: MSNL,VNL,FNL
 C=======================================================================
 
 C------------------------------------------------------
@@ -105,9 +111,16 @@ C------------------------------------------------------
           IDP  = IEXLNK(2,IEX)                                  
           NNG  = IGRNOD(IDG)%NENTITY
           GRNOD => IGRNOD(IDG)%ENTITY
-	  IF (IRESP==1) THEN
+	  IF (NLLNK(IEX)==1) THEN
+C----------Non local coupling interface--------------------------
+            MSNL  => NLOC_DMG%MASS(1:NLOC_DMG%L_NLOC)
+            VNL  => NLOC_DMG%VNL(1:NLOC_DMG%L_NLOC) 
+            FNL  => NLOC_DMG%FNL(1:NLOC_DMG%L_NLOC,1)  
+            CALL SEND_DATA_NL_C(IDP,NBDOF_NL(IEX),IADD_NL,FNL,VNL ,     
+     .                          MSNL,NCYCLE ,IEX)
+	  ELSEIF (IRESP==1) THEN
 C----------simple precision : DX is replaced by XDP--------------	                                    
-             CALL SEND_DATA_C(
+            CALL SEND_DATA_C(
      .        IDP    ,NNG    ,GRNOD  ,A      ,AR     ,     
      .        STX    ,STR    ,V      ,VR     ,MS     ,IN     ,     
      .        XDP    ,X      ,TYPLNK(IEX),NCYCLE,RBY,TAG_RBY,
@@ -115,7 +128,7 @@ C----------simple precision : DX is replaced by XDP--------------
      .        OFF_SPH_R2R  ,NUMSPH_GLO_R2R, NRBY)
           ELSE
 C---------double precision---------------------------------------  
-             CALL SEND_DATA_C(
+            CALL SEND_DATA_C(
      .        IDP    ,NNG    ,GRNOD  ,A      ,AR     ,     
      .        STX    ,STR    ,V      ,VR     ,MS     ,IN     ,     
      .        DX     ,X      ,TYPLNK(IEX),NCYCLE,RBY,TAG_RBY,
@@ -229,7 +242,7 @@ C------------------------------------------------------
      .       STX    ,STR, TYPLNK(IEX),NCYCLE,IEX)
         END DO
 
-C----------New rad2rad HMPP - synchro SPMD-----------------------------       
+C-------New rad2rad HMPP - synchro SPMD- (not needed for NL coupling) -----       
         IF ((SDD_R2R_ELEM>0).AND.(NSPMD>1)) THEN 
          SIZE =  1 + IRODDL*1         
          LENR = IAD_ELEM(1,NSPMD+1)-IAD_ELEM(1,1)

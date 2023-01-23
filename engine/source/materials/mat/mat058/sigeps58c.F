@@ -506,10 +506,13 @@ C------------------------------------------------------------------
           RFAC = NC / EC2
           RFAT = NT / ET2
 C---      contraintes membrane       
-          SIGC = RFAC * FC * LC(I) / DC
-          SIGT = RFAT * FT * LT(I) / DT
-          SIGNXX(I) = SIGC
-          SIGNYY(I) = SIGT
+          SIGC = FC * LC(I) / DC
+          SIGT = FT * LT(I) / DT
+          SIGNXX(I) = SIGC * RFAC
+          SIGNYY(I) = SIGT * RFAT
+c
+          UVAR(I,1)  = SIGC
+          UVAR(I,2)  = SIGT
           UVAR(I,15) = DC
           UVAR(I,16) = DT
 C---      contraintes cisaillement      
@@ -568,8 +571,6 @@ C---
 #include "vectorize.inc"
         DO  J=1,NINDX
           I=INDEX(J)
-          UVAR(I,1) = SIGNXX(I) + SIGVXX(I)
-          UVAR(I,2) = SIGNYY(I) + SIGVYY(I)
           UVAR(I,3) = SIGNXY(I) + SIGVXY(I)
           TAN_PHI(I)= DEPSXY(I)
           UVAR(I,6) = DEPSXY(I)
@@ -1507,10 +1508,14 @@ c
         RFAC = ONE / EC2
         RFAT = ONE / ET2
 C---    contraintes membrane       
-        SIGC = RFAC * FC * LC(I) / DC
-        SIGT = RFAT * FT * LT(I) / DT
-        SIGNXX(I) = SIGC
-        SIGNYY(I) = SIGT
+c
+        SIGC = FC * LC(I) / DC
+        SIGT = FT * LT(I) / DT
+        SIGNXX(I) = SIGC * RFAC
+        SIGNYY(I) = SIGT * RFAT
+c
+        UVAR(I,1)  = SIGC
+        UVAR(I,2)  = SIGT
         UVAR(I,15) = DC
         UVAR(I,16) = DT
 C------------------------------------------------------------------
@@ -1650,8 +1655,6 @@ C---
 #include "vectorize.inc"
       DO  J=1,NINDX
         I=INDEX(J)
-        UVAR(I,1) = SIGNXX(I) + SIGVXX(I)
-        UVAR(I,2) = SIGNYY(I) + SIGVYY(I)
         UVAR(I,3) = SIGNXY(I) + SIGVXY(I)
         TAN_PHI(I) = DEPSXY(I)
         UVAR(I,6)  = DEPSXY(I)
