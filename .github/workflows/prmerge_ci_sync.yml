@@ -117,7 +117,7 @@ jobs:
           
       - name: Run fake sync
         run: |
-          echo "Run fake sync"
+          echo "Run fake sync : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
 
       # # Create a WS to sync git changes on a temporary repo (sync_git_perforce)
       # - name: Create/Update sync_git_perforce workspace
