@@ -25,6 +25,9 @@ Chd|  SENSOR_BASE                   source/tools/sensor/sensor_base.F
 Chd|-- called by -----------
 Chd|        RESOL                         source/engine/resol.F         
 Chd|-- calls ---------------
+Chd|        ANCMSG                        source/output/message/message.F
+Chd|        ARRET                         source/system/arret.F         
+Chd|        ENG_USERLIB_USER_SENS         source/user_interface/dyn_userlib.c
 Chd|        SENSOR_ACC                    source/tools/sensor/sensor_acc.F
 Chd|        SENSOR_CONTACT                source/tools/sensor/sensor_contact.F
 Chd|        SENSOR_DIST                   source/tools/sensor/sensor_dist.F
@@ -41,6 +44,7 @@ Chd|        SENSOR_TIME                   source/tools/sensor/sensor_time.F
 Chd|        SENSOR_VEL                    source/tools/sensor/sensor_vel.F
 Chd|        SENSOR_WORK                   source/tools/sensor/sensor_work.F
 Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
+Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
 Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE SENSOR_BASE(SENSOR_TAB,
@@ -53,6 +57,7 @@ C   M o d u l e s
 C-----------------------------------------------
       USE GROUPDEF_MOD
       USE SENSOR_MOD
+      USE MESSAGE_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -70,6 +75,7 @@ C-----------------------------------------------
 #include      "scr17_c.inc"
 #include      "task_c.inc"
 #include      "parit_c.inc"
+#include      "userlib.inc"
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
@@ -91,7 +97,8 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
-      INTEGER TYP,ISENS
+      INTEGER TYP,ISENS,SENS_ID,SIZE
+      CHARACTER(LEN=256) :: OPTION
 C-----------------------------------------------
 C   D e s c r i p t i o n
 C-----------------------------------------------
@@ -233,8 +240,62 @@ c       SENSOR NIC-Nij
 c
           CALL SENSOR_NIC(SENSOR_TAB(ISENS) )
 c
-c----
-        ENDIF  ! TYP 
+c--------------------------------
+        ELSEIF (TYP == 29) THEN
+c--------------------------------
+c       USER SENSOR TYPE 29
+
+          SENS_ID  = SENSOR_TAB(ISENS)%SENS_ID
+
+          IF (USERL_AVAIL==1) THEN
+              CALL ENG_USERLIB_USER_SENS(TYP,SENS_ID)
+          ELSE
+              ! ----------------
+              ! ERROR to be printed & exit
+              OPTION='USER SENSOR 29'
+              SIZE=LEN_TRIM(OPTION)
+              CALL ANCMSG(MSGID=257,C1=OPTION(1:SIZE),ANMODE=ANINFO)
+              CALL ARRET(2)
+             ! ----------------
+          ENDIF
+c--------------------------------
+        ELSEIF (TYP == 30) THEN
+c--------------------------------
+c       USER SENSOR TYPE 30
+
+          SENS_ID  = SENSOR_TAB(ISENS)%SENS_ID
+
+          IF (USERL_AVAIL==1) THEN
+              CALL ENG_USERLIB_USER_SENS(TYP,SENS_ID)
+          ELSE
+              ! ----------------
+              ! ERROR to be printed & exit
+              OPTION='USER SENSOR 30'
+              SIZE=LEN_TRIM(OPTION)
+              CALL ANCMSG(MSGID=257,C1=OPTION(1:SIZE),ANMODE=ANINFO)
+              CALL ARRET(2)
+             ! ----------------
+          ENDIF
+c--------------------------------
+        ELSEIF (TYP == 31) THEN
+c--------------------------------
+c       USER SENSOR TYPE 31
+
+          SENS_ID  = SENSOR_TAB(ISENS)%SENS_ID
+
+          IF (USERL_AVAIL==1) THEN
+              CALL ENG_USERLIB_USER_SENS(TYP,SENS_ID)
+          ELSE
+              ! ----------------
+              ! ERROR to be printed & exit
+              OPTION='USER SENSOR 31'
+              SIZE=LEN_TRIM(OPTION)
+              CALL ANCMSG(MSGID=257,C1=OPTION(1:SIZE),ANMODE=ANINFO)
+              CALL ARRET(2)
+             ! ----------------
+          ENDIF
+
+       ENDIF  ! TYP 
 c----
       END DO  ! ISENS
 c--------------------------------------------------

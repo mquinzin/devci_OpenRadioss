@@ -32,6 +32,7 @@ Chd|        SROTA6                        source/output/anim/generate/srota6.F
 Chd|        SZSTRAINGPS                   source/elements/solid/solidez/szhour3.F
 Chd|        ELBUFDEF_MOD                  ../common_source/modules/elbufdef_mod.F
 Chd|        INITBUF_MOD                   share/resol/initbuf.F         
+Chd|        OUTMAX_MOD                    ../common_source/modules/outmax_mod.F
 Chd|====================================================================
       SUBROUTINE TENSGPSTRAIN(ELBUF_TAB,FUNC1   ,FUNC2   ,IPARG   ,GEO     ,
      .                    IXS      ,IXS10   ,IXS16   ,IXS20   ,IXQ     ,
@@ -42,6 +43,7 @@ C   M o d u l e s
 C-----------------------------------------------
       USE INITBUF_MOD
       USE ELBUFDEF_MOD            
+      USE OUTMAX_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -163,6 +165,7 @@ C=======================================================================
         EVAR(6,I) = ZERO
       ENDDO  
       DO 900 NG=1,NGROUP
+        IF (LMAX_NSTRA >0 .AND. IPART_OK(NG,2)==0) CYCLE
         IVISC = IPARG(61,NG)
         GBUF => ELBUF_TAB(NG)%GBUF
         CALL INITBUF (IPARG    ,NG      ,                    

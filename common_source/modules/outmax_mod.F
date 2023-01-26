@@ -37,6 +37,9 @@ Chd|        RDRESB                        engine/source/output/restart/rdresb.F
 Chd|        RESOL_INIT                    engine/source/engine/resol_init.F
 Chd|        RESTALLOC                     engine/source/output/restart/arralloc.F
 Chd|        SORTIE_MAIN                   engine/source/output/sortie_main.F
+Chd|        TENSGPS3                      engine/source/output/anim/generate/tensor6.F
+Chd|        TENSGPSTRAIN                  engine/source/output/anim/generate/tensgpstrain.F
+Chd|        TMAX_IPART                    engine/source/output/tmax_ipart.F
 Chd|        UPD_TMAX                      engine/source/output/upd_outmax.F
 Chd|        WRCOMI                        engine/source/output/restart/wrcomm.F
 Chd|        WRRESTP                       engine/source/output/restart/wrrestp.F
@@ -56,11 +59,12 @@ Chd|====================================================================
         integer  LMAX_NSTRA ! noda p1&p3 for 3D
 C------ used to initialize LMAX_* (for elementary only)
         integer :: NKEYMAX = 6  
+        integer :: NCY_GPS, NCY_GPSTR 
 C---------Output Max contact force and pressure 
         integer :: SFCONT_MAX, SPCONT_MAX 
         integer :: IFCONTMAX,IFCONTPMAX, IFCONT2MAX,IFCONTP2MAX,IFCONT2MIN,IFCONTP2MIN
 C        /VONM;/SIGEQ; /ENER ; /DAMA, /TENS/STRESS ;/TENS/STRAIN
-        integer, DIMENSION(:) ,  ALLOCATABLE :: IKEYMAX 
+        integer, DIMENSION(:) ,  ALLOCATABLE :: IKEYMAX,IGPSTAG,IGPSTRATAG
         integer, DIMENSION(:,:) ,ALLOCATABLE :: IPART_OK 
         my_real, DIMENSION(:) , ALLOCATABLE ::  TM_DIS,TM_VEL  ! 3*NUMNOD
         my_real, DIMENSION(:) , ALLOCATABLE ::   TM_NSIG1 ,TM_NSIG3 ! 6*NUMNOD

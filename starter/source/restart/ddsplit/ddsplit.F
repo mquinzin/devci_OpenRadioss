@@ -188,7 +188,6 @@ Chd|        W_LACC                        source/restart/ddsplit/w_lacc.F
 Chd|        W_LAS                         source/restart/ddsplit/w_las.F
 Chd|        W_LGAU                        source/restart/ddsplit/w_lgau.F
 Chd|        W_LLINK                       source/restart/ddsplit/w_llink.F
-Chd|        W_LSENS                       source/restart/ddsplit/w_lsens.F
 Chd|        W_MAD                         source/restart/ddsplit/w_mad.F
 Chd|        W_MAIN_PROC_WEIGHT            source/restart/ddsplit/w_master_proc_weight.F
 Chd|        W_MONVOL                      source/restart/ddsplit/w_monvol.F
@@ -266,7 +265,7 @@ Chd|====================================================================
      8   ITAB         ,ITABM1       ,GJBUFI         ,NALE         ,
      9   ALE_CONNECTIVITY,
      A   KXX          ,IXX          ,IBCL           ,IBFV         ,
-     B   LAS          ,LACCELM      ,LSENSOR        ,NNLINK       ,LLLINK      ,
+     B   LAS          ,LACCELM      ,NNLINK         ,LLLINK       ,
      C   IPARG        ,IGRAV        ,LGRAV          ,IBVEL        ,LBVEL       ,
      D   IACTIV       ,FACTIV       ,KINET          ,IPARI        ,NPRW        ,
      E   LPRW         ,IEXMAD       ,NPBY        ,
@@ -279,7 +278,7 @@ Chd|====================================================================
      L   BRMPC        ,GJBUFR       ,W              ,VEUL         ,FILL        ,
      M   DFILL        ,WB           ,DSAV           ,ASAV         ,MSNF        ,
      N   SPBUF        ,FAC          ,VEL            ,FSAV         ,FZERO       ,
-     O   XLAS         ,ACCELM       ,SENSOR         ,FBVEL        ,GRAVFAC     ,
+     O   XLAS         ,ACCELM       ,FBVEL        ,GRAVFAC     ,
      P   FR_WAVE      ,FAILWAVE     ,PARTS0         ,USERW        ,ELBUF       ,
      Q   RWL          ,RWSAV        ,RBY            ,RIVET        ,
      R   SECBUF       ,RVOLU        ,RCONX          ,NLOC_DMG     ,
@@ -458,9 +457,8 @@ C-----------------------------------------------
      .        IXS(NIXS,*),IXS10(6,*),IXS20(12,*),IXS16(8,*),
      .        IXQ(NIXQ,*),IXC(*),IXT(*),IXP(*),IXR(*),
      .        ITAB(*),ITABM1(*),GJBUFI(*),
-     .        NALE(*),IEXMAD(*),
-     .        KXX(*),IXX(*),IBCL(*),IBFV(*),LAS(*),
-     .        LACCELM(*),LSENSOR(*),NNLINK(*),LLLINK(*),
+     .        NALE(*),IEXMAD(*),KXX(*),IXX(*),IBCL(*),IBFV(*),LAS(*),
+     .        LACCELM(*),NNLINK(*),LLLINK(*),
      .        IPARG(*),IGRAV(*),LGRAV(*),
      .        IBVEL(*),LBVEL(*),IACTIV(*),KINET(*),
      .        IPARI(*),NPRW(*),LPRW(*),
@@ -522,7 +520,7 @@ C-----------------------------------------------
      .       GJBUFR(*), W(*), VEUL(*), FILL(*), DFILL(*),
      .       WB(*), ASAV(*), DSAV(*), MSNF(*),
      .       SPBUF(*), FAC(*), VEL(*), FACTIV(*),
-     .       FSAV(*), FZERO(*), XLAS(*), ACCELM(*), SENSOR(*),
+     .       FSAV(*), FZERO(*), XLAS(*), ACCELM(*),
      .       FBVEL(*), GRAVFAC(*), FR_WAVE(*), USERW(*), ELBUF(*),
      .       RWL(*), RWSAV(*), RBY(*), RIVET(*),
      .       SECBUF(*), RVOLU(*), PARTS0(*), RCONX(*),
@@ -2197,11 +2195,6 @@ C--------------------------------------
       IF (NBGAUGE>0)
      .  CALL W_LGAU(LGAUGE,NBGAUGE,NODLOCAL,LEN_IA,CEL,CEP,P-1)
 C--------------------------------------
-C LSENSOR
-C--------------------------------------
-      IF (NSENSOR>0)
-     .  CALL W_LSENS(LSENSOR,NSENSOR,NSENSI,NODLOCAL,LEN_IA)
-C--------------------------------------
 C LLINK
 C--------------------------------------
       IF (NLINK>0)
@@ -2986,9 +2979,6 @@ C--------------------------------------------
 C Sensors
 C--------------------------------------------
       IF (NSENSOR > 0) THEN
-        CALL WRITE_DB(SENSOR,NSENSOR*NSENSR)
-        LEN_AM = LEN_AM + NSENSOR*NSENSR
-
         CALL WRITE_SENSOR_TAB(SENSOR_TAB,NSENSOR,NODLOCAL,LEN_AM)
       END IF
 C--------------------------------------------

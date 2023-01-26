@@ -35,10 +35,11 @@ Chd|        UPD_INT_K                     source/implicit/upd_glob_k.F
 Chd|        IMP_INTBUF                    share/modules/imp_mod_def.F   
 Chd|        IMP_INTTD                     share/modules/imp_mod_def.F   
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE IMP_INT_K( A     ,V         ,
      1                      ICODT ,ICODR ,ISKEW  ,IBFV  ,NPC    ,
-     2                      TF    ,VEL   ,SENSOR ,LSENSOR,XFRAME ,
+     2                      TF    ,VEL   ,SENSOR_TAB,XFRAME ,
      3                      RBY   ,X     ,SKEW   ,LPBY   ,NPBY  ,
      4                      ITAB  ,WEIGHT,MS     ,IN     ,NRBYAC,
      5                      IRBYAC,NSS   ,ISS    ,IPARI  ,INTBUF_TAB,
@@ -57,13 +58,11 @@ C-----------------------------------------------
       USE IMP_INTTD
       USE INTBUFDEF_MOD
       USE IMP_INTBUF
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   G l o b a l   P a r a m e t e r s
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -75,7 +74,7 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
-      INTEGER NPC(*),IBFV(NIFV,*),LSENSOR(NSENSI,*),DIRUL(*),
+      INTEGER NPC(*),IBFV(NIFV,*),DIRUL(*),
      .        ICODT(*),ICODR(*),ISKEW(*),ITOK(*),NDDL,NT_RW
       INTEGER WEIGHT(*),LPBY(*),NPBY(NNPBY,*),ITAB(*),
      .        IPARI(NPARI,*), NRBYAC,IRBYAC(*),
@@ -88,10 +87,11 @@ C-----------------------------------------------
       my_real
      .  A(3,*),V(3,*),RBY(NRBY,*),X(3,*) ,SKEW(*),IN(*),MS(*)
       my_real
-     .  TF(*), VEL(LFXVELR,*),SENSOR(NSENSR,*),DIAG_K(*),LT_K(*),
+     .  TF(*), VEL(LFXVELR,*),DIAG_K(*),LT_K(*),
      .  DIAG_I(*),LT_I(*),LB(*),UD(3,*),GAPMIN,XFRAME(NXFRAME,*),
      .  FRBE3(*)
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -113,7 +113,7 @@ C-----------int5 first-------------
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -135,7 +135,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -159,7 +159,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -176,7 +176,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -205,7 +205,7 @@ c     2        NUM_IMP1(N),NS_IMP1(IAD),NE_IMP1(IAD)   ,IND_IMP1(IAD),
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -229,7 +229,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -246,7 +246,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -273,7 +273,7 @@ C----- normal branche------------
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -289,12 +289,12 @@ C
        END DO
       DO N=1,NINTER
         NTY   =IPARI(7,N)
-	LREM(N) = 0
+	       LREM(N) = 0
         IF(NTY==7) THEN
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -318,7 +318,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -335,7 +335,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -353,7 +353,7 @@ C
 C
         IF(GAPMIN<ZERO)RETURN  
             CALL UPD_INT_K(ICODT ,ICODR ,ISKEW ,IBFV    ,NPC    ,
-     1                      TF   ,VEL   ,SENSOR ,LSENSOR,XFRAME ,
+     1                      TF   ,VEL   ,XFRAME ,
      2                      RBY   ,X     ,SKEW   ,LPBY   ,NPBY  ,
      3                      ITAB  ,WEIGHT,MS     ,IN     ,NRBYAC,
      4                      IRBYAC,NSS   ,ISS    ,IPARI  ,INTBUF_TAB,
@@ -378,24 +378,23 @@ Chd|        I7MAIN_CRIT_TRI               source/interfaces/intsort/i7main_crit_
 Chd|        IMP_ICOMCRIT                  source/implicit/imp_int_k.F   
 Chd|        SPMD_MIN_S                    source/mpi/implicit/imp_spmd.F
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE IMP_INTDT(
      1       IPARI    ,INTBUF_TAB,X        ,
      2       V        ,VR      ,ISENDTO ,IRECVFROM,
      4       NEWFRONT ,ITASK   ,DTK     ,ITAB     ,
      5       INTLIST  ,NBINTC  ,DT_MIN  ,MS       ,
-     6       SENSOR   ,MAXDGAP)
+     6       SENSOR_TAB,MAXDGAP)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE INTBUFDEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   G l o b a l   P a r a m e t e r s
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -414,9 +413,10 @@ C-----------------------------------------------
      .        ITASK
       my_real 
      .   X(3,*), V(3,*),VR(3,*),DTK(*),DT_MIN,MS(*),
-     .   SENSOR(NSENSR,*),MAXDGAP(NINTER)
+     .   MAXDGAP(NINTER)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -496,7 +496,7 @@ C
           ISENS = 0
           IF(NTY == 7) ISENS = IPARI(64,N)  
           IF(ISENS/=0)  THEN
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -512,7 +512,7 @@ C
 C
           ISENS = IPARI(64,N)  
           IF(ISENS/=0)  THEN
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -528,7 +528,7 @@ C
          CALL IMP_ICOMCRIT(
      1    INTBUF_TAB   ,IPARI   ,NEWFRONT ,ISENDTO  ,
      2    IRECVFROM,DTK(N)  ,ITAB    ,XSLV_L   ,XMSR_L   ,
-     3    VSLV_L  ,VMSR_L   ,SIZE_T  ,N        ,SENSOR   ,
+     3    VSLV_L  ,VMSR_L   ,SIZE_T  ,N        ,SENSOR_TAB,
      4    INTLIST  ,NBINTC  ,MAXDGAP)
 C     
           IF (NSPMD>1)CALL SPMD_MIN_S(DTK(N))
@@ -547,16 +547,18 @@ Chd|        SPMD_GET_STIF11               source/mpi/interfaces/send_cand.F
 Chd|        SPMD_SYNC_MMX                 source/mpi/interfaces/spmd_sync_mmx.F
 Chd|        INTAB                         source/implicit/ind_glob_k.F  
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE IMP_ICOMCRIT(
      1  INTBUF_TAB,IPARI  ,NEWFRONT,ISENDTO,
      2  IRCVFROM,DT2T   ,ITAB   ,XSLV_L  ,XMSR_L ,
-     3  VSLV_L ,VMSR_L  ,SIZE_T ,N       ,SENSOR ,
+     3  VSLV_L ,VMSR_L  ,SIZE_T ,N       ,SENSOR_TAB,
      4  INTLIST ,NBINTC ,MAXDGAP) 
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE INTBUFDEF_MOD
+      USE SENSOR_MOD
 C----6---------------------------------------------------------------7---------8
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -585,9 +587,10 @@ C-----------------------------------------------
 C     REAL
       my_real
      .   DT2T,XSLV_L(6,*), XMSR_L(6,*), VSLV_L(6,*), 
-     .VMSR_L(6,*), SIZE_T(*),SENSOR(NSENSR,*),MAXDGAP(NINTER)
+     .VMSR_L(6,*), SIZE_T(*),MAXDGAP(NINTER)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -619,7 +622,7 @@ C
           IF(NTY == 7.OR.NTY == 11.OR.NTY == 24.OR.NTY == 21.OR.
      .       NTY == 5.OR.NTY == 19 ) ISENS = IPARI(64,I)      
           IF(ISENS/=0) THEN             
-            TS = SENSOR(2,ISENS)
+            TS = SENSOR_TAB(ISENS)%TSTART
             IF (TT>=TS) INTERACT = 1
           ELSE
             STARTT = INTBUF_TAB(I)%VARIABLES(3)
@@ -708,6 +711,7 @@ Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE IMP_INTTD0(
      1       IPARI ,INTBUF_TAB     ,X       ,D       ,
@@ -721,7 +725,7 @@ Chd|====================================================================
      9       DT2PREV,WA,NUM_IMP1,IRLEN20,ISLEN20,
      A       IRLEN20T,ISLEN20T,IRLEN20E,ISLEN20E,
      B       IKINE,DIAG_SMS,COUNT_REMSLV,COUNT_REMSLVE,
-     C       SENSOR,XDP,H3D_DATA,MULTI_FVM,FORNEQS,MAXDGAP)
+     C       SENSOR_TAB,XDP,H3D_DATA,MULTI_FVM,FORNEQS,MAXDGAP)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -729,13 +733,11 @@ C-----------------------------------------------
       USE H3D_MOD
       USE MULTI_FVM_MOD
       USE GROUPDEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   G l o b a l   P a r a m e t e r s
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -767,13 +769,14 @@ C-----------------------------------------------
       my_real 
      .   X(3,*), D(3,*),MS(*),WA(*),
      .   DT2PREV, TEMP(*),D_IMP(3,*),DR_IMP(3,*),IN(*),DIAG_SMS(*),
-     .   SENSOR(NSENSR,*),FORNEQS(3,*),MAXDGAP(NINTER)
+     .   FORNEQS(3,*),MAXDGAP(NINTER)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
       TYPE(H3D_DATABASE) :: H3D_DATA
       TYPE(MULTI_FVM_STRUCT), INTENT(INOUT) :: MULTI_FVM
 !
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -814,7 +817,7 @@ C----deactive cette fonction.
      2       V        ,VR      ,ISENDTO ,IRECVFROM,
      4       NEWFRONT ,ITASK   ,DTK     ,ITAB     ,
      5       INTLIST  ,NBINTC  ,DT_MIN  ,MS       ,
-     6       SENSOR   ,MAXDGAP)
+     6       SENSOR_TAB,MAXDGAP)
        IF (DT_MIN >= DT2) GOTO 1000
        DO N = 1,NINTER
         NUM_IMP(N) = 0
@@ -840,7 +843,7 @@ C
         ISENS = 0
         IF(NTY == 7.OR.NTY == 11) ISENS = IPARI(64,N)      
         IF(ISENS/=0) THEN             !CMAAAAA
-           TS = SENSOR(2,ISENS)
+           TS = SENSOR_TAB(ISENS)%TSTART
            IF (TT>=TS) INTERACT = 1
         ELSE
            STARTT = INTBUF_TAB(N)%VARIABLES(3)
@@ -876,7 +879,7 @@ C
      9       IXS    ,TEMP  ,DT2PREV,WA     ,N    ,NTY,
      A       IRLEN20,ISLEN20,IRLEN20T,ISLEN20T,IRLEN20E,
      B       ISLEN20E,IKINE,DIAG_SMS,COUNT_REMSLV,COUNT_REMSLVE,
-     C       SENSOR  ,XDP  ,H3D_DATA, MULTI_FVM  ,FORNEQS)
+     C       SENSOR_TAB,XDP  ,H3D_DATA, MULTI_FVM  ,FORNEQS)
  999   CONTINUE
       ENDDO
 C
@@ -1083,6 +1086,7 @@ Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.
 Chd|        H3D_MOD                       share/modules/h3d_mod.F       
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
 Chd|        MULTI_FVM_MOD                 ../common_source/modules/multi_fvm_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE IMP_TRIPI(
      1       IPARI ,INTBUF_TAB   ,X       ,D       ,
@@ -1096,7 +1100,7 @@ Chd|====================================================================
      9       IXS    ,TEMP  ,DT2PREV,WAG    ,N   ,NTY ,
      A       IRLEN20,ISLEN20,IRLEN20T,ISLEN20T,IRLEN20E,
      B       ISLEN20E,IKINE,DIAG_SMS,COUNT_REMSLV,COUNT_REMSLVE,  
-     C       SENSOR  ,XDP,H3D_DATA,MULTI_FVM,FORNEQS)
+     C       SENSOR_TAB,XDP,H3D_DATA,MULTI_FVM,FORNEQS)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
@@ -1104,13 +1108,11 @@ C-----------------------------------------------
       USE H3D_MOD
       USE MULTI_FVM_MOD
       USE GROUPDEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   G l o b a l   P a r a m e t e r s
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -1140,14 +1142,14 @@ C-----------------------------------------------
       
       my_real 
      .   X(3,*), D(3,*),V(*),MS(*),WAG(*),
-     .   VR(3,*),DT2PREV, TEMP(*),IN(*), DIAG_SMS(*), SENSOR(NSENSR,*),
-     .   FORNEQS(3,*)
+     .   VR(3,*),DT2PREV, TEMP(*),IN(*), DIAG_SMS(*),FORNEQS(3,*)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
       TYPE(H3D_DATABASE) :: H3D_DATA
       TYPE(MULTI_FVM_STRUCT), INTENT(INOUT) :: MULTI_FVM
 !
       TYPE (GROUP_)  , DIMENSION(NGRBRIC) :: IGRBRIC
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -1181,7 +1183,7 @@ C-------------dans inttri------
      4       IRLEN17 ,IXS    ,IXS(L3) ,
      5       IGRBRIC ,TEMP   ,1       ,IRLEN7T ,ISLEN7T ,
      6       IRLEN20 ,ISLEN20,IRLEN20T,ISLEN20T,IRLEN20E,
-     7       ISLEN20E,IKINE  ,DIAG_SMS,SENSOR  ,INTBUF_TAB,INT24E2EUSE,
+     7       ISLEN20E,IKINE  ,DIAG_SMS,SENSOR_TAB,INTBUF_TAB,INT24E2EUSE,
      8       FORNEQS ,MULTI_FVM)
            CALL SPMD_I7XVCOM2(
      1       IPARI   ,X       ,V       ,MS      ,
@@ -1190,7 +1192,7 @@ C-------------dans inttri------
      4       IRLEN17 ,IXS    ,IXS(L3) ,
      5       IGRBRIC ,TEMP   ,2       ,IRLEN7T ,ISLEN7T ,
      6       IRLEN20 ,ISLEN20,IRLEN20T,ISLEN20T,IRLEN20E,
-     7       ISLEN20E,IKINE  ,DIAG_SMS,SENSOR  ,INTBUF_TAB,INT24E2EUSE,
+     7       ISLEN20E,IKINE  ,DIAG_SMS,SENSOR_TAB,INTBUF_TAB,INT24E2EUSE,
      8       FORNEQS ,MULTI_FVM)
         ENDIF
           NRTM_T = IPARI(4,N)
@@ -1199,7 +1201,7 @@ C-------------dans inttri------
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -1226,7 +1228,7 @@ C
 C
          ISENS = IPARI(64,N)
          IF(ISENS/=0)  THEN  ! SENSOR
-            TS = SENSOR(2,ISENS)
+            TS = SENSOR_TAB(ISENS)%TSTART
          ELSE
             TS = TT
          ENDIF
@@ -1258,13 +1260,13 @@ C--------- a modifier par interface---
      2    NBINTC ,INTLIST ,IBIDLEN ,IBIDLEN  ,
      3    IBIDLEN,IBIDLEN,IBIDLEN ,IBIDLEN ,IBIDLEN  ,
      4    IBIDLEN,IBIDLEN,IBIDLEN ,IBIDLEN ,IBIDLEN  ,
-     5    IBIDLEN,IBIDLEN,SENSOR  ,INTBUF_TAB, 1)
+     5    IBIDLEN,IBIDLEN,SENSOR_TAB,INTBUF_TAB, 1)
          CALL SPMD_IFRONT(
      1    IPARI  ,NEWFRONT,ISENDTO ,IRECVFROM,
      2    NBINTC ,INTLIST ,IBIDLEN ,IBIDLEN  ,
      3    IBIDLEN,IBIDLEN,IBIDLEN ,IBIDLEN ,IBIDLEN  ,
      4    IBIDLEN,IBIDLEN,IBIDLEN ,IBIDLEN ,IBIDLEN  ,
-     5    IBIDLEN,IBIDLEN,SENSOR  ,INTBUF_TAB, 2)
+     5    IBIDLEN,IBIDLEN,SENSOR_TAB,INTBUF_TAB, 2)
 
 
         ENDIF
@@ -1273,7 +1275,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -1291,7 +1293,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -1319,7 +1321,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -1342,7 +1344,7 @@ C
 C
           ISENS = IPARI(64,N)
           IF(ISENS/=0)  THEN  ! SENSOR
-             TS = SENSOR(2,ISENS)
+             TS = SENSOR_TAB(ISENS)%TSTART
           ELSE
              TS = TT
           ENDIF
@@ -1587,24 +1589,23 @@ Chd|        IMP_SOLV                      source/implicit/imp_solv.F
 Chd|-- calls ---------------
 Chd|        IMP_INTDT                     source/implicit/imp_int_k.F   
 Chd|        INTBUFDEF_MOD                 ../common_source/modules/intbufdef_mod.F
+Chd|        SENSOR_MOD                    share/modules/sensor_mod.F    
 Chd|====================================================================
       SUBROUTINE IMP_DTKIN(
      1       IPARI ,INTBUF_TAB      ,X       ,V       ,
      2       VR    ,ITAB   ,D_IMP   ,DR_IMP  ,NBINTC  ,
      3       INTLIST,ITASK ,NEWFRONT,ISENDTO ,IRECVFROM,
      4       IDDL  ,NDOF   ,IKC     ,SCAL    ,MS      ,
-     5       SENSOR, MAXDGAP)
+     5       SENSOR_TAB, MAXDGAP)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
       USE INTBUFDEF_MOD
+      USE SENSOR_MOD
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
 #include      "implicit_f.inc"
-C-----------------------------------------------
-C   G l o b a l   P a r a m e t e r s
-C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
@@ -1624,10 +1625,11 @@ C-----------------------------------------------
       INTEGER IDDL(*)  ,NDOF(*),IKC(*)
       my_real 
      .   X(3,*), V(3,*),VR(3,*),
-     .   D_IMP(3,*),DR_IMP(3,*),SCAL,MS(*),SENSOR(NSENSR,*),
+     .   D_IMP(3,*),DR_IMP(3,*),SCAL,MS(*),
      .   MAXDGAP(NINTER)
 
       TYPE(INTBUF_STRUCT_) INTBUF_TAB(*)
+      TYPE (SENSOR_STR_) ,DIMENSION(NSENSOR) :: SENSOR_TAB
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
@@ -1658,7 +1660,7 @@ C-------------before inttri------
      2       V        ,VR      ,ISENDTO ,IRECVFROM,
      4       NEWFRONT ,ITASK   ,DTK     ,ITAB     ,
      5       INTLIST  ,NBINTC  ,DT_MIN  ,MS       ,
-     6       SENSOR   ,MAXDGAP)
+     6       SENSOR_TAB,MAXDGAP)
 C  
        SCAL = DT_MIN*DTI
        IF (SCAL<ONE) THEN
