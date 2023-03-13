@@ -456,61 +456,61 @@ jobs:
       #   if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch.outputs.status != 200 }} 
 
 
-  sync_github_gitlab:
-    needs: [syncGitPperforce]
-    runs-on: [dev_sync,linux64]
-    container: 
-      image: fr-qafactorydev.europe.altair.com/common-linux64:latest
-      credentials: 
-        username: ${{secrets.DOCKER_REGISTRY_USER}}
-        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      volumes: 
-         - /etc/localtime:/etc/localtime:ro
+  # sync_github_gitlab:
+  #   needs: [syncGitPperforce]
+  #   runs-on: [dev_sync,linux64]
+  #   container: 
+  #     image: fr-qafactorydev.europe.altair.com/common-linux64:latest
+  #     credentials: 
+  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
+  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+  #     volumes: 
+  #        - /etc/localtime:/etc/localtime:ro
 
-    env:
-      GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
-      GITLAB_REPO_URL : ${{ secrets.GITLAB_REPO_URL }}
-      # Needed by gh auth
-      GH_TOKEN: ${{ secrets.SERVBOT_PAT }} 
+  #   env:
+  #     GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+  #     GITLAB_REPO_URL : ${{ secrets.GITLAB_REPO_URL }}
+  #     # Needed by gh auth
+  #     GH_TOKEN: ${{ secrets.SERVBOT_PAT }} 
 
-    steps:
+  #   steps:
 
-      - name: Set github access credentials
-        run: |
-          # This command exit with 1 even when everything is OK ...
-          gh auth login -h github.com || echo ""
-          gh auth setup-git
-          gh auth status
+  #     - name: Set github access credentials
+  #       run: |
+  #         # This command exit with 1 even when everything is OK ...
+  #         gh auth login -h github.com || echo ""
+  #         gh auth setup-git
+  #         gh auth status
 
-      - name: Set gitlab access credentials
-        run: |
-          glab auth login -h gitlab.com --token ${{ env.GITLAB_PAT }}
-          glab auth status
-          glab config -h gitlab.com  set git_protocol https
-          glab config -h gitlab.com  set user servbotaltr
-          git config --global user.email "servbotaltr@altair.com"
-          git config --global user.name "servbotaltr"
-          git config --global credential.helper '!/usr/bin/glab auth git-credential'
+  #     - name: Set gitlab access credentials
+  #       run: |
+  #         glab auth login -h gitlab.com --token ${{ env.GITLAB_PAT }}
+  #         glab auth status
+  #         glab config -h gitlab.com  set git_protocol https
+  #         glab config -h gitlab.com  set user servbotaltr
+  #         git config --global user.email "servbotaltr@altair.com"
+  #         git config --global user.name "servbotaltr"
+  #         git config --global credential.helper '!/usr/bin/glab auth git-credential'
 
 
-      - name: Clone gitlab repo
-        run: |
-          if ! test -d .git
-          then
-            git clone ${{ env.GITLAB_REPO_URL }} .
-          else
-              echo "Already present"
-          fi
+  #     - name: Clone gitlab repo
+  #       run: |
+  #         if ! test -d .git
+  #         then
+  #           git clone ${{ env.GITLAB_REPO_URL }} .
+  #         else
+  #             echo "Already present"
+  #         fi
 
-          # Create a branch from_github_main if it does not exist
-          git checkout from_github_main || git checkout -b from_github_main
+  #         # Create a branch from_github_main if it does not exist
+  #         git checkout from_github_main || git checkout -b from_github_main
 
-          # Add remote link to github/main
-          git remote remove github
-          git remote add github $GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git || echo "Remote origin already exist"
-          # git remote -v
+  #         # Add remote link to github/main
+  #         git remote remove github
+  #         git remote add github $GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git || echo "Remote origin already exist"
+  #         # git remote -v
 
-          # Merge github commits into this branch and push on remote
-          git fetch github 
-          git merge github/main
-          git push --set-upstream origin from_github_main      
+  #         # Merge github commits into this branch and push on remote
+  #         git fetch github 
+  #         git merge github/main
+  #         git push --set-upstream origin from_github_main      
