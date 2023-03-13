@@ -886,8 +886,8 @@ jobs:
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_qa.outputs.status != 200 }} 
 
 
-  Call the sync CI if build and qa are OK 
-  Secrets variables must be passed
+  # Call the sync CI if build and qa are OK 
+  # Secrets variables must be passed
   call-workflow-sync-git2perforce:
     # needs: [qa_linux,qa_windows_no_container]
     uses: ./.github/workflows/prmerge_ci_sync.yml
