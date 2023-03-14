@@ -193,15 +193,15 @@ jobs:
             $sync_option \
             --current_commit ${{github.sha}} 
 
-      # # Create/Upgrade local git repo
-      # - uses: actions/checkout@v3
-      #   with:
-      #     path: ${{ env.WORKDIR }}
-      #     clean: 'false'
-      #     lfs: 'true'
-      # - name: Unshallow the git log, else we won't be able to checkout commits 
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: git fetch --unshallow
+      # Create/Upgrade local git repo
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ env.WORKDIR }}
+          clean: 'false'
+          lfs: 'true'
+      - name: Unshallow the git log, else we won't be able to checkout commits 
+        working-directory: ${{ env.WORKDIR }}
+        run: git fetch --unshallow
 
       ## For each commit found: get git files, p4 reconcile and submit
       # If some file are still opened after submit, abort
