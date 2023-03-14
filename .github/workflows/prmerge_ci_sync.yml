@@ -322,10 +322,10 @@ jobs:
 
                 echo "INFO_STEP_SUBMIT_INTEGRATE_REPO=$changelist" >> $GITHUB_ENV
 
-                # p4 integrate $P4REPOSYNCPERFORCE/...@$changelist,@$changelist $P4REPOPERFORCE/...
-                # p4 resolve -am
-                # p4_description=`p4 -Ztag -F %Description% change -o $changelist`
-                # p4 submit -d "$p4_description"
+                p4 integrate $P4REPOSYNCPERFORCE/...@$changelist,@$changelist $P4REPOPERFORCE/...
+                p4 resolve -am
+                p4_description=`p4 -Ztag -F %Description% change -o $changelist`
+                p4 submit -d "$p4_description"
 
               done
 
@@ -340,123 +340,123 @@ jobs:
 
           fi
 
-      # - name: Managing step execution
-      #   if: ${{ always() }}
-      #   run: |
+      - name: Managing step execution
+        if: ${{ always() }}
+        run: |
 
-      #     MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
-      #     CONTINUE=1
-      #     echo -e "\n#### STATUS_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT ###"
-      #     if [ "$STATUS_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT" = 0 ]
-      #     then
-      #       echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-      #       MAILMSG+="$MSG_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT\n"
-      #       CONTINUE=0
-      #     else
-      #       echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-      #     fi
+          MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
+          CONTINUE=1
+          echo -e "\n#### STATUS_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT ###"
+          if [ "$STATUS_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT" = 0 ]
+          then
+            echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+            MAILMSG+="$MSG_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT\n"
+            CONTINUE=0
+          else
+            echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+          fi
 
-      #     if [ "$CONTINUE" = 1 ]
-      #     then
-      #       echo -e "\n#### STATUS_STEP_SUBMIT_TMP_SYNC_REPO ###"
-      #       if [ "$STATUS_STEP_SUBMIT_TMP_SYNC_REPO" = 0 ]
-      #       then 
-      #         echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-      #         echo "  MSG : $MSG_STEP_SUBMIT_TMP_SYNC_REPO ($INFO_STEP_SUBMIT_TMP_SYNC_REPO)"
-      #         MAILMSG+="$MSG_STEP_SUBMIT_TMP_SYNC_REPO ($INFO_STEP_SUBMIT_TMP_SYNC_REPO)\n"
-      #       CONTINUE=0
-      #       else
-      #         echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-      #       fi
-      #     fi
+          if [ "$CONTINUE" = 1 ]
+          then
+            echo -e "\n#### STATUS_STEP_SUBMIT_TMP_SYNC_REPO ###"
+            if [ "$STATUS_STEP_SUBMIT_TMP_SYNC_REPO" = 0 ]
+            then 
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              echo "  MSG : $MSG_STEP_SUBMIT_TMP_SYNC_REPO ($INFO_STEP_SUBMIT_TMP_SYNC_REPO)"
+              MAILMSG+="$MSG_STEP_SUBMIT_TMP_SYNC_REPO ($INFO_STEP_SUBMIT_TMP_SYNC_REPO)\n"
+            CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi
 
-      #     if [ "$CONTINUE" = 1 ]
-      #     then
-      #       echo -e "\n#### STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT ###"
-      #       if [ "$STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT" = 0 ]
-      #       then 
-      #         echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-      #         MAILMSG+="$MSG_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT\n"
-      #         CONTINUE=0
-      #       else
-      #         echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-      #       fi
-      #     fi
+          if [ "$CONTINUE" = 1 ]
+          then
+            echo -e "\n#### STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT ###"
+            if [ "$STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT" = 0 ]
+            then 
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              MAILMSG+="$MSG_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT\n"
+              CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi
 
-      #     if [ "$CONTINUE" = 1 ] 
-      #     then
-      #       echo -e "\n"#### STATUS_STEP_SUBMIT_INTEGRATE_REPO ###"
-      #       if [ "$STATUS_STEP_SUBMIT_INTEGRATE_REPO" = 0 ]
-      #       then 
-      #         echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-      #         echo "  MSG : $MSG_STEP_SUBMIT_INTEGRATE_REPO ($INFO_STEP_SUBMIT_INTEGRATE_REPO)"
+          if [ "$CONTINUE" = 1 ] 
+          then
+            echo -e "\n"#### STATUS_STEP_SUBMIT_INTEGRATE_REPO ###"
+            if [ "$STATUS_STEP_SUBMIT_INTEGRATE_REPO" = 0 ]
+            then 
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              echo "  MSG : $MSG_STEP_SUBMIT_INTEGRATE_REPO ($INFO_STEP_SUBMIT_INTEGRATE_REPO)"
 
-      #         export P4CLIENT=$(echo "${P4USER}_${{ github.repository }}_integrate_perforce" | tr '/' '_')
-      #         echo "---------"
-      #         p4 opened
-      #         p4 changes -s pending -c $P4CLIENT
-      #         echo "---------"
-      #         MAILMSG+="$MSG_STEP_SUBMIT_INTEGRATE_REPO ($INFO_STEP_SUBMIT_INTEGRATE_REPO)\n"
-      #         CONTINUE=0
-      #       else
-      #         echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-      #       fi
-      #     fi
+              export P4CLIENT=$(echo "${P4USER}_${{ github.repository }}_integrate_perforce" | tr '/' '_')
+              echo "---------"
+              p4 opened
+              p4 changes -s pending -c $P4CLIENT
+              echo "---------"
+              MAILMSG+="$MSG_STEP_SUBMIT_INTEGRATE_REPO ($INFO_STEP_SUBMIT_INTEGRATE_REPO)\n"
+              CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi
 
-      #     # Send email 
-      #     if [ "$CONTINUE" = 0 ] 
-      #     then
-      #       # Close the branch 
-      #       echo "CLOSE_BRANCH=1" >> $GITHUB_ENV
+          # Send email 
+          if [ "$CONTINUE" = 0 ] 
+          then
+            # Close the branch 
+            echo "CLOSE_BRANCH=1" >> $GITHUB_ENV
 
-      #       # Setting SMTP server (docker host)
-      #       DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-      #       echo "set smtp=smtp://${DOCKER_HOST}:25" >> /etc/mail.rc 
+            # Setting SMTP server (docker host)
+            DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+            echo "set smtp=smtp://${DOCKER_HOST}:25" >> /etc/mail.rc 
 
-      #       # Print message in log 
-      #       echo -e $MAILMSG
+            # Print message in log 
+            echo -e $MAILMSG
 
-      #       # Send email
-      #       echo -e "$MAILMSG\nThe branch is closed" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} (${{github.sha}})" $TO_EMAIL
+            # Send email
+            echo -e "$MAILMSG\nThe branch is closed" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} (${{github.sha}})" $TO_EMAIL
 
-      #       # Exit fail to see it as a failure
-      #       exit 1
+            # Exit fail to see it as a failure
+            exit 1
 
-      #     fi
+          fi
 
-      # # Close the branch (= restrict push to team devopsadmins) if needed
-      # # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-      # - uses: octokit/request-action@v2.x
-      #   id: close_branch
-      #   env:
-      #     GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-      #     REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}} ']"
-      #   with:
-      #     route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
-      #     data: ${{ env.REQUEST_BODY }}
-      #   if: ${{ always() && env.CLOSE_BRANCH == 1 }} 
+      # Close the branch (= restrict push to team devopsadmins) if needed
+      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+      - uses: octokit/request-action@v2.x
+        id: close_branch
+        env:
+          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}} ']"
+        with:
+          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+          data: ${{ env.REQUEST_BODY }}
+        if: ${{ always() && env.CLOSE_BRANCH == 1 }} 
 
-      # # It the closing went wrong we send an email
-      # - name: "Check result of closing branch and warn if it fails"
-      #   run: |
-      #     # No need to configure SMTP server, already done in previous steps
+      # It the closing went wrong we send an email
+      - name: "Check result of closing branch and warn if it fails"
+        run: |
+          # No need to configure SMTP server, already done in previous steps
 
-      #     MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
-      #     MAILMSG+="A branch closing is needed but has failed\n\n"
-      #     MAILMSG+="Return status API is : ${{ steps.close_branch.outputs.status }}\n\n"
-      #     MAILMSG+="Check more detailed datas in CI logs\n"
+          MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
+          MAILMSG+="A branch closing is needed but has failed\n\n"
+          MAILMSG+="Return status API is : ${{ steps.close_branch.outputs.status }}\n\n"
+          MAILMSG+="Check more detailed datas in CI logs\n"
 
-      #     # Print message in log 
-      #     echo -e $MAILMSG
-      #     echo -e "\nClose return data API is : ${{ steps.close_branch.outputs.data }}"
+          # Print message in log 
+          echo -e $MAILMSG
+          echo -e "\nClose return data API is : ${{ steps.close_branch.outputs.data }}"
 
-      #     # Send email
-      #     echo -e "$MAILMSG" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch" $TO_EMAIL
+          # Send email
+          echo -e "$MAILMSG" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch" $TO_EMAIL
 
-      #     # Exit fail to see it as a failure
-      #     exit 1
+          # Exit fail to see it as a failure
+          exit 1
 
-      #   if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch.outputs.status != 200 }} 
+        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch.outputs.status != 200 }} 
 
 
   # sync_github_gitlab:
