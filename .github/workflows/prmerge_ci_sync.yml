@@ -298,8 +298,8 @@ jobs:
 
           else
 
-            echo \"p4 changes -l -s submitted -m 1000 $P4REPOPERFORCE/... | grep "^\s*\[ GIT INTEG \]" | head -n 1 | sed -e "s/^.*\[ GIT INTEG \] //;s/ .*$//"\"
-            echo \"p4 changes -s submitted -m 1000 $P4REPOSYNCPERFORCE/... | grep -B 10000 "GIT INTEG.*\s*$LAST_KNOW_INTEG_COMMIT_TRUNCATED" | head -n-1 | awk -F' ' '{print $2}' | sort -n\"
+            echo "p4 changes -l -s submitted -m 1000 $P4REPOPERFORCE/... | grep \"^\s*\[ GIT INTEG \]\" | head -n 1 | sed -e \"s/^.*\[ GIT INTEG \] //;s/ .*$//\""
+            echo "p4 changes -s submitted -m 1000 $P4REPOSYNCPERFORCE/... | grep -B 10000 \"GIT INTEG.*\s*$LAST_KNOW_INTEG_COMMIT_TRUNCATED\" | head -n-1 | awk -F' ' '{print $2}' | sort -n"
 
             # # Getting the last known integrated commit
             # export LAST_KNOW_INTEG_COMMIT=`p4 changes -l -s submitted -m 1000 $P4REPOPERFORCE/... | grep "^\s*\[ GIT INTEG \]" | head -n 1 | sed -e "s/^.*\[ GIT INTEG \] //;s/ .*$//"`
