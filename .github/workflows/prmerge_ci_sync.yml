@@ -209,6 +209,7 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           git config --global advice.detachedHead false
+          git fetch
 
           # We don't want extlib to be synced
           rm -rf extlib
