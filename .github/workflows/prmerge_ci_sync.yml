@@ -272,70 +272,71 @@ jobs:
             p4 change -d $CL
           done
 
-      #     echo -e "P4USER=$P4USER\nP4PORT=$P4PORT\nP4CLIENT=$P4CLIENT" > .p4config
+          echo -e "P4USER=$P4USER\nP4PORT=$P4PORT\nP4CLIENT=$P4CLIENT" > .p4config
 
-      #     # In case of first run we won't find last known integrated commit integrate everything
-      #     # Variable RUN_FIRST_TIME must be set to run_1 at this precise moment
-      #     if [ "$RUN_FIRST_TIME" = "run_1" ]
-      #     then
-      #       echo "/!\\ Warning integrate all /!\\"
-      #       p4 integrate $P4REPOSYNCPERFORCE/... $P4REPOPERFORCE/...
-      #       export LINE=$(tail -n 1 ${{ env.COMMIT_LIST_FILE }})
-      #       IFS='||'; arrIN=($LINE); unset IFS;
-      #       message="[ GIT INTEG ] ${arrIN[0]} - ${arrIN[2]} - ${arrIN[4]}"
+          # In case of first run we won't find last known integrated commit integrate everything
+          # Variable RUN_FIRST_TIME must be set to run_1 at this precise moment
+          if [ "$RUN_FIRST_TIME" = "run_1" ]
+          then
+            echo "/!\\ Warning integrate all /!\\"
+            p4 integrate $P4REPOSYNCPERFORCE/... $P4REPOPERFORCE/...
+            export LINE=$(tail -n 1 ${{ env.COMMIT_LIST_FILE }})
+            IFS='||'; arrIN=($LINE); unset IFS;
+            message="[ GITHUB INTEG ] ${arrIN[0]} - ${arrIN[2]} - ${arrIN[4]}"
 
-      #       opened_files_nb=$(p4 opened -c default | wc -l)
-      #       if [ ${opened_files_nb} -gt 0 ]
-      #       then 
-      #         # Try to resolve can be useful if destination repository already exist
-      #         p4 resolve -am
-      #         p4 submit -d "${message}"
-      #       fi
+            opened_files_nb=$(p4 opened -c default | wc -l)
+            if [ ${opened_files_nb} -gt 0 ]
+            then 
+              # Try to resolve can be useful if destination repository already exist
+              p4 resolve -am
+              p4 submit -d "${message}"
+            fi
 
-      #       # Set correct end of step status (if not an email will be sent)
-      #       echo "STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT=1" >> $GITHUB_ENV
-      #       echo "STATUS_STEP_SUBMIT_INTEGRATE_REPO=1" >> $GITHUB_ENV
+            # Set correct end of step status (if not an email will be sent)
+            echo "STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT=1" >> $GITHUB_ENV
+            echo "STATUS_STEP_SUBMIT_INTEGRATE_REPO=1" >> $GITHUB_ENV
 
-      #     else
+          else
 
-      #       # Getting the last known integrated commit
-      #       export LAST_KNOW_INTEG_COMMIT=`p4 changes -l -s submitted -m 1000 $P4REPOPERFORCE/... | grep "^\s*\[ GIT INTEG \]" | head -n 1 | sed -e "s/^.*\[ GIT INTEG \] //;s/ .*$//"`
-      #       export LAST_KNOW_INTEG_COMMIT_TRUNCATED=$(echo $LAST_KNOW_INTEG_COMMIT | cut -c -16)
+            echo \"p4 changes -l -s submitted -m 1000 $P4REPOPERFORCE/... | grep "^\s*\[ GIT INTEG \]" | head -n 1 | sed -e "s/^.*\[ GIT INTEG \] //;s/ .*$//"\""
+            echo \"p4 changes -s submitted -m 1000 $P4REPOSYNCPERFORCE/... | grep -B 10000 "GIT INTEG.*\s*$LAST_KNOW_INTEG_COMMIT_TRUNCATED" | head -n-1 | awk -F' ' '{print $2}' | sort -n\"
 
-      #       # Getting all not integrated changelist (=all until last know commit)
-      #       if [ ! -z "$LAST_KNOW_INTEG_COMMIT_TRUNCATED" ]
-      #       then 
+            # # Getting the last known integrated commit
+            # export LAST_KNOW_INTEG_COMMIT=`p4 changes -l -s submitted -m 1000 $P4REPOPERFORCE/... | grep "^\s*\[ GIT INTEG \]" | head -n 1 | sed -e "s/^.*\[ GIT INTEG \] //;s/ .*$//"`
+            # export LAST_KNOW_INTEG_COMMIT_TRUNCATED=$(echo $LAST_KNOW_INTEG_COMMIT | cut -c -16)
 
-      #         # Set correct end of step status (if not an email will be sent)
-      #         echo "STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT=1" >> $GITHUB_ENV
+            # # Getting all not integrated changelist (=all until last know commit)
+            # if [ ! -z "$LAST_KNOW_INTEG_COMMIT_TRUNCATED" ]
+            # then 
 
-      #         for changelist in `p4 changes -s submitted -m 1000 $P4REPOSYNCPERFORCE/... | grep -B 10000 "GIT INTEG.*\s*$LAST_KNOW_INTEG_COMMIT_TRUNCATED" | head -n-1 | awk -F' ' '{print $2}' | sort -n`
-      #         do 
-      #           echo "---------------------------------"
-      #           echo "-- $changelist --"
-      #           echo "---------------------------------"
+            #   # Set correct end of step status (if not an email will be sent)
+            #   echo "STATUS_STEP_PERFORCE_LAST_KNOWN_INTEGRATED_COMMIT=1" >> $GITHUB_ENV
 
-      #           echo "INFO_STEP_SUBMIT_INTEGRATE_REPO=$changelist" >> $GITHUB_ENV
+            #   for changelist in `p4 changes -s submitted -m 1000 $P4REPOSYNCPERFORCE/... | grep -B 10000 "GIT INTEG.*\s*$LAST_KNOW_INTEG_COMMIT_TRUNCATED" | head -n-1 | awk -F' ' '{print $2}' | sort -n`
+            #   do 
+            #     echo "---------------------------------"
+            #     echo "-- $changelist --"
+            #     echo "---------------------------------"
 
-      #           p4 integrate $P4REPOSYNCPERFORCE/...@$changelist,@$changelist $P4REPOPERFORCE/...
-      #           p4 resolve -am
-      #           p4_description=`p4 -Ztag -F %Description% change -o $changelist`
-      #           p4 submit -d "$p4_description"
+            #     echo "INFO_STEP_SUBMIT_INTEGRATE_REPO=$changelist" >> $GITHUB_ENV
 
-      #         done
+            #     p4 integrate $P4REPOSYNCPERFORCE/...@$changelist,@$changelist $P4REPOPERFORCE/...
+            #     p4 resolve -am
+            #     p4_description=`p4 -Ztag -F %Description% change -o $changelist`
+            #     p4 submit -d "$p4_description"
 
-      #         # Set correct end of step status (if not an email will be sent)
-      #         echo "STATUS_STEP_SUBMIT_INTEGRATE_REPO=1" >> $GITHUB_ENV
+            #   done
 
-      #       else 
-      #         # Exit 1 not found LAST_KNOW_INTEG_COMMIT
-      #         # echo "Error cannot find a last known integrate commit in $P4REPOPERFORCE repository"
-      #         exit 1
-      #       fi
+            #   # Set correct end of step status (if not an email will be sent)
+            #   echo "STATUS_STEP_SUBMIT_INTEGRATE_REPO=1" >> $GITHUB_ENV
 
+            # else 
+            #   # Exit 1 not found LAST_KNOW_INTEG_COMMIT
+            #   # echo "Error cannot find a last known integrate commit in $P4REPOPERFORCE repository"
+            #   exit 1
+            # fi
 
-
-      #     fi
+          fi
 
       # - name: Managing step execution
       #   if: ${{ always() }}
