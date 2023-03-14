@@ -177,21 +177,21 @@ jobs:
           # Set correct end of step status (if not an email will be sent)
           echo "STATUS_STEP_PERFORCE_LAST_KNOWN_GIT_COMMIT=1" >> $GITHUB_ENV
 
-      # # Get all unsynced commit since last good one
-      # # If we never meet the last known commit on perforce we abort, that could mean there are more commits to into account
-      # # At WS creation we use the dedicated --force_sync option to accept submiting event if perforce_last_commit has not been found
-      # # so if this specific case fails, think to delete perforce client before re-running
-      # - name: Get all unsynced commit since last good one
-      #   run: |
-      #     sync_git_2_perforce.py \
-      #       --git_api_url ${{ github.api_url }} \
-      #       --git_repo ${{ github.repository }} \
-      #       --git_user $SERVBOT_USER \
-      #       --git_token $SERVBOT_PAT \
-      #       --interval_check "${{ env.DATE_MIN_CHECK_COMMITS }}" \
-      #       --output_file ${{ env.COMMIT_LIST_FILE }} \
-      #       $sync_option \
-      #       --current_commit ${{github.sha}} 
+      # Get all unsynced commit since last good one
+      # If we never meet the last known commit on perforce we abort, that could mean there are more commits to into account
+      # At WS creation we use the dedicated --force_sync option to accept submiting event if perforce_last_commit has not been found
+      # so if this specific case fails, think to delete perforce client before re-running
+      - name: Get all unsynced commit since last good one
+        run: |
+          sync_git_2_perforce.py \
+            --git_api_url ${{ github.api_url }} \
+            --git_repo ${{ github.repository }} \
+            --git_user $SERVBOT_USER \
+            --git_token $SERVBOT_PAT \
+            --interval_check "${{ env.DATE_MIN_CHECK_COMMITS }}" \
+            --output_file ${{ env.COMMIT_LIST_FILE }} \
+            $sync_option \
+            --current_commit ${{github.sha}} 
 
       # # Create/Upgrade local git repo
       # - uses: actions/checkout@v3
@@ -203,39 +203,39 @@ jobs:
       #   working-directory: ${{ env.WORKDIR }}
       #   run: git fetch --unshallow
 
-      # ## For each commit found: get git files, p4 reconcile and submit
-      # # If some file are still opened after submit, abort
-      # - name: Upgrade perforce for each git commit found
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     git config --global advice.detachedHead false
+      ## For each commit found: get git files, p4 reconcile and submit
+      # If some file are still opened after submit, abort
+      - name: Upgrade perforce for each git commit found
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          git config --global advice.detachedHead false
 
-      #     # We don't want extlib to be synced
-      #     rm -rf extlib
-      #     ls -ls
+          # We don't want extlib to be synced
+          rm -rf extlib
+          ls -ls
 
-      #     while read LINE
-      #     do
-      #       IFS='||'; arrIN=($LINE); unset IFS;
-      #       message="[ GIT INTEG ] ${arrIN[0]} - ${arrIN[2]} - ${arrIN[4]}"
-      #       echo "---------------------------------"
-      #       echo "-- ${arrIN[0]} --"
-      #       echo "---------------------------------"
-      #       echo "INFO_STEP_SUBMIT_TMP_SYNC_REPO=${arrIN[0]}" >> $GITHUB_ENV
-      #       git checkout ${arrIN[0]}
-      #       #p4 status
-      #       p4 reconcile
-      #       opened_files_nb=$(p4 opened -c default | wc -l)
-      #       #echo "OPENED : ${opened_files_nb}"
-      #       if [ ${opened_files_nb} -gt 0 ]
-      #       then 
-      #         p4 submit -d "${message}"
-      #       fi
+          while read LINE
+          do
+            IFS='||'; arrIN=($LINE); unset IFS;
+            message="[ GITHUB INTEG ] ${arrIN[0]} - ${arrIN[2]} - ${arrIN[4]}"
+            echo "---------------------------------"
+            echo "-- ${arrIN[0]} --"
+            echo "---------------------------------"
+            echo "INFO_STEP_SUBMIT_TMP_SYNC_REPO=${arrIN[0]}" >> $GITHUB_ENV
+            git checkout ${arrIN[0]}
+            #p4 status
+            p4 reconcile
+            opened_files_nb=$(p4 opened -c default | wc -l)
+            #echo "OPENED : ${opened_files_nb}"
+            if [ ${opened_files_nb} -gt 0 ]
+            then 
+              p4 submit -d "${message}"
+            fi
 
-      #     done < ${{ env.COMMIT_LIST_FILE }}
+          done < ${{ env.COMMIT_LIST_FILE }}
 
-      #     # Set correct end of step status (if not an email will be sent)
-      #     echo "STATUS_STEP_SUBMIT_TMP_SYNC_REPO=1" >> $GITHUB_ENV
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_STEP_SUBMIT_TMP_SYNC_REPO=1" >> $GITHUB_ENV
 
 
       # # Create a WS to integration (and merge on the fly) the temporary repo (sync_git_perforce) to the final destination
