@@ -121,7 +121,6 @@ jobs:
         run: |
           echo $P4PASSWD | p4 login
           export P4CLIENT=$(echo "${P4USER}_${{ github.repository }}_sync_git_perforce" | tr '/' '_')
-          echo "P4CLIENT: $P4CLIENT"
           echo "P4CLIENT=$P4CLIENT" >> $GITHUB_ENV
           if ! p4 client -o -t $P4CLIENT > /dev/null 2>&1; then 
             echo "Creating workspace $P4CLIENT (1st time run)"
@@ -161,7 +160,7 @@ jobs:
             SCRIPT_OPT='--force_sync'
           else
             CL=`p4 changes -c $P4CLIENT -s submitted | grep "\[ GIT\(LAB\|HUB\)\? INTEG \]" | head -1 |awk -F' ' '{print $2}'`
-            RET=`p4 describe $CL | head -3 | tail -1 | sed -e "s/^.*\[ GIT INTEG \] //;s/ .*$//"`
+            RET=`p4 describe $CL | head -3 | tail -1 | sed -e "s/^.*\[ GIT\(LAB\|HUB\)\? INTEG \] //;s/ .*$//"`
 
             if [ -z $RET ] || [ "$RET" = "" ]
             then 
