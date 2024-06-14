@@ -35,7 +35,7 @@ on:
 jobs:
 
   sync_github_gitlab:
-    runs-on: [sync,linux64]
+    runs-on: [test-sync,linux64]
     container: 
       image: fr-qafactorydev.europe.altair.com/common-linux64:latest
       credentials: 
