@@ -65,6 +65,7 @@ jobs:
           pwd
           id
           hostname
+          mkdir toto
 
       # # Set the working
       # - name: Set workdir 
