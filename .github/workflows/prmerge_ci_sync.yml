@@ -121,8 +121,8 @@ jobs:
           # git lfs ls-files
           # git lfs --version
           # git lfs fetch -a github
-      #     git merge github/main
-      #     git push --set-upstream origin from_github_main       
+          git merge github/main
+          git push --set-upstream origin from_github_main       
 
       #     # Set correct end of step status (if not an email will be sent)
       #     echo "STATUS_STEP_MERGE=1" >> $GITHUB_ENV
