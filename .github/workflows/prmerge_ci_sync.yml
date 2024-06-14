@@ -117,10 +117,10 @@ jobs:
           git remote -v
 
           # # Merge github commits into this branch and push on remote
-          # git fetch github 
-          # git lfs ls-files
-          # git lfs --version
-          # git lfs fetch -a github
+          git fetch github 
+          git lfs ls-files
+          git lfs --version
+          git lfs fetch -a github
           git merge github/main
           git push --set-upstream origin from_github_main       
 
