@@ -103,7 +103,7 @@ jobs:
           if ! test -d .git
           then
             # git clone ${{ env.GITLAB_REPO_URL }} .
-            git clone https://gitlab.com/altairengineering/solvers/radioss/radioss_devops_tests/test-sync-2.git
+            git clone https://gitlab.com/altairengineering/solvers/radioss/radioss_devops_tests/test-sync-2.git .
           else
               echo "Already present"
           fi
