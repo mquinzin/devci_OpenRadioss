@@ -120,7 +120,8 @@ jobs:
           git fetch github 
           git lfs ls-files
           git lfs --version
-          git lfs fetch -a github
+          # git lfs fetch -a github
+          git lfs fetch github
           git merge github/main
           git push --set-upstream origin from_github_main       
 
