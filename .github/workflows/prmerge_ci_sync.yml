@@ -111,15 +111,15 @@ jobs:
           git checkout from_github_main || git checkout -b from_github_main
 
           # Add remote link to github/main
-          echo "Running git remote add github $GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
-          git remote add github $GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git || echo "Remote origin already exist"
+          echo "Running git remote add github $GITHUB_SERVER_URL/devci_OpenRadioss.git.git"
+          git remote add github $GITHUB_SERVER_URL/devci_OpenRadioss.git || echo "Remote origin already exist"
           git remote -v
 
-          # Merge github commits into this branch and push on remote
-          git fetch github 
-          git lfs ls-files
-          git lfs --version
-          git lfs fetch -a github
+          # # Merge github commits into this branch and push on remote
+          # git fetch github 
+          # git lfs ls-files
+          # git lfs --version
+          # git lfs fetch -a github
       #     git merge github/main
       #     git push --set-upstream origin from_github_main       
 
