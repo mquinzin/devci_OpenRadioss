@@ -12,15 +12,15 @@ env:
   FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
   TO_EMAIL: ${{ secrets.TO_EMAIL }}
   MAIL_RELAY: ${{ secrets.MAIL_RELAY }}
-  QA_TIMEOUT_PER_TEST: 300
+  QA_TIMEOUT_PER_TEST_LINUX: 150
+  QA_TIMEOUT_PER_TEST_WIN: 500
 
 jobs:
 
   # build_tools_linux:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
-  #   # DEV ONLY # runs-on: ["linux64","dev_pmci"]
-  #   runs-on: ["linux64","dev_pmci"]
-  #   # runs-on: ["linux64","prmerge_ci"]
+  #   # DEV ONLY # runs-on: ["linux64","dev_pmci"] 
+  #   runs-on: ["linux64","prmerge_ci"]
   #   continue-on-error: true
   #   container: 
   #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411-devts11
@@ -129,7 +129,7 @@ jobs:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
   #   runs-on: ["win64","build","prmerge_ci"]
   #   continue-on-error: true
-
+ 
   #   env:
   #     STATUS_BUILD: 0
   #     os: win64
@@ -227,8 +227,7 @@ jobs:
   # build_linux:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
   #   # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
-  #   runs-on: ["${{ matrix.build }}","dev_pmci"]
-  #   # runs-on: ["${{ matrix.build }}","prmerge_ci"]
+  #   runs-on: ["${{ matrix.build }}","prmerge_ci"]
   #   container: 
   #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:ompi411-devts11
   #     credentials: 
@@ -252,10 +251,10 @@ jobs:
   #           os: linux64
   #           binary: starter
 
-  #         # - build: starter_linux64_gf_sp
-  #         #   precision: sp
-  #         #   os: linux64
-  #         #   binary: starter
+  #         - build: starter_linux64_gf_sp
+  #           precision: sp
+  #           os: linux64
+  #           binary: starter
 
   #         - build: engine_linux64_gf_ompi
   #           precision: dp
@@ -263,21 +262,21 @@ jobs:
   #           binary: engine
   #           mpi: ompi
 
-  #         # - build: engine_linux64_gf_ompi_sp
-  #         #   precision: sp
-  #         #   os: linux64
-  #         #   binary: engine
-  #         #   mpi: ompi
+  #         - build: engine_linux64_gf_ompi_sp
+  #           precision: sp
+  #           os: linux64
+  #           binary: engine
+  #           mpi: ompi
 
-  #         # - build: engine_linux64_gf
-  #         #   precision: dp
-  #         #   os: linux64
-  #         #   binary: engine
+  #         - build: engine_linux64_gf
+  #           precision: dp
+  #           os: linux64
+  #           binary: engine
 
-  #         # - build: engine_linux64_gf_sp
-  #         #   precision: sp
-  #         #   os: linux64 
-  #         #   binary: engine
+  #         - build: engine_linux64_gf_sp
+  #           precision: sp
+  #           os: linux64 
+  #           binary: engine
 
   #   steps:
 
@@ -318,7 +317,7 @@ jobs:
   #           mpi_opts="-mpi=${{ matrix.mpi }}"
   #         fi
 
-  #         cmd="./build_script.sh -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts -debug=2"
+  #         cmd="./build_script.sh -release -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
   #         echo "========================================="
   #         echo "--  BUILD ${{ matrix.build }} --"   
   #         echo "--  $cmd --"   
@@ -421,7 +420,6 @@ jobs:
   #   needs: build_linux
   #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
   #   runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
-  #   # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
   #   container: 
   #     image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:ompi411
   #     credentials: 
@@ -439,7 +437,6 @@ jobs:
   #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
   #     # DEV ONLY # QA_NB_PROC: 2
   #     QA_NB_PROC: 4
-  #     # QA_NB_PROC: 2
   #     QA_NB_THREAD: 2
 
   #   strategy:
@@ -490,8 +487,8 @@ jobs:
   #         source ${{ env.homeuser }}/.bashrc
   #         export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
 
-  #         # cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext}_db 1.1 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
-  #         cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext}_db 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --env:ASAN_OPTIONS='new_delete_type_mismatch=0:detect_leaks=0' --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
+
+  #         cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST_LINUX }}'"
   #         echo "========================================="
   #         echo "--  QA ${{ matrix.os }}_${{ matrix.precision }} --"   
   #         echo "--  $cmd --"   
@@ -597,10 +594,10 @@ jobs:
   #           os: win64
   #           binary: starter
 
-  #         # - build: starter_win64_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: starter
+  #         - build: starter_win64_sp
+  #           precision: sp
+  #           os: win64
+  #           binary: starter
 
   #         - build: engine_win64_impi
   #           precision: dp
@@ -608,21 +605,21 @@ jobs:
   #           binary: engine
   #           mpi: impi
 
-  #         # - build: engine_win64_impi_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: engine
-  #         #   mpi: impi
+  #         - build: engine_win64_impi_sp
+  #           precision: sp
+  #           os: win64
+  #           binary: engine
+  #           mpi: impi
 
-  #         # - build: engine_win64
-  #         #   precision: dp
-  #         #   os: win64
-  #         #   binary: engine
+  #         - build: engine_win64
+  #           precision: dp
+  #           os: win64
+  #           binary: engine
 
-  #         # - build: engine_win64_sp
-  #         #   precision: sp
-  #         #   os: win64
-  #         #   binary: engine
+  #         - build: engine_win64_sp
+  #           precision: sp
+  #           os: win64
+  #           binary: engine
 
   #   steps:
 
@@ -676,7 +673,7 @@ jobs:
   #         echo '---------------------------------';
   #         mpi_opts='';
   #         if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
-  #         cmd=\"./build_script.sh -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
+  #         cmd=\"./build_script.sh -release -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
   #         echo \"=========================================\";
   #         echo \"--  BUILD ${{ matrix.build }} --\";
   #         echo \"--  $cmd --\";
@@ -820,7 +817,7 @@ jobs:
   #         rm -f QA.summary;
   #         export PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$PATH;
   #         export PATH=${{ env.oneapi_exlib }}/${{ matrix.os }}:$PATH;
-  #         cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.1-1.3 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}' \";
+  #         cmd=\"./or_qa_script ../../exec/engine_${{ matrix.os }}_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:KMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST_WIN }}' \";
   #         echo \"=========================================\";
   #         echo \"--  QA ${{ matrix.os }}_${{ matrix.precision }} --\"; 
   #         echo \"--  $cmd --\";   
@@ -894,19 +891,16 @@ jobs:
     secrets: 
       DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
       DOCKER_REGISTRY_PASSWD: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}   
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
       FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
       TO_EMAIL: ${{ secrets.TO_EMAIL }} 
       GITLAB_PAT: "${{ secrets.GITLAB_PAT }}"
       GITLAB_REPO_URL: "${{ secrets.GITLAB_REPO_URL }}"
-
+      
   # delivery:
-  #   # needs: [qa_linux,qa_windows_no_container,build_tools_linux,build_tools_windows_no_container]
-  #   # needs: [build_linux]
-  #   needs: [qa_windows_no_container,build_tools_windows_no_container]
+  #   needs: [qa_linux,qa_windows_no_container,build_tools_linux,build_tools_windows_no_container]
   #   # DEV ONLY # runs-on: dev_delivery
-  #   runs-on: dev_delivery
-  #   # runs-on: delivery    
+  #   runs-on: delivery    
   #   container: 
   #     image: fr-qafactorydev.europe.altair.com/common-linux64
   #     credentials: 
@@ -915,8 +909,7 @@ jobs:
   #     volumes: 
   #        - /etc/localtime:/etc/localtime:ro
   #        # DEV ONLY # - /github_download_counter_dev:/github_download_counter
-  #        - /github_download_counter_dev:/github_download_counter
-  #        # - /github_download_counter:/github_download_counter
+  #        - /github_download_counter:/github_download_counter
 
   #   env:
   #     SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
@@ -1070,4 +1063,3 @@ jobs:
   #             --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
   #             --counter_file_dir /github_download_counter \
   #             --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }}
-
