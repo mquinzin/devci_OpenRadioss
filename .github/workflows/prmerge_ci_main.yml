@@ -650,6 +650,9 @@ jobs:
             Add-Content -Path $env:GITHUB_ENV -Value "WORKDIR=$env:GITHUB_BASE_REF"
           }          
 
+      - name: Check workdir 
+        run: |
+          Write-Output "The shared variable is: $env:WORKDIR"
 
       # # Set the working dir suffixed with branch name
       # - name: Set workdir 
@@ -776,36 +779,36 @@ jobs:
 
 
 
-  qa_windows_no_container:
+  # qa_windows_no_container:
 
-    needs: build_windows_no_container
-    # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
-    runs-on: ["qa_${{ matrix.os }}","dev_pmci"]
+  #   needs: build_windows_no_container
+  #   # runs-on: ["qa_${{ matrix.os }}","prmerge_ci"]
+  #   runs-on: ["qa_${{ matrix.os }}","dev_pmci"]
 
-    env:
-      hm_reader_extlib: ../../extlib/hm_reader
-      hm_reader_cfgfiles: ../../hm_cfg_files
-      oneapi_exlib: ../../EXTRA/win64/extlib/intelOneAPI_runtime
-      mpi: impi
-      STATUS_QA: 0
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-      # DEV ONLY # QA_NB_PROC: 2
-      QA_NB_PROC: 4
-      QA_NB_THREAD: 2
+  #   env:
+  #     hm_reader_extlib: ../../extlib/hm_reader
+  #     hm_reader_cfgfiles: ../../hm_cfg_files
+  #     oneapi_exlib: ../../EXTRA/win64/extlib/intelOneAPI_runtime
+  #     mpi: impi
+  #     STATUS_QA: 0
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  #     # DEV ONLY # QA_NB_PROC: 2
+  #     QA_NB_PROC: 4
+  #     QA_NB_THREAD: 2
 
-    strategy:
-      # If one job fails others continue
-      fail-fast: false
-      matrix:
-        os: [win64]
-        # precision: [dp,sp]
-        precision: [dp]
+  #   strategy:
+  #     # If one job fails others continue
+  #     fail-fast: false
+  #     matrix:
+  #       os: [win64]
+  #       # precision: [dp,sp]
+  #       precision: [dp]
         
-    steps:
+  #   steps:
 
-      - name: Check workdir 
-        run: |
-          Write-Output "The shared variable is: $env:WORKDIR"
+  #     - name: Check workdir 
+  #       run: |
+  #         Write-Output "The shared variable is: $env:WORKDIR"
 
   #     # Get git related to the commit
   #     - name: Checkout git sources
