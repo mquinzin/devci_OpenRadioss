@@ -611,7 +611,6 @@ jobs:
             precision: dp
             os: win64
             binary: starter
-            mpi: impi
 
           # - build: starter_win64_sp
           #   precision: sp
@@ -687,12 +686,30 @@ jobs:
           ninja --version
           if not '${{ matrix.mpi }}'=='' (
             set mpi_opts=-mpi=${{ matrix.mpi }}
-          )      
-          .\build_windows.bat -release -arch=${{ matrix.os }} -c -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          )   
+          echo =========================================
+          echo --  BUILD ${{ matrix.build }} --
+          echo =========================================
+          echo Running: .\build_windows.bat -release -arch=${{ matrix.os }} -c -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
-          type .\myrun.bat
-          
-      # cmd /c .\myrun.bat           
+          cmd /c .\myrun.bat    
+          cd ..
+          $directoryPath = "exec"
+          if (Test-Path -Path $directoryPath) {
+              $files = Get-ChildItem -Path $directoryPath
+              if ($files.Count -eq 0) {
+                  Write-Output "The directory is empty."
+                  exit 1
+              } else {
+                  # Display the contents of the directory
+                  $files | ForEach-Object { Write-Output $_.FullName }
+              }
+          } else {
+              Write-Output "The directory does not exist."
+              exit 1
+          }
+          Add-Content -Path $env:GITHUB_ENV -Value "STATUS_BUILD=1"
+
 
       # - name: Running builds
       #   working-directory: ${{ env.WORKDIR }}
