@@ -9,7 +9,8 @@ on:
 env:
   CLOSE_BRANCH: 0
   TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}
-  FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+  # FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+  FROM_EMAIL : 'mquinzin@altair.com'
   TO_EMAIL: ${{ secrets.TO_EMAIL }}
   MAIL_RELAY: ${{ secrets.MAIL_RELAY }}
   QA_TIMEOUT_PER_TEST_LINUX: 150
@@ -716,7 +717,14 @@ jobs:
           $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:\n\n"
           Write-Output "`r`n#### STATUS_STEP_BUILD ${{ matrix.build }} ($env:STATUS_BUILD) ###"
           if ($env:STATUS_BUILD -eq 0) {
-            Write-Output "Status`t[ $([char]27)[31mFAILED$([char]27)[0m ]"
+            Write-Output "Status`t[ $([char]27)[31;2;1mFAILED$([char]27)[0m ]"
+            $MAILMSG += "The build ${{ matrix.build }} has failed \n"
+            Add-Content -Path $env:GITHUB_ENV -Value "CLOSE_BRANCH=1"
+            Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $env:TO_EMAIL -Subject "Error in Github CI repo ${{ github.repository }} (${{github.sha}})" -Body $MAILMSG -Port 25
+            exit 1
+          }
+          else {
+            Write-Output "Status`t[ $([char]27)[32;2;1mOK$([char]27)[0m ]"
           }
 
       # - name: Managing step execution
