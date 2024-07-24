@@ -643,8 +643,8 @@ jobs:
 
       - name: Set workdir 
         run: >
-          pwd
-          ls
+          pwd;
+          ls;
           if [ "${{ github.base_ref }}" = "" ]; 
           then 
             echo "WORKDIR=${{github.ref_name}}"
