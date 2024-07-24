@@ -716,7 +716,9 @@ jobs:
           $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:\n\n"
           Write-Output "`r`n#### STATUS_STEP_BUILD ${{ matrix.build }} ($env:STATUS_BUILD) ###"
           if ($env:STATUS_BUILD -eq 0) {
-            echo "CLOSE BRANCH"
+            Write-Host -NoNewline "Status [ "
+            Write-Host -ForegroundColor Red -NoNewline FAILED
+            Write-Host -NoNewline " ]"
           }
 
       # - name: Managing step execution
