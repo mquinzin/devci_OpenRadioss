@@ -642,7 +642,7 @@ jobs:
     steps:
 
       - name: Set workdir 
-        script: |
+        run: |
           pwd
           ls
 
