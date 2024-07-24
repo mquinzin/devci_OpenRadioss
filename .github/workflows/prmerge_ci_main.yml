@@ -658,7 +658,10 @@ jobs:
       - name: Clean local exe dir
         working-directory: ${{ env.WORKDIR }}
         run: |
-          Remove-Item -Path "exec" -Recurse -Force
+          $dir2remove = "exec"
+          if (Test-Path -Path $dir2remove) {
+            Remove-Item -Path $dir2remove -Recurse -Force
+          }
 
       # - name: Clean local exe dir
       #   working-directory: ${{ env.WORKDIR }}
