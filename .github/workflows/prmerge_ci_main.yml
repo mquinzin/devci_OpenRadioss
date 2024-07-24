@@ -643,11 +643,11 @@ jobs:
 
       - name: Set workdir 
         run: |
-          if (${{ github.base_ref }} -eq '') {
-            echo "WORKDIR1=${{github.ref_name}}"
+          if ([string]::IsNullOrEmpty($env:GITHUB_BASE_REF)) {
+            echo "WORKDIR1=$env:GITHUB_REF_NAME"
           } 
           else {
-            echo "WORKDIR2=${{github.base_ref}}"
+            echo "WORKDIR2=$env:GITHUB_BASE_REF"
           }          
 
 
