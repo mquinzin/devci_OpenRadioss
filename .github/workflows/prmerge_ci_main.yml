@@ -685,7 +685,7 @@ jobs:
           ifx --version
           cmake --version
           ninja --version
-          if not '$env:mpi'=='' (
+          if not $env:mpi=='' (
             set mpi_opts=-mpi=$env:mpi
           )      
           .\build_windows.bat -release -arch=$env:os -c -prec=$env:precision -nt=$env:BUILD_NB_THREAD %mpi_opts%
