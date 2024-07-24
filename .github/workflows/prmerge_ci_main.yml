@@ -593,8 +593,9 @@ jobs:
 
   build_windows_no_container:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
-    runs-on: ["${{ matrix.build }}","prmerge_ci"]
- 
+    # runs-on: ["${{ matrix.build }}","prmerge_ci"]
+    runs-on: ["${{ matrix.build }}","dev_pmci"]
+
     env:
       BUILD_NB_THREAD: 2
       STATUS_BUILD: 0
