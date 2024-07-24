@@ -611,6 +611,7 @@ jobs:
             precision: dp
             os: win64
             binary: starter
+            mpi: impi
 
           # - build: starter_win64_sp
           #   precision: sp
