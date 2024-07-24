@@ -685,11 +685,10 @@ jobs:
           ifx --version
           cmake --version
           ninja --version
-          echo Variable is $env:mpi,${{ matrix.mpi }}
-          if not $env:mpi=='' (
-            set mpi_opts=-mpi=$env:mpi
+          if not '${{ matrix.mpi }}'=='' (
+            set mpi_opts=-mpi=${{ matrix.mpi }}
           )      
-          .\build_windows.bat -release -arch=$env:os -c -prec=$env:precision -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          .\build_windows.bat -release -arch=${{ matrix.os }} -c -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           type .\myrun.bat
           
