@@ -618,11 +618,11 @@ jobs:
           #   os: win64
           #   binary: starter
 
-          # - build: engine_win64_impi
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
-          #   mpi: impi
+          - build: engine_win64_impi
+            precision: dp
+            os: win64
+            binary: engine
+            mpi: impi
 
           # - build: engine_win64_impi_sp
           #   precision: sp
@@ -691,7 +691,7 @@ jobs:
           echo =========================================
           echo --  BUILD ${{ matrix.build }} --
           echo =========================================
-          .\build_windows.bat -release -arch=${{ matrix.os }}_ifxxx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          .\build_windows.bat -release -arch=${{ matrix.os }}_ifx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           cmd /c .\myrun.bat    
           cd ..
@@ -727,34 +727,13 @@ jobs:
             Write-Output "Status`t[ $([char]27)[32;2;1mOK$([char]27)[0m ]"
           }
 
-      # - name: Managing step execution
-      #   if: ${{ always() }}
-      #   # Running cygwin from powershell or cmd => neither identation nor comment !
-      #   shell: cmd
-      #   run: >
-      #     call C:\cygwin64\bin\bash --login -c "
-      #     MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
-      #     echo -e \"\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###\";
-      #     if [ ${{ env.STATUS_BUILD }} = 0 ];
-      #     then
-      #     echo -e \"Status\t[ \033[31;2;1mFAILED\033[0m ]\";
-      #     MAILMSG+=\"The build ${{ matrix.build }} has failed \n\";
-      #     echo \"CLOSE_BRANCH=1\" >> $GITHUB_ENV;
-      #     echo -e $MAILMSG;
-      #     echo -e \"$MAILMSG\nThe branch is closed\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}})\" -r $MAIL_RELAY $TO_EMAIL;
-      #     exit 1;
-      #     else
-      #     echo -e \"Status\t[ \033[32;2;1mOK\033[0m ]\";
-      #     fi;   
-      #     "
-
-      # # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
-      # - name: Upload built artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
-      #     path: ${{ env.WORKDIR }}/exec
-      #   if: ${{ env.CLOSE_BRANCH == 0 }}           
+      # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
+          path: ${{ env.WORKDIR }}/exec
+        if: ${{ env.CLOSE_BRANCH == 0 }}           
 
       # # Close the branch (= restrict push to team devopsadmins) if needed
       # # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
