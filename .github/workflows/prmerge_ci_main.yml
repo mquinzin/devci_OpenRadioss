@@ -660,6 +660,7 @@ jobs:
         run: |
           $dir2remove = "exec"
           if (Test-Path -Path $dir2remove) {
+            echo "The dir exist"
             Remove-Item -Path $dir2remove -Recurse -Force
           }
 
