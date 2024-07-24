@@ -617,11 +617,11 @@ jobs:
           #   os: win64
           #   binary: starter
 
-          # - build: engine_win64_impi
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
-          #   mpi: impi
+          - build: engine_win64_impi
+            precision: dp
+            os: win64
+            binary: engine
+            mpi: impi
 
           # - build: engine_win64_impi_sp
           #   precision: sp
