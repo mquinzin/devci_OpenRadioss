@@ -642,15 +642,16 @@ jobs:
     steps:
 
       - name: Set workdir 
-        run: >
+        script: |
           pwd
           ls
-          # if [ "${{ github.base_ref }}" = "" ]; 
-          # then 
-          #   echo "WORKDIR=${{github.ref_name}}"
-          # else
-          #   echo "WORKDIR=${{github.base_ref}}"
-          # fi;           
+
+      # if [ "${{ github.base_ref }}" = "" ]; 
+      # then 
+      #   echo "WORKDIR=${{github.ref_name}}"
+      # else
+      #   echo "WORKDIR=${{github.base_ref}}"
+      # fi;           
 
 
       # # Set the working dir suffixed with branch name
