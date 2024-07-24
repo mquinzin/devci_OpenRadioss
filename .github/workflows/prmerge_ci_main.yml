@@ -641,6 +641,7 @@ jobs:
 
     steps:
 
+      # Set the working dir suffixed with branch name
       - name: Set workdir 
         run: |
           if ([string]::IsNullOrEmpty($env:GITHUB_BASE_REF)) {
@@ -650,29 +651,14 @@ jobs:
             Add-Content -Path $env:GITHUB_ENV -Value "WORKDIR=$env:GITHUB_BASE_REF"
           }          
 
-      - name: Check workdir 
+      - name: Create branch oriented WS directory & integration WS (WIN64)
         run: |
-          Write-Output "The shared variable is: $env:WORKDIR"
+          New-Item -Path "$env:WORKDIR" -ItemType "Directory"
 
-      # # Set the working dir suffixed with branch name
-      # - name: Set workdir 
-      #   shell: cmd
-      #   run: >
-      #     call C:\cygwin64\bin\bash --login -c "
-      #     if [ \"${{ github.base_ref }}\" = \"\" ]; 
-      #     then 
-      #     echo \"WORKDIR=${{github.ref_name}}\" >> $GITHUB_ENV;
-      #     else
-      #     echo \"WORKDIR=${{github.base_ref}}\" >> $GITHUB_ENV;
-      #     fi;  
-      #     "
-      # - name: Create branch oriented WS directory & integration WS (WIN64)
-      #   shell: cmd
-      #   run: >
-      #     call C:\cygwin64\bin\bash --login -c "
-      #     cd %cd:\=/%;
-      #     mkdir -p ${{ env.WORKDIR }};
-      #     "
+      - name: Clean local exe dir
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          Remove-Item -Path "exec" -Recurse -Force
 
       # - name: Clean local exe dir
       #   working-directory: ${{ env.WORKDIR }}
