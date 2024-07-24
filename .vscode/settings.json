@@ -1,0 +1,12 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#ff2222",
+        "titleBar.activeBackground": "#ff2222",
+        "titleBar.inactiveBackground": "#b21818",
+        "titleBar.activeForeground": "#000000",
+        "terminal.foreground": "#FFFFFF"
+    },
+    "files.associations": {
+        "or_QA.files*": "shellscript"
+    }
+}
