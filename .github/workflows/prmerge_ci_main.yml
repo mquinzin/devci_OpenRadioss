@@ -690,7 +690,7 @@ jobs:
           echo =========================================
           echo --  BUILD ${{ matrix.build }} --
           echo =========================================
-          .\build_windows.bat -release -arch=${{ matrix.os }}_ifx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          .\build_windows.bat -release -arch=${{ matrix.os }}_ifxxx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           cmd /c .\myrun.bat    
           cd ..
