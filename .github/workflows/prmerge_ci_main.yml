@@ -674,6 +674,14 @@ jobs:
           clean: 'false'
           lfs: 'true'
 
+      - name: Running builds
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          cd ${{ matrix.binary }}
+          pwd
+          echo "here"
+          ls  
+
       # - name: Running builds
       #   working-directory: ${{ env.WORKDIR }}
       #   # Running cygwin from powershell or cmd => neither identation nor comment !
