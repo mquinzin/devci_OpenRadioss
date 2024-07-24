@@ -643,8 +643,9 @@ jobs:
 
       - name: Set workdir 
         run: |
-          pwd
+          echo "Salut line1"
           ls
+          echo "Salut line2"
 
       # if [ "${{ github.base_ref }}" = "" ]; 
       # then 
