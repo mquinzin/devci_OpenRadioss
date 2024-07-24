@@ -617,11 +617,11 @@ jobs:
           #   os: win64
           #   binary: starter
 
-          - build: engine_win64_impi
-            precision: dp
-            os: win64
-            binary: engine
-            mpi: impi
+          # - build: engine_win64_impi
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
 
           # - build: engine_win64_impi_sp
           #   precision: sp
@@ -710,32 +710,14 @@ jobs:
           }
           Add-Content -Path $env:GITHUB_ENV -Value "STATUS_BUILD=1"
 
-
-      # - name: Running builds
-      #   working-directory: ${{ env.WORKDIR }}
-      #   # Running cygwin from powershell or cmd => neither identation nor comment !
-      #   # Not using wsl because of cmake issue with linux/win pathes conversion
-      #   shell: cmd
-      #   run: >
-      #     call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019 && C:\cygwin64\bin\bash --login -c "
-      #     cd %cd:\=/%;
-      #     echo '------- Print ifx version -------';
-      #     ifx --version;
-      #     echo '---------------------------------';
-      #     mpi_opts='';
-      #     if [ ! -z ${{ matrix.mpi }} ]; then mpi_opts='-mpi=${{ matrix.mpi }}'; fi;
-      #     cmd=\"./build_script.sh -release -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $mpi_opts\";
-      #     echo \"=========================================\";
-      #     echo \"--  BUILD ${{ matrix.build }} --\";
-      #     echo \"--  $cmd --\";
-      #     echo \"=========================================\";        
-      #     mkdir exec;
-      #     cd ${{ matrix.binary }};
-      #     eval $cmd;
-      #     cd ..;
-      #     md5sum exec/* || exit 1;
-      #     echo \"STATUS_BUILD=1\" >> $GITHUB_ENV;
-      #     "
+      - name: Managing step execution
+        if: ${{ always() }}
+        run: |
+          $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:\n\n"
+          Write-Output "`r`n#### STATUS_STEP_BUILD ${{ matrix.build }} ($env:STATUS_BUILD) ###"
+          if ($env:STATUS_BUILD -eq 0) {
+            echo "CLOSE BRANCH"
+          }
 
       # - name: Managing step execution
       #   if: ${{ always() }}
