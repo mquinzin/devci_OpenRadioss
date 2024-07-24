@@ -805,7 +805,7 @@ jobs:
 
       - name: Check workdir 
         run: |
-          echo "WORKDIR is $env:WORKDIR"
+          Write-Output "The shared variable is: $env:WORKDIR"
 
   #     # Get git related to the commit
   #     - name: Checkout git sources
