@@ -653,14 +653,16 @@ jobs:
 
       - name: Create branch oriented WS directory & integration WS (WIN64)
         run: |
-          New-Item -Path "$env:WORKDIR" -ItemType "Directory"
+          $dir2create = "$env:WORKDIR"
+          if (-not (Test-Path -Path $dir2create)) {
+            New-Item -Path $dir2create -ItemType "Directory"
+          }
 
       - name: Clean local exe dir
         working-directory: ${{ env.WORKDIR }}
         run: |
           $dir2remove = "exec"
           if (Test-Path -Path $dir2remove) {
-            echo "The dir exist"
             Remove-Item -Path $dir2remove -Recurse -Force
           }
 
