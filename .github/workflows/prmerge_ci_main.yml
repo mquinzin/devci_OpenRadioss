@@ -685,6 +685,7 @@ jobs:
           ifx --version
           cmake --version
           ninja --version
+          echo Variable is $env:mpi,${{ matrix.mpi }}
           if not $env:mpi=='' (
             set mpi_opts=-mpi=$env:mpi
           )      
