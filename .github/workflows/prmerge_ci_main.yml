@@ -678,9 +678,20 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           cd ${{ matrix.binary }}
-          pwd
-          echo "here"
-          ls  
+          @"
+          @echo off
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+          ifx --version
+          cmake --version
+          ninja --version
+          if not '$mpi'=='' (
+            set mpi_opts=-mpi=$env:mpi
+          )      
+          .\build_windows.bat -release -arch=$env:os -c -prec=$env:precision -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
+          type .\myrun.bat
+          
+      # cmd /c .\myrun.bat           
 
       # - name: Running builds
       #   working-directory: ${{ env.WORKDIR }}
