@@ -694,6 +694,10 @@ jobs:
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           cmd /c .\myrun.bat    
           cd ..
+          cd exec
+          "Salut" | Set-Content -Path "file1.txt"
+          "Salut" | Set-Content -Path "file2.txt"
+          cd ..
           $directoryPath = "exec"
           if (Test-Path -Path $directoryPath) {
               $files = Get-ChildItem -Path $directoryPath
