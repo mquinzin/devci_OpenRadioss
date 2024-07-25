@@ -691,7 +691,7 @@ jobs:
           echo =========================================
           echo --  BUILD ${{ matrix.build }} --
           echo =========================================
-          .\build_windows.bat -release -arch=${{ matrix.os }}_ifx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          .\build_windows.bat -release -arch=${{ matrix.os }}_ifxxx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           cmd /c .\myrun.bat    
           cd ..
@@ -735,17 +735,17 @@ jobs:
           path: ${{ env.WORKDIR }}/exec
         if: ${{ env.CLOSE_BRANCH == 0 }}           
 
-      # # Close the branch (= restrict push to team devopsadmins) if needed
-      # # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-      # - uses: octokit/request-action@v2.x
-      #   id: close_branch_build
-      #   env:
-      #     GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-      #     REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
-      #   with:
-      #     route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
-      #     data: ${{ env.REQUEST_BODY }}
-      #   if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
+      # Close the branch (= restrict push to team devopsadmins) if needed
+      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+      - uses: octokit/request-action@v2.x
+        id: close_branch_build
+        env:
+          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
+        with:
+          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+          data: ${{ env.REQUEST_BODY }}
+        if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
       # # If the closing went wrong we send an email
       # - name: "Check result of closing branch and warn if it fails"
