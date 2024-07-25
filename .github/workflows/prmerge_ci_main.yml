@@ -737,7 +737,8 @@ jobs:
 
       # Close the branch (= restrict push to team devopsadmins) if needed
       # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-      - uses: octokit/request-action@v2.x
+      - name: Close the branch if errors
+        uses: octokit/request-action@v2.x
         id: close_branch_build
         env:
           GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
