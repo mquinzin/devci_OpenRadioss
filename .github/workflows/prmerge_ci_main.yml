@@ -691,7 +691,7 @@ jobs:
           echo =========================================
           echo --  BUILD ${{ matrix.build }} --
           echo =========================================
-          .\build_windows.bat -release -arch=${{ matrix.os }}_ifxxx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          .\build_windows.bat -release -arch=${{ matrix.os }}_ifx -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           cmd /c .\myrun.bat    
           cd ..
@@ -748,22 +748,31 @@ jobs:
           data: ${{ env.REQUEST_BODY }}
         if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
-      # # If the closing went wrong we send an email
-      # - name: "Check result of closing branch and warn if it fails"
-      #   # Running cygwin from powershell or cmd => neither identation nor comment !
-      #   shell: cmd
-      #   run: >
-      #     call C:\cygwin64\bin\bash --login -c "
-      #     MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
-      #     MAILMSG+=\"A branch closing is needed but has failed\n\n\";
-      #     MAILMSG+=\"Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n\";
-      #     MAILMSG+=\"Check more detailed datas in CI logs\n\";
-      #     echo -e $MAILMSG;
-      #     echo -e \"\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}\";
-      #     echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
-      #     exit 1;
-      #     "
-      #   if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
+      # If the closing went wrong we send an email
+      - name: "Check result of closing branch and warn if it fails"
+        run: |
+          $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:\n\n"
+          $MAILMSG += "A branch closing is needed but has failed\n\n"
+          $MAILMSG += "Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n"
+          $MAILMSG += "Check more detailed datas in CI logs\n"
+          Write-Output "`r`nClose return data API is : ${{ steps.close_branch_build.outputs.data }}";
+          Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $env:TO_EMAIL -Subject "Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch" -Body $MAILMSG -Port 25
+          exit 1
+        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
+
+        # shell: cmd
+        # run: >
+        #   call C:\cygwin64\bin\bash --login -c "
+        #   MAILMSG=\"Some error(s) has(ve) been raised during workflow execution:\n\n\";
+        #   MAILMSG+=\"A branch closing is needed but has failed\n\n\";
+        #   MAILMSG+=\"Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n\";
+        #   MAILMSG+=\"Check more detailed datas in CI logs\n\";
+        #   echo -e $MAILMSG;
+        #   echo -e \"\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}\";
+        #   echo -e \"$MAILMSG\" | Email -f $FROM_EMAIL -s \"Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch\" -r $MAIL_RELAY $TO_EMAIL;
+        #   exit 1;
+        #   "
+        # if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
 
 
