@@ -744,7 +744,7 @@ jobs:
           GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
           REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
         with:
-          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+          route: PUT /repos/${{ github.repository }}/branches/mainx/protection/restrictions/teams
           data: ${{ env.REQUEST_BODY }}
         if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
