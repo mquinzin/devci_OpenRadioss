@@ -751,10 +751,10 @@ jobs:
       # If the closing went wrong we send an email
       - name: "Check result of closing branch and warn if it fails"
         run: |
-          $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:\n\n"
-          $MAILMSG += "A branch closing is needed but has failed\n\n"
-          $MAILMSG += "Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n"
-          $MAILMSG += "Check more detailed datas in CI logs\n"
+          $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:`r`n`r`n"
+          $MAILMSG += "A branch closing is needed but has failed`r`n`r`n"
+          $MAILMSG += "Return status API is : ${{ steps.close_branch_build.outputs.status }}`r`n`r`n"
+          $MAILMSG += "Check more detailed datas in CI logs`r`n"
           Write-Output "`r`nClose return data API is : ${{ steps.close_branch_build.outputs.data }}";
           Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $env:TO_EMAIL -Subject "Error in Github CI repo ${{ github.repository }} (${{github.sha}}) on closing branch" -Body $MAILMSG -Port 25
           exit 1
