@@ -816,28 +816,38 @@ jobs:
           rm -rf exec;
           "
 
-      # Download artifacts (since V4 we must download all needed artifacts, we could do it using wildcard but it doesn't work ... see https://github.com/actions/download-artifact/issues/337)
-      # Using hard name waiting for this issue to be fixed
+      # # Download artifacts (since V4 we must download all needed artifacts, we could do it using wildcard but it doesn't work ... see https://github.com/actions/download-artifact/issues/337)
+      # # Using hard name waiting for this issue to be fixed
+      # # - name: Download artifacts
+      # #   uses: actions/download-artifact@v4
+      # #   with:
+      # #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-*
+      # #     path: exec
+      # #     merge-multiple: true
       # - name: Download artifacts
       #   uses: actions/download-artifact@v4
       #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-*
+      #     # name: "bins-${{ matrix.os }}-${{ matrix.precision }}-*"
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-starter_win64
       #     path: exec
       #     merge-multiple: true
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          # name: "bins-${{ matrix.os }}-${{ matrix.precision }}-*"
-          name: bins-${{ matrix.os }}-${{ matrix.precision }}-starter_win64
-          path: exec
-          merge-multiple: true
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          # name: "bins-${{ matrix.os }}-${{ matrix.precision }}-*"
-          name: bins-${{ matrix.os }}-${{ matrix.precision }}-engine_win64_impi
-          path: exec
-          merge-multiple: true
+      # - name: Download artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     # name: "bins-${{ matrix.os }}-${{ matrix.precision }}-*"
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-engine_win64_impi
+      #     path: exec
+      #     merge-multiple: true
+
+      # DEV ONLY #
+      - name: TEMPORARY copy artifact for dev
+        run: |
+          $dir2create = "exec"
+          if (-not (Test-Path -Path $dir2create)) {
+            New-Item -Path $dir2create -ItemType "Directory"
+          }
+          Copy-Item -Path "D:\github-runners\openradioss-dev-build-win64-1\_work\devci_OpenRadioss\devci_OpenRadioss\main\exec\starter_win64_ifx.exe" "exec\starter_win64_ifx.exe" -Force
+          Copy-Item -Path "D:\github-runners\openradioss-dev-build-win64-2\_work\devci_OpenRadioss\devci_OpenRadioss\main\exec\engine_win64_ifx_impi.exe" "exec\engine_win64_ifx_impi.exe" -Force
 
       - name: Running qa
         # Running cygwin from powershell or cmd => neither identation nor comment !
