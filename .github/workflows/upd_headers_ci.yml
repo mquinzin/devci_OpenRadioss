@@ -20,7 +20,7 @@ jobs:
     # DEV ONLY # runs-on: ["dev_update_headers"]
     runs-on: ["update_headers"]
     container: 
-      image: fr-qafactorydev.europe.altair.com/common-linux64
+      image: fr-qafactorydev.europe.altair.com/common-linux64:18.0
       credentials: 
         username: ${{secrets.DOCKER_REGISTRY_USER}}
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
@@ -38,7 +38,9 @@ jobs:
 
       - name: Running the update header script
         run: |
-          Compiling_tools/script/or_header_mod_auto.pl update_headers
+          # Compiling_tools/script/or_header_mod_auto.pl update_headers
+          cd scripts
+          python ./headers.py
           # Clean temporary files (if any) 
           git clean -f
 
