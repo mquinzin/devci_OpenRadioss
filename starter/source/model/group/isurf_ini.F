@@ -20,13 +20,14 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  ISURF_INI                     source/model/group/isurf_ini.F
-Chd|-- called by -----------
-Chd|        LECTUR                        source/starter/lectur.F       
-Chd|-- calls ---------------
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    isurf_ini      ../starter/source/model/group/isurf_ini.F
+      !||--- called by ------------------------------------------------------
+      !||    lectur         ../starter/source/starter/lectur.F
+      !||--- calls      -----------------------------------------------------
+      !||    id             ../starter/source/airbag/hm_read_monvol_type2.F
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
       SUBROUTINE ISURF_INI(IGRSURF)
 C-----------------------------------------------
 C   M o d u l e s

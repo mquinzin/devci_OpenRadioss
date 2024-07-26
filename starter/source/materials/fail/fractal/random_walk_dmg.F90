@@ -25,6 +25,11 @@
 !hd|-- called by -----------
 !hd|-- calls ---------------
 !hd|====================================================================
+      !||====================================================================
+      !||    random_walk_dmg_mod   ../starter/source/materials/fail/fractal/random_walk_dmg.F90
+      !||--- called by ------------------------------------------------------
+      !||    updfail               ../starter/source/materials/updfail.F90
+      !||====================================================================
       module random_walk_dmg_mod
       contains
 ! ========================================================================================
@@ -33,6 +38,19 @@
 
 ! ========================================================================================
 
+      !||====================================================================
+      !||    random_walk_dmg                ../starter/source/materials/fail/fractal/random_walk_dmg.F90
+      !||--- called by ------------------------------------------------------
+      !||    updfail                        ../starter/source/materials/updfail.F90
+      !||--- calls      -----------------------------------------------------
+      !||    fractal_element_neighbor       ../starter/source/materials/fail/fractal/fractal_element_neighbor.F90
+      !||    id                             ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    ngr2usrn                       ../starter/source/system/nintrr.F
+      !||    to                             ../starter/source/groups/elegror_seatbelt.F
+      !||--- uses       -----------------------------------------------------
+      !||    fractal_element_neighbor_mod   ../starter/source/materials/fail/fractal/fractal_element_neighbor.F90
+      !||    message_mod                    ../starter/share/message_module/message_mod.F
+      !||====================================================================
         subroutine random_walk_dmg(fractal,fail ,                     &
           ngrshel,ngrsh3n,igrsh4n,igrsh3n,                            &
           imat   ,nixc   ,ixc    ,nixtg  ,ixtg  ,numelc ,numeltg)

@@ -21,15 +21,17 @@ Copyright>        As an alternative to this open-source version, Altair also off
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 C
-Chd|====================================================================
-Chd|  I3PEN3                        source/interfaces/inter3d1/i3pen3.F
-Chd|-- called by -----------
-Chd|        ININT3                        source/interfaces/inter3d1/inint3.F
-Chd|-- calls ---------------
-Chd|        ANCMSG                        source/output/message/message.F
-Chd|        INIST3                        source/interfaces/inter3d1/inist3.F
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    i3pen3        ../starter/source/interfaces/inter3d1/i3pen3.F
+      !||--- called by ------------------------------------------------------
+      !||    inint3        ../starter/source/interfaces/inter3d1/inint3.F
+      !||--- calls      -----------------------------------------------------
+      !||    ancmsg        ../starter/source/output/message/message.F
+      !||    id            ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    inist3        ../starter/source/interfaces/inter3d1/inist3.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod   ../starter/share/message_module/message_mod.F
+      !||====================================================================
       SUBROUTINE I3PEN3(X    ,IRECT ,MSR  ,NSV  ,ILOC ,
      1                  IRTL ,CST   ,IRTL0,GAP  ,NSN  ,
      2                  ITAB ,IWPENE,ID,TITR)
@@ -127,13 +129,14 @@ C
       ENDDO
       RETURN
       END
-Chd|====================================================================
-Chd|  I5PWR3                        source/interfaces/inter3d1/i3pen3.F
-Chd|-- called by -----------
-Chd|        ININT3                        source/interfaces/inter3d1/inint3.F
-Chd|-- calls ---------------
-Chd|        INIST3                        source/interfaces/inter3d1/inist3.F
-Chd|====================================================================
+      !||====================================================================
+      !||    i5pwr3   ../starter/source/interfaces/inter3d1/i3pen3.F
+      !||--- called by ------------------------------------------------------
+      !||    inint3   ../starter/source/interfaces/inter3d1/inint3.F
+      !||--- calls      -----------------------------------------------------
+      !||    inist3   ../starter/source/interfaces/inter3d1/inist3.F
+      !||    to       ../starter/source/groups/elegror_seatbelt.F
+      !||====================================================================
       SUBROUTINE I5PWR3(X    ,IRECT ,MSR  ,NSV  ,ILOC ,
      1                  IRTL ,CST   ,IRTL0,GAP  ,NSN  ,
      2                  ITAB ,INACTI)

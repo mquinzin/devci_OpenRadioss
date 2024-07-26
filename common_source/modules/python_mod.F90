@@ -20,6 +20,32 @@
 !Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 !Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 !Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
+      !||====================================================================
+      !||    python_funct_mod       ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    daasolv                ../engine/source/fluid/daasolv.F
+      !||    daasolvp               ../engine/source/fluid/daasolvp.F
+      !||    ddsplit                ../starter/source/restart/ddsplit/ddsplit.F
+      !||    execargcheck           ../engine/source/engine/execargcheck.F
+      !||    fixvel                 ../engine/source/constraints/general/impvel/fixvel.F
+      !||    flow0                  ../engine/source/fluid/flow0.F
+      !||    force                  ../engine/source/loads/general/force.F90
+      !||    gravit                 ../engine/source/loads/general/grav/gravit.F
+      !||    gravit_fvm_fem         ../engine/source/loads/general/grav/gravit_fvm_fem.F
+      !||    hm_read_funct_python   ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||    incpflow               ../engine/source/fluid/incpflow.F
+      !||    lag_fxv                ../engine/source/tools/lagmul/lag_fxv.F
+      !||    lag_fxvp               ../engine/source/tools/lagmul/lag_fxv.F
+      !||    lag_mult               ../engine/source/tools/lagmul/lag_mult.F
+      !||    lag_multp              ../engine/source/tools/lagmul/lag_mult.F
+      !||    lectur                 ../engine/source/input/lectur.F
+      !||    radioss2               ../engine/source/engine/radioss2.F
+      !||    rdresb                 ../engine/source/output/restart/rdresb.F
+      !||    resol                  ../engine/source/engine/resol.F
+      !||    resol_head             ../engine/source/engine/resol_head.F
+      !||    wrrestp                ../engine/source/output/restart/wrrestp.F
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
       module python_funct_mod
         use iso_c_binding
         integer, parameter :: max_line_length = 500 !< the maximum length of a line of code of python function
@@ -29,13 +55,33 @@
         integer :: python_error !< true if the starter command line had the option "-python"
 ! use iso_c_binding to bind python_init to cpp_python_init and python_finalize to cpp_python_finalize
         interface
+      !||====================================================================
+      !||    python_initialize      ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    hm_read_funct_python   ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||    python_funct_test      ../common_source/modules/python_mod.F90
+      !||    python_register        ../common_source/modules/python_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
           subroutine python_initialize(ok) bind(c, name="cpp_python_initialize")
             use iso_c_binding
             integer(kind=c_int), intent(inout) :: ok  !< error code
           end subroutine python_initialize
+      !||====================================================================
+      !||    python_finalize     ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_funct_test   ../common_source/modules/python_mod.F90
+      !||====================================================================
           subroutine python_finalize() bind(c, name="cpp_python_finalize")
           end subroutine python_finalize
           ! add a function to the python dictionary
+      !||====================================================================
+      !||    python_register_function   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_funct_init          ../common_source/modules/python_mod.F90
+      !||    python_register            ../common_source/modules/python_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
           subroutine python_register_function(name, code, num_lines) bind(c, name="cpp_python_register_function")
             use iso_c_binding
             character(kind=c_char), dimension(*) :: name !< intent out: extracted from the code
@@ -43,6 +89,16 @@
             character(kind=c_char), dimension(500,*) :: code
           end subroutine python_register_function
           ! call a function from the python dictionary
+      !||====================================================================
+      !||    python_call_function      ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    hm_read_funct_python      ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||    python_call_funct1d_dp    ../common_source/modules/python_mod.F90
+      !||    python_call_funct1d_sp    ../common_source/modules/python_mod.F90
+      !||    python_deriv_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||    python_funct_test         ../common_source/modules/python_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
           subroutine python_call_function(name, num_args, args, num_return, return_values) &
             bind(c, name="cpp_python_call_function")
             use iso_c_binding
@@ -53,6 +109,12 @@
             real(kind = c_double), intent(out) :: return_values(num_return)
           end subroutine python_call_function
           ! a subroutine that check if the function works, and return an nonzero error code if it does not
+      !||====================================================================
+      !||    python_check_function   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    hm_read_funct_python    ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
           subroutine python_check_function(name, error) bind(c, name="cpp_python_check_function")
             use iso_c_binding
             character(kind=c_char), dimension(*) :: name
@@ -94,6 +156,13 @@
       contains
 
 !! \brief serialize python_function into a buffer (for I/O)
+      !||====================================================================
+      !||    python_serialize    ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    ddsplit             ../starter/source/restart/ddsplit/ddsplit.F
+      !||    python_funct_test   ../common_source/modules/python_mod.F90
+      !||    wrrestp             ../engine/source/output/restart/wrrestp.F
+      !||====================================================================
         subroutine python_serialize(python, buffer,buffer_size)
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                                     Module
@@ -148,6 +217,12 @@
         end subroutine python_serialize
 
 !! \brief deserialize python_function (for I/O)
+      !||====================================================================
+      !||    python_deserialize   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_funct_test    ../common_source/modules/python_mod.F90
+      !||    rdresb               ../engine/source/output/restart/rdresb.F
+      !||====================================================================
         subroutine python_deserialize(python, buffer)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -193,6 +268,14 @@
 
 !! \brief Initialize the python function
 !! \details allocate funct%name and funct%code, and copy the name and code from the input file
+      !||====================================================================
+      !||    python_funct_init          ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    hm_read_funct_python       ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||    python_funct_test          ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_register_function   ../common_source/modules/python_mod.F90
+      !||====================================================================
         subroutine python_funct_init(funct, code, len_code, num_lines)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -231,6 +314,14 @@
         end subroutine
 
 !! \brief Register the python functions saved in the python structure into the python interpreter dictionary
+      !||====================================================================
+      !||    python_register            ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    resol                      ../engine/source/engine/resol.F
+      !||--- calls      -----------------------------------------------------
+      !||    python_initialize          ../common_source/modules/python_mod.F90
+      !||    python_register_function   ../common_source/modules/python_mod.F90
+      !||====================================================================
         subroutine python_register(py)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -271,6 +362,11 @@
 
 !! \brief Evaluate the python function
 !! \details the python function is called with one argument and one return value  (double precision version)
+      !||====================================================================
+      !||    python_call_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_call_function     ../common_source/modules/python_mod.F90
+      !||====================================================================
         subroutine python_call_funct1D_dp(py, funct_id, x, y)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -294,6 +390,11 @@
 
 !! \brief Evaluate the python function
 !! \details the python function is called with one argument and one return value  (single precision version)
+      !||====================================================================
+      !||    python_call_funct1d_sp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_call_function     ../common_source/modules/python_mod.F90
+      !||====================================================================
         subroutine python_call_funct1D_sp(py, funct_id, x, y)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -317,6 +418,13 @@
         end subroutine
 
 !! \brief Adaptive derivative of the python function (double precision version)
+      !||====================================================================
+      !||    python_deriv_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_deriv_funct1d_sp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_call_function      ../common_source/modules/python_mod.F90
+      !||====================================================================
         subroutine python_deriv_funct1D_dp(py, funct_id, x, y)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -361,6 +469,11 @@
         end subroutine
 
 !! \brief adaptive derivative of the python function (single precision version)
+      !||====================================================================
+      !||    python_deriv_funct1d_sp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_deriv_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||====================================================================
         subroutine python_deriv_funct1D_sp(py, funct_id, x, y)
           implicit none
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -385,6 +498,17 @@
 
 
         ! unit test
+      !||====================================================================
+      !||    python_funct_test      ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_call_function   ../common_source/modules/python_mod.F90
+      !||    python_deserialize     ../common_source/modules/python_mod.F90
+      !||    python_finalize        ../common_source/modules/python_mod.F90
+      !||    python_funct_init      ../common_source/modules/python_mod.F90
+      !||    python_initialize      ../common_source/modules/python_mod.F90
+      !||    python_serialize       ../common_source/modules/python_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
         subroutine python_funct_test()
           use iso_c_binding , only: c_null_char,c_char
           implicit none

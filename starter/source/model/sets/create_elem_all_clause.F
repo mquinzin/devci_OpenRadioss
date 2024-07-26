@@ -20,14 +20,15 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  CREATE_ELEM_ALL_CLAUSE        source/model/sets/create_elem_all_clause.F
-Chd|-- called by -----------
-Chd|        HM_SET                        source/model/sets/hm_set.F    
-Chd|-- calls ---------------
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|        SETDEF_MOD                    ../common_source/modules/setdef_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    create_elem_all_clause   ../starter/source/model/sets/create_elem_all_clause.F
+      !||--- called by ------------------------------------------------------
+      !||    hm_set                   ../starter/source/model/sets/hm_set.F
+      !||--- calls      -----------------------------------------------------
+      !||    id                       ../starter/source/airbag/hm_read_monvol_type2.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod              ../starter/share/message_module/message_mod.F
+      !||====================================================================
       SUBROUTINE CREATE_ELEM_ALL_CLAUSE( CLAUSE )
 C-----------------------------------------------
 C   ROUTINE DESCRIPTION :

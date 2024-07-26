@@ -20,17 +20,17 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  HM_SUBMODGRN                  source/groups/hm_submodgr.F   
-Chd|-- called by -----------
-Chd|        HM_LECGRN                     source/groups/hm_lecgrn.F     
-Chd|-- calls ---------------
-Chd|        ANCMSG                        source/output/message/message.F
-Chd|        GROUPS_GET_ELEM_LIST          source/groups/groups_get_elem_list.F
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
-Chd|====================================================================
+      !||====================================================================
+      !||    hm_submodgrn   ../starter/source/groups/hm_submodgr.F
+      !||--- called by ------------------------------------------------------
+      !||    hm_lecgrn      ../starter/source/groups/hm_lecgrn.F
+      !||--- calls      -----------------------------------------------------
+      !||    id             ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    usr2sys        ../starter/source/system/sysfus.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod    ../starter/share/message_module/message_mod.F
+      !||    submodel_mod   ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
       SUBROUTINE HM_SUBMODGRN(
      .           ITAB   ,ITABM1    ,ISUBMOD  ,SID     ,
      .           NNOD   ,MESS      ,FLAG     ,TITR    ,
@@ -75,6 +75,22 @@ C   E x t e r n a l   F u n c t i o n s
 C-----------------------------------------------
       INTEGER  USR2SYS
       INTERFACE
+      !||====================================================================
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||--- called by ------------------------------------------------------
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||--- calls      -----------------------------------------------------
+      !||    ancmsg                   ../starter/source/output/message/message.F
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    hm_get_int_array_index   ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
+      !||    hm_get_intv              ../starter/source/devtools/hm_reader/hm_get_intv.F
+      !||    id                       ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    nintlst                  ../starter/source/system/nintrr.F
+      !||    nintlstn                 ../starter/source/system/nintrr.F
+      !||    set_usrtos               ../starter/source/model/sets/ipartm1.F
+      !||--- uses       -----------------------------------------------------
+      !||    submodel_mod             ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
        SUBROUTINE GROUPS_GET_ELEM_LIST(arg1,arg2,arg3)
         USE SUBMODEL_MOD
         INTEGER,DIMENSION(:),ALLOCATABLE       :: arg1
@@ -158,17 +174,14 @@ C-------------------------------------
 C-------------------------
       RETURN
       END
-Chd|====================================================================
-Chd|  HM_SUBMODGRE                  source/groups/hm_submodgr.F   
-Chd|-- called by -----------
-Chd|        HM_LECGRE                     source/groups/hm_lecgre.F     
-Chd|-- calls ---------------
-Chd|        ANCMSG                        source/output/message/message.F
-Chd|        GROUPS_GET_ELEM_LIST          source/groups/groups_get_elem_list.F
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
-Chd|====================================================================
+      !||====================================================================
+      !||    hm_submodgre   ../starter/source/groups/hm_submodgr.F
+      !||--- calls      -----------------------------------------------------
+      !||    id             ../starter/source/airbag/hm_read_monvol_type2.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod    ../starter/share/message_module/message_mod.F
+      !||    submodel_mod   ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
       SUBROUTINE HM_SUBMODGRE(
      .           ISUBMOD  ,IX      ,NIX      ,SID      ,
      .           NEL      ,NUMEL   ,IELT     ,MESS     ,
@@ -211,6 +224,22 @@ C-----------------------------------------------
       INTEGER :: NENTITY
 C-----------------------------------------------
       INTERFACE
+      !||====================================================================
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||--- called by ------------------------------------------------------
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||--- calls      -----------------------------------------------------
+      !||    ancmsg                   ../starter/source/output/message/message.F
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    hm_get_int_array_index   ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
+      !||    hm_get_intv              ../starter/source/devtools/hm_reader/hm_get_intv.F
+      !||    id                       ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    nintlst                  ../starter/source/system/nintrr.F
+      !||    nintlstn                 ../starter/source/system/nintrr.F
+      !||    set_usrtos               ../starter/source/model/sets/ipartm1.F
+      !||--- uses       -----------------------------------------------------
+      !||    submodel_mod             ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
        SUBROUTINE GROUPS_GET_ELEM_LIST(arg1,arg2,arg3)
         USE SUBMODEL_MOD
         INTEGER,DIMENSION(:),ALLOCATABLE       :: arg1

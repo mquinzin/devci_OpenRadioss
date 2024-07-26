@@ -20,14 +20,16 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  I22WETSURF                    source/interfaces/int22/i22wetsurf.F
-Chd|-- called by -----------
-Chd|        I22MAINF                      source/interfaces/int22/i22mainf.F
-Chd|-- calls ---------------
-Chd|        I22BUFBRIC_MOD                ../common_source/modules/interfaces/cut-cell-search_mod.F
-Chd|        I22TRI_MOD                    ../common_source/modules/interfaces/cut-cell-search_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    i22wetsurf       ../engine/source/interfaces/int22/i22wetsurf.F
+      !||--- called by ------------------------------------------------------
+      !||    i22mainf         ../engine/source/interfaces/int22/i22mainf.F
+      !||--- calls      -----------------------------------------------------
+      !||    f                ../engine/source/boundary_conditions/ebcs/ebcs_extrapol.F
+      !||--- uses       -----------------------------------------------------
+      !||    i22bufbric_mod   ../common_source/modules/interfaces/cut-cell-search_mod.F
+      !||    i22tri_mod       ../common_source/modules/interfaces/cut-cell-search_mod.F
+      !||====================================================================
       SUBROUTINE I22WETSURF(
      1                  JLT    ,CAND_B ,CAND_E  ,CB_LOC ,CE_LOC ,
      2                  X1     ,X2     ,X3      ,X4     ,Y1     ,
@@ -158,6 +160,16 @@ C      INTEGER :: TAG_EL(NBCUT_MAX)
       TYPE(POLYGON) :: PolySCUT, PolyTria(4), POLYresult
      
       INTERFACE   
+      !||====================================================================
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||--- called by ------------------------------------------------------
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||--- calls      -----------------------------------------------------
+      !||    f                      ../engine/source/boundary_conditions/ebcs/ebcs_extrapol.F
+      !||    get_unique_main_cell   ../engine/source/interfaces/int22/get_unique_master_cell.F
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||====================================================================
         FUNCTION I22AERA(NPTS,P, C)
           INTEGER :: NPTS
           my_real :: P(3,NPTS), I22AERA(3), C(3)
@@ -1363,6 +1375,15 @@ C
 C===============================================================================
 
 
+      !||====================================================================
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||--- called by ------------------------------------------------------
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||    intersectp             ../engine/source/interfaces/int22/i22wetsurf.F
+      !||--- calls      -----------------------------------------------------
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||====================================================================
       FUNCTION GetProjectedFaceType(P1,P2,P3,P4,I,ListP)
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
@@ -1383,6 +1404,16 @@ C-----------------------------------------------
 C   I n t e r f  a c e   B l o c k s
 C----------------------------------------------- 
       INTERFACE
+      !||====================================================================
+      !||    intersectp             ../engine/source/interfaces/int22/i22wetsurf.F
+      !||--- called by ------------------------------------------------------
+      !||    intersectp             ../engine/source/interfaces/int22/i22wetsurf.F
+      !||    is_on_1st_half_plane   ../engine/source/interfaces/int22/i22clip_tools.F
+      !||--- calls      -----------------------------------------------------
+      !||    crossprod2d            ../engine/source/interfaces/int22/i22clip_tools.F
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||    intersectp             ../engine/source/interfaces/int22/i22wetsurf.F
+      !||====================================================================
         FUNCTION intersectP(a,b,c,d,iflg)
           my_real, intent(inout) :: a(2),b(2),c(2),d(2)
           my_real                :: intersectP(2)

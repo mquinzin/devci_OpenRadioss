@@ -20,13 +20,15 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  I15TOTT1                      source/interfaces/int15/i15tott1.F
-Chd|-- called by -----------
-Chd|        I15CMP                        source/interfaces/int15/i15cmp.F
-Chd|-- calls ---------------
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    i15tott1       ../engine/source/interfaces/int15/i15tott1.F
+      !||--- called by ------------------------------------------------------
+      !||    i15cmp         ../engine/source/interfaces/int15/i15cmp.F
+      !||--- calls      -----------------------------------------------------
+      !||    de             ../engine/source/elements/sh3n/coque3n/therm3c.F
+      !||--- uses       -----------------------------------------------------
+      !||    groupdef_mod   ../common_source/modules/groupdef_mod.F
+      !||====================================================================
       SUBROUTINE I15TOTT1(NOINT ,NDEB ,NTC   ,X     ,KSURF ,
      2                  IGRSURF  ,BUFSF ,KTC   ,KSI   ,NOLD  ,
      3                  XP1   ,XP2    ,XP3   ,XTK   ,YTK   ,

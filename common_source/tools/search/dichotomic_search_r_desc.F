@@ -20,6 +20,14 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
+      !||====================================================================
+      !||    dichotomic_search_r_desc       ../common_source/tools/search/dichotomic_search_r_desc.F
+      !||--- called by ------------------------------------------------------
+      !||    dichotomic_search_r_desc       ../common_source/tools/search/dichotomic_search_r_desc.F
+      !||    pblast_parameters__air_burst   ../common_source/modules/loads/pblast_mod.F
+      !||--- calls      -----------------------------------------------------
+      !||    dichotomic_search_r_desc       ../common_source/tools/search/dichotomic_search_r_desc.F
+      !||====================================================================
       FUNCTION DICHOTOMIC_SEARCH_R_DESC(VAL, ARRAY, LEN)
 C-----------------------------------------------
 C   D e s c r i p t i o n

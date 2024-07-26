@@ -20,25 +20,23 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  SINIT22_FVM                   source/interfaces/int22/sinit22_fvm.F
-Chd|-- called by -----------
-Chd|        ALEMAIN                       source/ale/alemain.F          
-Chd|-- calls ---------------
-Chd|        DESTROY_CELL                  source/interfaces/int22/destroy_cell.F
-Chd|        GET_GROUP_ID                  source/interfaces/int22/get_group_id.F
-Chd|        INITBUF                       share/resol/initbuf.F         
-Chd|        MY_BARRIER                    source/system/machine.F       
-Chd|        SIGEPS37_SINGLE_CELL          source/interfaces/int22/sigeps37_single_cell.F
-Chd|        weighting_Cell_Nodes          source/interfaces/int22/weighting_cell_nodes.F
-Chd|        ALEFVM_MOD                    ../common_source/modules/ale/alefvm_mod.F
-Chd|        ALE_CONNECTIVITY_MOD          ../common_source/modules/ale/ale_connectivity_mod.F
-Chd|        ELBUFDEF_MOD                  ../common_source/modules/mat_elem/elbufdef_mod.F
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|        I22BUFBRIC_MOD                ../common_source/modules/interfaces/cut-cell-search_mod.F
-Chd|        I22TRI_MOD                    ../common_source/modules/interfaces/cut-cell-search_mod.F
-Chd|        INITBUF_MOD                   share/resol/initbuf.F         
-Chd|====================================================================
+      !||====================================================================
+      !||    sinit22_fvm                  ../engine/source/interfaces/int22/sinit22_fvm.F
+      !||--- called by ------------------------------------------------------
+      !||    alemain                      ../engine/source/ale/alemain.F
+      !||--- calls      -----------------------------------------------------
+      !||    f                            ../engine/source/boundary_conditions/ebcs/ebcs_extrapol.F
+      !||    get_unique_main_cell         ../engine/source/interfaces/int22/get_unique_master_cell.F
+      !||    link_with_unique_main_cell   ../engine/source/interfaces/int22/link_with_unique_master_cell.F
+      !||--- uses       -----------------------------------------------------
+      !||    ale_connectivity_mod         ../common_source/modules/ale/ale_connectivity_mod.F
+      !||    alefvm_mod                   ../common_source/modules/ale/alefvm_mod.F
+      !||    elbufdef_mod                 ../common_source/modules/mat_elem/elbufdef_mod.F
+      !||    groupdef_mod                 ../common_source/modules/groupdef_mod.F
+      !||    i22bufbric_mod               ../common_source/modules/interfaces/cut-cell-search_mod.F
+      !||    i22tri_mod                   ../common_source/modules/interfaces/cut-cell-search_mod.F
+      !||    initbuf_mod                  ../engine/share/resol/initbuf.F
+      !||====================================================================
       SUBROUTINE SINIT22_FVM (
      .                    IXS    , ELBUF_TAB ,IPARG ,ITAB  ,ITASK   ,
      .                    BUFBRIC, NBRIC_L   ,X     ,ALE_CONNECTIVITY,V       ,
@@ -236,6 +234,16 @@ C-----------------------------------------------
       INTEGER :: IAD2, IAD3, LGTH2, LGTH3
      
       INTERFACE
+      !||====================================================================
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||--- called by ------------------------------------------------------
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||--- calls      -----------------------------------------------------
+      !||    f                      ../engine/source/boundary_conditions/ebcs/ebcs_extrapol.F
+      !||    get_unique_main_cell   ../engine/source/interfaces/int22/get_unique_master_cell.F
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||====================================================================
         FUNCTION I22AERA(NPTS, P, C)      
         my_real                      :: I22AERA(3)
         INTEGER, INTENT(IN)          :: NPTS

@@ -25,12 +25,14 @@ C
 C     SORTIE1.FOR
 C
 C=======================================================================
-Chd|====================================================================
-Chd|  TITRE1                        source/output/outfile/titre1.F
-Chd|-- called by -----------
-Chd|        STARTER0                      source/starter/starter0.F     
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    titre1     ../starter/source/output/outfile/titre1.F
+      !||--- called by ------------------------------------------------------
+      !||    starter0   ../starter/source/starter/starter0.F
+      !||--- calls      -----------------------------------------------------
+      !||    friction   ../starter/source/interfaces/reader/inter_dcod_function.F
+      !||    to         ../starter/source/groups/elegror_seatbelt.F
+      !||====================================================================
       SUBROUTINE TITRE1
 C------------------------------------
 C     DEBUT => CONTROLS

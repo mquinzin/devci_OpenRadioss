@@ -20,13 +20,14 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  GR_ENTITY_INI                 source/model/group/gr_entity_ini.F
-Chd|-- called by -----------
-Chd|        GROUP_INI                     source/model/group/group_ini.F
-Chd|-- calls ---------------
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    gr_entity_ini   ../starter/source/model/group/gr_entity_ini.F
+      !||--- called by ------------------------------------------------------
+      !||    group_ini       ../starter/source/model/group/group_ini.F
+      !||--- calls      -----------------------------------------------------
+      !||    id              ../starter/source/airbag/hm_read_monvol_type2.F
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
       SUBROUTINE GR_ENTITY_INI(IGR,NGR,LENGROUP)
 C-----------------------------------------------
 C   M o d u l e s

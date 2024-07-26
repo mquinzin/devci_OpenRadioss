@@ -20,24 +20,27 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  INIVOL_DEF_MOD                share/modules1/inivol_mod.F   
-Chd|-- called by -----------
-Chd|        ALE_BOX_COLORATION            source/initial_conditions/inivol/ale_box_coloration.F
-Chd|        CONTRL                        source/starter/contrl.F       
-Chd|        HM_READ_INIVOL                source/initial_conditions/inivol/hm_read_inivol.F
-Chd|        HM_READ_MAT151                source/materials/mat/mat151/hm_read_mat151.F
-Chd|        INITIA                        source/elements/initia/initia.F
-Chd|        LECTUR                        source/starter/lectur.F       
-Chd|        QGRTAILS                      source/elements/solid_2d/quad/qgrtails.F
-Chd|        R2R_GROUP                     source/coupling/rad2rad/r2r_group.F
-Chd|        R2R_PRELEC                    source/coupling/rad2rad/r2r_prelec.F
-Chd|        SGRTAILS                      source/elements/solid/solide/sgrtails.F
-Chd|        ST_QAPRINT_INIVOL             source/output/qaprint/st_qaprint_inivol.F
-Chd|        SURFACE_MIN_MAX_COMPUTATION   source/initial_conditions/inivol/surface_min_max_computation.F
-Chd|        T3GRTAILS                     source/elements/solid_2d/tria/t3grtails.F
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    inivol_def_mod                ../starter/share/modules1/inivol_mod.F
+      !||--- called by ------------------------------------------------------
+      !||    ale_box_coloration            ../starter/source/initial_conditions/inivol/ale_box_coloration.F
+      !||    contrl                        ../starter/source/starter/contrl.F
+      !||    hm_read_inivol                ../starter/source/initial_conditions/inivol/hm_read_inivol.F
+      !||    hm_read_mat151                ../starter/source/materials/mat/mat151/hm_read_mat151.F
+      !||    init_inivol                   ../starter/source/initial_conditions/inivol/init_inivol.F90
+      !||    init_inivol_2d_polygons       ../starter/source/initial_conditions/inivol/init_inivol_2D_polygons.F90
+      !||    initia                        ../starter/source/elements/initia/initia.F
+      !||    lectur                        ../starter/source/starter/lectur.F
+      !||    qgrtails                      ../starter/source/elements/solid_2d/quad/qgrtails.F
+      !||    r2r_group                     ../starter/source/coupling/rad2rad/r2r_group.F
+      !||    r2r_prelec                    ../starter/source/coupling/rad2rad/r2r_prelec.F
+      !||    sgrtails                      ../starter/source/elements/solid/solide/sgrtails.F
+      !||    st_qaprint_inivol             ../starter/source/output/qaprint/st_qaprint_inivol.F
+      !||    surface_min_max_computation   ../starter/source/initial_conditions/inivol/surface_min_max_computation.F
+      !||    t3grtails                     ../starter/source/elements/solid_2d/tria/t3grtails.F
+      !||--- calls      -----------------------------------------------------
+      !||    id                            ../starter/source/airbag/hm_read_monvol_type2.F
+      !||====================================================================
       MODULE INIVOL_DEF_MOD
 C-----------------------------------------------
 C   m y _ r e a l
@@ -86,12 +89,11 @@ C-----------------------------------------------
 
 
 
-Chd|====================================================================
-Chd|  INIVOL_INTERF_MOD             share/modules1/inivol_mod.F   
-Chd|-- called by -----------
-Chd|        LECTUR                        source/starter/lectur.F       
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    inivol_interf_mod   ../starter/share/modules1/inivol_mod.F
+      !||--- called by ------------------------------------------------------
+      !||    lectur              ../starter/source/starter/lectur.F
+      !||====================================================================
       MODULE INIVOL_INTERF_MOD
 C-----------------------------------------------
 C   m y _ r e a l
@@ -101,6 +103,28 @@ C-----------------------------------------------
 C   B l o c k   I n t e r f a c e
 C------------------------------------------------
       INTERFACE
+      !||====================================================================
+      !||    hm_read_inivol             ../starter/source/initial_conditions/inivol/hm_read_inivol.F
+      !||--- called by ------------------------------------------------------
+      !||    lectur                     ../starter/source/starter/lectur.F
+      !||--- calls      -----------------------------------------------------
+      !||    ancmsg                     ../starter/source/output/message/message.F
+      !||    hm_get_float_array_index   ../starter/source/devtools/hm_reader/hm_get_float_array_index.F
+      !||    hm_get_int_array_index     ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
+      !||    hm_get_intv                ../starter/source/devtools/hm_reader/hm_get_intv.F
+      !||    hm_option_is_encrypted     ../starter/source/devtools/hm_reader/hm_option_is_encrypted.F
+      !||    hm_option_read_key         ../starter/source/devtools/hm_reader/hm_option_read_key.F
+      !||    hm_option_start            ../starter/source/devtools/hm_reader/hm_option_start.F
+      !||    hm_sz_r2r                  ../starter/source/coupling/rad2rad/routines_r2r.F
+      !||    id                         ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    trace_in1                  ../starter/source/system/trace_back.F
+      !||--- uses       -----------------------------------------------------
+      !||    hm_option_read_mod         ../starter/share/modules1/hm_option_read_mod.F
+      !||    inivol_def_mod             ../starter/share/modules1/inivol_mod.F
+      !||    message_mod                ../starter/share/message_module/message_mod.F
+      !||    r2r_mod                    ../starter/share/modules1/r2r_mod.F
+      !||    submodel_mod               ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
          SUBROUTINE HM_READ_INIVOL(INIVOL_STRUCT , KVOL, IGRSURF ,IPART  ,MULTI_FVM, BUFMAT, IPM, NSUBMAT, LSUBMODEL, UNITAB)
            USE UNITAB_MOD
            USE MULTI_FVM_MOD

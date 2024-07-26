@@ -20,19 +20,17 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  HM_GROGRO                     source/groups/hm_grogro.F     
-Chd|-- called by -----------
-Chd|        LECGGROUP                     source/groups/lecggroup.F     
-Chd|-- calls ---------------
-Chd|        ANCMSG                        source/output/message/message.F
-Chd|        GROUPS_GET_ELEM_LIST          source/groups/groups_get_elem_list.F
-Chd|        HM_OPTION_READ_KEY            source/devtools/hm_reader/hm_option_read_key.F
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|        HM_OPTION_READ_MOD            share/modules1/hm_option_read_mod.F
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|        SUBMODEL_MOD                  share/modules1/submodel_mod.F 
-Chd|====================================================================
+      !||====================================================================
+      !||    hm_grogro            ../starter/source/groups/hm_grogro.F
+      !||--- called by ------------------------------------------------------
+      !||    lecggroup            ../starter/source/groups/lecggroup.F
+      !||--- calls      -----------------------------------------------------
+      !||    id                   ../starter/source/airbag/hm_read_monvol_type2.F
+      !||--- uses       -----------------------------------------------------
+      !||    hm_option_read_mod   ../starter/share/modules1/hm_option_read_mod.F
+      !||    message_mod          ../starter/share/message_module/message_mod.F
+      !||    submodel_mod         ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
       SUBROUTINE HM_GROGRO(NUMEN   ,NGRELN  ,IGRELEM ,ICOUNT,
      .                  FLAG    ,ITER    ,ELKEY  ,LSUBMODEL )
 !---
@@ -73,6 +71,22 @@ C-----------------------------------------------
       INTEGER :: NENTITY
 C-----------------------------------------------
       INTERFACE
+      !||====================================================================
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||--- called by ------------------------------------------------------
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||--- calls      -----------------------------------------------------
+      !||    ancmsg                   ../starter/source/output/message/message.F
+      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    hm_get_int_array_index   ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
+      !||    hm_get_intv              ../starter/source/devtools/hm_reader/hm_get_intv.F
+      !||    id                       ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    nintlst                  ../starter/source/system/nintrr.F
+      !||    nintlstn                 ../starter/source/system/nintrr.F
+      !||    set_usrtos               ../starter/source/model/sets/ipartm1.F
+      !||--- uses       -----------------------------------------------------
+      !||    submodel_mod             ../starter/share/modules1/submodel_mod.F
+      !||====================================================================
        SUBROUTINE GROUPS_GET_ELEM_LIST(arg1,arg2,arg3)
         USE SUBMODEL_MOD
         INTEGER,DIMENSION(:),ALLOCATABLE       :: arg1

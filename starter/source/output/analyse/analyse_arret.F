@@ -20,12 +20,15 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  ANADERR                       source/output/analyse/analyse_arret.F
-Chd|-- called by -----------
-Chd|-- calls ---------------
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    anaderr       ../starter/source/output/analyse/analyse_arret.F
+      !||--- called by ------------------------------------------------------
+      !||    anaderr       ../starter/source/output/analyse/analyse_arret.F
+      !||--- calls      -----------------------------------------------------
+      !||    anaderr       ../starter/source/output/analyse/analyse_arret.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod   ../starter/share/message_module/message_mod.F
+      !||====================================================================
       INTEGER FUNCTION ANADERR()
       USE MESSAGE_MOD
 C-----------------------------------------------
@@ -42,12 +45,15 @@ C
       RETURN
 C
       END
-Chd|====================================================================
-Chd|  ANADWAR                       source/output/analyse/analyse_arret.F
-Chd|-- called by -----------
-Chd|-- calls ---------------
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    anadwar       ../starter/source/output/analyse/analyse_arret.F
+      !||--- called by ------------------------------------------------------
+      !||    anadwar       ../starter/source/output/analyse/analyse_arret.F
+      !||--- calls      -----------------------------------------------------
+      !||    anadwar       ../starter/source/output/analyse/analyse_arret.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod   ../starter/share/message_module/message_mod.F
+      !||====================================================================
       INTEGER FUNCTION ANADWAR()
       USE MESSAGE_MOD
 C-----------------------------------------------
@@ -65,12 +71,15 @@ C
 C
       END
 C
-Chd|====================================================================
-Chd|  ANGETNB                       source/output/analyse/analyse_arret.F
-Chd|-- called by -----------
-Chd|-- calls ---------------
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    angetnb       ../starter/source/output/analyse/analyse_arret.F
+      !||--- called by ------------------------------------------------------
+      !||    angetnb       ../starter/source/output/analyse/analyse_arret.F
+      !||--- calls      -----------------------------------------------------
+      !||    angetnb       ../starter/source/output/analyse/analyse_arret.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod   ../starter/share/message_module/message_mod.F
+      !||====================================================================
       INTEGER FUNCTION ANGETNB(NBERR,NBWARN)
       USE MESSAGE_MOD
 C-----------------------------------------------
@@ -93,14 +102,15 @@ C
 C
       END
 C
-Chd|====================================================================
-Chd|  ANPRINT                       source/output/analyse/analyse_arret.F
-Chd|-- called by -----------
-Chd|        ANEND                         source/output/analyse/analyse_arret.F
-Chd|-- calls ---------------
-Chd|        SUMMSG                        source/output/message/summsg.F
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    anprint       ../starter/source/output/analyse/analyse_arret.F
+      !||--- called by ------------------------------------------------------
+      !||    anend         ../starter/source/output/analyse/analyse_arret.F
+      !||--- calls      -----------------------------------------------------
+      !||    summsg        ../starter/source/output/message/summsg.F
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod   ../starter/share/message_module/message_mod.F
+      !||====================================================================
       SUBROUTINE ANPRINT()
       USE MESSAGE_MOD
 C-----------------------------------------------
@@ -158,12 +168,11 @@ C-----------------------------------------------
       RETURN
       END
 C
-Chd|====================================================================
-Chd|  ANFILE                        source/output/analyse/analyse_arret.F
-Chd|-- called by -----------
-Chd|        ANEND                         source/output/analyse/analyse_arret.F
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    anfile   ../starter/source/output/analyse/analyse_arret.F
+      !||--- called by ------------------------------------------------------
+      !||    anend    ../starter/source/output/analyse/analyse_arret.F
+      !||====================================================================
       SUBROUTINE ANFILE ()
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
@@ -180,16 +189,19 @@ C
       RETURN
       END
 C
-Chd|====================================================================
-Chd|  ANEND                         source/output/analyse/analyse_arret.F
-Chd|-- called by -----------
-Chd|        STARTER0                      source/starter/starter0.F     
-Chd|-- calls ---------------
-Chd|        ANFILE                        source/output/analyse/analyse_arret.F
-Chd|        ANPRINT                       source/output/analyse/analyse_arret.F
-Chd|        MY_EXIT                       source/output/analyse/analyse.c
-Chd|        MESSAGE_MOD                   share/message_module/message_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    anend                 ../starter/source/output/analyse/analyse_arret.F
+      !||--- called by ------------------------------------------------------
+      !||    anend                 ../starter/source/output/analyse/analyse_arret.F
+      !||    starter0              ../starter/source/starter/starter0.F
+      !||--- calls      -----------------------------------------------------
+      !||    anend                 ../starter/source/output/analyse/analyse_arret.F
+      !||    anfile                ../starter/source/output/analyse/analyse_arret.F
+      !||    anprint               ../starter/source/output/analyse/analyse_arret.F
+      !||    my_exit               ../starter/source/output/analyse/analyse.c
+      !||--- uses       -----------------------------------------------------
+      !||    message_mod           ../starter/share/message_module/message_mod.F
+      !||====================================================================
       INTEGER FUNCTION ANEND()
       USE MESSAGE_MOD
 C-----------------------------------------------

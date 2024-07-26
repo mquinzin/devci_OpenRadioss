@@ -20,13 +20,16 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  ALLOC_ELBUF_IMP               source/elements/elbuf/alloc_elbuf_imp.F
-Chd|-- called by -----------
-Chd|        RESOL                         source/engine/resol.F         
-Chd|-- calls ---------------
-Chd|        ELBUFDEF_MOD                  ../common_source/modules/mat_elem/elbufdef_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    alloc_elbuf_imp   ../engine/source/elements/elbuf/alloc_elbuf_imp.F
+      !||--- called by ------------------------------------------------------
+      !||    resol             ../engine/source/engine/resol.F
+      !||--- calls      -----------------------------------------------------
+      !||    for               ../engine/source/materials/mat/mat077/sigeps77.F
+      !||    nvar              ../engine/source/input/nvar.F
+      !||--- uses       -----------------------------------------------------
+      !||    elbufdef_mod      ../common_source/modules/mat_elem/elbufdef_mod.F
+      !||====================================================================
       SUBROUTINE ALLOC_ELBUF_IMP(ELBUF_TAB,ELBUF_IMP,NGROUP,IPARG)
 C-----------------------------------------------
 C   M o d u l e s
