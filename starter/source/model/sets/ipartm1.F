@@ -124,7 +124,7 @@ C-----------------------------------------------
       !||    create_setcol_list     ../starter/source/model/sets/create_setcol_clause.F
       !||    create_subm_list       ../starter/source/model/sets/create_subm_clause.F
       !||    create_subs_list       ../starter/source/model/sets/create_subs_clause.F
-      !||    groups_get_elem_list   ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_admlistcnt.F
       !||    hm_read_inistate_d00   ../starter/source/elements/initia/hm_read_inistate_d00.F
       !||    hm_read_thgrne         ../starter/source/output/th/hm_read_thgrne.F
       !||    hm_tagpart2            ../starter/source/groups/hm_tagpart2.F

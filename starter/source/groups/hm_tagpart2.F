@@ -82,20 +82,18 @@ C-----------------------------------------------
 C-----------------------------------------------
       INTERFACE
       !||====================================================================
-      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_admlistcnt.F
       !||--- called by ------------------------------------------------------
-      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_admlistcnt.F
       !||--- calls      -----------------------------------------------------
-      !||    ancmsg                   ../starter/source/output/message/message.F
-      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
-      !||    hm_get_int_array_index   ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
-      !||    hm_get_intv              ../starter/source/devtools/hm_reader/hm_get_intv.F
-      !||    id                       ../starter/source/airbag/hm_read_monvol_type2.F
-      !||    nintlst                  ../starter/source/system/nintrr.F
-      !||    nintlstn                 ../starter/source/system/nintrr.F
-      !||    set_usrtos               ../starter/source/model/sets/ipartm1.F
+      !||    ancmsg                 ../starter/source/output/message/message.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_admlistcnt.F
+      !||    id                     ../starter/source/airbag/hm_read_monvol_type2.F
+      !||    nintlst                ../starter/source/system/nintrr.F
+      !||    nintlstn               ../starter/source/system/nintrr.F
+      !||    set_usrtos             ../starter/source/model/sets/ipartm1.F
       !||--- uses       -----------------------------------------------------
-      !||    submodel_mod             ../starter/share/modules1/submodel_mod.F
+      !||    submodel_mod           ../starter/share/modules1/submodel_mod.F
       !||====================================================================
        SUBROUTINE GROUPS_GET_ELEM_LIST(arg1,arg2,arg3)
         USE SUBMODEL_MOD

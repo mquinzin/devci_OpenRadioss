@@ -205,6 +205,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    h3d_solid_vector                 ../engine/source/output/h3d/h3d_results/h3d_solid_vector.F
       !||    h3d_sph_scalar                   ../engine/source/output/h3d/h3d_results/h3d_sph_scalar.F
       !||    h3d_sph_tensor                   ../engine/source/output/h3d/h3d_results/h3d_sph_tensor.F
+      !||    i22aera                          ../engine/source/interfaces/int22/sinit22_fvm.F
       !||    i9grd2                           ../engine/source/interfaces/int09/i9grd2.F
       !||    i9grd3                           ../engine/source/interfaces/int09/i9grd3.F
       !||    imp_glob_k                       ../engine/source/implicit/imp_glob_k.F
