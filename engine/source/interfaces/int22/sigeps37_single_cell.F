@@ -22,8 +22,6 @@ Copyright>        software under a commercial license.  Contact Altair to discus
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
       !||    sigeps37_single_cell   ../engine/source/interfaces/int22/sigeps37_single_cell.F
-      !||--- called by ------------------------------------------------------
-      !||    i22aera                ../engine/source/interfaces/int22/sinit22_fvm.F
       !||--- uses       -----------------------------------------------------
       !||    alefvm_mod             ../common_source/modules/ale/alefvm_mod.F
       !||    elbufdef_mod           ../common_source/modules/mat_elem/elbufdef_mod.F

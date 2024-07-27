@@ -72,7 +72,7 @@ C
       !||====================================================================
       !||    nintlst                ../starter/source/system/nintrr.F
       !||--- called by ------------------------------------------------------
-      !||    groups_get_elem_list   ../starter/source/groups/hm_admlistcnt.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_tagpart2.F
       !||    nintlst                ../starter/source/system/nintrr.F
       !||--- calls      -----------------------------------------------------
       !||    ancmsg                 ../starter/source/output/message/message.F
@@ -819,7 +819,7 @@ C
       !||====================================================================
       !||    nintlstn               ../starter/source/system/nintrr.F
       !||--- called by ------------------------------------------------------
-      !||    groups_get_elem_list   ../starter/source/groups/hm_admlistcnt.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_tagpart2.F
       !||    nintlstn               ../starter/source/system/nintrr.F
       !||--- calls      -----------------------------------------------------
       !||    ancmsg                 ../starter/source/output/message/message.F

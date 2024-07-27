@@ -22,8 +22,6 @@ Copyright>        software under a commercial license.  Contact Altair to discus
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
       !||    destroy_cell     ../engine/source/interfaces/int22/destroy_cell.F
-      !||--- called by ------------------------------------------------------
-      !||    i22aera          ../engine/source/interfaces/int22/sinit22_fvm.F
       !||--- uses       -----------------------------------------------------
       !||    i22bufbric_mod   ../common_source/modules/interfaces/cut-cell-search_mod.F
       !||    i22tri_mod       ../common_source/modules/interfaces/cut-cell-search_mod.F

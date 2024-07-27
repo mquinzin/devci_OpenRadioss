@@ -161,20 +161,17 @@ C      INTEGER :: TAG_EL(NBCUT_MAX)
      
       INTERFACE   
       !||====================================================================
-      !||    i22aera                ../engine/source/interfaces/int22/sinit22_fvm.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
       !||--- called by ------------------------------------------------------
-      !||    i22aera                ../engine/source/interfaces/int22/sinit22_fvm.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
       !||--- calls      -----------------------------------------------------
-      !||    destroy_cell           ../engine/source/interfaces/int22/destroy_cell.F
       !||    f                      ../engine/source/boundary_conditions/ebcs/ebcs_extrapol.F
-      !||    get_group_id           ../engine/source/interfaces/int22/get_group_id.F
       !||    get_unique_main_cell   ../engine/source/interfaces/int22/get_unique_master_cell.F
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
-      !||    i22aera                ../engine/source/interfaces/int22/sinit22_fvm.F
-      !||    initbuf                ../engine/share/resol/initbuf.F
-      !||    my_barrier             ../engine/source/system/machine.F
-      !||    sigeps37_single_cell   ../engine/source/interfaces/int22/sigeps37_single_cell.F
-      !||    weighting_cell_nodes   ../engine/source/interfaces/int22/weighting_cell_nodes.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
+      !||    i22ass0                ../engine/source/interfaces/int22/i22assembly.F
+      !||    i22ass2                ../engine/source/interfaces/int22/i22assembly.F
+      !||    i7ass3                 ../engine/source/interfaces/int07/i7ass3.F
       !||====================================================================
         FUNCTION I22AERA(NPTS,P, C)
           INTEGER :: NPTS
@@ -1385,7 +1382,7 @@ C===============================================================================
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
       !||--- called by ------------------------------------------------------
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
-      !||    i22aera                ../engine/source/interfaces/int22/sinit22_fvm.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
       !||    intersectp             ../engine/source/interfaces/int22/i22wetsurf.F
       !||--- calls      -----------------------------------------------------
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F

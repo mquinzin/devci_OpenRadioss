@@ -22,8 +22,6 @@ Copyright>        software under a commercial license.  Contact Altair to discus
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
       !||    get_group_id   ../engine/source/interfaces/int22/get_group_id.F
-      !||--- called by ------------------------------------------------------
-      !||    i22aera        ../engine/source/interfaces/int22/sinit22_fvm.F
       !||====================================================================
       SUBROUTINE GET_GROUP_ID(
      1             II      , NG        , IG        , IPARG     )

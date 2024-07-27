@@ -22,6 +22,8 @@ Copyright>        software under a commercial license.  Contact Altair to discus
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
       !||    i22ass0   ../engine/source/interfaces/int22/i22assembly.F
+      !||--- called by ------------------------------------------------------
+      !||    i22aera   ../engine/source/interfaces/int22/i22for3.F
       !||--- uses       -----------------------------------------------------
       !||    tri7box   ../engine/share/modules/tri7box.F
       !||====================================================================
@@ -104,6 +106,8 @@ C
 
       !||====================================================================
       !||    i22ass2          ../engine/source/interfaces/int22/i22assembly.F
+      !||--- called by ------------------------------------------------------
+      !||    i22aera          ../engine/source/interfaces/int22/i22for3.F
       !||--- calls      -----------------------------------------------------
       !||    ancmsg           ../engine/source/output/message/message.F
       !||    arret            ../engine/source/system/arret.F

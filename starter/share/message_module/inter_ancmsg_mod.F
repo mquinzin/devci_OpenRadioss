@@ -140,7 +140,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    get_u_numfun                        ../starter/source/user_interface/uaccess.F
       !||    get_u_pnu                           ../starter/source/user_interface/uaccess.F
       !||    grfind                              ../starter/source/starter/freform.F
-      !||    groups_get_elem_list                ../starter/source/groups/hm_admlistcnt.F
+      !||    groups_get_elem_list                ../starter/source/groups/hm_tagpart2.F
       !||    hireorbe3                           ../starter/source/constraints/general/rbe3/hm_read_rbe3.F
       !||    hm_admlist                          ../starter/source/groups/hm_admlist.F
       !||    hm_bigbox                           ../starter/source/model/box/hm_bigbox.F

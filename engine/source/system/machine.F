@@ -110,7 +110,6 @@ C=======================================================================
       !||    i20mainf                         ../engine/source/interfaces/int20/i20mainf.F
       !||    i21main_tri                      ../engine/source/interfaces/intsort/i21main_tri.F
       !||    i21optcd                         ../engine/source/interfaces/int21/i21optcd.F
-      !||    i22aera                          ../engine/source/interfaces/int22/sinit22_fvm.F
       !||    i22buce                          ../engine/source/interfaces/intsort/i22buce.F
       !||    i22chk                           ../engine/source/interfaces/int22/i22ident.F
       !||    i22intersect                     ../engine/source/interfaces/int22/i22intersect.F
