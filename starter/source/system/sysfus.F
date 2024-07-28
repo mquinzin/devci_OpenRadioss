@@ -1228,17 +1228,18 @@ C-----------------------
       RETURN
       END
       !||====================================================================
-      !||    udouble_igr        ../starter/source/system/sysfus.F
+      !||    udouble_igr            ../starter/source/system/sysfus.F
       !||--- called by ------------------------------------------------------
-      !||    hm_lecgrn          ../starter/source/groups/hm_lecgrn.F
-      !||    hm_read_box        ../starter/source/model/box/hm_read_box.F
-      !||    hm_read_grpart     ../starter/source/groups/hm_read_grpart.F
-      !||    hm_read_inicrack   ../starter/source/initial_conditions/inicrack/hm_read_inicrack.F
-      !||    hm_read_lines      ../starter/source/groups/hm_read_lines.F
-      !||    hm_read_subset     ../starter/source/model/assembling/hm_read_subset.F
-      !||    hm_read_surf       ../starter/source/groups/hm_read_surf.F
+      !||    groups_get_elem_list   ../starter/source/groups/hm_lecgre.F
+      !||    hm_lecgrn              ../starter/source/groups/hm_lecgrn.F
+      !||    hm_read_box            ../starter/source/model/box/hm_read_box.F
+      !||    hm_read_grpart         ../starter/source/groups/hm_read_grpart.F
+      !||    hm_read_inicrack       ../starter/source/initial_conditions/inicrack/hm_read_inicrack.F
+      !||    hm_read_lines          ../starter/source/groups/hm_read_lines.F
+      !||    hm_read_subset         ../starter/source/model/assembling/hm_read_subset.F
+      !||    hm_read_surf           ../starter/source/groups/hm_read_surf.F
       !||--- calls      -----------------------------------------------------
-      !||    udoubl2_igr        ../starter/source/system/sysfus.F
+      !||    udoubl2_igr            ../starter/source/system/sysfus.F
       !||====================================================================
       SUBROUTINE UDOUBLE_IGR(LIST,NLIST,MESS,IR,RLIST)
 C      TEST LES N0 DOUBLES

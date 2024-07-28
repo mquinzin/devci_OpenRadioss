@@ -27,6 +27,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    contrbe3                          ../starter/source/constraints/general/rbe3/contrbe3.F
       !||    contrl                            ../starter/source/starter/contrl.F
       !||    create_map_tables                 ../starter/source/model/sets/map_tables.F
+      !||    groups_get_elem_list              ../starter/source/groups/hm_lecgre.F
       !||    hm_convert_2d_elements_seatbelt   ../starter/source/devtools/hm_reader/hm_convert_2d_elements_seatbelt.F
       !||    hm_convert_fail_tab               ../starter/source/devtools/hm_reader/hm_convert_fail_tab.F
       !||    hm_convert_inter_type19           ../starter/source/devtools/hm_reader/hm_convert_inter_type19.F

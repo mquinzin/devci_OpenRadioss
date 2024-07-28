@@ -89,18 +89,27 @@ C-----------------------------------------------
 C-----------------------------------------------
       INTERFACE
       !||====================================================================
-      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list     ../starter/source/groups/hm_lecgre.F
       !||--- called by ------------------------------------------------------
-      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list     ../starter/source/groups/hm_lecgre.F
       !||--- calls      -----------------------------------------------------
       !||    ancmsg                   ../starter/source/output/message/message.F
-      !||    groups_get_elem_list     ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list     ../starter/source/groups/hm_lecgre.F
+      !||    groups_get_nentity       ../starter/source/groups/groups_get_nentity.F
+      !||    hm_admlcnt               ../starter/source/groups/hm_admlistcnt.F
+      !||    hm_admlist               ../starter/source/groups/hm_admlist.F
+      !||    hm_bigbox2               ../starter/source/model/box/hm_bigbox2.F
       !||    hm_get_int_array_index   ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
       !||    hm_get_intv              ../starter/source/devtools/hm_reader/hm_get_intv.F
+      !||    hm_option_read_key       ../starter/source/devtools/hm_reader/hm_option_read_key.F
+      !||    hm_option_start          ../starter/source/devtools/hm_reader/hm_option_start.F
+      !||    hm_submodgre             ../starter/source/groups/hm_submodgr.F
+      !||    hm_tagpart               ../starter/source/groups/hm_tagpart.F
       !||    id                       ../starter/source/airbag/hm_read_monvol_type2.F
       !||    nintlst                  ../starter/source/system/nintrr.F
       !||    nintlstn                 ../starter/source/system/nintrr.F
       !||    set_usrtos               ../starter/source/model/sets/ipartm1.F
+      !||    udouble_igr              ../starter/source/system/sysfus.F
       !||--- uses       -----------------------------------------------------
       !||    submodel_mod             ../starter/share/modules1/submodel_mod.F
       !||====================================================================

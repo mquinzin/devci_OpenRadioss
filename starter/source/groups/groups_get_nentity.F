@@ -22,13 +22,15 @@ Copyright>        software under a commercial license.  Contact Altair to discus
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
 
       !||====================================================================
-      !||    groups_get_nentity   ../starter/source/groups/groups_get_nentity.F
+      !||    groups_get_nentity     ../starter/source/groups/groups_get_nentity.F
+      !||--- called by ------------------------------------------------------
+      !||    groups_get_elem_list   ../starter/source/groups/hm_lecgre.F
       !||--- calls      -----------------------------------------------------
-      !||    hm_get_intv          ../starter/source/devtools/hm_reader/hm_get_intv.F
+      !||    hm_get_intv            ../starter/source/devtools/hm_reader/hm_get_intv.F
       !||--- uses       -----------------------------------------------------
-      !||    hm_option_read_mod   ../starter/share/modules1/hm_option_read_mod.F
-      !||    message_mod          ../starter/share/message_module/message_mod.F
-      !||    submodel_mod         ../starter/share/modules1/submodel_mod.F
+      !||    hm_option_read_mod     ../starter/share/modules1/hm_option_read_mod.F
+      !||    message_mod            ../starter/share/message_module/message_mod.F
+      !||    submodel_mod           ../starter/share/modules1/submodel_mod.F
       !||====================================================================
       SUBROUTINE GROUPS_GET_NENTITY(NENTITY,LSUBMODEL)
       USE MESSAGE_MOD

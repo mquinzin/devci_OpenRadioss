@@ -44,7 +44,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    create_subm_list_g              ../starter/source/model/sets/create_subm_clause.F
       !||    create_subs_list                ../starter/source/model/sets/create_subs_clause.F
       !||    create_subs_list_g              ../starter/source/model/sets/create_subs_clause.F
-      !||    groups_get_elem_list            ../starter/source/groups/hm_tagpart2.F
+      !||    groups_get_elem_list            ../starter/source/groups/hm_lecgre.F
       !||    hm_admlist                      ../starter/source/groups/hm_admlist.F
       !||    hm_bigsbox                      ../starter/source/groups/hm_bigsbox.F
       !||    hm_elngr                        ../starter/source/groups/hm_elngr.F

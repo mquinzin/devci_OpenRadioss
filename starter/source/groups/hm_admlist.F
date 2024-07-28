@@ -22,6 +22,8 @@ Copyright>        software under a commercial license.  Contact Altair to discus
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
       !||    hm_admlist               ../starter/source/groups/hm_admlist.F
+      !||--- called by ------------------------------------------------------
+      !||    groups_get_elem_list     ../starter/source/groups/hm_lecgre.F
       !||--- calls      -----------------------------------------------------
       !||    ancmsg                   ../starter/source/output/message/message.F
       !||    hm_get_int_array_index   ../starter/source/devtools/hm_reader/hm_get_int_array_index.F
