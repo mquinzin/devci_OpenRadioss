@@ -20,17 +20,19 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  I22SUBVOL                     source/interfaces/int22/i22subvol.F
-Chd|-- called by -----------
-Chd|        INTTRI                        source/interfaces/intsort/inttri.F
-Chd|-- calls ---------------
-Chd|        MY_BARRIER                    source/system/machine.F       
-Chd|        ELBUFDEF_MOD                  ../common_source/modules/mat_elem/elbufdef_mod.F
-Chd|        GROUPDEF_MOD                  ../common_source/modules/groupdef_mod.F
-Chd|        I22BUFBRIC_MOD                ../common_source/modules/interfaces/cut-cell-search_mod.F
-Chd|        I22TRI_MOD                    ../common_source/modules/interfaces/cut-cell-search_mod.F
-Chd|====================================================================
+      !||====================================================================
+      !||    i22subvol        ../engine/source/interfaces/int22/i22subvol.F
+      !||--- called by ------------------------------------------------------
+      !||    inttri           ../engine/source/interfaces/intsort/inttri.F
+      !||--- calls      -----------------------------------------------------
+      !||    my_barrier       ../engine/source/system/machine.F
+      !||--- uses       -----------------------------------------------------
+      !||    elbufdef_mod     ../common_source/modules/mat_elem/elbufdef_mod.F
+      !||    groupdef_mod     ../common_source/modules/groupdef_mod.F
+      !||    i22bufbric_mod   ../common_source/modules/interfaces/cut-cell-search_mod.F
+      !||    i22edge_mod      ../common_source/modules/interfaces/cut-cell-buffer_mod.F
+      !||    i22tri_mod       ../common_source/modules/interfaces/cut-cell-search_mod.F
+      !||====================================================================
       SUBROUTINE I22SUBVOL(X    ,NIN     ,ITASK  ,IPARI  ,ITAB     , 
      .                     IXS  ,IXTG    ,V      ,IPARG  ,ELBUF_TAB,
      .                     W    ,IGRSH3N )
@@ -2366,6 +2368,13 @@ c              print *, "idsh3n=", IXTG(NIXTG,IBUFSSG(J))  !IDSPRI=
       END
 
 
+      !||====================================================================
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
+      !||--- called by ------------------------------------------------------
+      !||--- calls      -----------------------------------------------------
+      !||    get_unique_main_cell   ../engine/source/interfaces/int22/get_unique_master_cell.F
+      !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
+      !||====================================================================
       FUNCTION I22AERA(NPTS, P, C)
 C=======================================================================     
 C-----------------------------------------------

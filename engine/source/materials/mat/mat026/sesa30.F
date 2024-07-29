@@ -20,11 +20,9 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  SESA30                        source/materials/mat/mat026/sesa30.F
-Chd|-- called by -----------
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    sesa30   ../engine/source/materials/mat/mat026/sesa30.F
+      !||====================================================================
       SUBROUTINE SESA30(SIG  ,EINT ,QOLD ,VOL ,QNEW,
      2                  VNEW ,DV2  ,NEL, P01  )
 C-----------------------------------------------

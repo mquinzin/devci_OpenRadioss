@@ -20,16 +20,22 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  REALLOC_MOD                   share/modules1/realloc_mod.F  
-Chd|-- called by -----------
-Chd|        I11TRIVOX1                    source/interfaces/inter3d1/i11trivox1.F
-Chd|        I25TRIVOX_EDG                 source/interfaces/inter3d1/i25trivox_edg.F
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    realloc_mod     ../starter/share/modules1/realloc_mod.F
+      !||--- called by ------------------------------------------------------
+      !||    i11trivox1      ../starter/source/interfaces/inter3d1/i11trivox1.F
+      !||    i25trivox_edg   ../starter/source/interfaces/inter3d1/i25trivox_edg.F
+      !||====================================================================
       MODULE REALLOC_MOD
       CONTAINS
 
+      !||====================================================================
+      !||    ireallocate     ../starter/share/modules1/realloc_mod.F
+      !||--- called by ------------------------------------------------------
+      !||    i11trivox1      ../starter/source/interfaces/inter3d1/i11trivox1.F
+      !||    i25trivox_edg   ../starter/source/interfaces/inter3d1/i25trivox_edg.F
+      !||--- calls      -----------------------------------------------------
+      !||====================================================================
         FUNCTION IREALLOCATE(ptr, new_size)
 !reallocate INTEGER ARRAY
 C-----------------------------------------------
@@ -57,6 +63,11 @@ C-----------------------------------------------
         END FUNCTION IREALLOCATE
 C-----------------------------------------------
 
+      !||====================================================================
+      !||    jreallocate   ../starter/share/modules1/realloc_mod.F
+      !||--- called by ------------------------------------------------------
+      !||--- calls      -----------------------------------------------------
+      !||====================================================================
         FUNCTION JREALLOCATE(ptr, new_size)
 !reallocate MY_REAL ARRAY
 C-----------------------------------------------

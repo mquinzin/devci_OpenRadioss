@@ -20,11 +20,9 @@ Copyright>
 Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-Chd|====================================================================
-Chd|  M17LAW                        source/materials/mat/mat017/m17law.F
-Chd|-- called by -----------
-Chd|-- calls ---------------
-Chd|====================================================================
+      !||====================================================================
+      !||    m17law   ../engine/source/materials/mat/mat017/m17law.F
+      !||====================================================================
       SUBROUTINE M17LAW(
      1   PM,      OFF,     SIG,     EINT,
      2   RHO,     RK,      RE,      VORTI,
