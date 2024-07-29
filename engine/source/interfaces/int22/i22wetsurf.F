@@ -161,17 +161,14 @@ C      INTEGER :: TAG_EL(NBCUT_MAX)
      
       INTERFACE   
       !||====================================================================
-      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
       !||--- called by ------------------------------------------------------
-      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
       !||--- calls      -----------------------------------------------------
       !||    f                      ../engine/source/boundary_conditions/ebcs/ebcs_extrapol.F
       !||    get_unique_main_cell   ../engine/source/interfaces/int22/get_unique_master_cell.F
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
-      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
-      !||    i22ass0                ../engine/source/interfaces/int22/i22assembly.F
-      !||    i22ass2                ../engine/source/interfaces/int22/i22assembly.F
-      !||    i7ass3                 ../engine/source/interfaces/int07/i7ass3.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
       !||====================================================================
         FUNCTION I22AERA(NPTS,P, C)
           INTEGER :: NPTS
@@ -1382,7 +1379,7 @@ C===============================================================================
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
       !||--- called by ------------------------------------------------------
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F
-      !||    i22aera                ../engine/source/interfaces/int22/i22for3.F
+      !||    i22aera                ../engine/source/interfaces/int22/i22subvol.F
       !||    intersectp             ../engine/source/interfaces/int22/i22wetsurf.F
       !||--- calls      -----------------------------------------------------
       !||    getprojectedfacetype   ../engine/source/interfaces/int22/i22wetsurf.F

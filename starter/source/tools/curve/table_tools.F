@@ -148,8 +148,6 @@ c-----------
       END SUBROUTINE TABLE_WRESTR
       !||====================================================================
       !||    table_interp   ../starter/source/tools/curve/table_tools.F
-      !||--- called by ------------------------------------------------------
-      !||    get_u_table    ../starter/source/user_interface/utable.F
       !||--- calls      -----------------------------------------------------
       !||    arret          ../starter/source/system/arret.F
       !||--- uses       -----------------------------------------------------
@@ -313,8 +311,6 @@ C-----
       END SUBROUTINE TABLE_INTERP
       !||====================================================================
       !||    table_vinterp   ../starter/source/tools/curve/table_tools.F
-      !||--- called by ------------------------------------------------------
-      !||    get_u_vtable    ../starter/source/user_interface/utable.F
       !||--- calls      -----------------------------------------------------
       !||    arret           ../starter/source/system/arret.F
       !||--- uses       -----------------------------------------------------

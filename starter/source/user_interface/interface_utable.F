@@ -29,26 +29,18 @@ C-----------------------------------------------
       INTERFACE
 C
       !||====================================================================
-      !||    get_u_numtable   ../starter/source/user_interface/utable.F
+      !||    get_u_numtable   ../starter/source/user_interface/interface_utable.F
       !||--- called by ------------------------------------------------------
-      !||    get_u_numtable   ../starter/source/user_interface/utable.F
+      !||    get_u_numtable   ../starter/source/user_interface/interface_utable.F
       !||--- calls      -----------------------------------------------------
-      !||    get_u_numtable   ../starter/source/user_interface/utable.F
-      !||--- uses       -----------------------------------------------------
-      !||    table_glob_mod   ../starter/share/modules1/table_glob_mod.F
-      !||    table_mod        ../starter/share/modules1/table_mod.F
+      !||    get_u_numtable   ../starter/source/user_interface/interface_utable.F
       !||====================================================================
         INTEGER FUNCTION GET_U_NUMTABLE(I)
         INTEGER I
         END FUNCTION GET_U_NUMTABLE
 C
       !||====================================================================
-      !||    get_u_table           ../starter/source/user_interface/utable.F
-      !||--- calls      -----------------------------------------------------
-      !||    table_interp          ../starter/source/tools/curve/table_tools.F
-      !||--- uses       -----------------------------------------------------
-      !||    interface_table_mod   ../starter/share/modules1/table_mod.F
-      !||    table_glob_mod        ../starter/share/modules1/table_glob_mod.F
+      !||    get_u_table   ../starter/source/user_interface/interface_utable.F
       !||====================================================================
         SUBROUTINE GET_U_TABLE(I,XX,YY)
         INTEGER I
@@ -59,12 +51,7 @@ C
         END SUBROUTINE GET_U_TABLE
 C
       !||====================================================================
-      !||    get_u_vtable          ../starter/source/user_interface/utable.F
-      !||--- calls      -----------------------------------------------------
-      !||    table_vinterp         ../starter/source/tools/curve/table_tools.F
-      !||--- uses       -----------------------------------------------------
-      !||    interface_table_mod   ../starter/share/modules1/table_mod.F
-      !||    table_glob_mod        ../starter/share/modules1/table_glob_mod.F
+      !||    get_u_vtable   ../starter/source/user_interface/interface_utable.F
       !||====================================================================
         SUBROUTINE GET_U_VTABLE(I,NEL,IPOS,XX,YY,DYDX)
         INTEGER I,NEL

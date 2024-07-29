@@ -34,7 +34,6 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    func_inters_shear         ../starter/source/tools/curve/func_inters.F
       !||    func_maxy                 ../starter/source/tools/curve/func_maxy.F
       !||    func_slope                ../starter/source/tools/curve/func_slope.F
-      !||    get_u_numtable            ../starter/source/user_interface/utable.F
       !||    hm_read_fail              ../starter/source/materials/fail/hm_read_fail.F
       !||    hm_read_fail_tab1         ../starter/source/materials/fail/tabulated/hm_read_fail_tab1.F
       !||    hm_read_funct             ../starter/source/tools/curve/hm_read_funct.F
@@ -122,8 +121,6 @@ C-----------------------------------------------
       !||====================================================================
       !||    interface_table_mod   ../starter/share/modules1/table_mod.F
       !||--- called by ------------------------------------------------------
-      !||    get_u_table           ../starter/source/user_interface/utable.F
-      !||    get_u_vtable          ../starter/source/user_interface/utable.F
       !||    hm_read_table2        ../starter/source/tools/curve/hm_read_table.F
       !||    hm_read_table2_0      ../starter/source/tools/curve/hm_read_table2_0.F
       !||    hm_read_table2_1      ../starter/source/tools/curve/hm_read_table2_1.F
@@ -135,8 +132,6 @@ C-----------------------------------------------
 C
       !||====================================================================
       !||    table_interp   ../starter/source/tools/curve/table_tools.F
-      !||--- called by ------------------------------------------------------
-      !||    get_u_table    ../starter/source/user_interface/utable.F
       !||--- calls      -----------------------------------------------------
       !||    arret          ../starter/source/system/arret.F
       !||--- uses       -----------------------------------------------------
@@ -153,8 +148,6 @@ C
 C
       !||====================================================================
       !||    table_vinterp   ../starter/source/tools/curve/table_tools.F
-      !||--- called by ------------------------------------------------------
-      !||    get_u_vtable    ../starter/source/user_interface/utable.F
       !||--- calls      -----------------------------------------------------
       !||    arret           ../starter/source/system/arret.F
       !||--- uses       -----------------------------------------------------

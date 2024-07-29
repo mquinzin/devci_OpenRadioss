@@ -317,7 +317,6 @@ C-----------------------------------------------------
       !||--- called by ------------------------------------------------------
       !||    i18for3            ../engine/source/interfaces/int18/i18for3.F
       !||    i20for3            ../engine/source/interfaces/int20/i20for3.F
-      !||    i22aera            ../engine/source/interfaces/int22/i22for3.F
       !||    i23for3            ../engine/source/interfaces/int23/i23for3.F
       !||    i7ass33            ../engine/source/interfaces/int07/i7ass3.F
       !||--- calls      -----------------------------------------------------

@@ -23,9 +23,6 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||====================================================================
       !||    table_glob_mod   ../starter/share/modules1/table_glob_mod.F
       !||--- called by ------------------------------------------------------
-      !||    get_u_numtable   ../starter/source/user_interface/utable.F
-      !||    get_u_table      ../starter/source/user_interface/utable.F
-      !||    get_u_vtable     ../starter/source/user_interface/utable.F
       !||    iniguser         ../starter/source/system/iniguser.F
       !||    lectur           ../starter/source/starter/lectur.F
       !||--- uses       -----------------------------------------------------
