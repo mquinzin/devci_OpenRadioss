@@ -672,12 +672,21 @@ jobs:
           path: "${{ env.WORKDIR }}/exec_tmp"
 
 
+      - uses: octokit/request-action@v2.x
+        id: get_commit_author
+        env:
+          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+          REQUEST_BODY: "['7a3521ea854e4031c54ec8de304b928c09d601c8']"
+        with:
+          route: GET /repos/${{ github.repository }}/commits/7a3521ea854e4031c54ec8de304b928c09d601c8
+
       - name: Check pwd
         working-directory: ${{ env.WORKDIR }}
         run: |
           pwd
           ls
           ls -l exec_tmp/
+          echo "ATuhor :  @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}"
 
 
       # - name: Check files in exec
