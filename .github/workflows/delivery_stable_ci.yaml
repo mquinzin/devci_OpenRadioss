@@ -601,17 +601,29 @@ jobs:
       #     echo "DATEOFTHETAG=${LAST_STABLE_TAG_NAME#latest-}" >> $GITHUB_ENV
       #     rm -rf exec todeliver exec_tmp
 
+      # Set the working dir suffixed with deliv_stable
+      - name: Set workdir 
+        run: |
+          echo "WORKDIR=deliv_stable" >> $GITHUB_ENV
+
+      - name: Create branch oriented WS directory & integration WS
+        run: |
+          mkdir -p ${{ env.WORKDIR }}
+
       # Get last git modifications, don't clean before (way to go faster)
       - name: Checkout git sources
         uses: actions/checkout@v4
         with:
+          path: ${{ env.WORKDIR }}
           clean: 'false'
           lfs: 'true'
       #     ref: ${{ env.LAST_STABLE_TAG_NAME }}
 
       - name: Check pwd
+        working-directory: ${{ env.WORKDIR }}
         run: |
           pwd
+          echo "aaa" > toto
           ls /github_download_counter
 
       # # Get OpenRadioss extras from dedicated repository
