@@ -626,15 +626,15 @@ jobs:
           echo "aaa" > toto
           ls /github_download_counter
 
-      # # Get OpenRadioss extras from dedicated repository
-      # - name: Checkout git EXTRA sources
-      #   uses: actions/checkout@v4
-      #   with:
-      #     lfs: 'true'
-      #     clean: 'false'
-      #     repository: '${{ secrets.EXTRA_REPOSITORY }}'
-      #     path: 'EXTRA'
-      #     token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
+      # Get OpenRadioss extras from dedicated repository
+      - name: Checkout git EXTRA sources
+        uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+          clean: 'false'
+          repository: '${{ secrets.EXTRA_REPOSITORY }}'
+          path: "${{ env.WORKDIR }}/EXTRA"
+          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
       # # Download ALL artifacts
       # - name: Download ALL artifacts for packaging
