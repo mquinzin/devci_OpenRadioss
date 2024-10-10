@@ -710,7 +710,7 @@ jobs:
             Commit message:
             XXXXX
           files: |
-            "${{ env.WORKDIR }}/todeliver/*"
+            ${{ env.WORKDIR }}/todeliver/*
           clear_attachments: true    
           skip_tag_creation: true 
           target_commit: latest-20240827
