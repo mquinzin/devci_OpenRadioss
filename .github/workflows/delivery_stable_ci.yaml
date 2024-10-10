@@ -687,6 +687,34 @@ jobs:
           ls
           ls -l exec_tmp/
           echo "ATuhor :  @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}"
+          mkdir -p todeliver
+          echo "file1" > todeliver/file1
+          echo "file2" > todeliver/file2
+          echo "DATEOFTHETAG=20240827" >> $GITHUB_ENV
+          echo "LAST_STABLE_COMMIT=$(git rev-list -n 1 latest-2024082)" >> $GITHUB_ENV
+
+      # The action creates the release with an already existing tag (latest-xxxxx) so we use option skip_tag_creation: true
+      # We do this because we have already checkouted the wanted commit before
+      # Prerequisite: create the tag with command : git tag latest-YYYMMDD <commit id>; git push origin latest-YYYMMDD
+      - name: Release the new binaries
+        uses: docker://ghcr.io/mini-bomba/create-github-release:v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release: "latest-20240827"
+          tag: "latest-20240827"
+          name: "Last stable build on ${{ env.DATEOFTHETAG }}"            
+          body: |
+            This automatic release is built from commit XXXXX and authored by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
+            [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            Commit message:
+            XXXXX
+          files: |
+            todeliver/*
+          clear_attachments: true    
+          skip_tag_creation: true 
+          target_commit: latest-20240827
+
 
 
       # - name: Check files in exec
