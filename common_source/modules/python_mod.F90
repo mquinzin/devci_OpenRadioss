@@ -1,0 +1,647 @@
+!Copyright>        OpenRadioss
+!Copyright>        Copyright (C) 1986-2024 Altair Engineering Inc.
+!Copyright>
+!Copyright>        This program is free software: you can redistribute it and/or modify
+!Copyright>        it under the terms of the GNU Affero General Public License as published by
+!Copyright>        the Free Software Foundation, either version 3 of the License, or
+!Copyright>        (at your option) any later version.
+!Copyright>
+!Copyright>        This program is distributed in the hope that it will be useful,
+!Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
+!Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!Copyright>        GNU Affero General Public License for more details.
+!Copyright>
+!Copyright>        You should have received a copy of the GNU Affero General Public License
+!Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+!Copyright>
+!Copyright>
+!Copyright>        Commercial Alternative: Altair Radioss Software
+!Copyright>
+!Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+!Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+!Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
+      !||====================================================================
+      !||    python_funct_mod               ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    alefvm_grav_init               ../engine/source/ale/alefvm/alefvm_grav_init.F
+      !||    alemain                        ../engine/source/ale/alemain.F
+      !||    alewdx                         ../engine/source/ale/grid/alewdx.F
+      !||    cfield_1                       ../engine/source/loads/general/load_centri/cfield.F
+      !||    convec                         ../engine/source/constraints/thermic/convec.F
+      !||    daasolv                        ../engine/source/fluid/daasolv.F
+      !||    daasolvp                       ../engine/source/fluid/daasolvp.F
+      !||    ddsplit                        ../starter/source/restart/ddsplit/ddsplit.F
+      !||    execargcheck                   ../engine/source/engine/execargcheck.F
+      !||    fixflux                        ../engine/source/constraints/thermic/fixflux.F
+      !||    fixvel                         ../engine/source/constraints/general/impvel/fixvel.F
+      !||    flow0                          ../engine/source/fluid/flow0.F
+      !||    force                          ../engine/source/loads/general/force.F90
+      !||    forcefingeo                    ../engine/source/loads/general/forcefingeo.F
+      !||    forcepinch                     ../engine/source/loads/general/forcepinch.F
+      !||    funct_python_update_elements   ../engine/source/tools/curve/funct_python_update_elements.F90
+      !||    gravit                         ../engine/source/loads/general/grav/gravit.F
+      !||    gravit_fvm_fem                 ../engine/source/loads/general/grav/gravit_fvm_fem.F
+      !||    hm_read_funct_python           ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||    incpflow                       ../engine/source/fluid/incpflow.F
+      !||    lag_fxv                        ../engine/source/tools/lagmul/lag_fxv.F
+      !||    lag_fxvp                       ../engine/source/tools/lagmul/lag_fxv.F
+      !||    lag_mult                       ../engine/source/tools/lagmul/lag_mult.F
+      !||    lag_multp                      ../engine/source/tools/lagmul/lag_mult.F
+      !||    lectur                         ../engine/source/input/lectur.F
+      !||    load_pressure                  ../engine/source/loads/general/load_pressure/load_pressure.F
+      !||    pfluid                         ../engine/source/loads/general/pfluid/pfluid.F
+      !||    python_duplicate_nodes         ../starter/source/spmd/domain_decomposition/python_duplicate_nodes.F90
+      !||    python_register                ../engine/source/tools/curve/python_register.F90
+      !||    radiation                      ../engine/source/constraints/thermic/radiation.F
+      !||    radioss2                       ../engine/source/engine/radioss2.F
+      !||    rdresb                         ../engine/source/output/restart/rdresb.F
+      !||    resol                          ../engine/source/engine/resol.F
+      !||    resol_head                     ../engine/source/engine/resol_head.F
+      !||    rgwal1                         ../engine/source/ale/grid/rgwal1.F
+      !||    timfun                         ../engine/source/tools/curve/timfun.F
+      !||    wrrestp                        ../engine/source/output/restart/wrrestp.F
+      !||--- uses       -----------------------------------------------------
+      !||    python_element_mod             ../common_source/modules/python_element_mod.F90
+      !||====================================================================
+      module python_funct_mod
+        use iso_c_binding
+        use python_element_mod
+        integer, parameter :: max_line_length = 500 !< the maximum length of a line of code of python function
+        integer, parameter :: max_num_lines = 1000 !< the maximum number of lines of python function
+        integer, parameter :: max_code_length = max_line_length*max_num_lines
+        integer, parameter :: max_variable_length = 100
+! global variable
+        integer :: python_error !< true if the starter command line had the option "-python"
+! use iso_c_binding to bind python_init to cpp_python_init and python_finalize to cpp_python_finalize
+        interface
+          subroutine python_initialize(ok) bind(c, name="cpp_python_initialize")
+            use iso_c_binding
+            integer(kind=c_int), intent(inout) :: ok  !< error code
+          end subroutine python_initialize
+          subroutine python_finalize() bind(c, name="cpp_python_finalize")
+          end subroutine python_finalize
+          ! add a function to the python dictionary
+          subroutine python_register_function(name, code, num_lines) bind(c, name="cpp_python_register_function")
+            use iso_c_binding
+            character(kind=c_char), dimension(*) :: name !< intent out: extracted from the code
+            integer(kind=c_int), value :: num_lines
+            character(kind=c_char), dimension(500,*) :: code
+          end subroutine python_register_function
+          ! call a function from the python dictionary
+          subroutine python_call_function(name, num_args, args, num_return, return_values) &
+            bind(c, name="cpp_python_call_function")
+            use iso_c_binding
+            character(kind=c_char), dimension(*), intent(in) :: name !< intent in
+            integer(kind=c_int), value :: num_args
+            integer(kind=c_int), value :: num_return
+            real(kind = c_double), intent(in) :: args(num_args)
+            real(kind = c_double), intent(out) :: return_values(num_return)
+          end subroutine python_call_function
+          ! a subroutine that check if the function works, and return an nonzero error code if it does not
+          subroutine python_check_function(name, error) bind(c, name="cpp_python_check_function")
+            use iso_c_binding
+            character(kind=c_char), dimension(*) :: name
+            integer(kind=c_int), intent(out) :: error
+          end subroutine python_check_function
+
+          subroutine python_update_time(time,dt) bind(c, name="cpp_python_update_time")
+            use iso_c_binding
+#ifdef MYREAL8
+            real(kind = c_double), value, intent(in) :: time
+            real(kind = c_double), value, intent(in) :: dt
+#else
+            real(kind = c_float), value, intent(in) :: time
+            real(kind = c_float), value, intent(in) :: dt
+#endif
+          end subroutine python_update_time
+
+          !interface for    void cpp_python_update_nodal_entities(char *name, int len_name, my_real *values)
+          subroutine python_set_node_values(numnod, name_len, name, val) bind(c, name="cpp_python_update_nodal_entity")
+            use iso_c_binding
+            integer(kind=c_int), value, intent(in) :: numnod
+            integer(kind=c_int), value, intent(in) :: name_len
+            character(kind=c_char), dimension(name_len), intent(in) :: name
+#ifdef MYREAL8
+            real(kind=c_double), dimension(3,numnod), intent(in) :: val
+#else
+            real(kind=c_float), dimension(3,numnod), intent(in) :: val
+#endif
+          end subroutine python_set_node_values
+
+          subroutine python_get_number_of_nodes(number_of_nodes) bind(c, name="cpp_python_get_number_of_nodes")
+            use iso_c_binding
+            integer(kind=c_int), intent(out) :: number_of_nodes
+          end subroutine python_get_number_of_nodes
+
+          subroutine python_get_nodes(nodes_global_ids) &
+            bind(c, name="cpp_python_get_nodes")
+            use iso_c_binding
+            integer(kind=c_int), intent(inout) :: nodes_global_ids(*)
+          end subroutine python_get_nodes
+
+
+
+          !interface for    void cpp_create_node_mapping(int * itab, int *num_nodes)
+          subroutine python_create_node_mapping(itab, num_nodes) &
+            bind(c, name="cpp_python_create_node_mapping")
+            use iso_c_binding
+            integer(kind=c_int), intent(in) :: num_nodes
+            integer(kind=c_int), intent(in) :: itab(*)
+          end subroutine python_create_node_mapping
+        end interface
+        interface python_call_funct1D
+          module procedure python_call_funct1D_sp
+          module procedure python_call_funct1D_dp
+        end interface python_call_funct1D
+
+        interface python_deriv_funct1D
+          module procedure python_deriv_funct1D_sp
+          module procedure python_deriv_funct1D_dp
+        end interface python_deriv_funct1D
+! ----------------------------------------------------------------------------------------------------------------------
+!                                               Type definitions
+! ----------------------------------------------------------------------------------------------------------------------
+!! \brief the python function structure: it contains the python code in plain text
+        type :: python_function
+          character(kind=c_char), dimension(:), allocatable :: name !< the name of the python function
+          character(kind=c_char), dimension(:), allocatable :: code !< the code of the python function
+          integer :: len_name !< the length of the name
+          integer :: len_code !< the length of the code
+          integer :: num_lines !< the number of lines of the code
+          integer :: num_args !< the number of arguments of the function (1 for 1D function)
+          integer :: num_return !< the number of return values of the function (1 for 1D function)
+          integer :: user_id !< the user id of the function
+        end type python_function
+! ----------------------------------------------------------------------------------------------------------------------
+!! \brief the python structure: it contains the python functions
+        type python_
+          type(python_function), dimension(:), allocatable :: functs !< the python functions
+          integer :: funct_offset !< the local id of the python function starts after the id of other kind of functions
+          integer :: nb_functs !< the number of python functions
+          type(python_element) :: elements !< element quantities requested from Python code
+        end type python_
+! ----------------------------------------------------------------------------------------------------------------------
+
+      contains
+
+!! \brief serialize python_function into a buffer (for I/O)
+      !||====================================================================
+      !||    python_serialize    ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    ddsplit             ../starter/source/restart/ddsplit/ddsplit.F
+      !||    python_funct_test   ../common_source/modules/python_mod.F90
+      !||    wrrestp             ../engine/source/output/restart/wrrestp.F
+      !||====================================================================
+        subroutine python_serialize(python, buffer,buffer_size)
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Module
+! ----------------------------------------------------------------------------------------------------------------------
+!         use python_element_mod, only : element_serialize, element_get_size
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_),                             intent(in) :: python!< the Fortran structure that holds the python functions
+          integer, dimension(:),  allocatable,    intent(inout) :: buffer !< the buffer to serialize the python functions
+          integer,                                intent(inout) :: buffer_size !< the size of the buffer
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          integer :: i,pos,len_name,len_code, ierr,elsize
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          buffer_size = 3 ! funct_offset, nb_functs
+! compute the size of the buffer
+          do i = 1, python%nb_functs
+            buffer_size = buffer_size + 6! 5 integers: len_name, len_code, num_lines, num_args, num_return
+            buffer_size = buffer_size + python%functs(i)%len_name + python%functs(i)%len_code
+          enddo
+          elsize = 0
+          !elsize = element_get_size(python%elements%global)
+          buffer_size = buffer_size + elsize
+! allocate the buffer
+
+          if(allocated(buffer)) deallocate(buffer)
+          allocate(buffer(buffer_size), stat = ierr)
+          if(ierr /= 0) then
+            write(6,*) "ERROR: python_serialize: allocation of buffer failed"
+          else
+            buffer(1) = buffer_size
+            buffer(2) = python%funct_offset
+            buffer(3) = python%nb_functs
+            pos = 4
+            do i = 1,python%nb_functs
+              buffer(pos)   = python%functs(i)%len_name
+              buffer(pos+1) = python%functs(i)%len_code
+              buffer(pos+2) = python%functs(i)%num_lines
+              buffer(pos+3) = python%functs(i)%num_args
+              buffer(pos+4) = python%functs(i)%num_return
+              buffer(pos+5) = python%functs(i)%user_id
+              pos = pos + 6
+! transfer the name to the buffer, using the transfer function
+              len_name=python%functs(i)%len_name
+              len_code = python%functs(i)%len_code
+              buffer(pos:pos+len_name-1) = transfer(python%functs(i)%name, buffer(pos:pos+len_name-1))
+              pos = pos + python%functs(i)%len_name
+              buffer(pos:pos+len_code-1) = transfer(python%functs(i)%code, buffer(pos:pos+len_code-1))
+              pos = pos + python%functs(i)%len_code
+            enddo
+          endif
+!         call element_serialize(python%elements%global,buffer(pos:pos+elsize-1),elsize)
+
+
+        end subroutine python_serialize
+
+!! \brief deserialize python_function (for I/O)
+      !||====================================================================
+      !||    python_deserialize   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_funct_test    ../common_source/modules/python_mod.F90
+      !||    rdresb               ../engine/source/output/restart/rdresb.F
+      !||====================================================================
+        subroutine python_deserialize(python, buffer)
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Module
+! ----------------------------------------------------------------------------------------------------------------------
+!         use python_element_mod, only : element_deserialize
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_),                          intent(inout) :: python!< the Fortran structure that holds the python functions
+          integer, dimension(:),  allocatable,    intent(inout) :: buffer !< the buffer to serialize the python functions
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          integer :: i,pos,ierr
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          python_error = 0
+          python%funct_offset = buffer(2)
+          python%nb_functs = buffer(3)
+          allocate(python%functs(python%nb_functs),stat = ierr)
+          if(ierr == 0 ) then
+            pos = 4
+            do i = 1,python%nb_functs
+              python%functs(i)%len_name=buffer(pos)
+              python%functs(i)%len_code = buffer(pos+1)
+              python%functs(i)%num_lines = buffer(pos+2)
+              python%functs(i)%num_args = buffer(pos+3)
+              python%functs(i)%num_return = buffer(pos+4)
+              python%functs(i)%user_id = buffer(pos+5)
+              pos = pos + 6
+              allocate(python%functs(i)%name(python%functs(i)%len_name),stat = ierr)
+              if(ierr == 0) then
+                python%functs(i)%name=transfer(buffer(pos:pos+python%functs(i)%len_name-1), python%functs(i)%name)
+                pos = pos + python%functs(i)%len_name
+              endif
+              allocate(python%functs(i)%code(python%functs(i)%len_code),stat = ierr)
+              if(ierr == 0) then
+                python%functs(i)%code = transfer(buffer(pos:pos+python%functs(i)%len_code-1), python%functs(i)%code)
+                pos = pos + python%functs(i)%len_code
+              endif
+            enddo
+!           call element_deserialize(python%elements%global,buffer(pos:))
+          endif
+
+        end subroutine python_deserialize
+
+
+
+!! \brief Initialize the python function
+!! \details allocate funct%name and funct%code, and copy the name and code from the input file
+      !||====================================================================
+      !||    python_funct_init          ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    hm_read_funct_python       ../starter/source/tools/curve/hm_read_funct_python.F90
+      !||    python_funct_test          ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||====================================================================
+        subroutine python_funct_init(funct, code, len_code, num_lines)
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_function),                     intent(out) :: funct !< the Fortran structure that holds the python function
+          integer,                                    intent(in) :: len_code !< the length of the code
+          integer,                                    intent(in) :: num_lines !< the number of lines of the code
+          character(kind=c_char,len=len_code),        intent(in) :: code !< the code of the python function from the input file
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          character(len=max_line_length) :: name
+          integer                        :: i
+          integer                        :: ierr
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          name=" "
+
+          call python_register_function(name, code, num_lines)
+          allocate(funct%name(len_trim(name)),stat = ierr)
+          if(ierr == 0) then
+            do i = 1, len_trim(name)
+              funct%name(i) = name(i:i)
+            end do
+          endif
+          allocate(funct%code(len_code))
+          do i = 1, len_code
+            funct%code(i) = code(i:i)
+          end do
+          funct%num_args = 1
+          funct%num_return = 1
+          funct%len_code = len_code
+          funct%len_name=len_trim(name)
+          funct%num_lines = num_lines
+        end subroutine
+
+
+!! \brief Evaluate the python function
+!! \details the python function is called with one argument and one return value  (double precision version)
+      !||====================================================================
+      !||    python_call_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||====================================================================
+        subroutine python_call_funct1D_dp(py, funct_id, x, y)
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_),                      intent(in) :: py !< the Fortran structure that holds the python function
+          integer,                            intent(in) :: funct_id !< the id of the python function
+          double precision,                   intent(in) :: x !< the input value
+          double precision,                  intent(out) :: y !< the output value
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          double precision, dimension(1) :: argin, argout
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          argin(1) = x
+!$OMP CRITICAL
+          call python_call_function(py%functs(funct_id)%name, 1, argin, 1, argout)
+!$OMP END CRITICAL
+          y = argout(1)
+        end subroutine
+
+!! \brief Evaluate the python function
+!! \details the python function is called with one argument and one return value  (single precision version)
+      !||====================================================================
+      !||    python_call_funct1d_sp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||====================================================================
+        subroutine python_call_funct1D_sp(py, funct_id, x, y)
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_),                      intent(in) :: py !< the Fortran structure that holds the python function
+          integer,                            intent(in) :: funct_id !< the id of the python function
+          real,                               intent(in) :: x !< the input value
+          real,                               intent(out) :: y !< the output value
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          double precision, dimension(1) :: argin, argout
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          argin(1) = dble(x)
+          ! the double precision function is called, then the result is converted to single
+!$OMP CRITICAL
+          call python_call_function(py%functs(funct_id)%name, 1, argin, 1, argout)
+!$OMP END CRITICAL
+          y = real(argout(1),kind(1.0))
+        end subroutine
+
+!! \brief Adaptive derivative of the python function (double precision version)
+      !||====================================================================
+      !||    python_deriv_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_deriv_funct1d_sp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||====================================================================
+        subroutine python_deriv_funct1D_dp(py, funct_id, x, y)
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_),                      intent(in) :: py !< the Fortran structure that holds the python function
+          integer,                            intent(in) :: funct_id !< the id of the python function
+          double precision,                   intent(in) :: x !< the input value
+          double precision,                  intent(out) :: y !< the derivative at x
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          double precision, dimension(1) :: argin, argout
+          double precision :: f1, f2
+          double precision :: eps, h, prev_derivative, derivative
+          integer :: i
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+
+          eps = epsilon(1.0D0)
+          h = sqrt(eps) * max(1.0D0, abs(x))
+          prev_derivative = 0.0D0
+          derivative = 0.0D0
+          i = 1
+
+          do while (i <= 10 .and. h /= 0.0D0 .and. &
+            (i == 1 .or. abs(derivative - prev_derivative) > eps * abs(derivative)))
+            argin(1) = x + h
+            call python_call_function(py%functs(funct_id)%name, 1, argin, 1, argout)
+            f1 = argout(1)
+            argin(1) = x - h
+            call python_call_function(py%functs(funct_id)%name, 1, argin, 1, argout)
+            f2 = argout(1)
+            derivative = (f1 - f2) / (2.0D0 * h)
+            prev_derivative = derivative
+            h = h / 2.0D0
+            i = i + 1
+          end do
+
+          y = derivative
+        end subroutine
+
+!! \brief adaptive derivative of the python function (single precision version)
+      !||====================================================================
+      !||    python_deriv_funct1d_sp   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_deriv_funct1d_dp   ../common_source/modules/python_mod.F90
+      !||====================================================================
+        subroutine python_deriv_funct1D_sp(py, funct_id, x, y)
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          type(python_),                      intent(in) :: py !< the Fortran structure that holds the python function
+          integer,                            intent(in) :: funct_id !< the id of the python function
+          real,                   intent(in) :: x !< the input value
+          real,                  intent(out) :: y !< the derivative at x
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          double precision :: argin, argout
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+
+          argin = dble(x)
+          call python_deriv_funct1D_dp(py, funct_id, argin, argout)
+          y = real(argout,kind(1.0))
+        end subroutine
+
+!! \brief update variables known by python functions
+      !||====================================================================
+      !||    python_update_nodal_entity     ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_update_nodal_entities   ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
+        subroutine python_update_nodal_entity(numnod, name, name_len, val)
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Module
+! ----------------------------------------------------------------------------------------------------------------------
+          use iso_c_binding
+! --------------------------------------------------------------------------------------------------------------------------
+!                                                   Implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Included files
+! ----------------------------------------------------------------------------------------------------------------------
+#include "my_real.inc"
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          integer,                                     intent(in) :: numnod !< the number of nodes
+          integer,                                     intent(in) :: name_len !< the length of the name
+          character(kind=c_char), dimension(name_len), intent(in) :: name      !< the name of the variable
+          my_real, dimension(3,numnod),                intent(in) :: val !< the values
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          character(kind=c_char), dimension(name_len+1)        :: temp_name
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          temp_name(1:name_len) = name
+          temp_name(name_len+1:name_len+1) = c_null_char
+          call python_set_node_values(numnod, name_len, temp_name, val)
+        end subroutine
+
+
+!! \brief update variables known by python functions
+      !||====================================================================
+      !||    python_update_nodal_entities   ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    resol                          ../engine/source/engine/resol.F
+      !||--- calls      -----------------------------------------------------
+      !||    python_update_nodal_entity     ../common_source/modules/python_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
+        subroutine python_update_nodal_entities(numnod,X, A, D, DR, V, VR, AR)
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Module
+! ----------------------------------------------------------------------------------------------------------------------
+          use iso_c_binding, only : c_double
+! --------------------------------------------------------------------------------------------------------------------------
+!                                                   Implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Included files
+! ----------------------------------------------------------------------------------------------------------------------
+#include "my_real.inc"
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          integer,                                 intent(in) :: numnod !< the number of nodes
+          my_real, optional,  dimension(3,numnod), intent(in) :: X !< the coordinates
+          my_real, optional,  dimension(3,numnod), intent(in) :: A !< the acceleration
+          my_real, optional,  dimension(3,numnod), intent(in) :: D !< the displacement
+          my_real, optional,  dimension(3,numnod), intent(in) :: DR !< the rotational? relative? displacement
+          my_real, optional,  dimension(3,numnod), intent(in) :: V !< the velocity
+          my_real, optional,  dimension(3,numnod), intent(in) :: VR !< the rotational? relative? velocity
+          my_real, optional,  dimension(3,numnod), intent(in) :: AR !< the acceleration
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+
+          if(present(X))  call python_update_nodal_entity(numnod,"C",1, X)
+          if(present(A))  call python_update_nodal_entity(numnod,"A",1, A)
+          if(present(D))  call python_update_nodal_entity(numnod,"D",1, D)
+          if(present(DR)) call python_update_nodal_entity(numnod,"DR",2, DR)
+          if(present(V))  call python_update_nodal_entity(numnod,"V",1, V)
+          if(present(VR)) call python_update_nodal_entity(numnod,"VR",2, VR)
+          if(present(AR)) call python_update_nodal_entity(numnod,"AR",2, AR)
+
+        end subroutine
+
+
+
+
+        ! unit test
+      !||====================================================================
+      !||    python_funct_test      ../common_source/modules/python_mod.F90
+      !||--- calls      -----------------------------------------------------
+      !||    python_deserialize     ../common_source/modules/python_mod.F90
+      !||    python_funct_init      ../common_source/modules/python_mod.F90
+      !||    python_serialize       ../common_source/modules/python_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
+        subroutine python_funct_test()
+          use iso_c_binding , only: c_null_char,c_char
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          double precision :: argin(2), argout(1)
+          character(kind=c_char,len=max_code_length) :: code
+          character(len=max_line_length) :: name
+          integer :: buffer_size,ok
+          integer, dimension(:), allocatable :: buffer
+          integer :: ierr
+          type(python_) :: py,py2
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+! Initialize python
+          ok = 0
+          call python_initialize(ok)
+! write a code of the function multiply(x,y)
+          code = " "
+          code = "def test_function(x,y):" // c_null_char // "    return x*y"// c_null_char // "    "//c_null_char
+! Register a function
+          name=" "
+          allocate(py%functs(1),stat = ierr)
+          if( ierr /= 0) stop
+          py%nb_functs = 1
+          py%funct_offset = 0
+          call python_funct_init(py%functs(1), code, len_trim(code),3)
+          call python_serialize(py, buffer, buffer_size) ! write into buffer
+          call python_deserialize(py2, buffer) ! read from buffer
+
+! Call the function
+          argin(1) = 2.0
+          argin(2) = 3.0
+          call python_call_function(py2%functs(1)%name, 2, argin, 1, argout)
+! Check the result
+          if (argout(1) /= 6.0) then
+            !                write(*,*) "Error: python_funct_test failed"
+            !top
+          end if
+! Finalize python
+          call python_finalize()
+        end subroutine python_funct_test
+
+! python_init
+      end module python_funct_mod
