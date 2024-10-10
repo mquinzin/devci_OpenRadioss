@@ -573,8 +573,32 @@ jobs:
   #         exit 1
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
-  delivery:
+  fake_build:
+
+    runs-on: dev_delivery    
+    container: 
+      image: fr-qafactorydev.europe.altair.com/common-linux64
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+
+    steps:
+
+      # Set the working dir suffixed with deliv_stable
+      - name: Set workdir 
+        run: |
+          echo "titi" > tata
+
+      # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tata
+          path: tata
+
+  delivery: 
     # needs: [build_linux,build_windows_no_container,build_tools_linux,build_tools_windows_no_container]
+    needs: fake_build
     # DEV ONLY # runs-on: dev_delivery
     runs-on: dev_delivery    
     container: 
@@ -636,11 +660,11 @@ jobs:
           path: "${{ env.WORKDIR }}/EXTRA"
           token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
-      # # Download ALL artifacts
-      # - name: Download ALL artifacts for packaging
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     path: exec_tmp
+      # Download ALL artifacts
+      - name: Download ALL artifacts for packaging
+        uses: actions/download-artifact@v4
+        with:
+          path: "${{ env.WORKDIR }}/tutu"
 
       # - name: Check files in exec
       #   run: |
