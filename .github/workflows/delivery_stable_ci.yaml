@@ -587,14 +587,26 @@ jobs:
       # Set the working dir suffixed with deliv_stable
       - name: Set workdir 
         run: |
-          echo "titi" > tata
+          echo "WORKDIR=test_artifact" >> $GITHUB_ENV
+
+      - name: Create branch oriented WS directory & integration WS
+        run: |
+          mkdir -p ${{ env.WORKDIR }}
+
+      # Create artifact
+      - name: Create artifact
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          mkdir -p exec
+          echo "titi" > exec/titi
+          echo "tutu" > exec/tutu
 
       # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
       - name: Upload built artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: tata
-          path: tata
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
+          path: ${{ env.WORKDIR }}/exec        
 
   delivery: 
     # needs: [build_linux,build_windows_no_container,build_tools_linux,build_tools_windows_no_container]
@@ -643,13 +655,6 @@ jobs:
           lfs: 'true'
       #     ref: ${{ env.LAST_STABLE_TAG_NAME }}
 
-      - name: Check pwd
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          pwd
-          echo "aaa" > toto
-          ls /github_download_counter
-
       # Get OpenRadioss extras from dedicated repository
       - name: Checkout git EXTRA sources
         uses: actions/checkout@v4
@@ -664,7 +669,16 @@ jobs:
       - name: Download ALL artifacts for packaging
         uses: actions/download-artifact@v4
         with:
-          path: "${{ env.WORKDIR }}/tutu"
+          path: "${{ env.WORKDIR }}/exec_tmp"
+
+
+      - name: Check pwd
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          pwd
+          ls
+          ls -l exec_tmp/
+
 
       # - name: Check files in exec
       #   run: |
