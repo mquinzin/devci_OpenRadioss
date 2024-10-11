@@ -32,6 +32,7 @@ jobs:
       - name: DO nothing
         run: |
           echo "Do nothing"
+          echo "github.ref : {{ github.ref }}"
 
       # # Get last git modifications, WS is not persistent here
       # - uses: actions/checkout@v4
