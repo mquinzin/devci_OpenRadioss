@@ -60,22 +60,20 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           # Get branch
-          export BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
           # DEV ONLY #
-          # export DELIV_COMMIT="a8f09135ff6259d01cbea2a46882a005b96d4ee7"
-          # export DELIV_COMMIT="1a6bb033adf8a9a89814155fb474040350d1a95dww"
-          export BRANCH_NAME="dev/ci/hm_reader_intermediate"
+          echo "BRANCH_NAME=dev/ci/hm_reader_intermediate" >> $GITHUB_ENV
 
-          export HM_REMOTE_DIR="${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}"
+          echo "HM_REMOTE_DIR=${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${{ env.BRANCH_NAME }}/${DELIV_COMMIT}" >> $GITHUB_ENV
           # Check if the commit exist on jfrog
-          result_hm=$(jf rt s ${JF_OPTIONS} "${HM_REMOTE_DIR}/*")
+          result_hm=$(jf rt s ${JF_OPTIONS} "${{ env.HM_REMOTE_DIR }}/*")
 
-          # if [[ "${result_hm}" == "[]" ]]
-          # then
-          #   echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
-          #   exit 1
-          # fi
+          if [[ "${result_hm}" == "[]" ]]
+          then
+            echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
+            exit 1
+          fi
 
       - name: Check all libs are present
         run: |     
@@ -90,12 +88,12 @@ jobs:
             "win64/hm_reader_win64.dll"
           )
 
-          # search_results_hm_reader=$(jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/*)
-          echo "search into ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/*"
-          jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/* | grep '"path":'
+          # search_results_hm_reader=$(jf rt search ${JF_OPTIONS} ${{ env.HM_REMOTE_DIR }}/*)
+          echo "search into ${{ env.HM_REMOTE_DIR }}/*"
+          jf rt search ${JF_OPTIONS} ${{ env.HM_REMOTE_DIR }}/* | grep '"path":'
           echo "-----"
           exit 1
-          result_array=$(jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/* | grep '"path":' | sed 's/.*"path": "//' | sed 's/",//')
+          result_array=$(jf rt search ${JF_OPTIONS} ${{ env.HM_REMOTE_DIR }}/* | grep '"path":' | sed 's/.*"path": "//' | sed 's/",//')
 
           all_found=true
           not_found_libs=''
@@ -156,15 +154,15 @@ jobs:
         #   # Commercial libs
         #   for myarch in linux64 linuxa64 win64
         #   do
-        #     jf rt download ${JF_OPTIONS} --flat=true ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/${myarch}_com/* ${HMREADER_COMMERCIAL_LOCAL_DIR}/${myarch}/
+        #     jf rt download ${JF_OPTIONS} --flat=true ${{ env.HM_REMOTE_DIR }}/${myarch}_com/* ${HMREADER_COMMERCIAL_LOCAL_DIR}/${myarch}/
         #   done
         #   # # Opensource libs
-        #   # jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
+        #   # jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${{ env.HM_REMOTE_DIR }}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
 
         #   # D2R
         #   # Remove local files in case name has changed (version in name !)
         #   rm -rf ${D2R_LOCAL_DIR}/*
-        #   jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/libapr*" "${HW_SOLVER_PREFIX}/${D2R_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/(*)" ${D2R_LOCAL_DIR}/{1}
+        #   jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/libapr*" "${HW_SOLVER_PREFIX}/${D2R_PREFIX}/${{ env.BRANCH_NAME }}/${DELIV_COMMIT}/(*)" ${D2R_LOCAL_DIR}/{1}
         #   # Add files in case they are new (new name)
 
         #   # Add new files
