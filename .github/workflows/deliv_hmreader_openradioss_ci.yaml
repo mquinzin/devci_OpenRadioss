@@ -20,6 +20,7 @@ env:
   # QA_TIMEOUT_PER_TEST_LINUX: 150
   # QA_TIMEOUT_PER_TEST_WIN: 500
   # LAST_STABLE_TAG_NAME: ${{ github.event.inputs.tag_name }}
+  JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
 
 jobs:
 
@@ -38,6 +39,8 @@ jobs:
  
     env:
       DELIVERY_STATUS: 0
+      HW_SOLVER_PREFIX: "hwsolvers/radioss"
+      HMREADER_PREFIX: "hm_reader"
 
     steps:
 
@@ -55,30 +58,20 @@ jobs:
         run: |
           # Get branch
           export BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          echo "BRANCH is ${BRANCH_NAME}"
-          echo "deliv_commit is ${{ env.DELIV_COMMIT }}"
-          echo "toto" > toto
+
           # DEV ONLY #
           # export DELIV_COMMIT="a8f09135ff6259d01cbea2a46882a005b96d4ee7"
-          # export DELIV_COMMIT="1a6bb033adf8a9a89814155fb474040350d1a95d"
+          # export DELIV_COMMIT="1a6bb033adf8a9a89814155fb474040350d1a95dww"
 
-          #   if [ -z "${DELIV_COMMIT}" ]
-          #   then
-          #     echo "Error: DELIV_COMMIT is required but not provided." >&2;
-          #     exit 1
-          #   fi
+          export HM_REMOTE_DIR="${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}"
+          # Check if the commit exist on jfrog
+          result_hm=$(jf rt s ${JF_OPTIONS} "${HM_REMOTE_DIR}/*")
 
-        #   export HM_REMOTE_DIR="${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}"
-        #   export D2R_REMOTE_DIR="${HW_SOLVER_PREFIX}/${D2R_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}"
-        #   # Check if the commit exist on jfrog
-        #   result_hm=$(jf rt s ${JF_OPTIONS} "${HM_REMOTE_DIR}/*")
-        #   result_d2r=$(jf rt s ${JF_OPTIONS} "${D2R_REMOTE_DIR}/*")
-
-        #   if [[ "${result_hm}" == "[]" ]] || [[ "${result_d2r}" == "[]" ]]
-        #   then
-        #     echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
-        #     exit 1
-        #   fi
+          if [[ "${result_hm}" == "[]" ]]
+          then
+            echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
+            exit 1
+          fi
 
       # - name: Check all libs are present
       #   run: |     
