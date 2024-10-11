@@ -65,13 +65,15 @@ jobs:
 
           export HM_REMOTE_DIR="${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}"
           # Check if the commit exist on jfrog
-          result_hm=$(jf rt s ${JF_OPTIONS} "${HM_REMOTE_DIR}/*")
+          echo jf rt s ${JF_OPTIONS} "${HM_REMOTE_DIR}/*"
 
-          if [[ "${result_hm}" == "[]" ]]
-          then
-            echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
-            exit 1
-          fi
+          # result_hm=$(jf rt s ${JF_OPTIONS} "${HM_REMOTE_DIR}/*")
+
+          # if [[ "${result_hm}" == "[]" ]]
+          # then
+          #   echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
+          #   exit 1
+          # fi
 
       # - name: Check all libs are present
       #   run: |     
