@@ -3,7 +3,7 @@ name: Update Headers CI
 on:
   # push:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '03 7 * * *'
   workflow_dispatch:
 
 env:
@@ -31,6 +31,7 @@ jobs:
 
       - name: DO nothing
         run: |
+          date
           echo "Do nothing"
           echo "github.ref : {{ github.ref }}"
 
