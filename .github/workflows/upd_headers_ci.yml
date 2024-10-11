@@ -3,7 +3,7 @@ name: Update Headers CI
 on:
   # push:
   schedule:
-    - cron: '03 7 * * *'
+    - cron: '35 7 * * *'
   workflow_dispatch:
 
 env:
