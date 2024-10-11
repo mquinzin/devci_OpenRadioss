@@ -3,7 +3,7 @@ name: Update Headers CI
 on:
   # push:
   schedule:
-    - cron: '35 7 * * *'
+    - cron: '10 9 * * *'
   workflow_dispatch:
 
 env:
@@ -33,7 +33,7 @@ jobs:
         run: |
           date
           echo "Do nothing"
-          echo "github.ref : {{ github.ref }}"
+          echo "github.ref : ${{ github.ref }}"
 
       # # Get last git modifications, WS is not persistent here
       # - uses: actions/checkout@v4
