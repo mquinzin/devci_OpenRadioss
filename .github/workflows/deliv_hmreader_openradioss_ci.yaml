@@ -74,60 +74,53 @@ jobs:
           #   exit 1
           # fi
 
-      # - name: Check all libs are present
-      #   run: |     
-        #   echo "-------------------------"
-        #   echo "Verify libraries on jfrog"
-        #   echo "-------------------------"
+      - name: Check all libs are present
+        run: |     
+          echo "-------------------------"
+          echo "Verify libraries on jfrog"
+          echo "-------------------------"
 
-        #   patterns=(
-        #     "linux64/libhm_reader_linux64.so"
-        #     "linuxa64/libhm_reader_linuxa64.so"
-        #     "win64/hm_reader_win64.lib"
-        #     "win64/hm_reader_win64.dll"
-        #     "linux64_com/libhm_reader_linux64_com.a"
-        #     "linuxa64_com/libhm_reader_linuxa64_com.a"
-        #     "win64_com/hm_reader_win64_com.lib"
-        #     "linux64/d2r_.*_linux64"
-        #     "linuxa64/d2r_.*_linuxa64"
-        #     "win64/d2r_.*_win64\.exe"   
-        #   )
+          patterns=(
+            "linux64/libhm_reader_linux64.so"
+            "linuxa64/libhm_reader_linuxa64.soww"
+            "win64/hm_reader_win64.lib"
+            "win64/hm_reader_win64.dll"
+          )
 
-        #   search_results_hm_reader=$(jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/*)
-        #   search_results_d2r=$(jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${D2R_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/*)
-        #   result_array=($(echo "${search_results_hm_reader} ${search_results_d2r}" | grep '"path":' | sed 's/.*"path": "//' | sed 's/",//' ))
+          # search_results_hm_reader=$(jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/*)
+          result_array=(jf rt search ${JF_OPTIONS} ${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}/* | grep '"path":' | sed 's/.*"path": "//' | sed 's/",//' )
 
-        #   all_found=true
-        #   not_found_libs=''
+          all_found=true
+          not_found_libs=''
 
-        #   # Loop through each pattern
-        #   for pattern in "${patterns[@]}"; do
-        #       # Check if the pattern is present in any line
-        #       found=false
-        #       for line in "${result_array[@]}"; do
-        #           if echo "$line" | grep -q "$pattern"; then
-        #               found=true
-        #               break
-        #           fi
-        #       done
+          # Loop through each pattern
+          for pattern in "${patterns[@]}"; do
+              # Check if the pattern is present in any line
+              found=false
+              for line in "${result_array[@]}"; do
+                  if echo "$line" | grep -q "$pattern"; then
+                      found=true
+                      break
+                  fi
+              done
 
-        #       # If the pattern was not found in any line, mark as not all found
-        #       if ! $found; then
-        #           # echo "Pattern '$pattern' not found in any line."
-        #           not_found_libs+="\n${pattern}"
-        #           all_found=false
-        #       # else
-        #       #     echo "Pattern '$pattern' found."
-        #       fi
-        #   done
+              # If the pattern was not found in any line, mark as not all found
+              if ! $found; then
+                  # echo "Pattern '$pattern' not found in any line."
+                  not_found_libs+="\n${pattern}"
+                  all_found=false
+              # else
+              #     echo "Pattern '$pattern' found."
+              fi
+          done
 
-        #   # Final result check
-        #   if $all_found; then
-        #       echo -e "\nAll librarie have been found!"
-        #   else
-        #       echo -e "\nSome librariy pattern has not been found:\n${not_found_libs}"
-        #       exit 1
-        #   fi
+          # Final result check
+          if $all_found; then
+              echo -e "\nAll librarie have been found!"
+          else
+              echo -e "\nSome librariy pattern has not been found:\n${not_found_libs}"
+              exit 1
+          fi
 
       # - name: Load last status of the branch
       #   run: |
