@@ -46,9 +46,19 @@ jobs:
     env:
       HW_SOLVER_PREFIX: "hwsolvers/radioss"
       HMREADER_PREFIX: "hm_reader"
+      STATUS_STEP_CHECK_LIBS: 0
+      MSG_STEP_CHECK_LIBS: "Some libraries are missing on Jfrog"  
+      STATUS_STEP_CONNECT_GH: 0
+      MSG_STEP_CONNECT_GH: "Could not connect to github repository"  
+      STATUS_STEP_LOAD_LAST_SRC: 0
+      MSG_STEP_LOAD_LAST_SRC: "Could not load last source of the branch"  
+      STATUS_STEP_GET_LIBS: 0
+      MSG_STEP_GET_LIBS: "Could not get libraries from Jfrog"  
+      STATUS_STEP_PUSH_OR: 0
+      MSG_STEP_PUSH_OR: "Could not push libraries on OpenRadioss repository"  
 
-    outputs:
-      deliv_status: ${{ steps.set-status.outputs.DELIVERY_STATUS }}
+    # outputs:
+    #   deliv_status: ${{ steps.set-status.outputs.DELIVERY_STATUS }}
 
     steps:
 
@@ -90,7 +100,7 @@ jobs:
           echo "-------------------------"
 
           patterns=(
-            "linux64/libhm_reader_linux64xxx.so"
+            "linux64/libhm_reader_linux64.so"
             "linuxa64/libhm_reader_linuxa64.so"
             "win64/hm_reader_win64.lib"
             "win64/hm_reader_win64.dll"
@@ -125,29 +135,44 @@ jobs:
           # Final result check
           if $all_found; then
               echo -e "\nAll librarie have been found!"
+              # Set correct end of step status (if not an email will be sent)
+              echo "STATUS_STEP_CHECK_LIBS=1" >> $GITHUB_ENV
           else
               echo -e "\nSome librariy pattern has not been found:\n${not_found_libs}"
               exit 1
           fi
 
-      # - name: Load last status of the branch
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #       echo "--------------"
-      #       echo "Checkout branch ${CI_COMMIT_BRANCH} last status"
-      #       echo "----------"   
-      #       git config --global user.email "${GITLAB_USER_EMAIL}"
-      #       git config --global user.name "${GITLAB_USER_NAME}"  
+      - name: Set github access credentials
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          # This command exit with 1 even when everything is OK ...
+          gh auth login -h github.com || echo ""
+          gh auth setup-git
+          gh auth status
 
-      #       # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
-      #       git fetch origin ${CI_COMMIT_BRANCH}
-      #       git reset --hard origin/${CI_COMMIT_BRANCH}
-      #       git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
-      #       git checkout ${CI_COMMIT_BRANCH}
-      #       # echo "-------checkout"
-      #       # git branch && git log --pretty=oneline -n 5
-      #       # echo "-------"
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_STEP_CONNECT_GH=1" >> $GITHUB_ENV
 
+      - name: Load last status of the branch
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          CUR_BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "--------------"
+          echo "Checkout branch ${CUR_BRANCH} last status"
+          echo "----------"   
+          # git config --global user.email "${GITLAB_USER_EMAIL}"
+          # git config --global user.name "${GITLAB_USER_NAME}"  
+
+          # # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
+          # git fetch origin ${CI_COMMIT_BRANCH}
+          # git reset --hard origin/${CI_COMMIT_BRANCH}
+          # git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
+          # git checkout ${CI_COMMIT_BRANCH}
+          # # echo "-------checkout"
+          # # git branch && git log --pretty=oneline -n 5
+          # # echo "-------"
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_STEP_LOAD_LAST_SRC=1" >> $GITHUB_ENV
 
       # - name: Get hm reader and d2r libs locally
       #   working-directory: ${{ env.WORKDIR }}
@@ -189,47 +214,113 @@ jobs:
         #   git push origin ${CI_COMMIT_BRANCH}
 
 
-      - name: Set DELIVERY status if everything if OK
-        run: |  
-          echo "Everything OK"
-          echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
-
-      - name: Store DELIVERY status value for next job
+      - name: Managing step execution
         if: ${{ always() }}
-        id: set-status
-        run: |  
-          echo "DELIVERY_STATUS=${{ env.DELIVERY_STATUS }}" >> $GITHUB_OUTPUT
-  
-  check_deliver_hmreader_openradioss:
-    if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
-    # DEV ONLY # runs-on: ["delivery","prod"] 
-    # runs-on: ["delivery","prod"]
-    needs: deliver_hmreader_openradioss
-    runs-on: ["dev_delivery","dev"]
-    container: 
-      image: fr-qafactorydev.europe.altair.com/common-linux64
-      credentials: 
-        username: ${{secrets.DOCKER_REGISTRY_USER}}
-        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      volumes: 
-        - /etc/localtime:/etc/localtime:ro
- 
-    steps:
-
-      - name: Send email if status is 0 
-        if: ${{ needs.deliver_hmreader_openradioss.outputs.deliv_status == '0' }}
         run: |
-          # Setting SMTP server (docker host)
-          DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-          echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
 
-          # DEV ONLY #
-          export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
+          MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}\n\n"
+          CONTINUE=1
+          echo -e "\n#### STATUS_STEP_CHECK_LIBS ###"
+          if [ "$STATUS_STEP_CHECK_LIBS" = 0 ]
+          then
+            echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+            MAILMSG+="$MSG_STEP_CHECK_LIBS\n"
+            CONTINUE=0
+          else
+            echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+          fi
 
-          # Send email
-          SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
-          LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
-          echo -e ${MAILMSG}
-          echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
+          if [ "$CONTINUE" = 1 ]
+          then
+            echo -e "\n#### STATUS_STEP_CONNECT_GL ###"
+            if [ "$STATUS_STEP_CONNECT_GL" = 0 ]
+            then 
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              MAILMSG+="$MSG_STEP_CONNECT_GL\n"
+            CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi
+
+          if [ "$CONTINUE" = 1 ]
+          then
+            echo -e "\n#### STATUS_STEP_LOAD_LAST_SRC ###"
+            if [ "$STATUS_STEP_LOAD_LAST_SRC" = 0 ]
+            then 
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              MAILMSG+="$MSG_STEP_LOAD_LAST_SRC\n"
+            CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi
+
+          # Send email 
+          if [ "$CONTINUE" = 0 ] 
+          then
+    
+            # Setting SMTP server (docker host)
+            DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+            echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
+
+            # Print message in log 
+            echo -e $MAILMSG
+
+            # DEV ONLY #
+            export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
+
+            # Send email
+            SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ] - Error in CI"
+            LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
+
+            # Exit fail to see it as a failure
+            exit 1
+          fi
+
+
+      # - name: Set DELIVERY status if everything if OK
+      #   run: |  
+      #     echo "Everything OK"
+      #     echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
+
+      # - name: Store DELIVERY status value for next job
+      #   if: ${{ always() }}
+      #   id: set-status
+      #   run: |  
+      #     echo "DELIVERY_STATUS=${{ env.DELIVERY_STATUS }}" >> $GITHUB_OUTPUT
+  
+  # check_deliver_hmreader_openradioss:
+  #   if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
+  #   # DEV ONLY # runs-on: ["delivery","prod"] 
+  #   # runs-on: ["delivery","prod"]
+  #   needs: deliver_hmreader_openradioss
+  #   runs-on: ["dev_delivery","dev"]
+  #   container: 
+  #     image: fr-qafactorydev.europe.altair.com/common-linux64
+  #     credentials: 
+  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
+  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+  #     volumes: 
+  #       - /etc/localtime:/etc/localtime:ro
+ 
+  #   steps:
+
+  #     - name: Send email if status is 0 
+  #       if: ${{ needs.deliver_hmreader_openradioss.outputs.deliv_status == '0' }}
+  #       run: |
+  #         # Setting SMTP server (docker host)
+  #         DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+  #         echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
+
+  #         # DEV ONLY #
+  #         export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
+
+  #         # Send email
+  #         SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
+  #         LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+  #         MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
+  #         echo -e ${MAILMSG}
+  #         echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
         
