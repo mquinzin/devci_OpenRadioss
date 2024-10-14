@@ -47,6 +47,9 @@ jobs:
       HW_SOLVER_PREFIX: "hwsolvers/radioss"
       HMREADER_PREFIX: "hm_reader"
 
+    outputs:
+      deliv_status: ${{ steps.set-status.outputs.DELIVERY_STATUS }}
+
     steps:
 
       # Set the working dir suffixed with deliv_hmreader
@@ -215,8 +218,8 @@ jobs:
 
       - name: Check DELIVERY status 
         run: |  
-          echo "DELIVERY_STATUS=${{ needs.set-status.output.DELIVERY_STATUS }}" >> $GITHUB_ENV
-          echo "DELIVERY_STATUS: ${{ steps.set-status.output.DELIVERY_STATUS }}"
+          echo "DELIVERY_STATUS=${{ needs.deliver_hmreader_openradioss.output.deliv_status }}" >> $GITHUB_ENV
+          echo "DELIVERY_STATUS: ${{ steps.set-status.output.deliv_status }}"
           echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
 
 
