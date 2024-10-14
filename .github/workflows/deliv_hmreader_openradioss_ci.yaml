@@ -90,7 +90,7 @@ jobs:
           echo "-------------------------"
 
           patterns=(
-            "linux64/libhm_reader_linux64.so"
+            "linux64/libhm_reader_linux64xxx.so"
             "linuxa64/libhm_reader_linuxa64.so"
             "win64/hm_reader_win64.lib"
             "win64/hm_reader_win64.dll"
@@ -197,8 +197,6 @@ jobs:
         id: set-status
         run: |  
           echo "DELIVERY_STATUS=${{ env.DELIVERY_STATUS }}" >> $GITHUB_OUTPUT
-          echo "At this point DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"    
-
   
   check_deliver_hmreader_openradioss:
     if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
@@ -216,17 +214,9 @@ jobs:
  
     steps:
 
-      - name: Check DELIVERY status 
-        run: |  
-          echo "DELIVERY_STATUS=${{ needs.deliver_hmreader_openradioss.outputs.deliv_status }}" >> $GITHUB_ENV
-          echo "DELIVERY_STATUS: ${{ needs.deliver_hmreader_openradioss.outputs.deliv_status }}"
-
-
-      # Set the working dir suffixed with deliv_hmreader
       - name: Send email if status is 0 
-        if: ${{ env.DELIVERY_STATUS == '0' }}
+        if: ${{ needs.deliver_hmreader_openradioss.outputs.deliv_status == '0' }}
         run: |
-          echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
           # Setting SMTP server (docker host)
           DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
           echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
