@@ -166,8 +166,10 @@ jobs:
           
           git remote -v 
 
-          git config --global user.email ""${{ env.GIT_SERVBOT_EMAIL }}"
+          git config --global user.email "${{ env.GIT_SERVBOT_EMAIL }}"
           git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
+
+          git config --list | grep user
 
           echo "un" > toto
           git add toto
