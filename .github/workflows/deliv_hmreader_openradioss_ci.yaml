@@ -21,7 +21,7 @@ env:
   # QA_TIMEOUT_PER_TEST_WIN: 500
   # LAST_STABLE_TAG_NAME: ${{ github.event.inputs.tag_name }}
   CI: 'true'  # if true, disables interactive prompts and progress bar  
-  # JFROG_CLI_LOG_LEVEL: "ERROR"
+  JFROG_CLI_LOG_LEVEL: "ERROR"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
   JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
   MAIL_CONFIG_FILE: "/etc/mail.rc"
@@ -175,6 +175,7 @@ jobs:
           git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
           git add .
           git status
+          git commit -m "Update libhm_reader library for OpenRadioss"
 
           if [[ -n $(git status --porcelain) ]]; then
             # Set correct end of step status (if not an email will be sent)
