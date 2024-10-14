@@ -215,7 +215,7 @@ jobs:
 
       - name: Check DELIVERY status 
         run: |  
-          echo "DELIVERY_STATUS=${{ steps.set-status.output.DELIVERY_STATUS }}" >> $GITHUB_ENV
+          echo "DELIVERY_STATUS=${{ needs.set-status.output.DELIVERY_STATUS }}" >> $GITHUB_ENV
           echo "DELIVERY_STATUS: ${{ steps.set-status.output.DELIVERY_STATUS }}"
           echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
 
