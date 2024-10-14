@@ -48,6 +48,8 @@ jobs:
       HMREADER_PREFIX: "hm_reader"
       # Needed by gh auth
       GH_TOKEN: ${{ secrets.SERVBOT_PAT }}     
+      STATUS_STEP_CHECK_DELIV_COMMIT: 0
+      MSG_STEP_CHECK_DELIV_COMMIT: "Some libraries are missing on Jfrog"  
       STATUS_STEP_CHECK_LIBS: 0
       MSG_STEP_CHECK_LIBS: "Some libraries are missing on Jfrog"  
       STATUS_STEP_CONNECT_GH: 0
@@ -74,7 +76,7 @@ jobs:
         run: |
           mkdir -p ${{ env.WORKDIR }}
 
-      - name: Checking variable
+      - name: Checking delivery commit
         working-directory: ${{ env.WORKDIR }}
         run: |
           # Get branch
@@ -94,6 +96,9 @@ jobs:
             echo "Commit ${DELIV_COMMIT} does not exist on Jfrog."
             exit 1
           fi
+
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_STEP_CHECK_DELIV_COMMIT=1" >> $GITHUB_ENV          
 
       - name: Check all libs are present
         run: |     
@@ -144,37 +149,52 @@ jobs:
               exit 1
           fi
 
+      # Get last git modifications
+      - name: Checkout git sources
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.WORKDIR }}
+          clean: 'true'
+          lfs: 'true'
+
       - name: Set github access credentials
         working-directory: ${{ env.WORKDIR }}
-        run: |
-          # This command exit with 1 even when everything is OK ...
-          gh auth login -h github.com || echo ""
-          gh auth setup-git
-          gh auth status
+        run: |    
+          git branch
+          git log --pretty=oneline -n 10
 
-          # Set correct end of step status (if not an email will be sent)
-          echo "STATUS_STEP_CONNECT_GH=1" >> $GITHUB_ENV
 
-      - name: Load last status of the branch
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          CUR_BRANCH="${GITHUB_REF#refs/heads/}"
-          echo "--------------"
-          echo "Checkout branch ${CUR_BRANCH} last status"
-          echo "----------"   
-          # git config --global user.email "${GITLAB_USER_EMAIL}"
-          # git config --global user.name "${GITLAB_USER_NAME}"  
+      # - name: Set github access credentials
+      #   working-directory: ${{ env.WORKDIR }}
+      #   run: |
+      #     # This command exit with 1 even when everything is OK ...
+      #     gh auth login -h github.com || echo ""
+      #     gh auth setup-git
+      #     gh auth status
 
-          # # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
-          # git fetch origin ${CI_COMMIT_BRANCH}
-          # git reset --hard origin/${CI_COMMIT_BRANCH}
-          # git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
-          # git checkout ${CI_COMMIT_BRANCH}
-          # # echo "-------checkout"
-          # # git branch && git log --pretty=oneline -n 5
-          # # echo "-------"
-          # Set correct end of step status (if not an email will be sent)
-          echo "STATUS_STEP_LOAD_LAST_SRC=1" >> $GITHUB_ENV
+      #     # Set correct end of step status (if not an email will be sent)
+      #     echo "STATUS_STEP_CONNECT_GH=1" >> $GITHUB_ENV
+
+      # - name: Load last status of the branch
+      #   working-directory: ${{ env.WORKDIR }}
+      #   run: |
+      #     CUR_BRANCH="${GITHUB_REF#refs/heads/}"
+      #     echo "--------------"
+      #     echo "Checkout branch ${CUR_BRANCH} last status"
+      #     echo "----------"   
+      #     # git config --global user.email "${GITLAB_USER_EMAIL}"
+      #     # git config --global user.name "${GITLAB_USER_NAME}"  
+
+      #     # # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
+      #     # git fetch origin ${CI_COMMIT_BRANCH}
+      #     # git reset --hard origin/${CI_COMMIT_BRANCH}
+      #     # git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
+      #     # git checkout ${CI_COMMIT_BRANCH}
+      #     # # echo "-------checkout"
+      #     # # git branch && git log --pretty=oneline -n 5
+      #     # # echo "-------"
+      #     # Set correct end of step status (if not an email will be sent)
+      #     echo "STATUS_STEP_LOAD_LAST_SRC=1" >> $GITHUB_ENV
 
       # - name: Get hm reader and d2r libs locally
       #   working-directory: ${{ env.WORKDIR }}
@@ -222,41 +242,55 @@ jobs:
 
           MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}\n\n"
           CONTINUE=1
-          echo -e "\n#### STATUS_STEP_CHECK_LIBS ###"
-          if [ "$STATUS_STEP_CHECK_LIBS" = 0 ]
+
+          echo -e "\n#### STATUS_STEP_CHECK_DELIV_COMMIT ###"
+          if [ "$STATUS_STEP_CHECK_DELIV_COMMIT" = 0 ]
           then
             echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-            MAILMSG+="$MSG_STEP_CHECK_LIBS\n"
+            MAILMSG+="$MSG_STEP_CHECK_DELIV_COMMIT\n"
             CONTINUE=0
           else
             echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
           fi
 
           if [ "$CONTINUE" = 1 ]
-          then
-            echo -e "\n#### STATUS_STEP_CONNECT_GH ###"
-            if [ "$STATUS_STEP_CONNECT_GH" = 0 ]
-            then 
+          then          
+            echo -e "\n#### STATUS_STEP_CHECK_LIBS ###"
+            if [ "$STATUS_STEP_CHECK_LIBS" = 0 ]
+            then
               echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-              MAILMSG+="$MSG_STEP_CONNECT_GH\n"
-            CONTINUE=0
+              MAILMSG+="$MSG_STEP_CHECK_LIBS\n"
+              CONTINUE=0
             else
               echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
             fi
           fi
 
-          if [ "$CONTINUE" = 1 ]
-          then
-            echo -e "\n#### STATUS_STEP_LOAD_LAST_SRC ###"
-            if [ "$STATUS_STEP_LOAD_LAST_SRC" = 0 ]
-            then 
-              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-              MAILMSG+="$MSG_STEP_LOAD_LAST_SRC\n"
-            CONTINUE=0
-            else
-              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-            fi
-          fi
+          # if [ "$CONTINUE" = 1 ]
+          # then
+          #   echo -e "\n#### STATUS_STEP_CONNECT_GH ###"
+          #   if [ "$STATUS_STEP_CONNECT_GH" = 0 ]
+          #   then 
+          #     echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+          #     MAILMSG+="$MSG_STEP_CONNECT_GH\n"
+          #   CONTINUE=0
+          #   else
+          #     echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+          #   fi
+          # fi
+
+          # if [ "$CONTINUE" = 1 ]
+          # then
+          #   echo -e "\n#### STATUS_STEP_LOAD_LAST_SRC ###"
+          #   if [ "$STATUS_STEP_LOAD_LAST_SRC" = 0 ]
+          #   then 
+          #     echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+          #     MAILMSG+="$MSG_STEP_LOAD_LAST_SRC\n"
+          #   CONTINUE=0
+          #   else
+          #     echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+          #   fi
+          # fi
 
           # Send email 
           if [ "$CONTINUE" = 0 ] 
