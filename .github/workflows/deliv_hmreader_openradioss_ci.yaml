@@ -234,11 +234,11 @@ jobs:
 
           if [ "$CONTINUE" = 1 ]
           then
-            echo -e "\n#### STATUS_STEP_CONNECT_GL ###"
-            if [ "$STATUS_STEP_CONNECT_GL" = 0 ]
+            echo -e "\n#### STATUS_STEP_CONNECT_GH ###"
+            if [ "$STATUS_STEP_CONNECT_GH" = 0 ]
             then 
               echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-              MAILMSG+="$MSG_STEP_CONNECT_GL\n"
+              MAILMSG+="$MSG_STEP_CONNECT_GH\n"
             CONTINUE=0
             else
               echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
