@@ -167,55 +167,37 @@ jobs:
           echo "Getting HM Reader files"
           echo "----------"
 
-          md5sum ${HMREADER_OPENSOURCE_LOCAL_DIR}/*/*
-
           # Opensource libs
           jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${{ env.HM_REMOTE_DIR }}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
 
           # Add new files
+          git config --global user.email "${{ env.GIT_SERVBOT_EMAIL }}"
+          git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
           git add .
           git status
 
-          md5sum ${HMREADER_OPENSOURCE_LOCAL_DIR}/*/*
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "There are changes in the repository, abort."
+            exit 1
+          else
+            # Set correct end of step status (if not an email will be sent)
+            echo "STATUS_STEP_GET_LIBS=1" >> $GITHUB_ENV
+            echo "GO_PUSH=1" >> $GITHUB_ENV
+          fi
 
-      # - name: Set github access credentials
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |    
-      #     git config --global user.email "${{ env.GIT_SERVBOT_EMAIL }}"
-      #     git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        if: ${{ env.GO_PUSH == 1 }} 
+        with:
+          github_token: ${{ env.GIT_PUS_SERVBOT_PAT }}
+          branch: ${{ github.ref }}     
+          directory: ${{ env.WORKDIR }}    
 
-      #     git rm toto
-      #     git commit -m "Remove toto"
-      #     echo "GO_PUSH=1" >> $GITHUB_ENV
-
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   if: ${{ env.GO_PUSH == 1 }} 
-      #   with:
-      #     github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
-      #     branch: ${{ github.ref }}     
-      #     directory: ${{ env.WORKDIR }}    
-
-      # - name: Set push statys
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |    
-      #     # Set correct end of step status (if not an email will be sent)
-      #     echo "STATUS_STEP_PUSH_OR=1" >> $GITHUB_ENV
-
-
-
-      # - name: Push on Radioss
-      #   run: |
-        #   git add .
-        #   git commit -m "Update libhm_reader library for Radioss"
-
-        #   # Use adapted token with correct permission to push
-        #   NEW_URL=$(echo "$CI_REPOSITORY_URL" | sed -e "s?${CI_JOB_TOKEN}?${GITLAB_TOKEN}?")
-        #   # Recreate origin repo with related token (we can't use the current one to push)
-        #   git remote remove origin
-        #   git remote add origin $NEW_URL      
-        #   git push origin ${CI_COMMIT_BRANCH}
-
+      - name: Set push status
+        working-directory: ${{ env.WORKDIR }}
+        run: |    
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_STEP_PUSH_OR=1" >> $GITHUB_ENV
 
       - name: Managing step execution
         if: ${{ always() }}
@@ -295,49 +277,3 @@ jobs:
             # Exit fail to see it as a failure
             exit 1
           fi
-
-
-      # - name: Set DELIVERY status if everything if OK
-      #   run: |  
-      #     echo "Everything OK"
-      #     echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
-
-      # - name: Store DELIVERY status value for next job
-      #   if: ${{ always() }}
-      #   id: set-status
-      #   run: |  
-      #     echo "DELIVERY_STATUS=${{ env.DELIVERY_STATUS }}" >> $GITHUB_OUTPUT
-  
-  # check_deliver_hmreader_openradioss:
-  #   if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
-  #   # DEV ONLY # runs-on: ["delivery","prod"] 
-  #   # runs-on: ["delivery","prod"]
-  #   needs: deliver_hmreader_openradioss
-  #   runs-on: ["dev_delivery","dev"]
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/common-linux64
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
- 
-  #   steps:
-
-  #     - name: Send email if status is 0 
-  #       if: ${{ needs.deliver_hmreader_openradioss.outputs.deliv_status == '0' }}
-  #       run: |
-  #         # Setting SMTP server (docker host)
-  #         DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-  #         echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
-
-  #         # DEV ONLY #
-  #         export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
-
-  #         # Send email
-  #         SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
-  #         LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-  #         MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
-  #         echo -e ${MAILMSG}
-  #         echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
-        
