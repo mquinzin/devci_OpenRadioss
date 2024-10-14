@@ -188,8 +188,7 @@ jobs:
         #   echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
   
   check_deliver_hmreader_openradioss:
-    if: ${{ always() }}
-    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
     # DEV ONLY # runs-on: ["delivery","prod"] 
     # runs-on: ["delivery","prod"]
     runs-on: ["dev_delivery","dev"]
@@ -201,8 +200,6 @@ jobs:
       volumes: 
         - /etc/localtime:/etc/localtime:ro
  
-    env:
-
     steps:
 
       # Set the working dir suffixed with deliv_hmreader
