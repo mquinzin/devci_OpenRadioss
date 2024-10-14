@@ -160,7 +160,7 @@ jobs:
           # Use a PAT else the push won't trigger the next workflow
           token: ${{ env.GIT_PUSH_SERVBOT_PAT }}          
 
-      - name: Get hm reader and d2r libs locally
+      - name: Get hm reader libs locally
         working-directory: ${{ env.WORKDIR }}
         run: |
           echo "--------------"
@@ -177,19 +177,19 @@ jobs:
           git status
 
           if [[ -n $(git status --porcelain) ]]; then
-            echo "There are changes in the repository, abort."
-            exit 1
-          else
             # Set correct end of step status (if not an email will be sent)
             echo "STATUS_STEP_GET_LIBS=1" >> $GITHUB_ENV
             echo "GO_PUSH=1" >> $GITHUB_ENV
+          else
+            echo "There are no changes in the repository, abort."
+            exit 1
           fi
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         if: ${{ env.GO_PUSH == 1 }} 
         with:
-          github_token: ${{ env.GIT_PUS_SERVBOT_PAT }}
+          github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
           branch: ${{ github.ref }}     
           directory: ${{ env.WORKDIR }}    
 
@@ -203,6 +203,7 @@ jobs:
         if: ${{ always() }}
         run: |
 
+          LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}\n\n"
           CONTINUE=1
 
@@ -271,7 +272,6 @@ jobs:
 
             # Send email
             SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ] - Error in CI"
-            LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
 
             # Exit fail to see it as a failure
