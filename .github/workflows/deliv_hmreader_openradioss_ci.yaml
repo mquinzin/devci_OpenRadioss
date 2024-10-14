@@ -87,7 +87,7 @@ jobs:
           echo "-------------------------"
 
           patterns=(
-            "linux64/libhm_reader_linux64.so"
+            "linux64/libhm_reader_linux64xxx.so"
             "linuxa64/libhm_reader_linuxa64.so"
             "win64/hm_reader_win64.lib"
             "win64/hm_reader_win64.dll"
