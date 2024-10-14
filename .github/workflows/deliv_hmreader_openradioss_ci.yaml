@@ -24,6 +24,7 @@ env:
   # JFROG_CLI_LOG_LEVEL: "ERROR"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
   JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
+  MAIL_COMMAND: "s-nail"
 
 jobs:
 
@@ -191,6 +192,7 @@ jobs:
     if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
     # DEV ONLY # runs-on: ["delivery","prod"] 
     # runs-on: ["delivery","prod"]
+    needs: deliver_hmreader_openradioss
     runs-on: ["dev_delivery","dev"]
     container: 
       image: fr-qafactorydev.europe.altair.com/gitlab-utils
@@ -217,5 +219,5 @@ jobs:
           SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
           MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}"
           echo -e ${MAILMSG}
-          echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${CI_FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
+          echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
         
