@@ -191,8 +191,9 @@ jobs:
 
       - name: Store DELIVERY status value for next job
         if: ${{ always() }}
+        id: set-status
         run: |  
-          echo "::set-output name=delivery_status::${{ env.DELIVERY_STATUS }}"    
+          echo "DELIVERY_STATUS=${{ env.DELIVERY_STATUS }}" >> $GITHUB_OUTPUT
           echo "At this point DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"    
 
   
@@ -214,8 +215,8 @@ jobs:
 
       - name: Check DELIVERY status 
         run: |  
-          echo "DELIVERY_STATUS=${{ needs.job1.outputs.delivery_status }}" >> $GITHUB_ENV
-          echo "DELIVERY_STATUS: ${{ needs.job1.outputs.delivery_status }}"
+          echo "DELIVERY_STATUS=${{ steps.set-status.output.DELIVERY_STATUS }}" >> $GITHUB_ENV
+          echo "DELIVERY_STATUS: ${{ steps.set-status.output.DELIVERY_STATUS }}"
           echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
 
 
