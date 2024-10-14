@@ -156,6 +156,7 @@ jobs:
           path: ${{ env.WORKDIR }}
           clean: 'true'
           lfs: 'true'
+          ref: 'main'
 
       - name: Set github access credentials
         working-directory: ${{ env.WORKDIR }}
