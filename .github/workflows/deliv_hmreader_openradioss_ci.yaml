@@ -46,6 +46,8 @@ jobs:
     env:
       HW_SOLVER_PREFIX: "hwsolvers/radioss"
       HMREADER_PREFIX: "hm_reader"
+      # Needed by gh auth
+      GH_TOKEN: ${{ secrets.SERVBOT_PAT }}     
       STATUS_STEP_CHECK_LIBS: 0
       MSG_STEP_CHECK_LIBS: "Some libraries are missing on Jfrog"  
       STATUS_STEP_CONNECT_GH: 0
