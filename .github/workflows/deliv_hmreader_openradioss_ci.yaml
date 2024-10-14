@@ -90,7 +90,7 @@ jobs:
           echo "-------------------------"
 
           patterns=(
-            "linux64/libhm_reader_linux64xxx.so"
+            "linux64/libhm_reader_linux64.so"
             "linuxa64/libhm_reader_linuxa64.so"
             "win64/hm_reader_win64.lib"
             "win64/hm_reader_win64.dll"
@@ -231,13 +231,13 @@ jobs:
           DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
           echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
 
-      #     # DEV ONLY #
-      #     export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
+          # DEV ONLY #
+          export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
 
-      #     # Send email
-      #     SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
-      #     LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-      #     MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
-      #     echo -e ${MAILMSG}
-      #     echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
+          # Send email
+          SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
+          LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
+          echo -e ${MAILMSG}
+          echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
         
