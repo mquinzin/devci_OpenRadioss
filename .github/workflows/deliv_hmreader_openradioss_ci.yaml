@@ -11,15 +11,10 @@ on:
         required: true
 
 env:
-  # CLOSE_BRANCH: 0
-  # TEAM_RESTRICTIVE_CLOSED_BRANCH: ${{ secrets.TEAM_RESTRICTIVE_CLOSED_BRANCH }}
   DELIV_COMMIT: ${{ github.event.inputs.deliv_commit }}
   FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
   TO_EMAIL: ${{ secrets.TO_EMAIL }}
   MAIL_RELAY: ${{ secrets.MAIL_RELAY }}
-  # QA_TIMEOUT_PER_TEST_LINUX: 150
-  # QA_TIMEOUT_PER_TEST_WIN: 500
-  # LAST_STABLE_TAG_NAME: ${{ github.event.inputs.tag_name }}
   CI: 'true'  # if true, disables interactive prompts and progress bar  
   JFROG_CLI_LOG_LEVEL: "ERROR"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
@@ -35,7 +30,6 @@ jobs:
     # runs-on: ["delivery","prod"]
     runs-on: ["dev_delivery","dev"]
     container: 
-      # image: fr-qafactorydev.europe.altair.com/common-linux64
       image: fr-qafactorydev.europe.altair.com/common-linux64
       credentials: 
         username: ${{secrets.DOCKER_REGISTRY_USER}}
@@ -60,9 +54,6 @@ jobs:
       STATUS_STEP_PUSH_OR: 0
       MSG_STEP_PUSH_OR: "Could not push libraries on OpenRadioss repository"  
       HMREADER_OPENSOURCE_LOCAL_DIR: "extlib/hm_reader"
-
-    # outputs:
-    #   deliv_status: ${{ steps.set-status.outputs.DELIVERY_STATUS }}
 
     steps:
 
@@ -184,7 +175,7 @@ jobs:
             echo "There are no changes in the repository, abort."
             exit 1
           fi
-          
+
           git commit -m "Update libhm_reader library for OpenRadioss"
 
       - name: Push changes
