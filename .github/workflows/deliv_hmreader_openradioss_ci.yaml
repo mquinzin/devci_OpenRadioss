@@ -166,6 +166,11 @@ jobs:
           
           git remote -v 
 
+          echo "un" > toto
+          git add toto
+          git commit -m "Add toto"
+          git push origin main
+
       # - name: Set github access credentials
       #   working-directory: ${{ env.WORKDIR }}
       #   run: |
