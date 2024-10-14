@@ -55,14 +55,11 @@ jobs:
       MSG_STEP_CHECK_DELIV_COMMIT: "Some libraries are missing on Jfrog"  
       STATUS_STEP_CHECK_LIBS: 0
       MSG_STEP_CHECK_LIBS: "Some libraries are missing on Jfrog"  
-      STATUS_STEP_CONNECT_GH: 0
-      MSG_STEP_CONNECT_GH: "Could not connect to github repository"  
-      STATUS_STEP_LOAD_LAST_SRC: 0
-      MSG_STEP_LOAD_LAST_SRC: "Could not load last source of the branch"  
       STATUS_STEP_GET_LIBS: 0
       MSG_STEP_GET_LIBS: "Could not get libraries from Jfrog"  
       STATUS_STEP_PUSH_OR: 0
       MSG_STEP_PUSH_OR: "Could not push libraries on OpenRadioss repository"  
+      HMREADER_OPENSOURCE_LOCAL_DIR: "extlib/hm_reader"
 
     # outputs:
     #   deliv_status: ${{ steps.set-status.outputs.DELIVERY_STATUS }}
@@ -163,89 +160,49 @@ jobs:
           # Use a PAT else the push won't trigger the next workflow
           token: ${{ env.GIT_PUSH_SERVBOT_PAT }}          
 
-      - name: Set github access credentials
+      - name: Get hm reader and d2r libs locally
         working-directory: ${{ env.WORKDIR }}
-        run: |    
-          git branch
-          git log --pretty=oneline -n 10
-          
-          git remote -v 
+        run: |
+          echo "--------------"
+          echo "Getting HM Reader files"
+          echo "----------"
 
-          git config --global user.email "${{ env.GIT_SERVBOT_EMAIL }}"
-          git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
+          md5sum ${HMREADER_OPENSOURCE_LOCAL_DIR}/*/*
 
-          git config --list | grep user
+          # Opensource libs
+          jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${{ env.HM_REMOTE_DIR }}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
 
-          git rm toto
-          git commit -m "Remove toto"
-          echo "GO_PUSH=1" >> $GITHUB_ENV
+          # Add new files
+          git add .
+          git status
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        if: ${{ env.GO_PUSH == 1 }} 
-        with:
-          github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
-          branch: ${{ github.ref }}     
-          directory: ${{ env.WORKDIR }}        
+          md5sum ${HMREADER_OPENSOURCE_LOCAL_DIR}/*/*
 
       # - name: Set github access credentials
       #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     # This command exit with 1 even when everything is OK ...
-      #     gh auth login -h github.com || echo ""
-      #     gh auth setup-git
-      #     gh auth status
+      #   run: |    
+      #     git config --global user.email "${{ env.GIT_SERVBOT_EMAIL }}"
+      #     git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
 
-      #     # Set correct end of step status (if not an email will be sent)
-      #     echo "STATUS_STEP_CONNECT_GH=1" >> $GITHUB_ENV
+      #     git rm toto
+      #     git commit -m "Remove toto"
+      #     echo "GO_PUSH=1" >> $GITHUB_ENV
 
-      # - name: Load last status of the branch
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   if: ${{ env.GO_PUSH == 1 }} 
+      #   with:
+      #     github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
+      #     branch: ${{ github.ref }}     
+      #     directory: ${{ env.WORKDIR }}    
+
+      # - name: Set push statys
       #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     CUR_BRANCH="${GITHUB_REF#refs/heads/}"
-      #     echo "--------------"
-      #     echo "Checkout branch ${CUR_BRANCH} last status"
-      #     echo "----------"   
-      #     # git config --global user.email "${GITLAB_USER_EMAIL}"
-      #     # git config --global user.name "${GITLAB_USER_NAME}"  
-
-      #     # # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
-      #     # git fetch origin ${CI_COMMIT_BRANCH}
-      #     # git reset --hard origin/${CI_COMMIT_BRANCH}
-      #     # git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
-      #     # git checkout ${CI_COMMIT_BRANCH}
-      #     # # echo "-------checkout"
-      #     # # git branch && git log --pretty=oneline -n 5
-      #     # # echo "-------"
+      #   run: |    
       #     # Set correct end of step status (if not an email will be sent)
-      #     echo "STATUS_STEP_LOAD_LAST_SRC=1" >> $GITHUB_ENV
+      #     echo "STATUS_STEP_PUSH_OR=1" >> $GITHUB_ENV
 
-      # - name: Get hm reader and d2r libs locally
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-        #   echo "--------------"
-        #   echo "Getting HM Reader and D2R files"
-        #   echo "----------"
 
-        #   # Commercial libs
-        #   for myarch in linux64 linuxa64 win64
-        #   do
-        #     jf rt download ${JF_OPTIONS} --flat=true ${{ env.HM_REMOTE_DIR }}/${myarch}_com/* ${HMREADER_COMMERCIAL_LOCAL_DIR}/${myarch}/
-        #   done
-        #   # # Opensource libs
-        #   # jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${{ env.HM_REMOTE_DIR }}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
-
-        #   # D2R
-        #   # Remove local files in case name has changed (version in name !)
-        #   rm -rf ${D2R_LOCAL_DIR}/*
-        #   jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/libapr*" "${HW_SOLVER_PREFIX}/${D2R_PREFIX}/${{ env.BRANCH_NAME }}/${DELIV_COMMIT}/(*)" ${D2R_LOCAL_DIR}/{1}
-        #   # Add files in case they are new (new name)
-
-        #   # Add new files
-        #   git add .
-
-        #   git status
-        #   # md5sum ${HMREADER_COMMERCIAL_LOCAL_DIR}/*/* ${HMREADER_OPENSOURCE_LOCAL_DIR}/*/* ${D2R_LOCAL_DIR}/*/*
 
       # - name: Push on Radioss
       #   run: |
@@ -290,31 +247,31 @@ jobs:
             fi
           fi
 
-          # if [ "$CONTINUE" = 1 ]
-          # then
-          #   echo -e "\n#### STATUS_STEP_CONNECT_GH ###"
-          #   if [ "$STATUS_STEP_CONNECT_GH" = 0 ]
-          #   then 
-          #     echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-          #     MAILMSG+="$MSG_STEP_CONNECT_GH\n"
-          #   CONTINUE=0
-          #   else
-          #     echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-          #   fi
-          # fi
+          if [ "$CONTINUE" = 1 ]
+          then          
+            echo -e "\n#### STATUS_STEP_GET_LIBS ###"
+            if [ "$STATUS_STEP_GET_LIBS" = 0 ]
+            then
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              MAILMSG+="$MSG_STEP_GET_LIBS\n"
+              CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi
 
-          # if [ "$CONTINUE" = 1 ]
-          # then
-          #   echo -e "\n#### STATUS_STEP_LOAD_LAST_SRC ###"
-          #   if [ "$STATUS_STEP_LOAD_LAST_SRC" = 0 ]
-          #   then 
-          #     echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-          #     MAILMSG+="$MSG_STEP_LOAD_LAST_SRC\n"
-          #   CONTINUE=0
-          #   else
-          #     echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-          #   fi
-          # fi
+          if [ "$CONTINUE" = 1 ]
+          then          
+            echo -e "\n#### STATUS_STEP_PUSH_OR ###"
+            if [ "$STATUS_STEP_PUSH_OR" = 0 ]
+            then
+              echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+              MAILMSG+="$MSG_STEP_PUSH_OR\n"
+              CONTINUE=0
+            else
+              echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+            fi
+          fi          
 
           # Send email 
           if [ "$CONTINUE" = 0 ] 
