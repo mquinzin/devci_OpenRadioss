@@ -162,7 +162,8 @@ jobs:
         run: |    
           git branch
           git log --pretty=oneline -n 10
-
+          
+          git remote -v
 
       # - name: Set github access credentials
       #   working-directory: ${{ env.WORKDIR }}
