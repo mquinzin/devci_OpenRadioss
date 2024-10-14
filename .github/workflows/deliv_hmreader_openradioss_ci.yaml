@@ -180,8 +180,8 @@ jobs:
 
           git remote -v 
 
-          git add toto
-          git commit -m "Add toto"
+          git rm toto
+          git commit -m "Remove toto"
           git push origin main
 
       # - name: Set github access credentials
