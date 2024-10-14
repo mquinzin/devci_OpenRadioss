@@ -24,8 +24,8 @@ env:
   # JFROG_CLI_LOG_LEVEL: "ERROR"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
   JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
-  MAIL_CONFIG_FILE: "/etc/s-nail.rc"
-  MAIL_COMMAND: "s-nail"
+  MAIL_CONFIG_FILE: "/etc/mail.rc"
+  MAIL_COMMAND: "Mail"
 
 jobs:
 
@@ -36,7 +36,7 @@ jobs:
     runs-on: ["dev_delivery","dev"]
     container: 
       # image: fr-qafactorydev.europe.altair.com/common-linux64
-      image: fr-qafactorydev.europe.altair.com/gitlab-utils
+      image: fr-qafactorydev.europe.altair.com/common-linux64
       credentials: 
         username: ${{secrets.DOCKER_REGISTRY_USER}}
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
@@ -90,7 +90,7 @@ jobs:
           echo "-------------------------"
 
           patterns=(
-            "linux64/libhm_reader_linux64.so"
+            "linux64/libhm_reader_linux64xxx.so"
             "linuxa64/libhm_reader_linuxa64.so"
             "win64/hm_reader_win64.lib"
             "win64/hm_reader_win64.dll"
@@ -131,24 +131,26 @@ jobs:
           fi
 
       # - name: Load last status of the branch
+      #   working-directory: ${{ env.WORKDIR }}
       #   run: |
-        #     echo "--------------"
-        #     echo "Checkout branch ${CI_COMMIT_BRANCH} last status"
-        #     echo "----------"   
-        #     git config --global user.email "${GITLAB_USER_EMAIL}"
-        #     git config --global user.name "${GITLAB_USER_NAME}"  
+      #       echo "--------------"
+      #       echo "Checkout branch ${CI_COMMIT_BRANCH} last status"
+      #       echo "----------"   
+      #       git config --global user.email "${GITLAB_USER_EMAIL}"
+      #       git config --global user.name "${GITLAB_USER_NAME}"  
 
-        #     # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
-        #     git fetch origin ${CI_COMMIT_BRANCH}
-        #     git reset --hard origin/${CI_COMMIT_BRANCH}
-        #     git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
-        #     git checkout ${CI_COMMIT_BRANCH}
-        #     # echo "-------checkout"
-        #     # git branch && git log --pretty=oneline -n 5
-        #     # echo "-------"
+      #       # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
+      #       git fetch origin ${CI_COMMIT_BRANCH}
+      #       git reset --hard origin/${CI_COMMIT_BRANCH}
+      #       git branch --force ${CI_COMMIT_BRANCH} origin/${CI_COMMIT_BRANCH}      
+      #       git checkout ${CI_COMMIT_BRANCH}
+      #       # echo "-------checkout"
+      #       # git branch && git log --pretty=oneline -n 5
+      #       # echo "-------"
 
 
       # - name: Get hm reader and d2r libs locally
+      #   working-directory: ${{ env.WORKDIR }}
       #   run: |
         #   echo "--------------"
         #   echo "Getting HM Reader and D2R files"
@@ -205,7 +207,7 @@ jobs:
     needs: deliver_hmreader_openradioss
     runs-on: ["dev_delivery","dev"]
     container: 
-      image: fr-qafactorydev.europe.altair.com/gitlab-utils
+      image: fr-qafactorydev.europe.altair.com/common-linux64
       credentials: 
         username: ${{secrets.DOCKER_REGISTRY_USER}}
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
@@ -219,7 +221,7 @@ jobs:
         run: |
           # Setting SMTP server (docker host)
           DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-          echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
+          echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
 
           # DEV ONLY #
           export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
