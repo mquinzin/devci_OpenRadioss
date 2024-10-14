@@ -24,6 +24,7 @@ env:
   # JFROG_CLI_LOG_LEVEL: "ERROR"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
   JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
+  MAIL_CONFIG_FILE: "/etc/s-nail.rc"
   MAIL_COMMAND: "s-nail"
 
 jobs:
@@ -86,7 +87,7 @@ jobs:
           echo "-------------------------"
 
           patterns=(
-            "linux64/libhm_reader_linux64.so"
+            "linux64/libhm_reader_linux64xxx.so"
             "linuxa64/libhm_reader_linuxa64.so"
             "win64/hm_reader_win64.lib"
             "win64/hm_reader_win64.dll"
