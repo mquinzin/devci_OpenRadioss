@@ -175,7 +175,6 @@ jobs:
           git config --global user.name "${{ env.GIT_SERVBOT_USER }}"
           git add .
           git status
-          git commit -m "Update libhm_reader library for OpenRadioss"
 
           if [[ -n $(git status --porcelain) ]]; then
             # Set correct end of step status (if not an email will be sent)
@@ -185,6 +184,8 @@ jobs:
             echo "There are no changes in the repository, abort."
             exit 1
           fi
+          
+          git commit -m "Update libhm_reader library for OpenRadioss"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
