@@ -184,10 +184,10 @@ jobs:
         #   git push origin ${CI_COMMIT_BRANCH}
 
 
-      # - name: Set DELIVERY status if evertthing if OK
-      #   run: |  
-        #   echo "Everything OK"
-        #   echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
+      - name: Set DELIVERY status if everything if OK
+        run: |  
+          echo "Everything OK"
+          echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
   
   check_deliver_hmreader_openradioss:
     if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
