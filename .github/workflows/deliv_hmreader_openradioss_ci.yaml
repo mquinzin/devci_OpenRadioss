@@ -47,7 +47,7 @@ jobs:
       HW_SOLVER_PREFIX: "hwsolvers/radioss"
       HMREADER_PREFIX: "hm_reader"
       # Needed by gh auth
-      GH_TOKEN: ${{ secrets.SERVBOT_PAT }}     
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
       GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}   
       GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}   
       STATUS_STEP_CHECK_DELIV_COMMIT: 0
@@ -176,7 +176,7 @@ jobs:
           echo "un" > toto
 
           git remote remove origin
-          git remote add origin https://x-access-token:${{ secrets.SERVBOT_PAT }}@github.com/${{ github.repository }}.git
+          git remote add origin https://x-access-token:${{ env.SERVBOT_PAT }}@github.com/${{ github.repository }}.git
 
           git remote -v 
 
