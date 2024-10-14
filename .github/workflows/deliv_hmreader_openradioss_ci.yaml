@@ -205,21 +205,25 @@ jobs:
  
     steps:
 
-      # Set the working dir suffixed with deliv_hmreader
-      - name: Send email if status is 0 
-        if: ${{ env.DELIVERY_STATUS == '0' }}
-        run: |
-          # Setting SMTP server (docker host)
-          DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-          echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
+      - name: Check DELIVERY status 
+        run: |  
+          echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
 
-          # DEV ONLY #
-          export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
+      # # Set the working dir suffixed with deliv_hmreader
+      # - name: Send email if status is 0 
+      #   if: ${{ env.DELIVERY_STATUS == '0' }}
+      #   run: |
+      #     # Setting SMTP server (docker host)
+      #     DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+      #     echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
 
-          # Send email
-          SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
-          LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
-          echo -e ${MAILMSG}
-          echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
+      #     # DEV ONLY #
+      #     export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
+
+      #     # Send email
+      #     SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
+      #     LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+      #     MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
+      #     echo -e ${MAILMSG}
+      #     echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
         
