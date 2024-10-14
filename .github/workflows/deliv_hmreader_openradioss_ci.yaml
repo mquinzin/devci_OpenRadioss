@@ -185,7 +185,8 @@ jobs:
         if: ${{ env.GO_PUSH == 1 }} 
         with:
           github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
-          branch: ${{ github.ref }}                
+          branch: ${{ github.ref }}     
+          directory: ${{ env.WORKDIR }}        
 
       # - name: Set github access credentials
       #   working-directory: ${{ env.WORKDIR }}
