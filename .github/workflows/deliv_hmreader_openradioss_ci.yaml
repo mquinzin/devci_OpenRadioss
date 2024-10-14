@@ -218,7 +218,8 @@ jobs:
 
           # Send email
           SUBJECT="[ HMREADER LIBS PUSH on OPENRADIOSS ]"
-          MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}"
+          LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          MAILMSG="The delivery of hm reader libraries into OpenRadioss repository fails.\n\nFind detail in log page ${LOG_PATH}"
           echo -e ${MAILMSG}
           echo -e "${MAILMSG}" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
         
