@@ -48,6 +48,8 @@ jobs:
       HMREADER_PREFIX: "hm_reader"
       # Needed by gh auth
       GH_TOKEN: ${{ secrets.SERVBOT_PAT }}     
+      GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}   
+      GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}   
       STATUS_STEP_CHECK_DELIV_COMMIT: 0
       MSG_STEP_CHECK_DELIV_COMMIT: "Some libraries are missing on Jfrog"  
       STATUS_STEP_CHECK_LIBS: 0

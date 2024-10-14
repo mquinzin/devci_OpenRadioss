@@ -48,6 +48,8 @@ jobs:
     env:
       GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
       GITLAB_REPO_URL : ${{ secrets.GITLAB_REPO_URL }}
+      GITLAB_SERVBOT_USER: ${{ secrets.GITLAB_SERVBOT_USER }}
+      GITLAB_SERVBOT_EMAIL: ${{ secrets.GITLAB_SERVBOT_EMAIL }}
       # Needed by gh auth
       GH_TOKEN: ${{ secrets.SERVBOT_PAT }} 
       FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
