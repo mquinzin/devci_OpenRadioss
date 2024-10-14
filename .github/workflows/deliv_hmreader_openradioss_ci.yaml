@@ -190,7 +190,7 @@ jobs:
           echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
 
       - name: Store DELIVERY status value for next job
-        if: ${{ always() 
+        if: ${{ always() }}
         run: |  
           echo "::set-output name=delivery_status::${{ env.DELIVERY_STATUS }}"    
           echo "At this point DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"    
