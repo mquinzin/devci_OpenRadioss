@@ -188,6 +188,13 @@ jobs:
         run: |  
           echo "Everything OK"
           echo "DELIVERY_STATUS=1" >> $GITHUB_ENV
+
+      - name: Store DELIVERY status value for next job
+        if: ${{ always() 
+        run: |  
+          echo "::set-output name=delivery_status::${{ env.DELIVERY_STATUS }}"    
+          echo "At this point DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"    
+
   
   check_deliver_hmreader_openradioss:
     if: ${{ always() && github.repository_owner == 'OpenRadioss'}}
@@ -207,15 +214,18 @@ jobs:
 
       - name: Check DELIVERY status 
         run: |  
+          echo "DELIVERY_STATUS=${{ needs.job1.outputs.delivery_status }}" >> $GITHUB_ENV
+          echo "DELIVERY_STATUS: ${{ needs.job1.outputs.delivery_status }}"
           echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
 
-      # # Set the working dir suffixed with deliv_hmreader
-      # - name: Send email if status is 0 
-      #   if: ${{ env.DELIVERY_STATUS == '0' }}
-      #   run: |
-      #     # Setting SMTP server (docker host)
-      #     DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-      #     echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
+
+      # Set the working dir suffixed with deliv_hmreader
+      - name: Send email if status is 0 
+        if: ${{ env.DELIVERY_STATUS == '0' }}
+        run: |
+          # Setting SMTP server (docker host)
+          DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+          echo "set mta=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
 
       #     # DEV ONLY #
       #     export HMREADER_TO_EMAIL="mquinzin@europe.altair.com"
