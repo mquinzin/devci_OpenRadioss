@@ -47,7 +47,8 @@ jobs:
       HW_SOLVER_PREFIX: "hwsolvers/radioss"
       HMREADER_PREFIX: "hm_reader"
       # Needed by gh auth
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+      GIT_PUSH_SERVBOT_PAT: ${{ secrets.GIT_PUSH_SERVBOT_PAT }}
+      GO_PUSH: 0
       GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}   
       GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}   
       STATUS_STEP_CHECK_DELIV_COMMIT: 0
@@ -159,6 +160,8 @@ jobs:
           clean: 'true'
           lfs: 'true'
           ref: 'main'
+          # Use a PAT else the push won't trigger the next workflow
+          token: ${{ env.GIT_PUSH_SERVBOT_PAT }}          
 
       - name: Set github access credentials
         working-directory: ${{ env.WORKDIR }}
@@ -173,16 +176,16 @@ jobs:
 
           git config --list | grep user
 
-          echo "un" > toto
-
-          git remote remove origin
-          git remote add origin https://x-access-token:${{ env.SERVBOT_PAT }}@github.com/${{ github.repository }}.git
-
-          git remote -v 
-
           git rm toto
           git commit -m "Remove toto"
-          git push origin main
+          echo "GO_PUSH=1" >> $GITHUB_ENV
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        if: ${{ env.GO_PUSH == 1 }} 
+        with:
+          github_token: ${{ env.GIT_PUSH_SERVBOT_PAT }}
+          branch: ${{ github.ref }}                
 
       # - name: Set github access credentials
       #   working-directory: ${{ env.WORKDIR }}
