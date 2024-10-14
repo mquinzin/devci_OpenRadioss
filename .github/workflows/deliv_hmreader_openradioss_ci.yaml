@@ -218,8 +218,8 @@ jobs:
 
       - name: Check DELIVERY status 
         run: |  
-          echo "DELIVERY_STATUS=${{ needs.deliver_hmreader_openradioss.output.deliv_status }}" >> $GITHUB_ENV
-          echo "DELIVERY_STATUS: ${{ steps.set-status.output.deliv_status }}"
+          echo "DELIVERY_STATUS=${{ needs.deliver_hmreader_openradioss.outputs.deliv_status }}" >> $GITHUB_ENV
+          echo "DELIVERY_STATUS: ${{ steps.set-status.outputs.deliv_status }}"
           echo "DELIVERY_STATUS: ${{ env.DELIVERY_STATUS }}"
 
 
