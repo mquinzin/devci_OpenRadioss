@@ -162,8 +162,6 @@ jobs:
           # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
           git fetch origin ${BRANCH_NAME}
           git reset --hard origin/${BRANCH_NAME}
-          git branch --force ${BRANCH_NAME} origin/${BRANCH_NAME}      
-          git checkout ${BRANCH_NAME}
           echo "-------checkout"
           git branch && git log --pretty=oneline -n 5
           echo "-------"          
