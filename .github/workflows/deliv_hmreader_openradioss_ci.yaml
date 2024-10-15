@@ -158,7 +158,18 @@ jobs:
           echo "Getting HM Reader files" 
           echo "----------"
 
+          # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
+          git fetch origin ${BRANCH_NAME}
+          git reset --hard origin/${BRANCH_NAME}
+          git branch --force ${BRANCH_NAME} origin/${BRANCH_NAME}      
+          git checkout ${BRANCH_NAME}
+          echo "-------checkout"
+          git branch && git log --pretty=oneline -n 5
+          echo "-------"          
+
           echo "Current commit id is $GITHUB_SHA"
+
+          exit
 
           # Opensource libs
           jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${{ env.HM_REMOTE_DIR }}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
