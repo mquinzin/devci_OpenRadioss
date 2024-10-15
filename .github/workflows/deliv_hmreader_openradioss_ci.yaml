@@ -155,7 +155,7 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           echo "--------------"
-          echo "Getting HM Reader files"
+          echo "Getting HM Reader files" 
           echo "----------"
 
           echo "Current commit id is $GITHUB_SHA"
