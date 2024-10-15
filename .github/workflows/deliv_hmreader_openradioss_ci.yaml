@@ -72,10 +72,11 @@ jobs:
         run: |
           # Get branch
           export BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-          # DEV ONLY #
-          export BRANCH_NAME="dev/ci/hm_reader_intermediate"
 
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+
+          # DEV ONLY #
+          export BRANCH_NAME="dev/ci/hm_reader_intermediate"
 
           export HM_REMOTE_DIR="${HW_SOLVER_PREFIX}/${HMREADER_PREFIX}/${BRANCH_NAME}/${DELIV_COMMIT}"
           echo "HM_REMOTE_DIR=${HM_REMOTE_DIR}" >> $GITHUB_ENV
