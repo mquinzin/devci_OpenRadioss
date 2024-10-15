@@ -147,7 +147,7 @@ jobs:
           path: ${{ env.WORKDIR }}
           clean: 'true'
           lfs: 'true'
-          ref: 'main'
+          # ref: 'main'
           # Use a PAT else the push won't trigger the next workflow
           token: ${{ env.GIT_PUSH_SERVBOT_PAT }}          
 
@@ -157,6 +157,8 @@ jobs:
           echo "--------------"
           echo "Getting HM Reader files"
           echo "----------"
+
+          echo "Current commit id is $GITHUB_SHA"
 
           # Opensource libs
           jf rt download ${JF_OPTIONS} --flat=true --recursive --exclusions="*/_com/*" "${{ env.HM_REMOTE_DIR }}/(*)" ${HMREADER_OPENSOURCE_LOCAL_DIR}/{1}
