@@ -156,7 +156,7 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           echo "--------------"
-          echo "Getting HM Reader files" 
+          echo "Getting HM Reader files"  
           echo "----------"
 
           # Force local branch to point on same commit as remote branch, way to restore a correct env if old push failed before
