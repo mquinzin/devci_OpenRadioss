@@ -208,6 +208,10 @@ jobs:
         if: ${{ always() }}
         run: |
 
+          # Setting SMTP server (docker host)
+          DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+          echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
+
           SUBJECT="[ TEST ] - Error in CI"
           export HMREADER_TO_EMAIL="mquinzin@altair.com maxime.quinzin@gmail.com"
           echo -e "Hello" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
