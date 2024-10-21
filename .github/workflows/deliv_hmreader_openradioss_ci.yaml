@@ -213,7 +213,7 @@ jobs:
           echo "set smtp=smtp://${DOCKER_HOST}:25" >> ${MAIL_CONFIG_FILE}
 
           SUBJECT="[ TEST ] - Error in CI"
-          export HMREADER_TO_EMAIL="mquinzin@altair.com maxime.quinzin@gmail.com"
+          # export HMREADER_TO_EMAIL="mquinzin@altair.com maxime.quinzin@gmail.com"
           echo -e "Hello" | ${MAIL_COMMAND} -r ${FROM_EMAIL} -s "${SUBJECT}" ${HMREADER_TO_EMAIL}
 
           # LOG_PATH="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
