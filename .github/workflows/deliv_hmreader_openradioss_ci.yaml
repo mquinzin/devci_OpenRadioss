@@ -45,6 +45,7 @@ jobs:
       GO_PUSH: 0
       GIT_SERVBOT_USER: ${{ secrets.GIT_SERVBOT_USER }}   
       GIT_SERVBOT_EMAIL: ${{ secrets.GIT_SERVBOT_EMAIL }}   
+      HMREADER_TO_EMAIL: ${{ secrets.HMREADER_TO_EMAIL }}
       STATUS_STEP_CHECK_DELIV_COMMIT: 0
       MSG_STEP_CHECK_DELIV_COMMIT: "Some libraries are missing on Jfrog"  
       STATUS_STEP_CHECK_LIBS: 0
