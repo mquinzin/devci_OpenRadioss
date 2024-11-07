@@ -703,7 +703,8 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           echo "LAST_STABLE_COMMIT=$(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
-          echo "LAST_STABLE_COMMIT_MESSAGE=$(git log -1 --format=%B ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
+          # echo "LAST_STABLE_COMMIT_MESSAGE=$(git log -1 --format=%B ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
+          printf "LAST_STABLE_COMMIT_MESSAGE=%s\n" "$(git log -1 --format=%B "${{ env.LAST_STABLE_TAG_NAME }}")" >> $GITHUB_ENV
 
       - name: Print some variables
         working-directory: ${{ env.WORKDIR }}
