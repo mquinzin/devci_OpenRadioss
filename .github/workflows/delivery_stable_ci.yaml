@@ -574,7 +574,7 @@ jobs:
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
   delivery:
-    needs: [build_linux,build_windows_no_container,build_tools_linux,build_tools_windows_no_container]
+    # needs: [build_linux,build_windows_no_container,build_tools_linux,build_tools_windows_no_container]
     # DEV ONLY # runs-on: dev_delivery
     runs-on: delivery    
     container: 
