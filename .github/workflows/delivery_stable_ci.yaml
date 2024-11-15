@@ -640,6 +640,12 @@ jobs:
       - name: Check files in exec
         working-directory: ${{ env.WORKDIR }}
         run: |
+
+          # DEV ONLY #
+          mkdir -p exec_tmp/linux64 exec_tmp/win64
+          echo "aaa" > exec_tmp/linux64/fake_file_linux64        
+          echo "aaa" > exec_tmp/linux64/fake_file_win64        
+
           ls -l exec_tmp/ || echo "exec_tmp is empty"
 
       - name: Copy all artifact complex structure into flat files in exec
@@ -683,10 +689,6 @@ jobs:
             fi
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-
-            # DEV ONLY #
-            mkdir -p exec/${os}/
-            echo "aaa" > exec/${os}/fake_file_${os}
 
             cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
 
