@@ -631,6 +631,16 @@ jobs:
           path: "${{ env.WORKDIR }}/EXTRA"
           token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
+      # Get OpenRadioss gui in Tools repository
+      - name: Checkout git Tools sources
+        uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+          clean: 'false'
+          repository: '${{ secrets.TOOLS_REPOSITORY }}'
+          path: "${{ env.WORKDIR }}/TOOLS"
+          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
+
       # Download ALL artifacts
       - name: Download ALL artifacts for packaging
         uses: actions/download-artifact@v4
