@@ -644,7 +644,7 @@ jobs:
           # DEV ONLY #
           mkdir -p exec_tmp/linux64 exec_tmp/win64
           echo "aaa" > exec_tmp/linux64/fake_file_linux64        
-          echo "aaa" > exec_tmp/linux64/fake_file_win64        
+          echo "aaa" > exec_tmp/win64/fake_file_win64        
 
           ls -l exec_tmp/ || echo "exec_tmp is empty"
 
