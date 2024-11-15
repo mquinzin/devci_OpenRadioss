@@ -594,6 +594,7 @@ jobs:
       DELIVERY_NB_RELEASES_TO_KEEP: 3
       DELIVERY_TAG_PREFIX: 'latest-'
       OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
+      OPENRADIOSS_GUI: 'TOOLS/openradioss_gui'
 
     steps:
 
@@ -696,6 +697,12 @@ jobs:
             if test -d EXTRA/${os}
             then
               cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            fi
+
+            # Get OpenRadioss gui from Tools repository
+            if test -d ${OPENRADIOSS_GUI}
+            then
+              cp -a ${OPENRADIOSS_GUI} todeliver/${os}/
             fi
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
