@@ -640,7 +640,7 @@ jobs:
       - name: Check files in exec
         working-directory: ${{ env.WORKDIR }}
         run: |
-          ls -l exec_tmp/
+          ls -l exec_tmp/ || echo "exec_tmp is empty"
 
       - name: Copy all artifact complex structure into flat files in exec
         working-directory: ${{ env.WORKDIR }}
