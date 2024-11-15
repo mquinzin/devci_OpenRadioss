@@ -576,7 +576,8 @@ jobs:
   delivery:
     # needs: [build_linux,build_windows_no_container,build_tools_linux,build_tools_windows_no_container]
     # DEV ONLY # runs-on: dev_delivery
-    runs-on: delivery    
+    # runs-on: delivery  
+    runs-on: dev_delivery  
     container: 
       image: fr-qafactorydev.europe.altair.com/common-linux64
       credentials: 
@@ -585,7 +586,7 @@ jobs:
       volumes: 
          - /etc/localtime:/etc/localtime:ro
          # DEV ONLY # - /github_download_counter_dev:/github_download_counter
-        #  - /github_download_counter_dev:/github_download_counter
+        #  - /github_download_counter:/github_download_counter
 
     env:
       SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
@@ -620,104 +621,99 @@ jobs:
           lfs: 'true'
           ref: ${{ env.LAST_STABLE_TAG_NAME }}
 
-      # # Get OpenRadioss extras from dedicated repository
-      # - name: Checkout git EXTRA sources
-      #   uses: actions/checkout@v4
-      #   with:
-      #     lfs: 'true'
-      #     clean: 'false'
-      #     repository: '${{ secrets.EXTRA_REPOSITORY }}'
-      #     path: "${{ env.WORKDIR }}/EXTRA"
-      #     token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
+      # Get OpenRadioss extras from dedicated repository
+      - name: Checkout git EXTRA sources
+        uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+          clean: 'false'
+          repository: '${{ secrets.EXTRA_REPOSITORY }}'
+          path: "${{ env.WORKDIR }}/EXTRA"
+          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
-      # # Download ALL artifacts
-      # - name: Download ALL artifacts for packaging
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     path: "${{ env.WORKDIR }}/exec_tmp"
+      # Download ALL artifacts
+      - name: Download ALL artifacts for packaging
+        uses: actions/download-artifact@v4
+        with:
+          path: "${{ env.WORKDIR }}/exec_tmp"
 
-      # - name: Check files in exec
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     ls -l exec_tmp/
+      - name: Check files in exec
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          ls -l exec_tmp/
 
-      # - name: Copy all artifact complex structure into flat files in exec
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     echo "List exec_tmp : "
-      #     find exec_tmp -type f
+      - name: Copy all artifact complex structure into flat files in exec
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          echo "List exec_tmp : "
+          find exec_tmp -type f
 
-      #     for os in linux64 win64 
-      #     do
-      #       mkdir -p exec/${os}
-      #       for file in `find exec_tmp/*${os}*/ -type f`
-      #       do
-      #         cp -p $file exec/${os}/
-      #       done
-      #       chmod 755 exec/${os}/*
-      #     done
+          for os in linux64 win64 
+          do
+            mkdir -p exec/${os}
+            for file in `find exec_tmp/*${os}*/ -type f`
+            do
+              cp -p $file exec/${os}/
+            done
+            chmod 755 exec/${os}/*
+          done
 
-      #     echo "List exec : "
-      #     find exec -type f
+          echo "List exec : "
+          find exec -type f
 
-      # - name: Provide ALL binaries
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     # Removed lfs hook (not supported in next action, not neeeded)
-      #     rm -f .git/hooks/pre-push
+      - name: Provide ALL binaries
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          # Removed lfs hook (not supported in next action, not neeeded)
+          rm -f .git/hooks/pre-push
 
-      #     # Prepare tree architecture
-      #     rm -rf todeliver
+          # Prepare tree architecture
+          rm -rf todeliver
 
-      #     for os in linux64 win64 
-      #     do      
-      #       mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
-      #       cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
-      #       cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+          for os in linux64 win64 
+          do      
+            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
+            cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
+            cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
-      #       # Get Intel runtime and some other extras from a dedicated repository
-      #       if test -d EXTRA/${os}
-      #       then
-      #         cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-      #       fi
+            # Get Intel runtime and some other extras from a dedicated repository
+            if test -d EXTRA/${os}
+            then
+              cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            fi
 
-      #       cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-      #       cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
+            # DEV ONLY #
+            mkdir -p exec/${os}/
+            echo "aaa" > exec/${os}/fake_file_${os}
 
-      #       mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-      #       cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
+            cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
 
-      #       cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
+            cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
 
-      #       export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
+            cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-      #       cd todeliver/${os}
-      #       zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
-      #       cd ..
-      #       rm -rf ${os}
-      #       cd ..
-      #     done 
+            export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
+
+            cd todeliver/${os}
+            zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+            cd ..
+            rm -rf ${os}
+            cd ..
+          done 
 
       - name: Set some variables
         working-directory: ${{ env.WORKDIR }}
         run: |
-          # echo "LAST_STABLE_COMMIT=$(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
-          # echo "LAST_STABLE_COMMIT_MESSAGE=$(git log -1 --format=%B ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
+          echo "LAST_STABLE_COMMIT=$(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
+          # Way to deal with special chars in a commit message
           {
             echo "LAST_STABLE_COMMIT_MESSAGE<<EOF"
             git log -1 --format=%B "${{ env.LAST_STABLE_TAG_NAME }}"
             echo "EOF"
           } >> $GITHUB_ENV
-
-      - name: Print some variables
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          # echo "LAST_STABLE_COMMIT=${LAST_STABLE_COMMIT}"
-          echo "LAST_STABLE_COMMIT_MESSAGE=${LAST_STABLE_COMMIT_MESSAGE}"
-          mkdir todeliver
-          echo "lkmlk" > todeliver/myfile.txt
-
 
       - uses: octokit/request-action@v2.x
         id: get_commit_author
