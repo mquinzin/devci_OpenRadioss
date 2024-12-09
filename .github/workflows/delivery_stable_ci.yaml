@@ -599,7 +599,7 @@ jobs:
       DELIVERY_TAG_PREFIX: 'latest-'
       OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
       OPENRADIOSS_GUI: 'openradioss_gui'
-      OPENRADIOSS_GUI_TOOLS: 'TOOLS/${{ env.OPENRADIOSS_GUI }}'
+      OPENRADIOSS_GUI_TOOLS: 'TOOLS/openradioss_gui'
       OPENRADIOSS_INP2RAD: 'TOOLS/inp2rad/inp2rad/inp2rad.py'
 
     steps:
