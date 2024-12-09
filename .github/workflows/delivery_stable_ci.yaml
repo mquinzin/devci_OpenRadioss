@@ -595,6 +595,7 @@ jobs:
       DELIVERY_TAG_PREFIX: 'latest-'
       OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
       OPENRADIOSS_GUI: 'TOOLS/openradioss_gui'
+      OPENRADIOSS_INP2RAD: 'TOOLS/inp2rad/inp2rad/inp2rad.py'
 
     steps:
 
@@ -703,6 +704,10 @@ jobs:
             if test -d ${OPENRADIOSS_GUI}
             then
               cp -a ${OPENRADIOSS_GUI} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            fi
+            if test -f ${OPENRADIOSS_INP2RAD}
+            then
+              cp -a ${OPENRADIOSS_INP2RAD} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
             fi
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
