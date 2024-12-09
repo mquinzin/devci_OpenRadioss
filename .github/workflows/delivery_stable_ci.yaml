@@ -705,6 +705,8 @@ jobs:
             # Get OpenRadioss gui from Tools repository
             if test -d ${OPENRADIOSS_GUI}
             then
+              echo "cp -a ${OPENRADIOSS_GUI} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/"
+              sleep 3
               cp -a ${OPENRADIOSS_GUI} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
             fi
 
