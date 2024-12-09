@@ -690,15 +690,21 @@ jobs:
 
           for os in linux64 win64 
           do      
+            echo "FROM ${os}"
+
             mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
             cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
             cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+
+            echo "After mkdir"
 
             # Get Intel runtime and some other extras from a dedicated repository
             if test -d EXTRA/${os}
             then
               cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
             fi
+
+            echo "After EXTRA"
 
             # Get OpenRadioss gui from Tools repository
             if test -d ${OPENRADIOSS_GUI}
@@ -709,6 +715,8 @@ jobs:
             then
               cp -a ${OPENRADIOSS_INP2RAD} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
             fi
+
+            echo "After OPENRADIOSS_GUI"
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
@@ -721,7 +729,6 @@ jobs:
 
             export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
 
-            echo "FROM ${os}"
             echo "ls -l todeliver/"
             ls -l todeliver/
             echo "-----"
