@@ -750,7 +750,7 @@ jobs:
             echo "pwd"
             pwd
             echo "rm -rf ${os}"
-            rm -rf ${os}
+            #rm -rf ${os}
             cd ..
             echo "pwd"
             pwd
