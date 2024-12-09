@@ -731,8 +731,13 @@ jobs:
             cd todeliver/${os}
             echo zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
             cd ..
+            echo "pwd"
+            pwd
+            echo "rm -rf ${os}"
             rm -rf ${os}
             cd ..
+            echo "pwd"
+            pwd
           done 
 
       - name: Set some variables
