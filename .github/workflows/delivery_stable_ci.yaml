@@ -696,11 +696,11 @@ jobs:
             cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
             cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
-            # # Get Intel runtime and some other extras from a dedicated repository
-            # if test -d EXTRA/${os}
-            # then
-            #   cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-            # fi
+            # Get Intel runtime and some other extras from a dedicated repository
+            if test -d EXTRA/${os}
+            then
+              cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            fi
 
             # # Get OpenRadioss gui from Tools repository
             # if test -d ${OPENRADIOSS_GUI}
@@ -718,6 +718,10 @@ jobs:
             # cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
             # export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
+
+            echo "ls -l todeliver/${os}/"
+            ls -l todeliver/${os}/
+            echo "-----------"
 
             # cd todeliver/${os}
             # zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
