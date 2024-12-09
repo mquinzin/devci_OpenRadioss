@@ -684,6 +684,7 @@ jobs:
           # Prepare tree architecture
           rm -rf todeliver
 
+          # for os in linux64 win64
           for os in linux64 win64 
           do      
             mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
