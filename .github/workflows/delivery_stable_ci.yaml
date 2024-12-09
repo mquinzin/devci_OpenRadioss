@@ -578,7 +578,7 @@ jobs:
 
   delivery:
     # needs: [build_linux,build_windows_no_container,build_tools_linux,build_tools_windows_no_container]
-    needs: [build_linux]
+    # needs: [build_linux]
     # DEV ONLY # runs-on: dev_delivery
     # runs-on: delivery   
     runs-on: dev_delivery
