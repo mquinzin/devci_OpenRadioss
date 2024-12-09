@@ -696,26 +696,26 @@ jobs:
             cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
             cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
-            # Get Intel runtime and some other extras from a dedicated repository
-            if test -d EXTRA/${os}
-            then
-              cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-            fi
+            # # Get Intel runtime and some other extras from a dedicated repository
+            # if test -d EXTRA/${os}
+            # then
+            #   cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            # fi
 
-            # Get OpenRadioss gui from Tools repository
-            if test -d ${OPENRADIOSS_GUI}
-            then
-              cp -a ${OPENRADIOSS_GUI} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-            fi
+            # # Get OpenRadioss gui from Tools repository
+            # if test -d ${OPENRADIOSS_GUI}
+            # then
+            #   cp -a ${OPENRADIOSS_GUI} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            # fi
 
-            cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            # cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-            cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
+            # cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
 
-            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-            cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
+            # mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
+            # cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
 
-            cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+            # cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
             # export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
 
@@ -726,82 +726,82 @@ jobs:
             # cd ..
           done 
 
-      - name: Set some variables
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          echo "LAST_STABLE_COMMIT=$(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
-          # Way to deal with special chars in a commit message
-          {
-            echo "LAST_STABLE_COMMIT_MESSAGE<<EOF"
-            git log -1 --format=%B "${{ env.LAST_STABLE_TAG_NAME }}"
-            echo "EOF"
-          } >> $GITHUB_ENV
-
-      - uses: octokit/request-action@v2.x
-        id: get_commit_author
-        env:
-          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-          REQUEST_BODY: "['${{ env.LAST_STABLE_COMMIT }}']"
-        with:
-          route: GET /repos/${{ github.repository }}/commits/${{ env.LAST_STABLE_COMMIT }}
-
-      # - name: Counter Download - Update values
+      # - name: Set some variables
       #   working-directory: ${{ env.WORKDIR }}
       #   run: |
-      #       cd /github_download_counter
+      #     echo "LAST_STABLE_COMMIT=$(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})" >> $GITHUB_ENV
+      #     # Way to deal with special chars in a commit message
+      #     {
+      #       echo "LAST_STABLE_COMMIT_MESSAGE<<EOF"
+      #       git log -1 --format=%B "${{ env.LAST_STABLE_TAG_NAME }}"
+      #       echo "EOF"
+      #     } >> $GITHUB_ENV
 
-      #       # Do some before using some lock and retry stuff
-      #       cp download_count.json sav-delivery-${{ env.DATEOFTHETAG }}-download_count.json
+      # - uses: octokit/request-action@v2.x
+      #   id: get_commit_author
+      #   env:
+      #     GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+      #     REQUEST_BODY: "['${{ env.LAST_STABLE_COMMIT }}']"
+      #   with:
+      #     route: GET /repos/${{ github.repository }}/commits/${{ env.LAST_STABLE_COMMIT }}
 
-      #       github_download_count.py \
-      #         --git_api_url ${{ github.api_url }} \
-      #         --git_repo ${{ github.repository }} \
-      #         --git_user $SERVBOT_USER \
-      #         --git_token $SERVBOT_PAT \
-      #         --action update_values
+      # # - name: Counter Download - Update values
+      # #   working-directory: ${{ env.WORKDIR }}
+      # #   run: |
+      # #       cd /github_download_counter
 
-      # The action creates the release with an already existing tag (latest-xxxxx) so we use option skip_tag_creation: true
-      # We do this because we have already checkouted the wanted commit before
-      # Prerequisite: create the tag with command : git tag latest-YYYMMDD <commit id>; git push origin latest-YYYMMDD
-      - name: Release the new binaries
-        uses: docker://ghcr.io/mini-bomba/create-github-release:v1.2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release: "${{ env.LAST_STABLE_TAG_NAME }}"
-          tag: "${{ env.LAST_STABLE_TAG_NAME }}"
-          name: "Last stable build on ${{ env.DATEOFTHETAG }}"            
-          body: |
-            This automatic release is built from commit ${{ env.LAST_STABLE_COMMIT }} and authored by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-            [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      # #       # Do some before using some lock and retry stuff
+      # #       cp download_count.json sav-delivery-${{ env.DATEOFTHETAG }}-download_count.json
 
-            Commit message:
-            ${{ env.LAST_STABLE_COMMIT_MESSAGE }}
-          files: |
-            ${{ env.WORKDIR }}/todeliver/*
-          clear_attachments: true    
-          skip_tag_creation: true 
-          target_commit: ${{ env.LAST_STABLE_COMMIT }}
+      # #       github_download_count.py \
+      # #         --git_api_url ${{ github.api_url }} \
+      # #         --git_repo ${{ github.repository }} \
+      # #         --git_user $SERVBOT_USER \
+      # #         --git_token $SERVBOT_PAT \
+      # #         --action update_values
 
-      # - name: Counter Download - Update/Add entries
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #       cd /github_download_counter
-      #       github_download_count.py \
-      #         --git_api_url ${{ github.api_url }} \
-      #         --git_repo ${{ github.repository }} \
-      #         --git_user $SERVBOT_USER \
-      #         --git_token $SERVBOT_PAT \
-      #         --action update \
-      #         --tag_date ${{ env.DATEOFTHETAG }}
+      # # The action creates the release with an already existing tag (latest-xxxxx) so we use option skip_tag_creation: true
+      # # We do this because we have already checkouted the wanted commit before
+      # # Prerequisite: create the tag with command : git tag latest-YYYMMDD <commit id>; git push origin latest-YYYMMDD
+      # - name: Release the new binaries
+      #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.2.0
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     release: "${{ env.LAST_STABLE_TAG_NAME }}"
+      #     tag: "${{ env.LAST_STABLE_TAG_NAME }}"
+      #     name: "Last stable build on ${{ env.DATEOFTHETAG }}"            
+      #     body: |
+      #       This automatic release is built from commit ${{ env.LAST_STABLE_COMMIT }} and authored by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
+      #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-      # - name: Clean old github release/tag if needed + clean Counter Download
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #       clean_github_release.py \
-      #         --git_api_url ${{ github.api_url }} \
-      #         --git_repo ${{ github.repository }} \
-      #         --git_user $SERVBOT_USER \
-      #         --git_token $SERVBOT_PAT \
-      #         --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
-      #         --counter_file_dir /github_download_counter \
-      #         --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} 
+      #       Commit message:
+      #       ${{ env.LAST_STABLE_COMMIT_MESSAGE }}
+      #     files: |
+      #       ${{ env.WORKDIR }}/todeliver/*
+      #     clear_attachments: true    
+      #     skip_tag_creation: true 
+      #     target_commit: ${{ env.LAST_STABLE_COMMIT }}
+
+      # # - name: Counter Download - Update/Add entries
+      # #   working-directory: ${{ env.WORKDIR }}
+      # #   run: |
+      # #       cd /github_download_counter
+      # #       github_download_count.py \
+      # #         --git_api_url ${{ github.api_url }} \
+      # #         --git_repo ${{ github.repository }} \
+      # #         --git_user $SERVBOT_USER \
+      # #         --git_token $SERVBOT_PAT \
+      # #         --action update \
+      # #         --tag_date ${{ env.DATEOFTHETAG }}
+
+      # # - name: Clean old github release/tag if needed + clean Counter Download
+      # #   working-directory: ${{ env.WORKDIR }}
+      # #   run: |
+      # #       clean_github_release.py \
+      # #         --git_api_url ${{ github.api_url }} \
+      # #         --git_repo ${{ github.repository }} \
+      # #         --git_user $SERVBOT_USER \
+      # #         --git_token $SERVBOT_PAT \
+      # #         --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
+      # #         --counter_file_dir /github_download_counter \
+      # #         --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} 
