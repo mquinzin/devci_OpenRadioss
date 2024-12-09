@@ -717,6 +717,11 @@ jobs:
             fi
 
             echo "After OPENRADIOSS_GUI"
+            echo "pwd"
+            pwd
+            echo "ls -l"
+            ls -l
+            echo "-----------------"
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
