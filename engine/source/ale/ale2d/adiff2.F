@@ -1,0 +1,86 @@
+Copyright>        OpenRadioss
+Copyright>        Copyright (C) 1986-2024 Altair Engineering Inc.
+Copyright>
+Copyright>        This program is free software: you can redistribute it and/or modify
+Copyright>        it under the terms of the GNU Affero General Public License as published by
+Copyright>        the Free Software Foundation, either version 3 of the License, or
+Copyright>        (at your option) any later version.
+Copyright>
+Copyright>        This program is distributed in the hope that it will be useful,
+Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
+Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Copyright>        GNU Affero General Public License for more details.
+Copyright>
+Copyright>        You should have received a copy of the GNU Affero General Public License
+Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
+      !||====================================================================
+      !||    adiff2                 ../engine/source/ale/ale2d/adiff2.F
+      !||--- called by ------------------------------------------------------
+      !||    aeturb                 ../engine/source/ale/turbulence/aeturb.F
+      !||    akturb                 ../engine/source/ale/turbulence/akturb.F
+      !||    atherm                 ../engine/source/ale/atherm.F
+      !||--- uses       -----------------------------------------------------
+      !||    ale_connectivity_mod   ../common_source/modules/ale/ale_connectivity_mod.F
+      !||====================================================================
+      SUBROUTINE ADIFF2(PHIN,PHI,GRAD,COEF,ALE_CONNECT,VOL)
+      USE ALE_CONNECTIVITY_MOD
+C-----------------------------------------------
+C   I m p l i c i t   T y p e s
+C-----------------------------------------------
+#include      "implicit_f.inc"
+C-----------------------------------------------
+C   G l o b a l   P a r a m e t e r s
+C-----------------------------------------------
+#include      "mvsiz_p.inc"
+C-----------------------------------------------
+C   D u m m y   A r g u m e n t s
+C-----------------------------------------------
+      my_real PHIN(*), PHI(*), GRAD(4,*), COEF(*), VOL(*)
+      TYPE(t_ale_connectivity), INTENT(IN) :: ALE_CONNECT
+C-----------------------------------------------
+C   C o m m o n   B l o c k s
+C-----------------------------------------------
+#include      "com08_c.inc"
+#include      "vect01_c.inc"
+C-----------------------------------------------
+C   L o c a l   V a r i a b l e s
+C-----------------------------------------------
+      INTEGER I, IE, IV1, IV2, IV3, IV4, IAD2
+      my_real DPHI(MVSIZ)
+C-----------------------------------------------
+C   S o u r c e   L i n e s
+C-----------------------------------------------
+      DO I=LFT,LLT
+        IE =NFT+I
+        IAD2 = ALE_CONNECT%ee_connect%iad_connect(IE)
+        IV1 = ALE_CONNECT%ee_connect%connected(IAD2 + 1 - 1)
+        IV2 = ALE_CONNECT%ee_connect%connected(IAD2 + 2 - 1)
+        IV3 = ALE_CONNECT%ee_connect%connected(IAD2 + 3 - 1)
+        IV4 = ALE_CONNECT%ee_connect%connected(IAD2 + 4 - 1)
+        IF(IV1 <= 0)IV1=IE
+        IF(IV2 <= 0)IV2=IE
+        IF(IV3 <= 0)IV3=IE
+        IF(IV4 <= 0)IV4=IE
+        DPHI(I) = (COEF(IE)*COEF(IV1))*(PHI(IV1)-PHI(IE))*GRAD(1,I) / MAX(EM20,(COEF(IE)+COEF(IV1)))
+     3 +          (COEF(IE)*COEF(IV2))*(PHI(IV2)-PHI(IE))*GRAD(2,I) / MAX(EM20,(COEF(IE)+COEF(IV2)))
+     5 +          (COEF(IE)*COEF(IV3))*(PHI(IV3)-PHI(IE))*GRAD(3,I) / MAX(EM20,(COEF(IE)+COEF(IV3)))
+     7 +          (COEF(IE)*COEF(IV4))*(PHI(IV4)-PHI(IE))*GRAD(4,I) / MAX(EM20,(COEF(IE)+COEF(IV4)))
+      ENDDO!next I
+C-----------------------------------------------------------
+      DO I=LFT,LLT
+        DPHI(I)=TWO *DPHI(I)*DT1/MAX(VOL(I),EM20)
+      ENDDO
+C-----------------------------------------------------------
+      DO I=LFT,LLT
+        PHIN(I)=PHIN(I)+DPHI(I)
+      ENDDO
+C-----------------------------------------------------------
+      RETURN
+      END
