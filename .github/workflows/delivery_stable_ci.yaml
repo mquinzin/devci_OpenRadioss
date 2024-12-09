@@ -721,8 +721,13 @@ jobs:
 
             export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
 
+            echo "FROM ${os}"
+            ls -l todeliver/
+            echo "-----"
+            ls -l todeliver/${os}
+            echo "-----"
             cd todeliver/${os}
-            zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+            echo zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
             cd ..
             rm -rf ${os}
             cd ..
