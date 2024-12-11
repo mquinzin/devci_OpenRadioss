@@ -2,8 +2,8 @@ name: Update Headers CI
 
 on:
   # push:
-  schedule:
-    - cron: '0 1 * * *'
+  # schedule:
+  #   - cron: '0 1 * * *'
   workflow_dispatch:
 
 env:
