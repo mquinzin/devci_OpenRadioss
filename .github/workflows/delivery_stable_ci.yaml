@@ -401,7 +401,6 @@ jobs:
       OPENRADIOSS_GUI: 'openradioss_gui'
       TOOLS_OPENRADIOSS_GUI: 'TOOLS/openradioss_gui'
       TOOLS_INP2RAD: 'TOOLS/input_converters/inp2rad/inp2rad/inp2rad.py'
-      TOOLS_OUTPUT_CONVERTERS: 'TOOLS/output_converters'
       JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
       JF_TOOLS_OUTPUT_CONVERTERS: "${{ secrets.JFROG_DELIVERY_RADIOSS_REPO }}/OpenRadioss_Tools/output_converters"
 
@@ -518,10 +517,10 @@ jobs:
             fi
 
             # Get some output converters from Tools repository
-            if test -f ${{ env.TOOLS_OUTPUT_CONVERTERS}}
-            then
-              jf rt download ${JF_OPTIONS} "${JF_TOOLS_OUTPUT_CONVERTERS}/(*${os}*)" todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/{1}
-            fi
+            jf rt download ${JF_OPTIONS} "${JF_TOOLS_OUTPUT_CONVERTERS}/(*${os}*)" todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/{1}
+            echo "Find for ${os}"
+            find todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
+            echo "End find for ${os}"
 
             cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
