@@ -5,6 +5,7 @@ on:
 
 env:
   VERSION_FILE: "EXTLIB_VERSION.json"
+  GIT_PUSH_SERVBOT_PAT: ${{ secrets.GIT_PUSH_SERVBOT_PAT }}
 
 jobs:
 
