@@ -1,0 +1,42 @@
+name: Set exlib version
+on:
+  repository_dispatch:
+    types: [extlib-update]
+
+env:
+  VERSION_FILE: "EXTLIB_VERSION.json"
+
+jobs:
+
+  set-extlib-version:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # DEV ONLY # runs-on: ["dev_delivery","prod"] 
+    # runs-on: ["delivery","prod"]
+    runs-on: ["dev_delivery","dev"] 
+    container: 
+      image: fr-qafactorydev.europe.altair.com/common-linux64
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
+    steps:
+
+      # Set the working dir suffixed with deliv_hmreader
+      - name: Set workdir and status
+        run: |
+          echo "WORKDIR=set_extlib_vertsion" >> $GITHUB_ENV
+
+      # Get last git modifications
+      - name: Checkout git sources
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.WORKDIR }}
+          clean: 'true'
+          # Use a PAT else the push won't trigger the next workflow
+          token: ${{ env.GIT_PUSH_SERVBOT_PAT }}  
+
+      - name: Set version in file
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          echo "{\"version\": \"${{ github.event.client_payload.version }}\",\"url\": \"${{ github.event.client_payload.url }}\"}" > ${{ env.VERSION_FILE }}
