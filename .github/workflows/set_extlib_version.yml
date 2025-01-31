@@ -67,7 +67,7 @@ jobs:
           git branch && git log --pretty=oneline -n 5
           echo "-------"      
 
-          echo "{\"version\": \"${{ github.event.client_payload.version }}\",\"url\": \"${{ github.event.client_payload.url }}\"}" > ${{ env.VERSION_FILE }}
+          echo "{\"version\": \"${{ github.event.client_payload.version }}\",\"delivery_date\":\"${{ github.event.client_payload.delivery_date }}\",\"url\": \"${{ github.event.client_payload.url }}\"}" > ${{ env.VERSION_FILE }}
           
           # Add new files
           git config --global user.email "${{ env.GIT_SERVBOT_EMAIL }}"
