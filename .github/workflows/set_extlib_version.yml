@@ -39,9 +39,6 @@ jobs:
       - name: Set workdir and status
         run: |
           echo "WORKDIR=set_extlib_vertsion" >> $GITHUB_ENV
-          echo "Using branch ${{ github.event.client_payload.ref }}"
-          echo "Using delivery_date ${{ github.event.client_payload.delivery_date }}"
-          echo "Using url ${{ github.event.client_payload.url }}"
 
       # Get last git modifications
       - name: Checkout git sources
@@ -85,7 +82,7 @@ jobs:
             exit 1
           fi
 
-          git commit -m "Update extlib version to v${{ github.event.client_payload.version }}"          *
+          git commit -m "Update extlib version to v${{ github.event.client_payload.version }}"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
