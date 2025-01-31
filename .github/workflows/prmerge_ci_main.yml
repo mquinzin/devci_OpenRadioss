@@ -229,7 +229,8 @@ jobs:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
     # runs-on: ["${{ matrix.build }}","prmerge_ci"]
-    runs-on: ["${{ matrix.build }}","dev_pmci"]
+    # runs-on: ["${{ matrix.build }}","dev_pmci"]
+    runs-on: ["dev_pmci"]
     container: 
       image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
       credentials: 
@@ -391,7 +392,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fake_extlib
-          path: fake_extlib
+          path: ${{ env.WORKDIR }}/fake_extlib
         if: ${{ env.CLOSE_BRANCH == 0 }}    
 
       # Close the branch (= restrict push to team devopsadmins) if needed
