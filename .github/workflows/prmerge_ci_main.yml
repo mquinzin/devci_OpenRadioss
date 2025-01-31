@@ -393,7 +393,7 @@ jobs:
         with:
           name: fake_extlib
           path: ${{ env.WORKDIR }}/fake_extlib
-        if: ${{ env.CLOSE_BRANCH == 0 }}    
+        if: ${{ matrix.build == 'starter_linux64_gf' && env.CLOSE_BRANCH == 0 }}
 
       # Close the branch (= restrict push to team devopsadmins) if needed
       # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
