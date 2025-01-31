@@ -253,10 +253,10 @@ jobs:
             os: linux64
             binary: starter
 
-          # - build: starter_linux64_gf_sp
-          #   precision: sp
-          #   os: linux64
-          #   binary: starter
+          - build: starter_linux64_gf_sp
+            precision: sp
+            os: linux64
+            binary: starter
 
           # - build: engine_linux64_gf_ompi
           #   precision: dp
@@ -327,9 +327,6 @@ jobs:
           source /home/adminqa/.bashrc
           chmod 755 Compiling_tools/script/*
           chmod 755 ${{ matrix.binary }}/build_script.sh 
-          
-          # USED for development only (avoid using lfs)
-          test ! -e extlib && ln -s /__w/_tool/extlib .
 
           # md5sum exec/* || echo "Nothing in exec/" 
           mkdir exec
@@ -339,8 +336,10 @@ jobs:
 
           # DEV ONLY #
           cd exec
-          echo "mkmlkmlk" > starter_linux64_gf
+          echo "mkmlkmlk" > ${{ matrix.build }}
           cd ..
+          mkdir fake_extlib
+          echo "aaaa" > fake_extlib/fake_extlib_a
 
           # Exiting with failure is no bins generated, should be handle by build_script soon
           md5sum exec/* || exit 1
@@ -387,6 +386,13 @@ jobs:
           name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
           path: ${{ env.WORKDIR }}/exec
         if: ${{ env.CLOSE_BRANCH == 0 }} 
+
+      - name: Upload extlib artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fake_extlib
+          path: fake_extlib
+        if: ${{ env.CLOSE_BRANCH == 0 }}    
 
       # Close the branch (= restrict push to team devopsadmins) if needed
       # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
@@ -939,6 +945,7 @@ jobs:
 
   update_counters:
     # DEV ONLY # runs-on: dev_delivery
+    needs: build-linux
     runs-on: dev_delivery
     if: ${{ github.repository_owner == 'OpenRadioss' }} 
     # runs-on: delivery   
@@ -962,27 +969,35 @@ jobs:
         run: |
           echo "DATEOFTHEDAY=`date +'%Y%m%d'`" >> $GITHUB_ENV
 
+      - name: Download extlib artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fake_extlib
+          path: fake_extlib
+
       - name: Counter Download - Update values
         run: |
-            cd /github_download_counter
+            ls -l fake_extlib/
 
-            # Old way
-            # Do some before using some lock and retry stuff
-            cp download_count.json sav-merge-main-${{ env.DATEOFTHEDAY }}-download_count.json
+            # cd /github_download_counter
 
-            github_download_count.py \
-              --git_api_url ${{ github.api_url }} \
-              --git_repo ${{ github.repository }} \
-              --git_user $SERVBOT_USER \
-              --git_token $SERVBOT_PAT \
-              --action update_values      
+            # # Old way
+            # # Do some before using some lock and retry stuff
+            # cp download_count.json sav-merge-main-${{ env.DATEOFTHEDAY }}-download_count.json
 
-            # New way
-            # Do some before using some lock and retry stuff
-            cp download_count_new.json sav-merge-main-${{ env.DATEOFTHEDAY }}-download_count_new.json
-            github_download_count_new.py \
-              --git_api_url ${{ github.api_url }} \
-              --git_repo ${{ github.repository }} \
-              --git_user $SERVBOT_USER \
-              --git_token $SERVBOT_PAT \
-              --action update_values                    
+            # github_download_count.py \
+            #   --git_api_url ${{ github.api_url }} \
+            #   --git_repo ${{ github.repository }} \
+            #   --git_user $SERVBOT_USER \
+            #   --git_token $SERVBOT_PAT \
+            #   --action update_values      
+
+            # # New way
+            # # Do some before using some lock and retry stuff
+            # cp download_count_new.json sav-merge-main-${{ env.DATEOFTHEDAY }}-download_count_new.json
+            # github_download_count_new.py \
+            #   --git_api_url ${{ github.api_url }} \
+            #   --git_repo ${{ github.repository }} \
+            #   --git_user $SERVBOT_USER \
+            #   --git_token $SERVBOT_PAT \
+            #   --action update_values                    
