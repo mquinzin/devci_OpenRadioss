@@ -40,6 +40,8 @@ jobs:
         run: |
           echo "WORKDIR=set_extlib_vertsion" >> $GITHUB_ENV
           echo "Using branch ${{ github.event.client_payload.ref }}"
+          echo "Using delivery_date ${{ github.event.client_payload.delivery_date }}"
+          echo "Using url ${{ github.event.client_payload.url }}"
 
       # Get last git modifications
       - name: Checkout git sources
