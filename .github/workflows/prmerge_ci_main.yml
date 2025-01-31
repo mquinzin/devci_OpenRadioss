@@ -945,7 +945,7 @@ jobs:
 
   update_counters:
     # DEV ONLY # runs-on: dev_delivery
-    needs: build-linux
+    needs: build_linux
     runs-on: dev_delivery
     if: ${{ github.repository_owner == 'OpenRadioss' }} 
     # runs-on: delivery   
