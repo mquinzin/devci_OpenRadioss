@@ -339,7 +339,7 @@ jobs:
           cd exec
           echo "mkmlkmlk" > ${{ matrix.build }}
           cd ..
-          mkdir fake_extlib
+          mkdir -p fake_extlib
           echo "aaaa" > fake_extlib/fake_extlib_a
 
           # Exiting with failure is no bins generated, should be handle by build_script soon
