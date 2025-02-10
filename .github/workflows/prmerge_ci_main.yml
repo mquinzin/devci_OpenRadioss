@@ -411,32 +411,32 @@ jobs:
             os: win64
             binary: starter
 
-          # - build: starter_win64_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: starter
+          - build: starter_win64_sp
+            precision: sp
+            os: win64
+            binary: starter
 
-          # - build: engine_win64_impi
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
-          #   mpi: impi
+          - build: engine_win64_impi
+            precision: dp
+            os: win64
+            binary: engine
+            mpi: impi
 
-          # - build: engine_win64_impi_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: engine
-          #   mpi: impi
+          - build: engine_win64_impi_sp
+            precision: sp
+            os: win64
+            binary: engine
+            mpi: impi
 
-          # - build: engine_win64
-          #   precision: dp
-          #   os: win64
-          #   binary: engine
+          - build: engine_win64
+            precision: dp
+            os: win64
+            binary: engine
 
-          # - build: engine_win64_sp
-          #   precision: sp
-          #   os: win64
-          #   binary: engine
+          - build: engine_win64_sp
+            precision: sp
+            os: win64
+            binary: engine
 
     steps:
 
@@ -482,7 +482,15 @@ jobs:
           call 'C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\env\vars.bat'
           call 'C:\Program Files (x86)\Intel\oneAPI\mkl\2025.0\env\vars.bat'
           call 'C:\Program Files (x86)\Intel\oneAPI\mpi\2021.10.0\env\vars.bat'
-          icx
+          cmake --version
+          ninja --version
+          if not '${{ matrix.mpi }}'=='' (
+            set mpi_opts=-mpi=${{ matrix.mpi }}
+          )   
+          echo =========================================
+          echo --  BUILD ${{ matrix.build }} --
+          echo =========================================
+          .\build_windows.bat -release -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
           "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
           cmd /c .\myrun.bat    
           cd ..
