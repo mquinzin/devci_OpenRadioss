@@ -1,0 +1,163 @@
+Copyright>        OpenRadioss
+Copyright>        Copyright (C) 1986-2025 Altair Engineering Inc.
+Copyright>
+Copyright>        This program is free software: you can redistribute it and/or modify
+Copyright>        it under the terms of the GNU Affero General Public License as published by
+Copyright>        the Free Software Foundation, either version 3 of the License, or
+Copyright>        (at your option) any later version.
+Copyright>
+Copyright>        This program is distributed in the hope that it will be useful,
+Copyright>        but WITHOUT ANY WARRANTY; without even the implied warranty of
+Copyright>        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Copyright>        GNU Affero General Public License for more details.
+Copyright>
+Copyright>        You should have received a copy of the GNU Affero General Public License
+Copyright>        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+Copyright>
+Copyright>
+Copyright>        Commercial Alternative: Altair Radioss Software
+Copyright>
+Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
+Copyright>        software under a commercial license.  Contact Altair to discuss further if the
+Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
+      !||====================================================================
+      !||    lszk         ../common_source/eos/lszk.F
+      !||--- called by ------------------------------------------------------
+      !||    eosmain      ../common_source/eos/eosmain.F
+      !||--- uses       -----------------------------------------------------
+      !||    output_mod   ../common_source/modules/output/output_mod.F90
+      !||====================================================================
+      SUBROUTINE LSZK    ( IFLAG,NEL  ,PM   ,OFF  ,EINT ,MU  ,MU2 , 
+     2                     ESPE ,DVOL ,DF   ,VNEW ,MAT  ,PSH ,
+     3                     PNEW ,DPDM ,DPDE ,THETA,ECOLD)
+C-----------------------------------------------
+C   M o d u l e s
+C-----------------------------------------------
+      USE OUTPUT_MOD , ONLY : WFEXT
+C-----------------------------------------------
+C   D e s c r i p t i o n
+C-----------------------------------------------
+C This subroutine contains numerical solving
+C of LSZK EOS
+C Landau Stanyukovich Zeldovich Kompaneet
+C-----------------------------------------------
+C   I m p l i c i t   T y p e s
+C-----------------------------------------------
+#include      "implicit_f.inc"
+#include      "comlock.inc"
+C-----------------------------------------------
+C   C o m m o n   B l o c k s
+C-----------------------------------------------
+#include      "mvsiz_p.inc"
+#include      "param_c.inc"
+#include      "com04_c.inc"
+#include      "com06_c.inc"
+#include      "com08_c.inc"
+#include      "vect01_c.inc"
+#include      "scr06_c.inc"
+C-----------------------------------------------
+C   D u m m y   A r g u m e n t s
+C-----------------------------------------------
+      INTEGER MAT(NEL), IFLAG, NEL
+      my_real PM(NPROPM,NUMMAT), 
+     .        OFF(NEL)  ,EINT(NEL) ,MU(NEL)   , 
+     .        MU2(NEL)  ,ESPE(NEL) ,DVOL(NEL) ,DF(NEL)  , 
+     .        VNEW(NEL) ,PNEW(NEL) ,DPDM(NEL),
+     .        DPDE(NEL) ,THETA(NEL),ECOLD(NEL)
+C-----------------------------------------------
+C   L o c a l   V a r i a b l e s
+C-----------------------------------------------
+      INTEGER I, MX
+      my_real :: P0,PSH(MVSIZ),GAMMA,T0,E0,SPH,AA, BB,WFEXTT, DVV, PP, AR0B, B,PC
+C-----------------------------------------------
+C   S o u r c e  L i n e s
+C-----------------------------------------------
+      IF(IFLAG == 0) THEN
+C-----------------------------------------
+C     COMPUTE BULK MODULUS FOR SOUND SPEED
+C     COMPUTE COLD COMPRESSION ENERGY
+C-----------------------------------------
+       MX         = MAT(1)
+       E0         = PM(23,MX)         
+       GAMMA      = PM(34,MX)
+       P0         = PM(32,MX)
+       PSH(1:NEL) = PM(88,MX)
+       AR0B       = PM(35,MX)
+       B          = PM(36,MX)
+       SPH        = PM(69,MX)
+
+       DO I=1,NEL
+         PP      = (GAMMA-ONE)*(ONE+MU(I))*ESPE(I) + AR0B*EXP(B*LOG(ONE+MU(I)))
+         DPDM(I) = (GAMMA-ONE)*ESPE(I)+AR0B*B/(ONE+MU(I))*EXP((B-ONE)*LOG(ONE+MU(I)))+(GAMMA-ONE)*DF(I)*PP   !total derivative
+         DPDE(I) = (GAMMA-ONE)*(ONE+MU(I))                                                                  !partial derivative
+       ENDDO
+
+       DO I=1,NEL
+         ECOLD(I)=-THREE100*SPH
+         !IF(MU(I)>ZERO) ECOLD(I)=
+       ENDDO
+
+      ELSEIF(IFLAG == 1) THEN
+C----------------------------------------
+C     UPDATE PRESSURE AND INTERNAL ENERGY
+C----------------------------------------
+       WFEXTT     = ZERO
+       MX         = MAT(1)
+       E0         = PM(23,MX)         
+       GAMMA      = PM(34,MX)
+       P0         = PM(32,MX)
+       PSH(1:NEL) = PM(88,MX)
+       AR0B       = PM(35,MX)
+       B          = PM(36,MX)
+       SPH        = PM(69,MX)
+       PC         = PM(37,MX)
+
+       DO I=1,NEL
+         BB         = (GAMMA-ONE)*(ONE+MU(I))
+         AA         = AR0B*EXP(B*LOG(ONE+MU(I)))
+         DVV        = HALF*DVOL(I)*DF(I) / MAX(EM15,VNEW(I))
+         PNEW(I)    = (AA + BB*ESPE(I) ) / (ONE+BB*DVV)         
+         PNEW(I)    = MAX(PNEW(I),PC)*OFF(I)
+         EINT(I)    = EINT(I) - HALF*DVOL(I)*(PNEW(I))
+         PNEW(I)    = PNEW(I) - PSH(I)
+         WFEXTT     = WFEXTT-DVOL(I)*PSH(I)
+       ENDDO
+       
+#include "atomic.inc"
+       WFEXT = WFEXT + WFEXTT
+#include "atomend.inc"
+C
+C------------------------
+C     COMPUTE TEMPERATURE
+C------------------------
+
+         MX         = MAT(1)
+         SPH        = PM(69,MX)
+
+       DO I=1,NEL
+         IF(OFF(I)<1..OR.SPH<=0.) CYCLE
+         THETA(I) = (DF(I)*EINT(I)/VNEW(I)-ECOLD(I))/SPH
+         THETA(I)   = MAX(ZERO,THETA(I))
+       ENDDO
+      ELSEIF (IFLAG == 2) THEN
+         MX           = MAT(1)
+         E0           = PM(23,MX)         
+         GAMMA        = PM(34,MX)
+         P0           = PM(32,MX)
+         PSH(1:NEL) = PM(88,MX)
+         AR0B         = PM(35,MX)
+         B            = PM(36,MX)
+         SPH          = PM(69,MX)
+         
+         DO I=1, NEL
+            IF (VNEW(I) > ZERO) THEN
+               PNEW(I) = (GAMMA-ONE)*(ONE+MU(I))*ESPE(I) + AR0B*EXP(B*LOG(ONE+MU(I)))
+               DPDM(I) = (GAMMA-ONE)*ESPE(I)+AR0B*B/(ONE+MU(I))*EXP((B-ONE)*LOG(ONE+MU(I)))+(GAMMA-ONE)*DF(I)*PNEW(I)   !total derivative
+               DPDE(I) = (GAMMA-ONE)*(ONE+MU(I))                                                               !partial derivative
+               PNEW(I) = PNEW(I)-PSH(I)
+            ENDIF
+         ENDDO
+      ENDIF
+C------------------------      
+      RETURN
+      END
