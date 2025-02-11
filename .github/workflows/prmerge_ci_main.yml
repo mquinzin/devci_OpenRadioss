@@ -633,11 +633,11 @@ jobs:
           name: bins-${{ matrix.os }}-${{ matrix.precision }}-engine_win64_impi
           path: exec
           merge-multiple: true
-      - name: Download extlib artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: extlib
-          path: extlib
+      # - name: Download extlib artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: extlib
+      #     path: extlib
           
       - name: Running qa
         # Running cygwin from powershell or cmd => neither identation nor comment !
