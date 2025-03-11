@@ -641,8 +641,11 @@ jobs:
         with:
           title: New OpenRadioss release available
           body: |
-            A new release, related to the tag ${{ env.LAST_STABLE_TAG_NAME }}, is available for download.
-            Find it [here](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }}).
+            📢 A new OpenRadioss Stable Release is released!
+            We’re excited to announce the stable release of OpenRadioss!
+            This version, based on tag ${{ env.LAST_STABLE_TAG_NAME }}, brings improved stability, performance, and bug fixes based on community feedback.
+            🔹 Get it now: [GitHub Release Link](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }})
+            Try it out and share your feedback, please!
           repository-id: ${{ secrets.DISCUSSION_REPO_ID }}
           category-id: ${{ secrets.DISCUSSION_CAT_ID }}  
   
