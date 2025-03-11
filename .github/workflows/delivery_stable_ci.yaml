@@ -632,3 +632,17 @@ jobs:
               --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
               --counter_file_dir /github_download_counter \
               --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} 
+
+      - name: Create a new GitHub Discussion Annoucement
+        id: create-discussion
+        uses: abirismyname/create-discussion@v1.x
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+        with:
+          title: New OpenRadioss release available
+          body: |
+            A new release, related to the tag ${{ env.LAST_STABLE_TAG_NAME }}, is available for download.
+            Find it [here](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }}).
+          repository-id: ${{ secrets.DISCUSSION_REPO_ID }}
+          category-id: ${{ secrets.DISCUSSION_CAT_ID }}  
+  
