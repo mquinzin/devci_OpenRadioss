@@ -600,7 +600,7 @@ jobs:
             ${{ env.LAST_STABLE_COMMIT_MESSAGE }}
 
             Thank you for downloading OpenRadioss! We'd love to hear about your experience.  
-            👉 <a href="https://app.sli.do/event/uxEN5N2jZqeUHnqZEyqrcx" target="_blank" rel="noopener">Share your feedback here</a>
+            👉 <a href="https://app.sli.do/event/uxEN5N2jZqeUHnqZEyqrcx" target="or_survey" rel="noopener">Share your feedback here</a>
 
           files: |
             ${{ env.WORKDIR }}/todeliver/*
