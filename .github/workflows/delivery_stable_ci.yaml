@@ -569,20 +569,20 @@ jobs:
         with:
           route: GET /repos/${{ github.repository }}/commits/${{ env.LAST_STABLE_COMMIT }}
 
-      - name: Counter Download - Update values
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-            cd /github_download_counter
+      # - name: Counter Download - Update values
+      #   working-directory: ${{ env.WORKDIR }}
+      #   run: |
+      #       cd /github_download_counter
 
-            # Do some before using some lock and retry stuff
-            cp download_count.json sav-delivery-${{ env.DATEOFTHETAG }}-download_count.json
+      #       # Do some before using some lock and retry stuff
+      #       cp download_count.json sav-delivery-${{ env.DATEOFTHETAG }}-download_count.json
 
-            github_download_count.py \
-              --git_api_url ${{ github.api_url }} \
-              --git_repo ${{ github.repository }} \
-              --git_user $SERVBOT_USER \
-              --git_token $SERVBOT_PAT \
-              --action update_values
+      #       github_download_count.py \
+      #         --git_api_url ${{ github.api_url }} \
+      #         --git_repo ${{ github.repository }} \
+      #         --git_user $SERVBOT_USER \
+      #         --git_token $SERVBOT_PAT \
+      #         --action update_values
 
 
       # The action creates the release with an already existing tag (latest-xxxxx) so we use option skip_tag_creation: true
