@@ -475,77 +475,80 @@ jobs:
           touch exec_tmp/linux64/empty exec_tmp/win64/empty
           ls -l exec_tmp/
 
-      - name: Copy all artifact complex structure into flat files in exec
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          echo "List exec_tmp : "
-          find exec_tmp -type f
+      # - name: Copy all artifact complex structure into flat files in exec
+      #   working-directory: ${{ env.WORKDIR }}
+      #   run: |
+      #     echo "List exec_tmp : "
+      #     find exec_tmp -type f
 
-          for os in linux64 win64 
-          do
-            mkdir -p exec/${os}
-            for file in `find exec_tmp/*${os}*/ -type f`
-            do
-              cp -p $file exec/${os}/
-            done
-            chmod 755 exec/${os}/*
-          done
+      #     for os in linux64 win64 
+      #     do
+      #       mkdir -p exec/${os}
+      #       for file in `find exec_tmp/*${os}*/ -type f`
+      #       do
+      #         cp -p $file exec/${os}/
+      #       done
+      #       chmod 755 exec/${os}/*
+      #     done
 
-          echo "List exec : "
-          find exec -type f
+      #     echo "List exec : "
+      #     find exec -type f
 
       - name: Provide ALL binaries
         working-directory: ${{ env.WORKDIR }}
         run: |
-          # Removed lfs hook (not supported in next action, not neeeded)
-          rm -f .git/hooks/pre-push
+          # # Removed lfs hook (not supported in next action, not neeeded)
+          # rm -f .git/hooks/pre-push
 
-          # Prepare tree architecture
-          rm -rf todeliver
+          # # Prepare tree architecture
+          # rm -rf todeliver
 
-          for os in linux64 win64 
-          do      
-            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
-            cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
-            cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+          # for os in linux64 win64 
+          # do      
+          #   mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
+          #   cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
+          #   cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
-            # Get Intel runtime and some other extras from a dedicated repository
-            if test -d EXTRA/${os}
-            then
-              cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-            fi
+          #   # Get Intel runtime and some other extras from a dedicated repository
+          #   if test -d EXTRA/${os}
+          #   then
+          #     cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+          #   fi
 
-            # Get OpenRadioss gui from Tools repository and inp2rad
-            if test -d ${{ env.TOOLS_OPENRADIOSS_GUI}}
-            then
-              cp -a ${{ env.TOOLS_OPENRADIOSS_GUI}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-              if test -f ${{ env.TOOLS_INP2RAD}}
-              then
-                cp -a ${{ env.TOOLS_INP2RAD}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/${{ env.OPENRADIOSS_GUI }}/
-              fi            
-            fi
+          #   # Get OpenRadioss gui from Tools repository and inp2rad
+          #   if test -d ${{ env.TOOLS_OPENRADIOSS_GUI}}
+          #   then
+          #     cp -a ${{ env.TOOLS_OPENRADIOSS_GUI}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+          #     if test -f ${{ env.TOOLS_INP2RAD}}
+          #     then
+          #       cp -a ${{ env.TOOLS_INP2RAD}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/${{ env.OPENRADIOSS_GUI }}/
+          #     fi            
+          #   fi
 
-            # Get some output converters from Tools repository
-            jf rt download ${JF_OPTIONS} "${JF_TOOLS_OUTPUT_CONVERTERS}/${os}/*" todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/ --flat=true
-            chmod 755 todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/*
+          #   # Get some output converters from Tools repository
+          #   jf rt download ${JF_OPTIONS} "${JF_TOOLS_OUTPUT_CONVERTERS}/${os}/*" todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/ --flat=true
+          #   chmod 755 todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/*
 
-            cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+          #   cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-            cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
+          #   cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
 
-            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-            cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
+          #   mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
+          #   cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
 
-            cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+          #   cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-            export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
+          #   export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
 
-            cd todeliver/${os}
-            zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
-            cd ..
-            rm -rf ${os}
-            cd ..
-          done 
+          #   cd todeliver/${os}
+          #   zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+          #   cd ..
+          #   rm -rf ${os}
+          #   cd ..
+          # done 
+
+          mkdir todeliver
+          echo "EMPTY" > todeliver/empty
 
       - name: Set some variables
         working-directory: ${{ env.WORKDIR }}
@@ -633,18 +636,18 @@ jobs:
               --counter_file_dir /github_download_counter \
               --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} 
 
-      - name: Create a new GitHub Discussion Annoucement
-        id: create-discussion
-        uses: abirismyname/create-discussion@v1.x
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
-        with:
-          title: OpenRadioss Stable Update (${{ env.LAST_STABLE_TAG_NAME }})
-          body: |
-            We're excited to announce a new **stable release of OpenRadioss!**  
-            This version, based on **tag ${{ env.LAST_STABLE_TAG_NAME }}**, brings improved stability and performance based on community feedback.
-            🔹 [Get it now](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }})
-            Please, try it out and share your appreciated feedback, thanks!
-          repository-id: ${{ secrets.DISCUSSION_REPO_ID }}
-          category-id: ${{ secrets.DISCUSSION_CAT_ID }}  
+      # - name: Create a new GitHub Discussion Annoucement
+      #   id: create-discussion
+      #   uses: abirismyname/create-discussion@v1.x
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+      #   with:
+      #     title: OpenRadioss Stable Update (${{ env.LAST_STABLE_TAG_NAME }})
+      #     body: |
+      #       We're excited to announce a new **stable release of OpenRadioss!**  
+      #       This version, based on **tag ${{ env.LAST_STABLE_TAG_NAME }}**, brings improved stability and performance based on community feedback.
+      #       🔹 [Get it now](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }})
+      #       Please, try it out and share your appreciated feedback, thanks!
+      #     repository-id: ${{ secrets.DISCUSSION_REPO_ID }}
+      #     category-id: ${{ secrets.DISCUSSION_CAT_ID }}  
   
