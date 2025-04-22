@@ -481,18 +481,18 @@ jobs:
           echo "List exec_tmp : "
           find exec_tmp -type f
 
-          for os in linux64 win64 
-          do
-            mkdir -p exec/${os}
-            for file in `find exec_tmp/*${os}*/ -type f`
-            do
-              cp -p $file exec/${os}/
-            done
-            chmod 755 exec/${os}/*
-          done
+          # for os in linux64 win64 
+          # do
+          #   mkdir -p exec/${os}
+          #   for file in `find exec_tmp/*${os}*/ -type f`
+          #   do
+          #     cp -p $file exec/${os}/
+          #   done
+          #   chmod 755 exec/${os}/*
+          # done
 
-          echo "List exec : "
-          find exec -type f
+          # echo "List exec : "
+          # find exec -type f
 
       - name: Unzip extlib
         working-directory: ${{ env.WORKDIR }}
