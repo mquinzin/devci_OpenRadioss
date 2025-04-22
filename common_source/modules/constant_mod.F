@@ -23,6 +23,8 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||====================================================================
       !||    constant_mod                             ../common_source/modules/constant_mod.F
       !||--- called by ------------------------------------------------------
+      !||    alew8                                    ../engine/source/ale/grid/alew8.F90
+      !||    allocbuf_auto                            ../engine/source/elements/elbuf/allocbuf_auto.F
       !||    anim_nodal_ssp_elems                     ../engine/source/output/anim/generate/anim_nodal_ssp_elems.F90
       !||    bcs_wall_trigger                         ../engine/source/boundary_conditions/bcs_wall_trigger.F90
       !||    brent_algo                               ../common_source/modules/root_finding_algo_mod.F90
@@ -39,20 +41,45 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    crack_depth_init                         ../starter/source/materials/fail/windshield_alter/crack_depth_init.F90
       !||    create_plane_clause                      ../starter/source/model/sets/create_plane_clause.F90
       !||    crityld2000                              ../starter/source/materials/mat/mat087/law87_upd.F90
+      !||    damping_range_compute_param              ../starter/source/general_controls/damping/damping_range_compute_param.F90
+      !||    damping_range_init                       ../starter/source/general_controls/damping/damping_range_init.F90
+      !||    damping_range_shell                      ../engine/source/general_controls/damping/damping_range_shell.F90
+      !||    damping_range_shell_mom                  ../engine/source/general_controls/damping/damping_range_shell_mom.F90
+      !||    damping_range_solid                      ../engine/source/general_controls/damping/damping_range_solid.F90
       !||    damping_vref_rby                         ../engine/source/assembly/damping_vref_rby.F90
       !||    damping_vref_rby_stiff                   ../engine/source/assembly/damping_vref_rby_stiff.F90
       !||    damping_vref_sum6_rby                    ../engine/source/assembly/damping_vref_sum6_rby.F90
       !||    defbeam_sect_new                         ../starter/source/properties/beam/defbeam_sect_new.F90
+      !||    detach_node                              ../engine/source/engine/node_spliting/detach_node.F90
+      !||    detach_node_from_interfaces              ../engine/source/engine/node_spliting/detach_node.F90
       !||    detach_node_from_shells                  ../engine/source/engine/node_spliting/detach_node.F90
+      !||    detonation_times_printout                ../starter/source/initial_conditions/detonation/detonation_times_printout.F90
       !||    dim_shell_offsetp                        ../starter/source/elements/shell/shell_offset/dim_shell_offsetp.F90
       !||    dttherm                                  ../engine/source/time_step/dttherm.F90
       !||    ebcs11                                   ../engine/source/boundary_conditions/ebcs/ebcs11.F90
+      !||    eikonal_compute_adjacent                 ../starter/source/initial_conditions/detonation/eikonal_compute_adjacent.F90
+      !||    eikonal_fast_marching_method             ../starter/source/initial_conditions/detonation/eikonal_fast_marching_method.F90
+      !||    eikonal_godunov_operator_2d              ../starter/source/initial_conditions/detonation/eikonal_godunov_operator_2d.F90
+      !||    eikonal_godunov_operator_3d              ../starter/source/initial_conditions/detonation/eikonal_godunov_operator_3d.F90
+      !||    eikonal_init_mixture_vel                 ../starter/source/initial_conditions/detonation/eikonal_ini_mixture_vel.F90
+      !||    eikonal_init_start_list_2d               ../starter/source/initial_conditions/detonation/eikonal_init_start_list_2d.F90
+      !||    eikonal_remove_first                     ../starter/source/initial_conditions/detonation/eikonal_remove_first.F90
+      !||    eikonal_solver                           ../starter/source/initial_conditions/detonation/eikonal_solver.F90
       !||    eosexponential                           ../common_source/eos/eosexponential.F90
+      !||    eospolyno                                ../common_source/eos/eospolyno.F
+      !||    fail_gene1_b                             ../engine/source/materials/fail/gene1/fail_gene1_b.F90
+      !||    fail_gene1_ib                            ../engine/source/materials/fail/gene1/fail_gene1_ib.F90
+      !||    fail_inievo_b                            ../engine/source/materials/fail/inievo/fail_inievo_b.F90
+      !||    fail_inievo_ib                           ../engine/source/materials/fail/inievo/fail_inievo_ib.F90
+      !||    fail_spalling_s                          ../engine/source/materials/fail/spalling/fail_spalling_s.F90
+      !||    fail_tab2_b                              ../engine/source/materials/fail/tabulated/fail_tab2_b.F90
+      !||    fail_tab2_ib                             ../engine/source/materials/fail/tabulated/fail_tab2_ib.F90
       !||    fail_visual_b                            ../engine/source/materials/fail/visual/fail_visual_b.F90
       !||    fail_visual_ib                           ../engine/source/materials/fail/visual/fail_visual_ib.F90
       !||    fill_voxel_local                         ../engine/source/interfaces/intsort/fill_voxel.F90
       !||    fill_voxel_local_partial                 ../engine/source/interfaces/intsort/fill_voxel.F90
       !||    fill_voxel_remote                        ../engine/source/interfaces/intsort/fill_voxel.F90
+      !||    find_segment_in_list                     ../engine/source/engine/node_spliting/detach_node.F90
       !||    force                                    ../engine/source/loads/general/force.F90
       !||    fpcont2_max_output                       ../engine/source/output/h3d/h3d_results/fpcont2_max_output.F90
       !||    fpcont2_min_output                       ../engine/source/output/h3d/h3d_results/fpcont2_min_output.F90
@@ -78,6 +105,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_eos_compaction2                  ../starter/source/materials/eos/hm_read_eos_compaction2.F90
       !||    hm_read_eos_exponential                  ../starter/source/materials/eos/hm_read_eos_exponential.F90
       !||    hm_read_eos_powderburn                   ../starter/source/materials/eos/hm_read_eos_powderburn.F90
+      !||    hm_read_fail_spalling                    ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F90
       !||    hm_read_fractal_dmg                      ../starter/source/materials/fail/fractal/hm_read_fractal_dmg.F90
       !||    hm_read_inivol                           ../starter/source/initial_conditions/inivol/hm_read_inivol.F90
       !||    hm_read_mat                              ../starter/source/materials/mat/hm_read_mat.F90
@@ -85,6 +113,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_mat126                           ../starter/source/materials/mat/mat126/hm_read_mat126.F90
       !||    hm_read_mat127                           ../starter/source/materials/mat/mat127/hm_read_mat127.F90
       !||    hm_read_mat128                           ../starter/source/materials/mat/mat128/hm_read_mat128.F90
+      !||    hm_read_mat163                           ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat169_arup                      ../starter/source/materials/mat/mat169/hm_read_mat169.F90
       !||    hm_read_mat50                            ../starter/source/materials/mat/mat050/hm_read_mat50.F90
       !||    hm_read_mat57                            ../starter/source/materials/mat/mat057/hm_read_mat57.F90
@@ -107,10 +136,14 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    inter_save_candidate                     ../starter/source/interfaces/inter3d1/inter_save_candidate.F90
       !||    inter_sh_offset_ini                      ../engine/source/interfaces/shell_offset/inter_offset_ini.F90
       !||    jwl_eos_delta                            ../engine/source/materials/mat/mat041/jwl_eos_mod.F90
+      !||    law163_upd                               ../starter/source/materials/mat/mat163/law163_upd.F90
       !||    law190_upd                               ../starter/source/materials/mat/mat190/law190_upd.F90
       !||    law81_upd                                ../starter/source/materials/mat/mat081/law81_upd.F90
       !||    law87_upd                                ../starter/source/materials/mat/mat087/law87_upd.F90
       !||    m21law                                   ../engine/source/materials/mat/mat021/m21law.F
+      !||    m5in2                                    ../starter/source/initial_conditions/detonation/m5in2.F
+      !||    m5in2t                                   ../starter/source/initial_conditions/detonation/m5in2t.F
+      !||    m5in3                                    ../starter/source/initial_conditions/detonation/m5in3.F
       !||    mat25_crasurv_c                          ../engine/source/materials/mat/mat025/mat25_crasurv_c.F90
       !||    mat25_crasurv_s                          ../engine/source/materials/mat/mat025/mat25_crasurv_s.F90
       !||    mat25_tsaiwu_c                           ../engine/source/materials/mat/mat025/mat25_tsaiwu_c.F90
@@ -119,6 +152,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    mat87c_swift_voce                        ../engine/source/materials/mat/mat087/mat87c_swift_voce.F90
       !||    mat87c_tabulated                         ../engine/source/materials/mat/mat087/mat87c_tabulated.F90
       !||    mat87c_tabulated_3dir_ortho              ../engine/source/materials/mat/mat087/mat87c_tabulated_3dir_ortho.F90
+      !||    minter1d_rat                             ../common_source/eos/minter1d_rat.F
       !||    mmain                                    ../engine/source/materials/mat_share/mmain.F90
       !||    mulaw                                    ../engine/source/materials/mat_share/mulaw.F90
       !||    mulaw8                                   ../engine/source/materials/mat_share/mulaw8.F90
@@ -136,11 +170,13 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    preload_axial                            ../engine/source/elements/spring/preload_axial.F90
       !||    prodmat                                  ../engine/source/materials/tools/prodmat.F
       !||    prodmatvect                              ../starter/source/materials/mat/mat087/law87_upd.F90
+      !||    puff                                     ../common_source/eos/puff.F
       !||    r_yld2000                                ../starter/source/materials/mat/mat087/law87_upd.F90
       !||    random_walk_dmg                          ../starter/source/materials/fail/fractal/random_walk_dmg.F90
       !||    read_mat25_crasurv                       ../starter/source/materials/mat/mat025/read_mat25_crasurv.F90
       !||    read_mat25_tsaiwu                        ../starter/source/materials/mat/mat025/read_mat25_tsaiwu.F90
       !||    read_sensor_python                       ../starter/source/tools/sensor/hm_read_sensor_python.F90
+      !||    redef3                                   ../engine/source/elements/spring/redef3.F90
       !||    retractor_table_inv                      ../engine/source/tools/seatbelts/retractor_table_inv.F90
       !||    retractor_table_inv2                     ../engine/source/tools/seatbelts/retractor_table_inv2.F90
       !||    s6chour_ctl                              ../engine/source/elements/thickshell/solide6c/s6chour_ctl.F90
@@ -148,6 +184,10 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    sdistor_ini                              ../engine/source/elements/solid/solide/sdistror_ini.F90
       !||    select_s2s                               ../starter/source/interfaces/inter3d1/select_s2s.F90
       !||    sensor_python                            ../engine/source/tools/sensor/sensor_python.F90
+      !||    set_new_node_values                      ../engine/source/engine/node_spliting/detach_node.F90
+      !||    sfor_3n2s3                               ../engine/source/elements/solid/solide/sfor_4n2s4.F90
+      !||    sfor_4n2s4                               ../engine/source/elements/solid/solide/sfor_4n2s4.F90
+      !||    sfor_ns2s4                               ../engine/source/elements/solid/solide/sfor_ns2s4.F90
       !||    sfor_visn6                               ../engine/source/elements/thickshell/solide6c/sfor_visn6.F90
       !||    sh_offset_jonct_chk                      ../starter/source/elements/shell/shell_offset/sh_offset_jonkt_chk.F90
       !||    sh_offset_nproj                          ../starter/source/elements/shell/shell_offset/shell_offset_nproj.F90
@@ -164,6 +204,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    sigeps127c                               ../engine/source/materials/mat/mat127/sigeps127c.F90
       !||    sigeps128c                               ../engine/source/materials/mat/mat128/sigeps128c.F90
       !||    sigeps128s                               ../engine/source/materials/mat/mat128/sigeps128s.F90
+      !||    sigeps163                                ../engine/source/materials/mat/mat163/sigeps163.F90
       !||    sigeps169_connect                        ../engine/source/materials/mat/mat169/sigeps169_connect.F90
       !||    sigeps50s                                ../engine/source/materials/mat/mat050/sigeps50s.F90
       !||    sigeps51                                 ../engine/source/materials/mat/mat051/sigeps51.F90
@@ -178,9 +219,12 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    spmd_update_frontier_int25               ../engine/source/mpi/interfaces/spmd_update_frontier_int25.F90
       !||    spmd_xv_inter_type1                      ../engine/source/mpi/nodes/spmd_sd_xv_inter1.F90
       !||    stifint_icontrol                         ../starter/source/interfaces/interf1/stifint_icontrol.F90
+      !||    test_jc_shell_detach                     ../engine/source/engine/node_spliting/detach_node.F90
       !||    update_neighbour_segment                 ../engine/source/interfaces/interf/update_neighbour_segment.F90
       !||    updfail                                  ../starter/source/materials/updfail.F90
       !||    velrot_explicit                          ../engine/source/constraints/general/rbody/velrot_explicit.F90
+      !||    visc_plas                                ../engine/source/materials/visc/visc_plas.F90
+      !||    zeroing_matparam                         ../common_source/modules/mat_elem/matparam_def_mod.F90
       !||====================================================================
       module constant_mod
         implicit none
@@ -252,6 +296,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
         my_real, parameter ::  EP18  = EP17 * TEN
         my_real, parameter ::  EP19  = EP18 * TEN
         my_real, parameter ::  EP20  = EP19 * TEN
+        my_real, parameter ::  EP21  = EP20 * TEN
         my_real, parameter ::  EP29  = EP20 * EP09
         my_real, parameter ::  EP30  = EP20 * EP10
         my_real, parameter ::  EP31  = EP30 * TEN

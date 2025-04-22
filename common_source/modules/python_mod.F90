@@ -55,6 +55,8 @@
       !||    load_pressure                  ../engine/source/loads/general/load_pressure/load_pressure.F
       !||    nbfunct                        ../starter/source/tools/curve/nbfunc.F
       !||    pfluid                         ../engine/source/loads/general/pfluid/pfluid.F
+      !||    python_call_funct_cload_dp     ../engine/source/loads/general/python_call_funct_cload.F90
+      !||    python_call_funct_cload_sp     ../engine/source/loads/general/python_call_funct_cload.F90
       !||    python_duplicate_nodes         ../starter/source/spmd/domain_decomposition/python_duplicate_nodes.F90
       !||    python_register                ../engine/source/tools/curve/python_register.F90
       !||    r1def3                         ../engine/source/elements/spring/r1def3.F
@@ -77,6 +79,7 @@
       !||    rdresb                         ../engine/source/output/restart/rdresb.F
       !||    read_sensor_python             ../starter/source/tools/sensor/hm_read_sensor_python.F90
       !||    read_sensors                   ../engine/source/output/restart/read_sensors.F
+      !||    redef3                         ../engine/source/elements/spring/redef3.F90
       !||    redef3_law113                  ../engine/source/elements/spring/redef3_law113.F
       !||    resol                          ../engine/source/engine/resol.F
       !||    resol_head                     ../engine/source/engine/resol_head.F
@@ -179,6 +182,13 @@
             real(kind=c_float), dimension(3,numnod), intent(in) :: val
 #endif
           end subroutine python_set_node_values
+          subroutine python_update_active_node_values(name_len, name, val) bind(c, name="cpp_python_update_active_node")
+            use iso_c_binding
+            integer(kind=c_int), value, intent(in) :: name_len
+            character(kind=c_char), dimension(name_len), intent(in) :: name
+            real(kind=c_double), dimension(3), intent(in) :: val
+          end subroutine python_update_active_node_values
+
 
           subroutine python_get_number_of_nodes(number_of_nodes) bind(c, name="cpp_python_get_number_of_nodes")
             use iso_c_binding
@@ -215,11 +225,11 @@
           module procedure python_call_funct1D_sp
           module procedure python_call_funct1D_dp
         end interface python_call_funct1D
-
         interface python_deriv_funct1D
           module procedure python_deriv_funct1D_sp
           module procedure python_deriv_funct1D_dp
         end interface python_deriv_funct1D
+
 
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                               Type definitions
@@ -339,7 +349,7 @@
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                                      Body
 ! ----------------------------------------------------------------------------------------------------------------------
-          buffer_size = 3 ! funct_offset, nb_functs
+          buffer_size = 4 ! funct_offset, nb_functs, nb_sensors
 ! compute the size of the buffer
           do i = 1, python%nb_functs
             buffer_size = buffer_size + 6! 5 integers: len_name, len_code, num_lines, num_args, num_return
@@ -358,7 +368,8 @@
             buffer(1) = buffer_size
             buffer(2) = python%funct_offset
             buffer(3) = python%nb_functs
-            pos = 4
+            buffer(4) = python%nb_sensors
+            pos = 5
             do i = 1,python%nb_functs
               buffer(pos)   = python%functs(i)%len_name
               buffer(pos+1) = python%functs(i)%len_code
@@ -407,9 +418,10 @@
           python_error = 0
           python%funct_offset = buffer(2)
           python%nb_functs = buffer(3)
+          python%nb_sensors = buffer(4)
           allocate(python%functs(python%nb_functs),stat = ierr)
           if(ierr == 0 ) then
-            pos = 4
+            pos = 5
             do i = 1,python%nb_functs
               python%functs(i)%len_name=buffer(pos)
               python%functs(i)%len_code = buffer(pos+1)
@@ -545,6 +557,53 @@
 !$OMP END CRITICAL
           y = real(argout(1),kind(1.0))
         end subroutine
+
+      !||====================================================================
+      !||    python_set_active_node_values      ../common_source/modules/python_mod.F90
+      !||--- called by ------------------------------------------------------
+      !||    python_call_funct_cload_dp         ../engine/source/loads/general/python_call_funct_cload.F90
+      !||    python_call_funct_cload_sp         ../engine/source/loads/general/python_call_funct_cload.F90
+      !||--- calls      -----------------------------------------------------
+      !||--- uses       -----------------------------------------------------
+      !||====================================================================
+        subroutine python_set_active_node_values(name_len, name, val)
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Module
+! ----------------------------------------------------------------------------------------------------------------------
+          use iso_c_binding
+! --------------------------------------------------------------------------------------------------------------------------
+!                                                   Implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+          implicit none
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Included files
+! ----------------------------------------------------------------------------------------------------------------------
+#include "my_real.inc"
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                     Arguments
+! ----------------------------------------------------------------------------------------------------------------------
+          integer,                                     intent(in) :: name_len !< the length of the name
+          character(kind=c_char), dimension(name_len), intent(in) :: name      !< the name of the variable
+          double precision, dimension(3),                intent(in) :: val !< the values
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                   Local variables
+! ----------------------------------------------------------------------------------------------------------------------
+          character(kind=c_char), dimension(name_len+1)        :: temp_name
+          double precision :: valdb(3)
+! ----------------------------------------------------------------------------------------------------------------------
+!                                                      Body
+! ----------------------------------------------------------------------------------------------------------------------
+          temp_name(1:name_len) = name
+          temp_name(name_len+1:name_len+1) = c_null_char
+          valdb(1:3) = val
+          call python_update_active_node_values(name_len, temp_name, valdb)
+        end subroutine
+
+
+
+
+
+
 
 !! \brief Adaptive derivative of the python function (double precision version)
       !||====================================================================
@@ -750,7 +809,6 @@
           temp_name(name_len+1:name_len+1) = c_null_char
           call python_set_node_values(numnod, name_len, temp_name, val)
         end subroutine
-
 
 !! \brief update variables known by python functions
       !||====================================================================

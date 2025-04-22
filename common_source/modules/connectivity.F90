@@ -20,26 +20,30 @@
 !Copyright>        As an alternative to this open-source version, Altair also offers Altair Radioss
 !Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 !Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
-
-
       !||====================================================================
-      !||    connectivity_mod          ../common_source/modules/connectivity.F90
+      !||    connectivity_mod              ../common_source/modules/connectivity.F90
       !||--- called by ------------------------------------------------------
-      !||    asspar4                   ../engine/source/assembly/asspar4.F
-      !||    detach_node_from_shells   ../engine/source/engine/node_spliting/detach_node.F90
-      !||    radioss2                  ../engine/source/engine/radioss2.F
-      !||    rdresb                    ../engine/source/output/restart/rdresb.F
-      !||    resol                     ../engine/source/engine/resol.F
-      !||    resol_head                ../engine/source/engine/resol_head.F
-      !||    restalloc                 ../engine/source/output/restart/arralloc.F
-      !||    update_pon_shells         ../engine/source/engine/node_spliting/update_pon.F90
-      !||    wrrestp                   ../engine/source/output/restart/wrrestp.F
+      !||    asspar4                       ../engine/source/assembly/asspar4.F
+      !||    detach_node                   ../engine/source/engine/node_spliting/detach_node.F90
+      !||    detach_node_from_interfaces   ../engine/source/engine/node_spliting/detach_node.F90
+      !||    detach_node_from_shells       ../engine/source/engine/node_spliting/detach_node.F90
+      !||    find_segment_in_list          ../engine/source/engine/node_spliting/detach_node.F90
+      !||    radioss2                      ../engine/source/engine/radioss2.F
+      !||    rdresb                        ../engine/source/output/restart/rdresb.F
+      !||    resol                         ../engine/source/engine/resol.F
+      !||    resol_head                    ../engine/source/engine/resol_head.F
+      !||    restalloc                     ../engine/source/output/restart/arralloc.F
+      !||    set_new_node_values           ../engine/source/engine/node_spliting/detach_node.F90
+      !||    test_jc_shell_detach          ../engine/source/engine/node_spliting/detach_node.F90
+      !||    update_pon_shells             ../engine/source/engine/node_spliting/update_pon.F90
+      !||    wrrestp                       ../engine/source/output/restart/wrrestp.F
       !||--- uses       -----------------------------------------------------
-      !||    parith_on_mod             ../common_source/modules/parith_on_mod.F90
+      !||    parith_on_mod                 ../common_source/modules/parith_on_mod.F90
       !||====================================================================
       module connectivity_mod
         use iso_c_binding
         USE parith_on_mod
+#include "my_real.inc"
 !       INTEGER, PARAMETER :: NIXS = 11
 !       INTEGER, PARAMETER :: NIXC = 7
 !       INTEGER, PARAMETER :: NIXQ = 7
@@ -59,6 +63,9 @@
           integer, dimension(:), allocatable :: pid !< pid(i) :  PID of the i-th shell element
           integer, dimension(:), allocatable :: matid !< matid(i) :  Material ID of the i-th shell element
           integer, dimension(:), allocatable :: user_id !< user_id(i) :  user id of the shell element
+          my_real, dimension(:), allocatable :: damage
+          real, dimension(:), allocatable :: dist_to_center !< maximum distance of a node to the center of the element 
+          integer :: offset
           type(C_PTR) :: loc2glob
         end type shell_
         type solid_
@@ -88,7 +95,9 @@
       !||--- called by ------------------------------------------------------
       !||    rdresb                 ../engine/source/output/restart/rdresb.F
       !||--- calls      -----------------------------------------------------
+      !||    reserve_capacity       ../common_source/tools/container/umap_mod.F90
       !||--- uses       -----------------------------------------------------
+      !||    umap_mod               ../common_source/tools/container/umap_mod.F90
       !||====================================================================
         subroutine init_global_shell_id(shell)
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -126,6 +135,7 @@
       !||====================================================================
       !||    get_local_shell_id   ../common_source/modules/connectivity.F90
       !||--- uses       -----------------------------------------------------
+      !||    umap_mod             ../common_source/tools/container/umap_mod.F90
       !||====================================================================
         function get_local_shell_id(shell, global_id) result(local_id)
 ! ----------------------------------------------------------------------------------------------------------------------

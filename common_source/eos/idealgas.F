@@ -21,24 +21,36 @@ Copyright>        As an alternative to this open-source version, Altair also off
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
-      !||    idealgas     ../common_source/eos/idealgas.F
+      !||    idealgas   ../common_source/eos/idealgas.F
       !||--- called by ------------------------------------------------------
-      !||    eosmain      ../common_source/eos/eosmain.F
-      !||--- uses       -----------------------------------------------------
-      !||    output_mod   ../common_source/modules/output/output_mod.F90
+      !||    eosmain    ../common_source/eos/eosmain.F
       !||====================================================================
-      SUBROUTINE IDEALGAS(IFLAG ,NEL  ,PM   ,OFF   ,EINT  ,MU   ,MU2 , 
+      SUBROUTINE IDEALGAS(IFLAG ,NEL  ,PM   ,OFF   ,EINT  ,MU   ,
      2                     ESPE ,DVOL ,DF   ,VNEW  ,MAT   ,PSH  ,
-     3                     PNEW ,DPDM ,DPDE ,THETA ,ECOLD)
+     3                     PNEW ,DPDM ,DPDE )
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------
-      USE OUTPUT_MOD , ONLY : WFEXT
+C
 C-----------------------------------------------
 C   D e s c r i p t i o n
 C-----------------------------------------------
 C This subroutine contains numerical solving
 C of IDEAL GAS EOS
+!----------------------------------------------------------------------------
+!! \details STAGGERED SCHEME IS EXECUTED IN TWO PASSES IN EOSMAIN : IFLG=0 THEN IFLG=1
+!! \details COLLOCATED SCHEME IS DOING A SINGLE PASS : IFLG=2
+!! \details
+!! \details  STAGGERED SCHEME
+!! \details     EOSMAIN / IFLG = 0 : DERIVATIVE CALCULATION FOR SOUND SPEED ESTIMATION c[n+1] REQUIRED FOR PSEUDO-VISCOSITY (DPDE:partial derivative, DPDM:total derivative)
+!! \details     MQVISCB            : PSEUDO-VISCOSITY Q[n+1]
+!! \details     MEINT              : INTERNAL ENERGY INTEGRATION FOR E[n+1] : FIRST PART USING P[n], Q[n], and Q[n+1] CONTRIBUTIONS
+!! \details     EOSMAIN / IFLG = 1 : UPDATE P[n+1], T[N+1]
+!! \details                          INTERNAL ENERGY INTEGRATION FOR E[n+1] : LAST PART USING P[n+1] CONTRIBUTION
+!! \details                            (second order integration dE = -P.dV where P = 0.5(P[n+1] + P[n]) )
+!! \details  COLLOCATED SCHEME
+!! \details     EOSMAIN / IFLG = 2 : SINGLE PASS FOR P[n+1] AND DERIVATIVES
+!----------------------------------------------------------------------------
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -47,7 +59,6 @@ C-----------------------------------------------
 C-----------------------------------------------
 C   C o m m o n   B l o c k s
 C-----------------------------------------------
-#include      "mvsiz_p.inc"
 #include      "param_c.inc"
 #include      "com04_c.inc"
 #include      "com06_c.inc"
@@ -59,16 +70,16 @@ C   D u m m y   A r g u m e n t s
 C-----------------------------------------------
       INTEGER MAT(NEL), IFLAG, NEL
       my_real PM(NPROPM,NUMMAT), 
-     .     OFF(NEL)  ,EINT(NEL) ,MU(NEL)   , 
-     .     MU2(NEL)  ,ESPE(NEL) ,DVOL(NEL) ,DF(NEL)  , 
+     .     OFF(NEL)  ,EINT(NEL) ,MU(NEL)  ,
+     .     ESPE(NEL) ,DVOL(NEL) ,DF(NEL)  ,
      .     VNEW(NEL) ,PNEW(NEL) ,DPDM(NEL),
-     .     DPDE(NEL) ,THETA(NEL),ECOLD(NEL)
+     .     DPDE(NEL)
       my_real, INTENT(INOUT) :: PSH(NEL)
 C-----------------------------------------------
 C   L o c a l   V a r i a b l e s
 C-----------------------------------------------
       INTEGER I, MX
-      my_real :: P0,GAMMA,T0,E0,SPH,AA, BB,WFEXTT, DVV, PP, Cv, RHO, RHO0
+      my_real :: P0,GAMMA,T0,E0,SPH,BB,DVV,PP
 C-----------------------------------------------
 C   S o u r c e  L i n e s
 C-----------------------------------------------
@@ -83,15 +94,10 @@ C-----------------------------------------------
          DO I=1,NEL
            PP      = (GAMMA-ONE)*(ONE+MU(I))*ESPE(I)
            DPDM(I) = (GAMMA-ONE)*(ESPE(I)+PP*DF(I))     !total derivative
-           DPDE(I) = (GAMMA-ONE)*(ONE+MU(I))             !partial derivative
-         ENDDO
-         DO I=1,NEL
-           ECOLD(I)=-THREE100*SPH
-           IF(MU(I)>ZERO) ECOLD(I)=ECOLD(I)*(ONE+(GAMMA-ONE)*MU(I)*(ONE-MU(I)))
+           DPDE(I) = (GAMMA-ONE)*(ONE+MU(I))            !partial derivative
          ENDDO
 C-----------------------------------------------
       ELSEIF(IFLAG == 1) THEN
-         WFEXTT     =ZERO
          MX         = MAT(1)
          E0         = PM(23,MX)
          GAMMA      = PM(32,MX)
@@ -102,51 +108,29 @@ C-----------------------------------------------
          ! p1 = p(mu,E+dE) = (g-1)*(1+mu)*(E-dvv*(p0+p1))    where p1,p0 are total pressure (no pshift), dvv = DVOL/2/V0                                               
          DO I=1,NEL
            BB          = (GAMMA-ONE)*(ONE+MU(I))
+           DPDE(I)     = BB  !partial derivative
            DVV         = HALF*DVOL(I)*DF(I) / MAX(EM15,VNEW(I))
-           PNEW(I)     = BB*ESPE(I) / (ONE+BB*DVV)         
-           PNEW(I)     = MAX(PNEW(I),ZERO)*OFF(I)
-           EINT(I)     = EINT(I) - HALF*DVOL(I)*PNEW(I)
-           WFEXTT      = WFEXTT-DVOL(I)*PSH(I)
-           PNEW(I)     = PNEW(I)-PSH(I)
-         ENDDO       
-#include "atomic.inc"
-       WFEXT = WFEXT + WFEXTT
-#include "atomend.inc"
-         MX     = MAT(1)
-         RHO0   = PM(1 ,MX)
-         SPH    = PM(69,MX)
-         Cv     = PM(36,MX)
-         DO I=1,NEL
-           RHO      = RHO0*(ONE+MU(I))
-           IF(OFF(I)<1.) CYCLE
-           THETA(I) = EINT(I)/Cv/RHO/VNEW(I)
-           THETA(I) = MAX(ZERO,THETA(I))
+           PNEW(I)     = BB*ESPE(I) / (ONE+BB*DVV)
+           PNEW(I)     = (MAX(PNEW(I),ZERO)-PSH(I))*OFF(I)
+           EINT(I)     = EINT(I) - HALF*DVOL(I)*(PNEW(I)+PSH(I))
          ENDDO
 C-----------------------------------------------
        ELSEIF (IFLAG == 2) THEN
-         MX = MAT(1)
-         E0 = PM(23,MX)
-         GAMMA = PM(32,MX)
-         P0 = PM(31,MX)
-         PSH(1:NEL) = PM(88,MX)
-         T0 = PM(35,MX)
-         SPH = PM(69,MX)
-         RHO0 = PM(1 ,MX)
-         Cv = PM(36,MX)
-         DO I=1, NEL
-            IF (VNEW(I) > ZERO) THEN
-               PP      = (GAMMA-ONE)*(ONE+MU(I))*ESPE(I) - PSH(I)
-               DPDM(I) = (GAMMA-ONE)*(ESPE(I)+(PP+PSH(I))*DF(I)) !total derivative
-               DPDE(I) = (GAMMA-ONE)*(ONE+MU(I)) !partial derivative
-               PNEW(I) = PP
-            ENDIF
-         ENDDO
-         DO I=1,NEL
-           IF(VNEW(I) > ZERO) THEN
-             THETA(I) = ESPE(I)/RHO0/Cv !law151 only espe is defined
-             THETA(I) = MAX(ZERO,THETA(I))
-           ENDIF
-         ENDDO
+          MX           = MAT(1)
+          E0           = PM(23,MX)
+          GAMMA        = PM(32,MX)
+          P0           = PM(31,MX)
+          PSH(1:NEL) = PM(88,MX)
+          T0           = PM(35,MX)
+          SPH          = PM(69,MX)
+          DO I=1, NEL
+             IF (VNEW(I) > ZERO) THEN
+                PP      = (GAMMA-ONE)*(ONE+MU(I))*ESPE(I) - PSH(I)
+                DPDM(I) = (GAMMA-ONE)*(ESPE(I)+(PP+PSH(I))*DF(I)) !total derivative
+                DPDE(I) = (GAMMA-ONE)*(ONE+MU(I)) !partial derivative
+                PNEW(I) = PP
+             ENDIF
+          ENDDO
       ENDIF
 C-----------------------------------------------
       RETURN

@@ -32,7 +32,11 @@
       !||====================================================================
       !||    matparam_def_mod                    ../common_source/modules/mat_elem/matparam_def_mod.F90
       !||--- called by ------------------------------------------------------
+      !||    aeturb                              ../engine/source/ale/turbulence/aeturb.F
+      !||    akturb                              ../engine/source/ale/turbulence/akturb.F
       !||    alemain                             ../engine/source/ale/alemain.F
+      !||    alethe                              ../engine/source/ale/alethe.F
+      !||    atherm                              ../engine/source/ale/atherm.F
       !||    binit2                              ../starter/source/ale/bimat/binit2.F
       !||    brest2                              ../engine/source/ale/bimat/brest2.F
       !||    c3grhead                            ../starter/source/elements/sh3n/coque3n/c3grhead.F
@@ -44,6 +48,7 @@
       !||    check_mat_elem_prop_compatibility   ../starter/source/materials/mat/check_mat_elem_prop_compatibility.F
       !||    cinit3                              ../starter/source/elements/shell/coque/cinit3.F
       !||    compute_pressure                    ../engine/source/multifluid/multi_muscl_fluxes_computation.F
+      !||    dfunc0                              ../engine/source/output/anim/generate/dfunc0.F
       !||    dfuncc                              ../engine/source/output/anim/generate/dfuncc.F
       !||    dfuncc_ply                          ../engine/source/output/anim/generate/dfuncc_ply.F
       !||    dfuncs                              ../engine/source/output/anim/generate/dfunc6.F
@@ -122,6 +127,7 @@
       !||    hm_read_mat151                      ../starter/source/materials/mat/mat151/hm_read_mat151.F
       !||    hm_read_mat158                      ../starter/source/materials/mat/mat158/hm_read_mat158.F
       !||    hm_read_mat16                       ../starter/source/materials/mat/mat016/hm_read_mat16.F
+      !||    hm_read_mat163                      ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat169_arup                 ../starter/source/materials/mat/mat169/hm_read_mat169.F90
       !||    hm_read_mat18                       ../starter/source/materials/mat/mat018/hm_read_mat18.F
       !||    hm_read_mat19                       ../starter/source/materials/mat/mat019/hm_read_mat19.F
@@ -214,6 +220,7 @@
       !||    inivol_set                          ../starter/source/initial_conditions/inivol/inivol_set.F
       !||    law104_upd                          ../starter/source/materials/mat/mat104/law104_upd.F
       !||    law158_upd                          ../starter/source/materials/mat/mat158/law158_upd.F
+      !||    law163_upd                          ../starter/source/materials/mat/mat163/law163_upd.F90
       !||    law190_upd                          ../starter/source/materials/mat/mat190/law190_upd.F90
       !||    law19_upd                           ../starter/source/materials/mat/mat019/law19_upd.F90
       !||    law42_upd                           ../starter/source/materials/mat/mat042/law42_upd.F
@@ -277,6 +284,7 @@
       !||    sigeps127c                          ../engine/source/materials/mat/mat127/sigeps127c.F90
       !||    sigeps128c                          ../engine/source/materials/mat/mat128/sigeps128c.F90
       !||    sigeps128s                          ../engine/source/materials/mat/mat128/sigeps128s.F90
+      !||    sigeps163                           ../engine/source/materials/mat/mat163/sigeps163.F90
       !||    sigeps190                           ../engine/source/materials/mat/mat190/sigeps190.F
       !||    sigeps25c                           ../engine/source/materials/mat/mat025/sigeps25c.F
       !||    sigeps25cp                          ../engine/source/materials/mat/mat025/sigeps25cp.F
@@ -406,12 +414,73 @@
 
         contains
           procedure :: destruct => destruct_matparam
+          procedure :: zeroing => zeroing_matparam
 
       end type matparam_struct_
 
 
 
       contains
+
+      !||====================================================================
+      !||    zeroing_matparam   ../common_source/modules/mat_elem/matparam_def_mod.F90
+      !||--- uses       -----------------------------------------------------
+      !||    constant_mod       ../common_source/modules/constant_mod.F
+      !||====================================================================
+        subroutine zeroing_matparam(this)
+          use constant_mod , only : zero
+          implicit none
+          class(matparam_struct_), intent(inout) :: this
+
+            !initialize to 0 integer and real from data structure
+
+            this%rho = zero
+            this%rho0 = zero
+            this%young = zero
+            this%bulk = zero
+            this%shear = zero
+            this%nu = zero
+            this%stiff_contact = zero
+            this%stiff_hglass = zero
+            this%stiff_tstep = zero
+
+            !VISC
+            this%visc%ilaw = 0
+            this%visc%title = ''
+            this%visc%nuparam = 0
+            this%visc%niparam = 0
+            this%visc%nuvar = 0
+            this%visc%nfunc = 0
+            this%visc%ntable = 0
+
+            !THERM
+            this%therm%iform = 0
+            this%therm%func_thexp = 0
+            this%therm%tref = zero
+            this%therm%tmelt = zero
+            this%therm%rhocp = zero
+            this%therm%as = zero
+            this%therm%bs = zero
+            this%therm%al = zero
+            this%therm%bl = zero
+            this%therm%efrac = zero
+            this%therm%scale_thexp = zero
+
+            !EOS
+            this%eos%title = ''
+            this%eos%nuparam = 0
+            this%eos%niparam = 0
+            this%eos%nuvar = 0
+            this%eos%nfunc = 0
+            this%eos%ntable = 0
+            this%eos%isfluid = 0
+            this%eos%cv = zero
+            this%eos%cp = zero
+
+            !MULTIMAT
+            this%multimat%nb = 0
+
+        end subroutine zeroing_matparam
 
       !||====================================================================
       !||    destruct_matparam   ../common_source/modules/mat_elem/matparam_def_mod.F90

@@ -95,7 +95,7 @@ std::string element_parenthesis_to_underscore(const std::string &input, const st
 
 std::string node_parenthesis_to_underscore(const std::string &input)
 {
-    std::regex pattern(R"(\b(DX|DY|DZ|AX|AY|AZ|CX|CY|CZ|VX|VY|VZ|ARX|ARY|ARZ|VRX|VRY|VRZ|DRX|DRY|DRZ)\b\s*\(\s*(\d+)\s*\))");
+    std::regex pattern(R"(\b(DX|DY|DZ|AX|AY|AZ|CX|CY|CZ|VX|VY|VZ|ARX|ARY|ARZ|VRX|VRY|VRZ|DRX|DRY|DRZ)\b\s*\(\s*(\d+|ACTIVE_NODE)\s*\))");
     std::string result = std::regex_replace(input, pattern, "$1_$2");
     return result;
 }
@@ -185,6 +185,7 @@ void load_functions(T h, bool &python_initialized)
     load_function(h, "PyDict_New", MyDict_New, python_initialized);
     load_function(h, "PyList_New", MyList_New, python_initialized);
     load_function(h, "PyList_SetItem", MyList_SetItem, python_initialized);
+    load_function(h, "PyErr_Clear", MyErr_Clear, python_initialized);
 }
 
 
@@ -357,9 +358,10 @@ void call_python_function1D_vectors(const char *func_name, std::vector<double> &
             }
             else
             {
-                Y[i] = (std::numeric_limits<double>::infinity());
+                MyErr_Clear();
+                Y[i] = static_cast<double>(std::numeric_limits<float>::max());
             }
-            //std::cout<<"X["<<i<<"] = "<<X[i]<<" Y["<<i<<"] = "<<Y[i]<<std::endl;
+//           std::cout<<"X["<<i<<"] = "<<X[i]<<" Y["<<i<<"] = "<<Y[i]<<std::endl;
         }
     }
 }
@@ -493,7 +495,7 @@ void python_load_library()
 bool try_load_library(const std::string &path)
 {
     bool python_initialized = false;
-    handle = dlopen(path.c_str(), RTLD_LAZY);
+    handle = dlopen(path.c_str(), RTLD_LAZY |RTLD_GLOBAL);
     if (handle)
     {
         std::cout << "Trying python library: " << path << std::endl;
@@ -617,8 +619,37 @@ extern "C"
                 std::cout << "ERROR in Python: fetching main module dictionary" << std::endl;
                 return;
             }
-            MyRun_SimpleString("import math"); // Import the math module for sin and other functions
-            *ierror = 0;
+            int result = MyRun_SimpleString("import math"); // Import the math module for sin and other functions
+            if (result != 0)
+            {
+                std::cerr << "ERROR: Failed to import math module in Python." << std::endl;
+                // Print Python error traceback
+                if (MyErr_Occurred())
+                {
+                // Fetch the error details
+                PyObject *pType, *pValue, *pTraceback;
+                MyErr_Fetch(&pType, &pValue, &pTraceback);
+                if (pType)
+                    std::cout << "[PYTHON] " << MyUnicode_AsUTF8(MyObject_Str(pType)) << std::endl;
+                if (pValue)
+                    std::cout << "[PYTHON] " << MyUnicode_AsUTF8(MyObject_Str(pValue)) << std::endl;
+                if (pTraceback)
+                    std::cout << "[PYTHON]: " << MyUnicode_AsUTF8(MyObject_Str(pTraceback)) << std::endl;
+
+                // Print the error
+                //MyErr_Display(pType, pValue, pTraceback);
+
+                // Decrement reference counts for error objects
+                My_DecRef(pType);
+                My_DecRef(pValue);
+                My_DecRef(pTraceback);
+                exit_with_message("ERROR: Python function failed");
+                }
+           }else
+           {
+              *ierror = 0;
+           }
+
         }
     }
     void cpp_python_load_environment()
@@ -822,6 +853,7 @@ extern "C"
         {
             *error = 1;
         }
+
         //        std::cout << "Function exists? " << *error << std::endl;
     }
 
@@ -1007,6 +1039,48 @@ extern "C"
         // std::cout<< "Generated code: "<<code<<std::endl;
         python_execute_code(code);
     }
+
+    // values is an array of size (3*numnod) containing the values of the nodal entities
+//  call python_update_active_node_values(name_len, temp_name, val)
+
+    void cpp_python_update_active_node(int name_len, char *name, double *values)
+    {
+        if (!python_initialized)
+        {
+            return;
+        }
+        double x_values, y_values, z_values;
+        // loop over the map nodes_uid_to_local_id
+        {
+            x_values = static_cast<double>(values[0]);
+            y_values = static_cast<double>(values[1]);
+            z_values = static_cast<double>(values[2]);
+            PyObject *py_x_values = static_cast<PyObject *>(MyFloat_FromDouble(x_values));
+            PyObject *py_y_values = static_cast<PyObject *>(MyFloat_FromDouble(y_values));
+            PyObject *py_z_values = static_cast<PyObject *>(MyFloat_FromDouble(z_values));
+            if (!py_x_values || !py_y_values || !py_z_values)
+            {
+                std::cout << "ERROR: Failed to create Python objects from C++ doubles." << std::endl;
+                return;
+            }
+            // Set the Python global variables in the main module's dictionary
+            std::string x_name = std::string(name) + "X_ACTIVE_NODE";
+            std::string y_name = std::string(name) + "Y_ACTIVE_NODE";
+            std::string z_name = std::string(name) + "Z_ACTIVE_NODE";
+            // std::cout<<" write to python: "<<x_name<<" "<<y_name<<" "<<z_name<<std::endl;
+            MyDict_SetItemString(pDict, x_name.c_str(), py_x_values);
+            MyDict_SetItemString(pDict, y_name.c_str(), py_y_values);
+            MyDict_SetItemString(pDict, z_name.c_str(), py_z_values);
+            // Release the Python objects
+            if (py_x_values != nullptr)
+                My_DecRef(py_x_values);
+            if (py_y_values != nullptr)
+                My_DecRef(py_y_values);
+            if (py_z_values != nullptr)
+                My_DecRef(py_z_values);
+        }
+    }
+
 
     // values is an array of size (3*numnod) containing the values of the nodal entities
     void cpp_python_update_nodal_entity(int numnod, int name_len, char *name, my_real *values)

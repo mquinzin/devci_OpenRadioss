@@ -160,11 +160,16 @@
       !||    czforc3                             ../engine/source/elements/shell/coquez/czforc3.F
       !||    czforc3_crk                         ../engine/source/elements/xfem/czforc3_crk.F
       !||    czke3                               ../engine/source/elements/shell/coquez/czke3.F
+      !||    damping_range_init                  ../starter/source/general_controls/damping/damping_range_init.F90
+      !||    damping_range_shell                 ../engine/source/general_controls/damping/damping_range_shell.F90
+      !||    damping_range_shell_mom             ../engine/source/general_controls/damping/damping_range_shell_mom.F90
+      !||    damping_range_solid                 ../engine/source/general_controls/damping/damping_range_solid.F90
       !||    deallocate_elbuf                    ../starter/source/elements/elbuf_init/deallocate_buffer.F
       !||    deallocate_one_element_group        ../starter/source/elements/elbuf_init/deallocate_one_element_group.F
       !||    delamination                        ../engine/source/properties/composite_options/stack/delamination.F
       !||    deltax22                            ../engine/source/interfaces/int22/deltax22.F
       !||    desacti                             ../engine/source/elements/desacti.F
+      !||    detonation_times_printout           ../starter/source/initial_conditions/detonation/detonation_times_printout.F90
       !||    dfunc0                              ../engine/source/output/anim/generate/dfunc0.F
       !||    dfuncc                              ../engine/source/output/anim/generate/dfuncc.F
       !||    dfuncc_crk                          ../engine/source/output/anim/generate/dfuncc_crk.F
@@ -203,16 +208,25 @@
       !||    eigcond                             ../engine/stub/eigcond.F
       !||    eigoff                              ../engine/source/output/anim/generate/eigoff.F
       !||    eigp                                ../engine/stub/eigp.F
+      !||    eikonal_fast_marching_method        ../starter/source/initial_conditions/detonation/eikonal_fast_marching_method.F90
+      !||    eikonal_init_mixture_vel            ../starter/source/initial_conditions/detonation/eikonal_ini_mixture_vel.F90
+      !||    eikonal_solver                      ../starter/source/initial_conditions/detonation/eikonal_solver.F90
       !||    eloff                               ../engine/source/elements/eloff.F
       !||    enrichc_ini                         ../engine/source/elements/xfem/enrichc_ini.F
       !||    enrichtg_ini                        ../engine/source/elements/xfem/enrichtg_ini.F
       !||    err_thk                             ../engine/source/elements/shell/err_thk.F
       !||    fail_beam18                         ../engine/source/elements/beam/fail_beam18.F
       !||    fail_beam3                          ../engine/source/elements/beam/fail_beam3.F
+      !||    fail_gene1_b                        ../engine/source/materials/fail/gene1/fail_gene1_b.F90
+      !||    fail_gene1_ib                       ../engine/source/materials/fail/gene1/fail_gene1_ib.F90
       !||    fail_gene1_s                        ../engine/source/materials/fail/gene1/fail_gene1_s.F
+      !||    fail_inievo_b                       ../engine/source/materials/fail/inievo/fail_inievo_b.F90
+      !||    fail_inievo_ib                      ../engine/source/materials/fail/inievo/fail_inievo_ib.F90
       !||    fail_setoff_c                       ../engine/source/materials/fail/fail_setoff_c.F
       !||    fail_setoff_npg_c                   ../engine/source/materials/fail/fail_setoff_npg_c.F
       !||    fail_setoff_wind_frwave             ../engine/source/materials/fail/fail_setoff_wind_frwave.F
+      !||    fail_tab2_b                         ../engine/source/materials/fail/tabulated/fail_tab2_b.F90
+      !||    fail_tab2_ib                        ../engine/source/materials/fail/tabulated/fail_tab2_ib.F90
       !||    fail_windshield_init                ../starter/source/materials/fail/windshield_alter/fail_windshield_init.F
       !||    failini                             ../starter/source/elements/solid/solide/failini.F
       !||    forint                              ../engine/source/elements/forint.F
@@ -634,6 +648,7 @@
       !||    tensorc_crk                         ../engine/source/output/anim/generate/tensorc_crk.F
       !||    tensorc_ply                         ../engine/source/output/anim/generate/tensorc_ply.F
       !||    tensors                             ../engine/source/output/anim/generate/tensor6.F
+      !||    test_jc_shell_detach                ../engine/source/engine/node_spliting/detach_node.F90
       !||    tforc3                              ../engine/source/elements/truss/tforc3.F
       !||    thcluster                           ../engine/source/output/th/thcluster.F
       !||    thcoq                               ../engine/source/output/th/thcoq.F
@@ -672,6 +687,7 @@
       !||    usermat_solid                       ../engine/source/materials/mat_share/usermat_solid.F
       !||    velvecc22                           ../engine/source/output/anim/generate/velvec.F
       !||    velvecz22                           ../engine/source/output/anim/generate/velvecz22.F
+      !||    viscmain                            ../engine/source/materials/visc/viscmain.F
       !||    voln22                              ../engine/source/interfaces/int22/voln22.F
       !||    volpvgb                             ../engine/source/airbag/volpvg.F
       !||    w_elbuf_str                         ../engine/source/elements/elbuf/w_elbuf_str.F
@@ -718,6 +734,7 @@
         integer  g_epsd   
         integer  g_epsq
         integer  g_pla    
+        integer  g_wpla
         integer  g_temp   
         integer  g_tb     
         integer  g_rk     
@@ -733,6 +750,8 @@
         integer  g_forpg    
         integer  g_mompg
         integer  g_gama_r   
+        integer  g_for_g    ! used for resultant stress (global modeling)
+        integer  g_forpg_g    
 !
         integer  g_forpgpinch  
         integer  g_mompgpinch 
@@ -847,6 +866,7 @@
         my_real, dimension(:) , pointer ::   epsd  
         my_real, dimension(:) , pointer ::   epsq
         my_real, dimension(:) , pointer ::   pla   
+        my_real, dimension(:) , pointer ::   wpla
         my_real, dimension(:) , pointer ::   temp  
         my_real, dimension(:) , pointer ::   tb    
         my_real, dimension(:) , pointer ::   rk    
@@ -862,6 +882,8 @@
         my_real, dimension(:) , pointer ::   forpg   ! mean gauss point value    
         my_real, dimension(:) , pointer ::   mompg
         my_real, dimension(:) , pointer ::   gama_r  ! co-rotational local sys  
+        my_real, dimension(:) , pointer ::   for_g       
+        my_real, dimension(:) , pointer ::   forpg_g       
 !
         my_real, dimension(:) , pointer ::   forpgpinch 
         my_real, dimension(:) , pointer ::   mompgpinch
@@ -898,6 +920,7 @@
         my_real, dimension(:) , pointer ::   eint_distor  
 !---
 !    - 1d - elem (truss, beam, spring)
+        my_real, dimension(:) , pointer ::   dmgscl ! damage scaling
         my_real, dimension(:) , pointer ::   area
         my_real, dimension(:) , pointer ::   skew
         my_real, dimension(:) , pointer ::   length
@@ -984,6 +1007,7 @@
         my_real, dimension(:) , pointer ::   epsq   
         my_real, dimension(:) , pointer ::   epsf   
         my_real, dimension(:) , pointer ::   pla    
+        my_real, dimension(:) , pointer ::   wpla    
         my_real, dimension(:) , pointer ::   temp   
         my_real, dimension(:) , pointer ::   tb     
         my_real, dimension(:) , pointer ::   rk     
@@ -1057,6 +1081,12 @@
         integer, dimension(:,:), allocatable :: nl_solnod  ! identifiers of effectives nodes (8,nel)
       end type buf_nlocs_
 !--------------------------------------------------------------------------------
+!     buffer for damping frequency range
+      Type buf_damp_range_
+        my_real, dimension(:), pointer :: alpha ! alpha parameter of maxwell damping components
+        my_real, dimension(:), pointer :: tau   ! tau parameter of maxwell damping components
+      end type buf_damp_range_
+!-------------------------------------------------------------------------------
 
       Type buf_eos_
         my_real, dimension(:)  , pointer ::  var 
@@ -1167,7 +1197,8 @@
         integer  l_epsd                    
         integer  l_epsq   
         integer  l_epsf   
-        integer  l_pla             
+        integer  l_pla           
+        integer  l_wpla  
         integer  l_temp   
         integer  l_tb     
         integer  l_rk     
@@ -1280,6 +1311,8 @@
         type (buf_nloc_)  , dimension(:,:) , pointer :: nloc   ! non-local thickness specific structure for shells
         type (buf_nlocts_), dimension(:,:) , pointer :: nlocts ! non-local thickness specific structure for thickshells
         type (buf_nlocs_)                            :: nlocs  ! non-local structure of brick element geometry configuration
+        type (buf_damp_range_)                       :: damp_range  ! structure for damping parameters of damping freq range
+
       end type elbuf_struct_
 !
 !---------------
