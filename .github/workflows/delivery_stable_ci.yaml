@@ -476,7 +476,7 @@ jobs:
           echo "List exec_tmp : "
           find exec_tmp -type f
 
-          mv exec_tmp/extlib.zip ../
+          mv exec_tmp/extlib.zip ./
 
           # for os in linux64 win64 
           for os in linux64
