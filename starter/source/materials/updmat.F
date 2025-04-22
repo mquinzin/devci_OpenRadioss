@@ -39,6 +39,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    law119_upd             ../starter/source/materials/mat/mat119/law119_upd.F
       !||    law120_upd             ../starter/source/materials/mat/mat120/law120_upd.F
       !||    law158_upd             ../starter/source/materials/mat/mat158/law158_upd.F
+      !||    law163_upd             ../starter/source/materials/mat/mat163/law163_upd.F90
       !||    law190_upd             ../starter/source/materials/mat/mat190/law190_upd.F90
       !||    law19_upd              ../starter/source/materials/mat/mat019/law19_upd.F90
       !||    law36_upd              ../starter/source/materials/mat/mat036/law36_upd.F
@@ -59,6 +60,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||--- uses       -----------------------------------------------------
       !||    elbuftag_mod           ../starter/share/modules1/elbuftag_mod.F
       !||    eosfun_usr2sys_mod     ../starter/source/materials/tools/eosfun_usr2sys.F90
+      !||    law163_upd_mod         ../starter/source/materials/mat/mat163/law163_upd.F90
       !||    law190_upd_mod         ../starter/source/materials/mat/mat190/law190_upd.F90
       !||    law19_upd_mod          ../starter/source/materials/mat/mat019/law19_upd.F90
       !||    law81_upd_mod          ../starter/source/materials/mat/mat081/law81_upd.F90
@@ -81,6 +83,7 @@ C-----------------------------------------------
       USE LAW19_UPD_MOD  
       USE LAW81_UPD_MOD
       USE LAW87_UPD_MOD
+      USE LAW163_UPD_MOD
       USE LAW190_UPD_MOD  
       USE VISC_PARAM_MOD
       USE NAMES_AND_TITLES_MOD , ONLY : NCHARTITLE
@@ -394,6 +397,9 @@ c-------------------------
             CALL LAW158_UPD(MAT_PARAM(IMAT),TITR,NPC,PLD,
      .                      NFUNC,NFUNCL,IFUNC,MAT_ID,FUNC_ID,
      .                      PM(1,IMAT),SENSORS)
+c------------------
+          CASE (163)
+            CALL LAW163_UPD(MAT_PARAM(IMAT),PM(1,IMAT),NPROPM)
 c------------------
           CASE (190) !PAth dependent foam (dubois)
             CALL LAW190_UPD(MAT_PARAM(IMAT) ,NUMTABL ,ITABLE   ,TABLE   ,PM(1,IMAT),

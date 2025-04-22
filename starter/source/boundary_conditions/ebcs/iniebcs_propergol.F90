@@ -1,5 +1,5 @@
 !Copyright>        OpenRadioss
-!Copyright>        Copyright (C) 1986-2024 Altair Engineering Inc.
+!Copyright>        Copyright (C) 1986-2025 Altair Engineering Inc.
 !Copyright>
 !Copyright>        This program is free software: you can redistribute it and/or modify
 !Copyright>        it under the terms of the GNU Affero General Public License as published by
@@ -131,7 +131,7 @@
 ! ----------------------------------------------------------------------------------------------------------------------
       type(t_ebcs_propergol), target, intent(inout) :: ebcs                !< ebcs propergol data structure
       integer,intent(in) :: nummat                                         !< number of material law (size for mat_param data structure)
-      type(matparam_struct_) ,dimension(nummat) ,intent(in) :: mat_param   !< data strucutre for material parameters
+      type(matparam_struct_) ,dimension(nummat) ,intent(in) :: mat_param   !< data structure for material parameters
       character(len=nchartitle) :: title
       integer,intent(in) :: sixs,sixq,sixtg
       integer,intent(in) :: ixs(nixs,sixs/nixs),ixq(nixq,sixq/nixq),ixtg(nixtg,sixtg/nixtg)

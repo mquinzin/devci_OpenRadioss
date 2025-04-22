@@ -118,6 +118,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_fail_alter                ../starter/source/materials/fail/windshield_alter/hm_read_fail_alter.F
       !||    hm_read_fail_biquad               ../starter/source/materials/fail/biquad/hm_read_fail_biquad.F
       !||    hm_read_fail_chang                ../starter/source/materials/fail/changchang/hm_read_fail_chang.F
+      !||    hm_read_fail_cockcroft            ../starter/source/materials/fail/cockroft_latham/hm_read_fail_cockcroft.F
       !||    hm_read_fail_connect              ../starter/source/materials/fail/connect/hm_read_fail_connect.F
       !||    hm_read_fail_energy               ../starter/source/materials/fail/energy/hm_read_fail_energy.F
       !||    hm_read_fail_fabric               ../starter/source/materials/fail/fabric/hm_read_fail_fabric.F
@@ -139,7 +140,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_fail_rtcl                 ../starter/source/materials/fail/rtcl/hm_read_fail_rtcl.F
       !||    hm_read_fail_sahraei              ../starter/source/materials/fail/sahraei/hm_read_fail_sahraei.F
       !||    hm_read_fail_snconnect            ../starter/source/materials/fail/snconnect/hm_read_fail_snconnect.F
-      !||    hm_read_fail_spalling             ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F
+      !||    hm_read_fail_spalling             ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F90
       !||    hm_read_fail_syazwan              ../starter/source/materials/fail/syazwan/hm_read_fail_syazwan.F
       !||    hm_read_fail_tab1                 ../starter/source/materials/fail/tabulated/hm_read_fail_tab1.F
       !||    hm_read_fail_tab2                 ../starter/source/materials/fail/tabulated/hm_read_fail_tab2.F
@@ -252,6 +253,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_mat15                     ../starter/source/materials/mat/mat015/hm_read_mat15.F
       !||    hm_read_mat151                    ../starter/source/materials/mat/mat151/hm_read_mat151.F
       !||    hm_read_mat158                    ../starter/source/materials/mat/mat158/hm_read_mat158.F
+      !||    hm_read_mat163                    ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat169_arup               ../starter/source/materials/mat/mat169/hm_read_mat169.F90
       !||    hm_read_mat18                     ../starter/source/materials/mat/mat018/hm_read_mat18.F
       !||    hm_read_mat19                     ../starter/source/materials/mat/mat019/hm_read_mat19.F

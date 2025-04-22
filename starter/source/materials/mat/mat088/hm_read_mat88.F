@@ -176,33 +176,39 @@ C
       NFUNC = NL                         
 C      
       IUNL_FOR = 0
-      ICASE = 1 ! follow the quasistatic curve for unloading
-      RATE(NL  + 1 ) = ZERO
-      YFAC(NL  + 1 ) = ZERO
+      ICASE = 0 
       IF(YFAC_UNL == ZERO) YFAC_UNL = YFAC_UNL_UNIT
-      IF(ITENS == 0 .OR .ITENS == 1 .OR. ITENS == -1) THEN
-        IF(IFUNC_UNLOAD > 0 .AND. IFUNC_UNLOAD /= IFUNC(1)) THEN
-          NFUNC = NFUNC + 1
-          IFUNC(NFUNC) = IFUNC_UNLOAD
-          YFAC(NFUNC) = YFAC_UNL
-          RATE(NFUNC) = ZERO
-          IUNL_FOR = 1  ! using unloading curve
-          ICASE = 2 ! with damage using unloading curve
-        ELSEIF(HYS > ZERO) THEN
-          IUNL_FOR = 2 ! based on the energy 
-          ICASE = 2  ! with damage no need to unloading curve
-        ELSEIF(HYS < ZERO) THEN
-          IUNL_FOR = 3 ! based on the energy 
-          ICASE = 2  ! with damage no need to unloading curve
-          HYS = ABS(HYS)
-        ENDIF 
-      ELSEIF(ITENS == -2 .AND. IFUNC_UNLOAD > 0 ) THEN
-           ICASE = 3  !  follow unloading curve the curve should form closed loop
-           NFUNC = NFUNC + 1
-          IFUNC(NFUNC) = IFUNC_UNLOAD
-          YFAC(NFUNC) = YFAC_UNL
-          RATE(NFUNC) = ZERO 
-      ENDIF      
+      IF(NL == 1) THEN ! no strain rate effect 
+            IF(IFUNC_UNLOAD > 0 )THEN 
+              NFUNC = NFUNC + 1
+              IFUNC(NFUNC) = IFUNC_UNLOAD
+              YFAC(NFUNC) = YFAC_UNL
+              RATE(NFUNC) = ZERO
+              IUNL_FOR = 1  ! using unloading curve
+            ELSEIF(HYS /= ZERO) THEN
+              IUNL_FOR = 2 ! based on the energy 
+              HYS = ABS(HYS)
+            ELSE
+              IUNL_FOR = 0  ! no unloading curve, 
+            ENDIF     
+      ELSE ! strain rate effect
+            IF(IFUNC_UNLOAD > 0) THEN
+              NFUNC = NFUNC + 1
+              IFUNC(NFUNC) = IFUNC_UNLOAD
+              YFAC(NFUNC) = YFAC_UNL
+              RATE(NFUNC) = ZERO
+              IUNL_FOR = 1  ! using unloading curve
+            ELSEIF(HYS /= ZERO )THEN
+              IUNL_FOR = 3 ! based on the energy 
+              HYS = ABS(HYS)
+            ELSE ! using quasistatic curve for unloading 
+              NFUNC = NFUNC + 1
+              IFUNC(NFUNC) = IFUNC(1)
+              YFAC(NFUNC) =  YFAC(1)
+              RATE(NFUNC) = ZERO
+              IUNL_FOR = 1  ! using unloading curve
+            ENDIF   
+      ENDIF 
 C       
       IF(SHAPE == ZERO) SHAPE = ONE
       IF(HYS == ZERO) HYS = ONE
@@ -232,11 +238,13 @@ C
       UPARAM(9) = ICASE
       NUPARAM = 9
 C      
-      DO I=1,NL + 1 
+      DO I=1,NFUNC
          UPARAM( NUPARAM + 2*I - 1) = RATE(I) 
          UPARAM( NUPARAM + 2*I    ) = YFAC(I)
       ENDDO
-      NUPARAM  = NUPARAM + 2*(NL + 1) + 5 ! 5 for pt curve intersection + flag   
+      NUPARAM  = NUPARAM + 2*NFUNC 
+      UPARAM(NUPARAM + 1 : NUPARAM + 5) = ZERO
+      NUPARAM = NUPARAM + 5 ! used inside law88_upd.F  but not used in engine
 C    
       NUVAR   =  32 
 C
@@ -271,7 +279,7 @@ c-----------------
         IF(IUNL_FOR == 1) THEN
          II = NL
          WRITE(IOUT,1300)IFUNC(NFUNC),YFAC_UNL 
-        ELSEIF(IUNL_FOR == 2) THEN
+        ELSEIF(IUNL_FOR == 2 .or. IUNL_FOR == 3) THEN
          write(IOUT,1400) HYS, SHAPE
         ENDIF
         WRITE(IOUT,1500) ITENS

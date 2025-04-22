@@ -23,6 +23,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||====================================================================
       !||    table_slope   ../starter/source/materials/tools/table_slope.F
       !||--- called by ------------------------------------------------------
+      !||    law163_upd    ../starter/source/materials/mat/mat163/law163_upd.F90
       !||    law70_upd     ../starter/source/materials/mat/mat070/law70_upd.F
       !||--- uses       -----------------------------------------------------
       !||    message_mod   ../starter/share/message_module/message_mod.F
@@ -103,8 +104,8 @@ c
             IF (X1 == ZERO .or. X2 == ZERO) THEN
               STIFFINI = MAX(STIFFINI, DYDX)
             ENDIF
-            Y1 = Y2
-          ENDDO      
+          ENDDO
+          Y1 = Y2
           X1 = X2
         ENDDO
 c        

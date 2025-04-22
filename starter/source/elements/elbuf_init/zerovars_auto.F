@@ -79,6 +79,8 @@ c
       IAD = IAD + 1
       GBUF%G_PLA   = 0   
       IAD = IAD + 1
+      GBUF%G_WPLA   = 0   
+      IAD = IAD + 1    
       GBUF%G_TEMP  = 0   
       IAD = IAD + 1
       GBUF%G_TB    = 0   
@@ -178,6 +180,10 @@ C
       GBUF%G_AMU = 0   
       IAD = IAD + 1
       GBUF%G_EINT_DISTOR  = 0  
+      IAD = IAD + 1
+      GBUF%G_FOR_G  = 0  
+      IAD = IAD + 1
+      GBUF%G_FORPG_G  = 0  
       
 C 1-D elements (TRUSS, BEAM, SPRING, NSTRAND)
       IAD = IAD + 1
@@ -334,6 +340,8 @@ c
         BUFLY%L_EPSF   = 0
         IAD = IAD + 1
         BUFLY%L_PLA    = 0
+        IAD = IAD + 1
+        BUFLY%L_WPLA   = 0
         IAD = IAD + 1
         BUFLY%L_TEMP   = 0
         IAD = IAD + 1

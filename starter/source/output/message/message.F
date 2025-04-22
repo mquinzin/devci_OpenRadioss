@@ -93,6 +93,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    csigini4                            ../starter/source/elements/shell/coqueba/scigini4.F
       !||    cstraini4                           ../starter/source/elements/shell/coqueba/cstraini4.F
       !||    cuserini4                           ../starter/source/elements/shell/coqueba/cuserini4.F
+      !||    damping_rby_spmdset                 ../starter/source/general_controls/damping/damping_rby_spmdset.F90
       !||    defbeam_sect                        ../starter/source/properties/beam/hm_read_prop18.F
       !||    definter                            ../starter/source/interfaces/interf1/definter.F
       !||    domdec2                             ../starter/source/spmd/domdec2.F
@@ -213,7 +214,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_fail_inievo                 ../starter/source/materials/fail/inievo/hm_read_fail_inievo.F
       !||    hm_read_fail_johnson                ../starter/source/materials/fail/johnson_cook/hm_read_fail_johnson.F
       !||    hm_read_fail_orthbiquad             ../starter/source/materials/fail/orthbiquad/hm_read_fail_orthbiquad.F
-      !||    hm_read_fail_spalling               ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F
+      !||    hm_read_fail_spalling               ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F90
       !||    hm_read_fail_syazwan                ../starter/source/materials/fail/syazwan/hm_read_fail_syazwan.F
       !||    hm_read_fail_tab1                   ../starter/source/materials/fail/tabulated/hm_read_fail_tab1.F
       !||    hm_read_fail_tab2                   ../starter/source/materials/fail/tabulated/hm_read_fail_tab2.F

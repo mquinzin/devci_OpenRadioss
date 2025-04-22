@@ -163,7 +163,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_fail_rtcl                 ../starter/source/materials/fail/rtcl/hm_read_fail_rtcl.F
       !||    hm_read_fail_sahraei              ../starter/source/materials/fail/sahraei/hm_read_fail_sahraei.F
       !||    hm_read_fail_snconnect            ../starter/source/materials/fail/snconnect/hm_read_fail_snconnect.F
-      !||    hm_read_fail_spalling             ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F
+      !||    hm_read_fail_spalling             ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F90
       !||    hm_read_fail_syazwan              ../starter/source/materials/fail/syazwan/hm_read_fail_syazwan.F
       !||    hm_read_fail_tab1                 ../starter/source/materials/fail/tabulated/hm_read_fail_tab1.F
       !||    hm_read_fail_tab2                 ../starter/source/materials/fail/tabulated/hm_read_fail_tab2.F
@@ -217,6 +217,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_mat                       ../starter/source/materials/mat/hm_read_mat.F90
       !||    hm_read_mat100                    ../starter/source/materials/mat/mat100/hm_read_mat100.F
       !||    hm_read_mat109                    ../starter/source/materials/mat/mat109/hm_read_mat109.F
+      !||    hm_read_mat163                    ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat36                     ../starter/source/materials/mat/mat036/hm_read_mat36.F
       !||    hm_read_mat38                     ../starter/source/materials/mat/mat038/hm_read_mat38.F
       !||    hm_read_mat40                     ../starter/source/materials/mat/mat040/hm_read_mat40.F
@@ -304,6 +305,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_upwind                    ../starter/source/general_controls/computation/hm_read_upwind.F
       !||    hm_read_visc                      ../starter/source/materials/visc/hm_read_visc.F
       !||    hm_read_visc_lprony               ../starter/source/materials/visc/hm_read_visc_lprony.F
+      !||    hm_read_visc_plas                 ../starter/source/materials/visc/hm_read_visc_plas.F90
       !||    hm_read_visc_prony                ../starter/source/materials/visc/hm_read_visc_prony.F
       !||    hm_read_window_user               ../starter/source/tools/userwi/hm_read_window_user.F
       !||    hm_read_xref                      ../starter/source/loads/reference_state/xref/hm_read_xref.F

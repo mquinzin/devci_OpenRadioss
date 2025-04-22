@@ -150,6 +150,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    csigini4                            ../starter/source/elements/shell/coqueba/scigini4.F
       !||    cstraini4                           ../starter/source/elements/shell/coqueba/cstraini4.F
       !||    cuserini4                           ../starter/source/elements/shell/coqueba/cuserini4.F
+      !||    damping_rby_spmdset                 ../starter/source/general_controls/damping/damping_rby_spmdset.F90
       !||    ddsplit                             ../starter/source/restart/ddsplit/ddsplit.F
       !||    deallocate_elbuf                    ../starter/source/elements/elbuf_init/deallocate_buffer.F
       !||    deallocate_one_element_group        ../starter/source/elements/elbuf_init/deallocate_one_element_group.F
@@ -373,7 +374,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_fail_orthbiquad             ../starter/source/materials/fail/orthbiquad/hm_read_fail_orthbiquad.F
       !||    hm_read_fail_orthenerg              ../starter/source/materials/fail/orthenerg/hm_read_fail_orthenerg.F
       !||    hm_read_fail_sahraei                ../starter/source/materials/fail/sahraei/hm_read_fail_sahraei.F
-      !||    hm_read_fail_spalling               ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F
+      !||    hm_read_fail_spalling               ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F90
       !||    hm_read_fail_syazwan                ../starter/source/materials/fail/syazwan/hm_read_fail_syazwan.F
       !||    hm_read_fail_tab1                   ../starter/source/materials/fail/tabulated/hm_read_fail_tab1.F
       !||    hm_read_fail_tab2                   ../starter/source/materials/fail/tabulated/hm_read_fail_tab2.F
@@ -697,6 +698,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_upwind                      ../starter/source/general_controls/computation/hm_read_upwind.F
       !||    hm_read_visc                        ../starter/source/materials/visc/hm_read_visc.F
       !||    hm_read_visc_lprony                 ../starter/source/materials/visc/hm_read_visc_lprony.F
+      !||    hm_read_visc_plas                   ../starter/source/materials/visc/hm_read_visc_plas.F90
       !||    hm_read_visc_prony                  ../starter/source/materials/visc/hm_read_visc_prony.F
       !||    hm_read_window_user                 ../starter/source/tools/userwi/hm_read_window_user.F
       !||    hm_read_xelem                       ../starter/source/elements/reader/hm_read_xelem.F

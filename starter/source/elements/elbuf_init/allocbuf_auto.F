@@ -38,6 +38,7 @@ C-----------------------------------------------
       USE MY_ALLOC_MOD
       USE ELBUFDEF_MOD            
       USE MESSAGE_MOD
+      USE CONSTANT_MOD , ONLY : EP21
 C-----------------------------------------------
 C   I n c l u d e
 C-----------------------------------------------
@@ -187,10 +188,12 @@ c
                   LBUF%EPSF = ZERO
               CALL MY_ALLOC(LBUF%PLA,NEL*BUFLY%L_PLA)              
                   LBUF%PLA = ZERO
+             CALL MY_ALLOC(LBUF%WPLA,NEL*BUFLY%L_WPLA)              
+                  LBUF%WPLA = ZERO                  
               CALL MY_ALLOC(LBUF%TEMP,NEL*BUFLY%L_TEMP)
                   LBUF%TEMP = MIN(BUFLY%L_TEMP,1) * PM(79,IMAT) ! reference (initial) temperature
               CALL MY_ALLOC(LBUF%TB,NEL*BUFLY%L_TB)                
-                  LBUF%TB = ZERO
+                  LBUF%TB = -EP21
               CALL MY_ALLOC(LBUF%RK,NEL*BUFLY%L_RK)                
                   LBUF%RK = ZERO
               CALL MY_ALLOC(LBUF%RE,NEL*BUFLY%L_RE)                
@@ -428,6 +431,8 @@ c           Allocate Orthotropic Beta angle (dyna input format)
         ELBUF_TAB(NG)%GBUF%SH_IOFFSET = 0
       CALL MY_ALLOC(GBUF%EINT_DISTOR,NEL*GBUF%G_EINT_DISTOR)                                    
         ELBUF_TAB(NG)%GBUF%EINT_DISTOR = ZERO
+      CALL MY_ALLOC(GBUF%FOR_G,NEL*GBUF%G_FOR_G)                                    
+        ELBUF_TAB(NG)%GBUF%FOR_G = ZERO
 
 c
       IF (NPG == 1) THEN
@@ -447,6 +452,7 @@ C
           CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%STRPG,NEL*GBUF%G_STRPG)
           ELBUF_TAB(NG)%GBUF%STRPG = ZERO
         END IF
+        ELBUF_TAB(NG)%GBUF%FORPG_G=> GBUF%FOR_G
       ELSEIF (NPG > 1) THEN
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%FORPG,NEL*GBUF%G_FORPG)
            ELBUF_TAB(NG)%GBUF%FORPG = ZERO
@@ -468,11 +474,13 @@ C
           ELBUF_TAB(NG)%GBUF%STRPG = ZERO
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%STRWPG,NEL*GBUF%G_STRWPG)
           ELBUF_TAB(NG)%GBUF%STRWPG = ZERO  
+        CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%FORPG_G,NEL*GBUF%G_FORPG_G)
+          ELBUF_TAB(NG)%GBUF%FORPG_G = ZERO  
       ENDIF
 c
 c-------------------------------------------------
 c      IF (NPT == 1) THEN  ! NPT = 1 ! global variables are pointing to local ones    
-      IF (NPTTOT == 1) THEN  ! NPTTOT = 1 ! global variables are pointing to local ones    
+      IF (NPTTOT == 1) THEN  ! NPTTOT = 1 ! global variables are pointing to local ones, BEAM3 not included    
         LBUF => ELBUF_TAB(NG)%BUFLY(1)%LBUF(1,1,1)                                   
 c
         ELBUF_TAB(NG)%GBUF%BFRAC  => LBUF%BFRAC                                      
@@ -485,7 +493,8 @@ c
         ELBUF_TAB(NG)%GBUF%VOL    => LBUF%VOL                                        
         ELBUF_TAB(NG)%GBUF%EPSD   => LBUF%EPSD                                       
         ELBUF_TAB(NG)%GBUF%EPSQ   => LBUF%EPSQ                                       
-        ELBUF_TAB(NG)%GBUF%PLA    => LBUF%PLA                                        
+        ELBUF_TAB(NG)%GBUF%PLA    => LBUF%PLA            
+        ELBUF_TAB(NG)%GBUF%WPLA   => LBUF%WPLA                                      
         ELBUF_TAB(NG)%GBUF%TEMP   => LBUF%TEMP                                       
         ELBUF_TAB(NG)%GBUF%TB     => LBUF%TB                                         
         ELBUF_TAB(NG)%GBUF%RK     => LBUF%RK                                         
@@ -496,7 +505,7 @@ c
         ELBUF_TAB(NG)%GBUF%SEQ    => LBUF%SEQ
         ELBUF_TAB(NG)%GBUF%ABURN  => LBUF%ABURN   
         ELBUF_TAB(NG)%GBUF%MU     => LBUF%MU                                    
-      ELSE  ! NPT > 1                                                                
+      ELSE  ! NPT > 1 OR BEAM3                                                              
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%BFRAC,NEL*GBUF%G_BFRAC)                
               ELBUF_TAB(NG)%GBUF%BFRAC = ZERO     
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%OFF,NEL*GBUF%G_OFF) 
@@ -518,11 +527,13 @@ c
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%EPSQ,NEL*GBUF%G_EPSQ)  
               ELBUF_TAB(NG)%GBUF%EPSQ = ZERO 
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%PLA,NEL*GBUF%G_PLA)                       
-              ELBUF_TAB(NG)%GBUF%PLA = ZERO               
+              ELBUF_TAB(NG)%GBUF%PLA = ZERO    
+        CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%WPLA,NEL*GBUF%G_WPLA)                       
+              ELBUF_TAB(NG)%GBUF%WPLA = ZERO                             
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%TEMP,NEL*GBUF%G_TEMP)                      
               ELBUF_TAB(NG)%GBUF%TEMP = ZERO               
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%TB,NEL*GBUF%G_TB)                        
-              ELBUF_TAB(NG)%GBUF%TB = ZERO               
+              ELBUF_TAB(NG)%GBUF%TB = -EP21
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%RK,NEL*GBUF%G_RK)                      
               ELBUF_TAB(NG)%GBUF%RK = ZERO               
         CALL MY_ALLOC(ELBUF_TAB(NG)%GBUF%RE,NEL*GBUF%G_RE) 
@@ -547,6 +558,10 @@ c---
 c---
 c 1-D elements (TRUSS, BEAM, SPRING, NSTRAND)
 c---
+      IF(IGTYP == 3 .and. ITY == 5) THEN 
+        ALLOCATE (GBUF%DMGSCL(NEL*GBUF%G_DMGSCL)           ,STAT=Stat)
+          GBUF%DMGSCL = ONE
+      ENDIF 
       ALLOCATE (GBUF%AREA(NEL*GBUF%G_AREA)               ,STAT=Stat)
         GBUF%AREA = ZERO
       ALLOCATE (GBUF%SKEW(NEL*GBUF%G_SKEW)               ,STAT=Stat)

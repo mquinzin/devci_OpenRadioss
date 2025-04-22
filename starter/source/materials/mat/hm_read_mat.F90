@@ -86,6 +86,7 @@
       !||    hm_read_mat151            ../starter/source/materials/mat/mat151/hm_read_mat151.F
       !||    hm_read_mat158            ../starter/source/materials/mat/mat158/hm_read_mat158.F
       !||    hm_read_mat16             ../starter/source/materials/mat/mat016/hm_read_mat16.F
+      !||    hm_read_mat163            ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat169_arup       ../starter/source/materials/mat/mat169/hm_read_mat169.F90
       !||    hm_read_mat18             ../starter/source/materials/mat/mat018/hm_read_mat18.F
       !||    hm_read_mat19             ../starter/source/materials/mat/mat019/hm_read_mat19.F
@@ -166,6 +167,7 @@
       !||    hm_read_mat126_mod        ../starter/source/materials/mat/mat126/hm_read_mat126.F90
       !||    hm_read_mat127_mod        ../starter/source/materials/mat/mat127/hm_read_mat127.F90
       !||    hm_read_mat128_mod        ../starter/source/materials/mat/mat128/hm_read_mat128.F90
+      !||    hm_read_mat163_mod        ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat169_arup_mod   ../starter/source/materials/mat/mat169/hm_read_mat169.F90
       !||    hm_read_mat50_mod         ../starter/source/materials/mat/mat050/hm_read_mat50.F90
       !||    hm_read_mat57_mod         ../starter/source/materials/mat/mat057/hm_read_mat57.F90
@@ -206,6 +208,7 @@
       use hm_read_mat126_mod
       use hm_read_mat127_mod
       use hm_read_mat128_mod
+      use hm_read_mat163_mod
       use hm_read_mat169_arup_mod
       use names_and_titles_mod ,only : nchartitle, ncharline
       use reader_old_mod     ,only : key0
@@ -227,10 +230,9 @@
       integer, intent(in)                  :: userl_avail
       type (unit_type_),intent(in)         :: unitab
       type(submodel_data),intent(in)       :: lsubmodel(nsubmod)
-      !
-      integer, intent(inout)                  :: trimat
-      integer, intent(inout)                  :: ialelag
-      integer, intent(inout)                  :: mat_number
+      integer, intent(inout)               :: trimat
+      integer, intent(inout)               :: ialelag
+      integer, intent(inout)               :: mat_number
       integer ,intent(inout) :: buflen,iadbuf
       integer ,dimension(npropmi,nummat), intent(inout) :: ipm
       !
@@ -688,7 +690,7 @@
             &uparam   ,maxuparam ,nuparam  ,israte  ,imatvis  ,&
             &nuvar    ,ifunc     ,maxfunc  ,nfunc   ,parmat   ,&
             &unitab   ,mat_id    ,titr     ,mtag    ,lsubmodel,&
-            &pm(1,i)  ,matparam )
+            &pm(1,i)  ,matparam ,ipm(1,i))
 !-------
           case ('LAW52','GURSON')
             ilaw  = 52
@@ -1164,9 +1166,8 @@
           case ('LAW126','JOHNSON_HOLMQUIST_CONCRETE')
             ilaw = 126
             call hm_read_mat126(&
-            &nuvar    ,mtag     ,matparam ,npropm   ,iout     ,&
-            &parmat   ,unitab   ,pm(1,i)  ,lsubmodel,israte   ,&
-            &mat_id   ,titr     )
+            &nuvar    ,mtag     ,matparam ,iout     ,parmat   ,&
+            &unitab   ,lsubmodel,israte   ,mat_id   ,titr     )
 !-------
           case ('LAW127','ENHANCED_COMPOSITE')
             ilaw = 127
@@ -1194,6 +1195,13 @@
             call hm_read_mat158(matparam ,nuvar    ,nfunc    ,&
             &maxfunc  ,ifunc    ,mtag     ,unitab   ,&
             &lsubmodel,mat_id   ,titr     )
+!-------
+          case ('LAW163','CRUSHABLE_FOAM')
+            ilaw  = 163
+            call hm_read_mat163(&
+            &matparam ,nvartmp  ,parmat   ,unitab   ,mat_id   ,&
+            &titr     ,mtag     ,lsubmodel,iout     ,nuvar    ,&
+            &ilaw     ,ntable   ,table    )
 !-------
           case ('LAW169','ARUP_ADHESIVE')
             ilaw  = 169
@@ -1396,11 +1404,13 @@
                ipm(226+j,i) = itable(j)
             enddo
 !---------------------------------------------------------
-!         fill uparam buffer
+!           fill uparam buffer
 !---------------------------------------------------------
-            do j=1,nuparam
-               bufmat(iadbuf+j-1) = uparam(j)
-            enddo
+            if (nuparam > 0) then
+              do j=1,nuparam
+                bufmat(iadbuf+j-1) = uparam(j)
+              enddo
+            end if
             iadbuf = iadbuf + nuparam
             buflen = buflen + nuparam
 !
@@ -1418,7 +1428,8 @@
          endif ! ilaw>=28
 !------- high stiffness for contact
          pm(107,i) = two*max(pm(32,i),pm(100,i))
-         if (ilaw==1.or.ilaw==62) pm(107,i) = hundred*pm(107,i)
+         if (ilaw==1) pm(107,i) = thirty*pm(107,i)
+         if (ilaw==62) pm(107,i) = hundred*pm(107,i)
 !
          ipm(1,i)   = mat_id
          ipm(2,i)   = ilaw

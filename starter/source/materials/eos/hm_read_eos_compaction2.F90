@@ -51,7 +51,7 @@
       !||    submodel_mod              ../starter/share/modules1/submodel_mod.F
       !||====================================================================
       subroutine hm_read_eos_compaction2(iout,pm,unitab,lsubmodel,imideos,eos_tag,ieos,npropm,maxeos,&
-                                          eos_param)
+                                          eos_param, iunit, nfunc, npc, tf ,snpc ,npts )
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                                   Modules
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@
       use unitab_mod , only : unit_type_
       use submodel_mod , only : nsubmod, submodel_data
       use elbuftag_mod , only : eos_tag_
-      use constant_mod , only : zero, two_third, one, two, three, three100, ep20
+      use constant_mod , only : zero, em12, two_third, one, two, three, three100, ep20
       use eos_param_mod , only : eos_param_
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                                   Implicit none
@@ -81,19 +81,27 @@
       type(eos_tag_),dimension(0:maxeos) ,intent(inout) :: eos_tag !< data structure for EoS
       integer,intent(in) :: ieos !< EoS (internal) identifier
       type(eos_param_), intent(inout) :: eos_param !< eos data structure (specific parameters)
+      integer,intent(in) :: iunit !< unit identifier
+      integer,intent(in) :: snpc, npts, nfunc
+      integer,intent(in) :: npc(snpc)
+      my_real,intent(in) :: tf(npts)
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                                   Local variables
 ! ----------------------------------------------------------------------------------------------------------------------
-      my_real  p0, e0, psh, rho0,rhoi,rhor
-      my_real  mu,mumin,mumax
+      my_real  p0, psh, rho0,rhoi,rhor
+      my_real  mumin,mumax
       my_real  mu0,ssp0, dpdmu
       integer iform
       logical :: is_encrypted, is_available, is_available_rho0
 
       integer :: P_FUNC_ID !< user function identifer
+      integer :: jfunc !< loop
       my_real :: Fscale, Xscale !< function scale factors
       my_real :: bmin, bmax !< unload modulus
-      my_real :: dpdm0
+      my_real :: dpdm0 !< total derivative at initial time
+      my_real :: tmp, dpdmu_mumax, dpdmu_mumin
+
+      my_real :: FAC_M,FAC_L,FAC_T,FAC_PRES !< factors for unit translation (case iunit > 0)
 ! ----------------------------------------------------------------------------------------------------------------------
 !                                                   External
 ! ----------------------------------------------------------------------------------------------------------------------
@@ -148,19 +156,30 @@
          call ancmsg(MSGID=67,MSGTYPE=msgerror,ANMODE=aninfo,I1=imideos,C1='/EOS/COMPACTION2',C2='BMAX MUST BE POSITIVE')
       endif
 
-      !iform=1 : constant unload modulus bunl (old Radioss revision)
-      !iform=2 : linear uload modulus from c1 to bunl (default)
+      !Default values
       if(iform /= 1 .and. iform /= 2)then
+        !iform=1 : constant unload modulus bunl (old Radioss revision)
+        !iform=2 : linear uload modulus from c1 to bunl (default)
         iform=2 !default
       endif
 
-      if(mumax == zero) mumax=ep20
-      
-      mu = rho0/rhor-one
-      e0 = zero
-      if(pm(79)==zero)pm(79)=three100
-      pm(23) = e0
+      if(mumax == zero) mumax = ep20
 
+      if(Xscale == zero) Xscale = one
+
+       if(iunit > 0)then
+         fac_m = unitab%fac_m(iunit)
+         fac_l = unitab%fac_l(iunit)
+         fac_t = unitab%fac_t(iunit)
+         fac_pres = fac_m / (fac_l*fac_t*fac_t)
+       else
+         fac_pres = one
+       endif
+       if(Fscale == zero) Fscale = one * fac_pres
+
+      if(pm(79)==zero)pm(79)=three100
+
+      !integer parameters
       eos_param%nuparam = 7
       eos_param%niparam = 1
       eos_param%nuvar = 0
@@ -194,11 +213,40 @@
         endif
       endif
 
+      !check unload modulus regarding C1
+      do jfunc=1,nfunc
+        if(npc(nfunc + jfunc + 1) == P_FUNC_ID) then
+          tmp = finter(jfunc ,-em12 ,npc,tf,dpdmu_mumin)
+          dpdmu_mumin = dpdmu_mumin * fac_pres
+          if(bmin < dpdmu_mumin)  then
+            call ancmsg(MSGID=67,MSGTYPE=msgerror,ANMODE=aninfo,I1=imideos, &
+            C1='/EOS/COMPACTION2',C2='BMIN MUST BE GREATER THAN DERIVATIVE OF P(MU) AT 0.0')
+          end if
+          exit
+        end if
+      end do
+
+      !check unload modulus regarding point of maximum compaction
+      if(mumax > zero .and. mumax < 1000.)then !possible overflow with unphysical value
+        do jfunc=1,nfunc
+          if(npc(nfunc + jfunc + 1) == P_FUNC_ID) then
+            tmp = finter(jfunc ,mumax,npc,tf,dpdmu_mumax)
+            dpdmu_mumax = dpdmu_mumax * fac_pres
+            if(bmax < dpdmu_mumax)  then
+              call ancmsg(MSGID=67,MSGTYPE=msgerror,ANMODE=aninfo,I1=imideos, &
+              C1='/EOS/COMPACTION2',C2='BMAX MUST BE GREATER THAN DERIVATIVE OF P(MU) AT MUMAX')
+            end if
+            exit
+          end if
+        end do
+      end if
+
       !ssp0
       ssp0 = zero
       dpdmu=max(bmin,bmax)
       if(rhor > zero) ssp0 = sqrt(dpdmu/rhor)
       pm(27) = max(ssp0, pm(27))
+      pm(23) = zero ! e0
       pm(31) = p0-psh
       pm(104)= p0-psh
 

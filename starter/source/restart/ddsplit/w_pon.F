@@ -292,6 +292,7 @@ C-----------------------------------------------
       IADR(1:3,1:NUMELR_L) = 0
       IADTG(1:3,1:NUMELTG_L) = 0
       ALLOCATE(IADIB(4,NCONLD_L) )
+      if(NCONLD_L >0) IADIB(1:4,1:NCONLD_L) = -HUGE(I)
       ALLOCATE( IADTG1(3,NUMELTG6_L),IADIG3D(100,NUMELIG3D_L) )
 ! ------------------------------
 
@@ -1465,7 +1466,7 @@ C Ecriture tableaux P/ON propre au SPMD
 C-----------------------------------------------
 C
 C elements
-      CALL WRITE_I_C(ADDCNE_L,NUMNOD_L+1)
+      CALL WRITE_I_C(ADDCNE_L,NUMNOD_L+1)  ! ADSKY ?
       LEN_IA = LEN_IA + NUMNOD_L+1
       CALL WRITE_I_C(PROCNE,LCNE_L)
       LEN_IA = LEN_IA + LCNE_L

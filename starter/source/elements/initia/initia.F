@@ -21,104 +21,110 @@ Copyright>        As an alternative to this open-source version, Altair also off
 Copyright>        software under a commercial license.  Contact Altair to discuss further if the
 Copyright>        commercial version may interest you: https://www.altair.com/radioss/.
       !||====================================================================
-      !||    initia                      ../starter/source/elements/initia/initia.F
+      !||    initia                          ../starter/source/elements/initia/initia.F
       !||--- called by ------------------------------------------------------
-      !||    lectur                      ../starter/source/starter/lectur.F
+      !||    lectur                          ../starter/source/starter/lectur.F
       !||--- calls      -----------------------------------------------------
-      !||    addmaspart                  ../starter/source/tools/admas/addmaspart.F
-      !||    ancmsg                      ../starter/source/output/message/message.F
-      !||    arret                       ../starter/source/system/arret.F
-      !||    asstifi                     ../starter/source/interfaces/inter3d1/asstifi.F
-      !||    binit2                      ../starter/source/ale/bimat/binit2.F
-      !||    c3init3                     ../starter/source/elements/sh3n/coque3n/c3init3.F
-      !||    cbainit3                    ../starter/source/elements/shell/coqueba/cbainit3.F
-      !||    cdkinit3                    ../starter/source/elements/sh3n/coquedk/cdkinit3.F
-      !||    checkmp                     ../starter/source/elements/initia/initia.F
-      !||    chekmp2                     ../starter/source/elements/initia/initia.F
-      !||    cinit3                      ../starter/source/elements/shell/coque/cinit3.F
-      !||    dtnoda_stifint              ../starter/source/interfaces/inter3d1/dtnoda_stifint.F
-      !||    eporin3                     ../starter/source/ale/ale3d/eporin3.F
-      !||    fretitl2                    ../starter/source/starter/freform.F
-      !||    fxbsini                     ../starter/source/constraints/fxbody/fxbsini.F
-      !||    ig3dinit3                   ../starter/source/elements/ige3d/ig3dinit3.F
-      !||    ini_fvminivel               ../starter/source/elements/initia/ini_fvminivel.F
-      !||    ini_fxbody                  ../starter/source/constraints/fxbody/ini_fxbody.F
-      !||    ini_inimap1d                ../starter/source/initial_conditions/inimap/ini_inimap1d.F
-      !||    ini_inimap2d                ../starter/stub/ini_inimap2d.F
-      !||    ini_seatbelt                ../starter/source/tools/seatbelts/ini_seatbelt.F
-      !||    iniboltprel                 ../starter/source/loads/bolt/iniboltprel.F
-      !||    inigrav_load                ../starter/source/initial_conditions/inigrav/inigrav_load.F
-      !||    ininode_rm                  ../starter/source/materials/mat/mat019/ininode_rm.F
-      !||    inintmass                   ../starter/source/interfaces/inter3d1/inintmass.F
-      !||    inirbe2                     ../starter/source/constraints/general/rbe2/hm_read_rbe2.F
-      !||    inirby                      ../starter/source/constraints/general/rbody/inirby.F
-      !||    inirbys                     ../starter/source/constraints/general/rbody/inirby.F
-      !||    inirig_mat                  ../starter/source/elements/initia/inirig_mat.F
-      !||    inisrf                      ../starter/source/constraints/general/rbody/inisrf.F
-      !||    init_bcs_wall               ../starter/source/boundary_conditions/init_bcs_wall.F90
-      !||    init_inivol                 ../starter/source/initial_conditions/inivol/init_inivol.F90
-      !||    init_seatbelt_rbodies       ../starter/source/tools/seatbelts/init_seatbelt_rbodies.F90
-      !||    inivoid                     ../starter/source/elements/initia/inivoid.F
-      !||    inspcnd                     ../starter/source/elements/sph/inspcnd.F
-      !||    laser10                     ../starter/source/loads/laser/laser10.F
-      !||    lgmini_rby                  ../starter/source/tools/lagmul/lgmini_rby.F
-      !||    modbufel                    ../starter/source/constraints/fxbody/modbufel.F
-      !||    moddepl                     ../starter/source/constraints/fxbody/moddepl.F
-      !||    multifluid_global_tdet      ../starter/source/multifluid/multifluid_global_tdet.F
-      !||    multifluid_init2            ../starter/source/multifluid/multifluid_init2.F
-      !||    multifluid_init2t           ../starter/source/multifluid/multifluid_init2t.F
-      !||    multifluid_init3            ../starter/source/multifluid/multifluid_init3.F
-      !||    multifluid_init3t           ../starter/source/multifluid/multifluid_init3t.F
-      !||    nloc_dmg_init               ../starter/source/materials/fail/nloc_dmg_init.F
-      !||    outpart                     ../starter/source/elements/initia/initia.F
-      !||    outpart5                    ../starter/source/elements/initia/initia.F
-      !||    pinit3                      ../starter/source/elements/beam/pinit3.F
-      !||    q4init2                     ../starter/source/elements/solid_2d/quad4/q4init2.F
-      !||    qinit2                      ../starter/source/elements/solid_2d/quad/qinit2.F
-      !||    rcheckmass                  ../starter/source/elements/spring/rcheckmass.F
-      !||    retrirby                    ../starter/source/constraints/general/merge/hm_read_merge.F
-      !||    rini33_rb                   ../starter/source/elements/joint/rjoint/rini33_rb.F
-      !||    rini45_rb                   ../starter/source/elements/joint/rjoint/rini45_rb.F
-      !||    rinit3                      ../starter/source/elements/spring/rinit3.F
-      !||    s10init3                    ../starter/source/elements/solid/solide10/s10init3.F
-      !||    s10jaci3                    ../starter/source/elements/solid/solide10/s10jaci3.F
-      !||    s16init3                    ../starter/source/elements/thickshell/solide16/s16init3.F
-      !||    s20init3                    ../starter/source/elements/solid/solide20/s20init3.F
-      !||    s4init3                     ../starter/source/elements/solid/solide4/s4init3.F
-      !||    s4refsta3                   ../starter/source/elements/solid/solide4/s4refsta3.F
-      !||    s6cinit3                    ../starter/source/elements/thickshell/solide6c/s6cinit3.F
-      !||    s8cinit3                    ../starter/source/elements/thickshell/solide8c/s8cinit3.F
-      !||    s8zinit3                    ../starter/source/elements/solid/solide8z/s8zinit3.F
-      !||    scaleini                    ../starter/source/elements/initia/scaleini.F
-      !||    scinit3                     ../starter/source/elements/thickshell/solidec/scinit3.F
-      !||    sgsavini                    ../starter/source/elements/solid/solide/scoor3.F
-      !||    sgsavinieref                ../starter/source/elements/initia/initia.F
-      !||    sgsavinierefq               ../starter/source/elements/initia/initia.F
-      !||    sgsavref                    ../starter/source/elements/initia/initia.F
-      !||    sinit3                      ../starter/source/elements/solid/solide/sinit3.F
-      !||    sms_auto_dt                 ../starter/source/ams/sms_auto_dt.F
-      !||    spinit3                     ../starter/source/elements/sph/spinit3.F
-      !||    spmd_msin                   ../starter/source/elements/initia/spmd_msin.F
-      !||    spmd_msin_addmass           ../starter/source/elements/initia/spmd_msin_addmass.F
-      !||    spmd_partsav_pon            ../starter/source/elements/initia/spmd_msin_addmass.F
-      !||    srefsta3                    ../starter/source/elements/solid/solide/srefsta3.F
-      !||    suinit3                     ../starter/source/elements/elbuf_init/suinit3.F
-      !||    tinit3                      ../starter/source/elements/truss/tinit3.F
-      !||    uel2sys                     ../starter/source/initial_conditions/inista/yctrl.F
-      !||    xinit3                      ../starter/source/elements/xelem/xinit3.F
+      !||    addmaspart                      ../starter/source/tools/admas/addmaspart.F
+      !||    ancmsg                          ../starter/source/output/message/message.F
+      !||    arret                           ../starter/source/system/arret.F
+      !||    asstifi                         ../starter/source/interfaces/inter3d1/asstifi.F
+      !||    binit2                          ../starter/source/ale/bimat/binit2.F
+      !||    c3init3                         ../starter/source/elements/sh3n/coque3n/c3init3.F
+      !||    cbainit3                        ../starter/source/elements/shell/coqueba/cbainit3.F
+      !||    cdkinit3                        ../starter/source/elements/sh3n/coquedk/cdkinit3.F
+      !||    checkmp                         ../starter/source/elements/initia/initia.F
+      !||    chekmp2                         ../starter/source/elements/initia/initia.F
+      !||    cinit3                          ../starter/source/elements/shell/coque/cinit3.F
+      !||    damping_range_init              ../starter/source/general_controls/damping/damping_range_init.F90
+      !||    detonation_times_printout       ../starter/source/initial_conditions/detonation/detonation_times_printout.F90
+      !||    dtnoda_stifint                  ../starter/source/interfaces/inter3d1/dtnoda_stifint.F
+      !||    eikonal_solver                  ../starter/source/initial_conditions/detonation/eikonal_solver.F90
+      !||    eporin3                         ../starter/source/ale/ale3d/eporin3.F
+      !||    fretitl2                        ../starter/source/starter/freform.F
+      !||    fxbsini                         ../starter/source/constraints/fxbody/fxbsini.F
+      !||    ig3dinit3                       ../starter/source/elements/ige3d/ig3dinit3.F
+      !||    ini_fvminivel                   ../starter/source/elements/initia/ini_fvminivel.F
+      !||    ini_fxbody                      ../starter/source/constraints/fxbody/ini_fxbody.F
+      !||    ini_inimap1d                    ../starter/source/initial_conditions/inimap/ini_inimap1d.F
+      !||    ini_inimap2d                    ../starter/stub/ini_inimap2d.F
+      !||    ini_seatbelt                    ../starter/source/tools/seatbelts/ini_seatbelt.F
+      !||    iniboltprel                     ../starter/source/loads/bolt/iniboltprel.F
+      !||    inigrav_load                    ../starter/source/initial_conditions/inigrav/inigrav_load.F
+      !||    ininode_rm                      ../starter/source/materials/mat/mat019/ininode_rm.F
+      !||    inintmass                       ../starter/source/interfaces/inter3d1/inintmass.F
+      !||    inirbe2                         ../starter/source/constraints/general/rbe2/hm_read_rbe2.F
+      !||    inirby                          ../starter/source/constraints/general/rbody/inirby.F
+      !||    inirbys                         ../starter/source/constraints/general/rbody/inirby.F
+      !||    inirig_mat                      ../starter/source/elements/initia/inirig_mat.F
+      !||    inisrf                          ../starter/source/constraints/general/rbody/inisrf.F
+      !||    init_bcs_wall                   ../starter/source/boundary_conditions/init_bcs_wall.F90
+      !||    init_inivol                     ../starter/source/initial_conditions/inivol/init_inivol.F90
+      !||    init_seatbelt_rbodies           ../starter/source/tools/seatbelts/init_seatbelt_rbodies.F90
+      !||    inivoid                         ../starter/source/elements/initia/inivoid.F
+      !||    inspcnd                         ../starter/source/elements/sph/inspcnd.F
+      !||    laser10                         ../starter/source/loads/laser/laser10.F
+      !||    lgmini_rby                      ../starter/source/tools/lagmul/lgmini_rby.F
+      !||    modbufel                        ../starter/source/constraints/fxbody/modbufel.F
+      !||    moddepl                         ../starter/source/constraints/fxbody/moddepl.F
+      !||    multifluid_global_tdet          ../starter/source/multifluid/multifluid_global_tdet.F
+      !||    multifluid_init2                ../starter/source/multifluid/multifluid_init2.F
+      !||    multifluid_init2t               ../starter/source/multifluid/multifluid_init2t.F
+      !||    multifluid_init3                ../starter/source/multifluid/multifluid_init3.F
+      !||    multifluid_init3t               ../starter/source/multifluid/multifluid_init3t.F
+      !||    nloc_dmg_init                   ../starter/source/materials/fail/nloc_dmg_init.F
+      !||    outpart                         ../starter/source/elements/initia/initia.F
+      !||    outpart5                        ../starter/source/elements/initia/initia.F
+      !||    pinit3                          ../starter/source/elements/beam/pinit3.F
+      !||    q4init2                         ../starter/source/elements/solid_2d/quad4/q4init2.F
+      !||    qinit2                          ../starter/source/elements/solid_2d/quad/qinit2.F
+      !||    rcheckmass                      ../starter/source/elements/spring/rcheckmass.F
+      !||    retrirby                        ../starter/source/constraints/general/merge/hm_read_merge.F
+      !||    rini33_rb                       ../starter/source/elements/joint/rjoint/rini33_rb.F
+      !||    rini45_rb                       ../starter/source/elements/joint/rjoint/rini45_rb.F
+      !||    rinit3                          ../starter/source/elements/spring/rinit3.F
+      !||    s10init3                        ../starter/source/elements/solid/solide10/s10init3.F
+      !||    s10jaci3                        ../starter/source/elements/solid/solide10/s10jaci3.F
+      !||    s16init3                        ../starter/source/elements/thickshell/solide16/s16init3.F
+      !||    s20init3                        ../starter/source/elements/solid/solide20/s20init3.F
+      !||    s4init3                         ../starter/source/elements/solid/solide4/s4init3.F
+      !||    s4refsta3                       ../starter/source/elements/solid/solide4/s4refsta3.F
+      !||    s6cinit3                        ../starter/source/elements/thickshell/solide6c/s6cinit3.F
+      !||    s8cinit3                        ../starter/source/elements/thickshell/solide8c/s8cinit3.F
+      !||    s8zinit3                        ../starter/source/elements/solid/solide8z/s8zinit3.F
+      !||    scaleini                        ../starter/source/elements/initia/scaleini.F
+      !||    scinit3                         ../starter/source/elements/thickshell/solidec/scinit3.F
+      !||    sgsavini                        ../starter/source/elements/solid/solide/scoor3.F
+      !||    sgsavinieref                    ../starter/source/elements/initia/initia.F
+      !||    sgsavinierefq                   ../starter/source/elements/initia/initia.F
+      !||    sgsavref                        ../starter/source/elements/initia/initia.F
+      !||    sinit3                          ../starter/source/elements/solid/solide/sinit3.F
+      !||    sms_auto_dt                     ../starter/source/ams/sms_auto_dt.F
+      !||    spinit3                         ../starter/source/elements/sph/spinit3.F
+      !||    spmd_msin                       ../starter/source/elements/initia/spmd_msin.F
+      !||    spmd_msin_addmass               ../starter/source/elements/initia/spmd_msin_addmass.F
+      !||    spmd_partsav_pon                ../starter/source/elements/initia/spmd_msin_addmass.F
+      !||    srefsta3                        ../starter/source/elements/solid/solide/srefsta3.F
+      !||    suinit3                         ../starter/source/elements/elbuf_init/suinit3.F
+      !||    tinit3                          ../starter/source/elements/truss/tinit3.F
+      !||    uel2sys                         ../starter/source/initial_conditions/inista/yctrl.F
+      !||    xinit3                          ../starter/source/elements/xelem/xinit3.F
       !||--- uses       -----------------------------------------------------
-      !||    bpreload_mod                ../starter/share/modules1/bpreload_mod.F
-      !||    defaults_mod                ../starter/source/modules/defaults_mod.F90
-      !||    detonators_mod              ../starter/share/modules1/detonators_mod.F
-      !||    drape_mod                   ../starter/share/modules1/drape_mod.F
-      !||    func2d_mod                  ../starter/share/modules1/func2d_mod.F
-      !||    inimap1d_mod                ../starter/share/modules1/inimap1d_mod.F
-      !||    inimap2d_mod                ../starter/share/modules1/inimap2d_mod.F
-      !||    init_seatbelt_rbodies_mod   ../starter/source/tools/seatbelts/init_seatbelt_rbodies.F90
-      !||    inivol_def_mod              ../starter/share/modules1/inivol_mod.F
-      !||    message_mod                 ../starter/share/message_module/message_mod.F
-      !||    stack_mod                   ../starter/share/modules1/stack_mod.F
-      !||    submodel_mod                ../starter/share/modules1/submodel_mod.F
+      !||    bpreload_mod                    ../starter/share/modules1/bpreload_mod.F
+      !||    damping_range_init_mod          ../starter/source/general_controls/damping/damping_range_init.F90
+      !||    defaults_mod                    ../starter/source/modules/defaults_mod.F90
+      !||    detonation_times_printout_mod   ../starter/source/initial_conditions/detonation/detonation_times_printout.F90
+      !||    detonators_mod                  ../starter/share/modules1/detonators_mod.F
+      !||    drape_mod                       ../starter/share/modules1/drape_mod.F
+      !||    eikonal_solver_mod              ../starter/source/initial_conditions/detonation/eikonal_solver.F90
+      !||    func2d_mod                      ../starter/share/modules1/func2d_mod.F
+      !||    inimap1d_mod                    ../starter/share/modules1/inimap1d_mod.F
+      !||    inimap2d_mod                    ../starter/share/modules1/inimap2d_mod.F
+      !||    init_seatbelt_rbodies_mod       ../starter/source/tools/seatbelts/init_seatbelt_rbodies.F90
+      !||    inivol_def_mod                  ../starter/share/modules1/inivol_mod.F
+      !||    message_mod                     ../starter/share/message_module/message_mod.F
+      !||    stack_mod                       ../starter/share/modules1/stack_mod.F
+      !||    submodel_mod                    ../starter/share/modules1/submodel_mod.F
       !||====================================================================
       SUBROUTINE INITIA(IPARG      ,ELBUF         ,MS               ,IN             ,V         ,
      1                  X          ,IXS           ,IXQ              ,IXC            ,IXT       ,
@@ -130,10 +136,10 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
      7                  IGRNOD     ,IGRSURF       ,BUFSF            ,VR             ,
      8                  BUFMAT     ,XLAS          ,LAS              ,DTELEM         ,MSS       ,
      9                  MSQ        ,MSC           ,MST              ,MSP            ,MSR       ,
-     A                  MSTG       ,PTG           ,INC              ,
+     A                  MSTG       ,PTG           ,INC              ,NOD2ELTG       ,KNOD2ELTG ,
      B                  INP        ,INR           ,INTG             ,INDEX          ,
      C                  ITRI       ,KXX           ,IXX              ,XELEMWA        ,
-     E                  IWA        ,
+     E                  IWA        ,NOD2ELQ       ,KNOD2ELQ         ,NOD2ELS        ,KNOD2ELS  ,
      F                  KXSP       ,IXSP          ,NOD2SP           ,ISPCOND        ,ICODE     ,
      G                  ISKEW      ,ISKN          ,ISPSYM           ,XFRAME         ,ISPTAG    ,
      H                  SPBUF      ,MSSX          ,NSIGI            ,
@@ -177,7 +183,8 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
      K                  KNOD2EL1D  ,NOD2EL1D      ,EBCS_TAB         ,RBY_INIAXIS    ,ALEA      ,
      L                  KNOD2ELC   ,NOD2ELC       ,DR               ,SLRBODY        ,DRAPEG    ,
      M                  IPARI      ,INTBUF_TAB    ,INTERFACES       ,MAT_PARAM      ,NPRELOAD_A,
-     N                  PRELOAD_A  ,FAIL_FRACTAL  ,FAIL_BROKMANN    ,DEFAULTS )
+     N                  PRELOAD_A  ,FAIL_FRACTAL  ,FAIL_BROKMANN    ,DEFAULTS       ,NDAMP_FREQ_RANGE,
+     L                  DAMPR      ,IBEAM_VECTOR  ,RBEAM_VECTOR)
 C-----------------------------------------------
 C   M o d u l e s
 C-----------------------------------------------                     
@@ -210,8 +217,11 @@ C-----------------------------------------------
       USE NAMES_AND_TITLES_MOD , ONLY : NCHARTITLE
       USE ELBUFDEF_MOD
       USE MULTIMAT_PARAM_MOD , ONLY : M51_LC0MAX, M51_SSP0MAX, M51_TCP_REF, M51_lSET_IFLG6, M51_IFLG6, M51_ILOOP_NRF
-      use brokmann_random_def_mod
-      use glob_therm_mod
+      USE BROKMANN_RANDOM_DEF_MOD
+      USE GLOB_THERM_MOD
+      USE DAMPING_RANGE_INIT_MOD
+      USE EIKONAL_SOLVER_MOD, ONLY : EIKONAL_SOLVER
+      USE DETONATION_TIMES_PRINTOUT_MOD , ONLY : DETONATION_TIMES_PRINTOUT
 C-----------------------------------------------
 C   I m p l i c i t   T y p e s
 C-----------------------------------------------
@@ -311,6 +321,11 @@ C
       INTEGER NOM_OPT(LNOPT1,*),PTR_NOPT_RBE2,PTR_NOPT_ADM,PTR_NOPT_FUN,IOPT
       INTEGER FXBNOD(*), FXANI(2,*),ITAGND(*)
       INTEGER,INTENT(IN) :: NPRELOAD_A
+      INTEGER,INTENT(IN) :: NDAMP_FREQ_RANGE
+      my_real,INTENT(IN) :: DAMPR(NRDAMP,NDAMP)
+      INTEGER,INTENT(IN) :: IBEAM_VECTOR(NUMELP)
+      my_real,INTENT(IN) :: RBEAM_VECTOR(3,NUMELP)
+
 C
       TYPE (ELBUF_STRUCT_), TARGET, DIMENSION(NGROUP) :: ELBUF_TAB
       TYPE (ELBUF_STRUCT_), TARGET, DIMENSION(NGROUP,NXEL) :: XFEM_TAB
@@ -383,6 +398,12 @@ C      INTEGER *8 I8MI(6,NUMNOD)
       INTEGER ID,ISTOT, NF1,NNOD,NSROT,IDRAPE,ICPRE
       CHARACTER(LEN=NCHARTITLE)::TITR
       LOGICAL :: ERROR_THROWN
+      INTEGER,INTENT(IN) :: NOD2ELTG(3*NUMELTG)
+      INTEGER,INTENT(IN) :: NOD2ELQ(3*NUMELQ)
+      INTEGER,INTENT(IN) :: NOD2ELS(3*NUMELS)
+      INTEGER,INTENT(IN) :: KNOD2ELTG(NUMNOD+1)
+      INTEGER,INTENT(IN) :: KNOD2ELQ(NUMNOD+1)
+      INTEGER,INTENT(IN) :: KNOD2ELS(NUMNOD+1)
 C-----------------------------------------------
 C   D e r i v e d   T y p e   D e f i n i t i o n s
 C-----------------------------------------------
@@ -909,7 +930,7 @@ C
      E        STRP       ,INP        ,STIFINT    ,MCPP      ,INR       ,
      F        MSR        ,MSRT       ,STR        ,IPART(I15F),ITAB     ,
      G        IXR       , IMERGE2    ,IADMERGE2  ,NEL       ,DEFAULTS  ,
-     H        GLOB_THERM )
+     H        GLOB_THERM,IBEAM_VECTOR,RBEAM_VECTOR)
 C
        ELSEIF( MTN == 13) THEN
 C Rigid material
@@ -1365,7 +1386,7 @@ C 2D multifluid law
      4                MSP        ,INP      ,IGEO    ,STIFINT ,STRP       ,
      5                NSIGBEAM   ,SIGBEAM  ,PTBEAM  ,IUSER   ,MCP        ,
      6                MCPP       ,TEMP     ,PRELOAD_A,IBOLTP ,NPRELOAD_A ,
-     7                GLOB_THERM)
+     7                GLOB_THERM ,IBEAM_VECTOR,RBEAM_VECTOR)
         !----------------------------------------!
         !   ITY == 6                      SPRING !
         !----------------------------------------!
@@ -1510,6 +1531,25 @@ C
 C
        ENDIF
       END DO ! End loop on element group NG
+
+
+C-----------
+!DETONATION TIMES WITH SHADOWING EFFECTS
+!FAST MARCHING METHOD
+      CALL EIKONAL_SOLVER(ixq      , nixq     , numelq   ,
+     .                    ixs      , nixs     , numels   ,
+     .                    ixtg     , nixtg    , numeltg  ,
+     .                    x        , numnod   , titre(55),
+     .                    elbuf_tab, ngroup   , nparg    ,
+     .                    nod2eltg , knod2eltg,
+     .                    nod2elq  , knod2elq ,
+     .                    nod2els  , knod2els ,
+     .                    iparg    , ale_connectivity, npropm, nummat, pm, n2d, detonators,
+     .                    npropmi  , ipm     )
+! DETONATION TIMES PRINTOUT
+! + DEFAULT INITIALIZATION TO 0.0 IN CASE OF NO DETONATOR
+      CALL DETONATION_TIMES_PRINTOUT(NPARG,NGROUP,IPARG,N2D,IPRI,ELBUF_TAB,
+     .                               NIXS,NIXQ,NIXTG,NUMELS,NUMELQ,NUMELTG,IXS,IXQ,IXTG)
 C-----------
       !loop over material initialisation done.
       !IF NRF outlet, print its automatic characteristic
@@ -1864,7 +1904,7 @@ C
      .         NBNO        , IXS         , IXC , IXTG        , GEO  ,
      .         FXBRPM(ARPM), I   , FXBIPM(29,I), LVSIG ,FXBIPM(18,I),
      .         NME         , IRCS, FXBIPM(30,I), NELT,         NELP ,
-     .         IXT         , IXP )
+     .         IXT         , IXP ,IBEAM_VECTOR,RBEAM_VECTOR)
 C
             FXBIPM(33,I)=IRCS
             ADRRPM=FXBIPM(14,I)
@@ -1956,6 +1996,12 @@ C------------------------------------------------------
           ENDIF
         ENDIF
       ENDDO
+C------------------------------------------------------
+C Initialization of joint type spring (PID33 and PID45)
+C------------------------------------------------------
+      IF (NDAMP_FREQ_RANGE > 0) THEN
+        call damping_range_init(ndamp,nrdamp,dampr,ngroup,nparg,iparg,elbuf_tab)    
+      ENDIF      
 C
 C----------------------------------------------------------------
       IF(IPRI>=2) THEN

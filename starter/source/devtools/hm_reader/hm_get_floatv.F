@@ -95,7 +95,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_fail_rtcl             ../starter/source/materials/fail/rtcl/hm_read_fail_rtcl.F
       !||    hm_read_fail_sahraei          ../starter/source/materials/fail/sahraei/hm_read_fail_sahraei.F
       !||    hm_read_fail_snconnect        ../starter/source/materials/fail/snconnect/hm_read_fail_snconnect.F
-      !||    hm_read_fail_spalling         ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F
+      !||    hm_read_fail_spalling         ../starter/source/materials/fail/spalling/hm_read_fail_spalling.F90
       !||    hm_read_fail_syazwan          ../starter/source/materials/fail/syazwan/hm_read_fail_syazwan.F
       !||    hm_read_fail_tab1             ../starter/source/materials/fail/tabulated/hm_read_fail_tab1.F
       !||    hm_read_fail_tab2             ../starter/source/materials/fail/tabulated/hm_read_fail_tab2.F
@@ -192,6 +192,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_mat15                 ../starter/source/materials/mat/mat015/hm_read_mat15.F
       !||    hm_read_mat158                ../starter/source/materials/mat/mat158/hm_read_mat158.F
       !||    hm_read_mat16                 ../starter/source/materials/mat/mat016/hm_read_mat16.F
+      !||    hm_read_mat163                ../starter/source/materials/mat/mat163/hm_read_mat163.F90
       !||    hm_read_mat169_arup           ../starter/source/materials/mat/mat169/hm_read_mat169.F90
       !||    hm_read_mat18                 ../starter/source/materials/mat/mat018/hm_read_mat18.F
       !||    hm_read_mat19                 ../starter/source/materials/mat/mat019/hm_read_mat19.F
@@ -348,6 +349,7 @@ Copyright>        commercial version may interest you: https://www.altair.com/ra
       !||    hm_read_therm                 ../starter/source/materials/therm/hm_read_therm.F
       !||    hm_read_therm_stress          ../starter/source/materials/therm/hm_read_therm_stress.F90
       !||    hm_read_upwind                ../starter/source/general_controls/computation/hm_read_upwind.F
+      !||    hm_read_visc_plas             ../starter/source/materials/visc/hm_read_visc_plas.F90
       !||    hm_read_visc_prony            ../starter/source/materials/visc/hm_read_visc_prony.F
       !||    lcgeo19                       ../starter/source/elements/shell/coque/lcgeo19.F
       !||    lec_dof_jnt                   ../starter/source/properties/spring/hm_read_prop45.F

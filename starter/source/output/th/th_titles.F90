@@ -2759,7 +2759,8 @@
             'STORED HEAT',&
             'AVERAGE X-VELOCITY',&
             'AVERAGE Y-VELOCITY',&
-            'AVERAGE Z-VELOCITY'/)
+            'AVERAGE Z-VELOCITY',&
+            'PLASTIC WORK'/)
 ! frame
           varfr_title = (/&
             character(len=100) ::&
@@ -2823,7 +2824,7 @@
             'MASS FLOW ACROSS THE SURFACE (AIRBAGS,EBCS)',&
             'FLOW VELOCITY ACROSS THE SURFACE (AIRBAGS,EBCS,PRESSURE LOADS)',&
             'FLOW PRESSURE APPLIED ON THE SURFACE (AIRBAGS,EBCS,PRESSURE LOADS)',&
-            'FLOW ACCELERATION ACROSS THE SURFACE (AIRBAGS,EBCS,PRESSURE LOADS)',&
+            'SURFACE AREA WITH APPLIED PRESSURE',&
             'CUMULATED MASS CROSSING THE SURFACE (AIRBAGS,EBCS)'/)
 ! slipring
           varslip_title = (/&

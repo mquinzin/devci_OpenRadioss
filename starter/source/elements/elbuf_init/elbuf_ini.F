@@ -104,7 +104,8 @@ C-----------------------------------------------
      .   ISUBSTACK,IPPID,IPIDL,NPT_LAY,LEN_PLAPT,LEN_SIGPT,
      .   IPMAT,IPMAT_IPLY,NPTTOT,NUVARN,NX,IBOLTP,CRKDIR,INLOC,LNLOC,
      .   NONL, DEBUG_PRINT,IPINCH,NUVAREOS,IEOS_TYPE,IDRAPE,LLOC_SLICE,
-     .   IPNPT_LAY,IDFAIL,LNLOCTS,ICONTROL,ISHOFFSET
+     .   IPNPT_LAY,IDFAIL,LNLOCTS,ICONTROL,ISHOFFSET,IDAMP_FREQ_RANGE,
+     .   LDAMP_FREQ_RANGE,NVAR_DAMP_FREQ_RANGE,NPT0
       INTEGER, ALLOCATABLE, DIMENSION(:,:) :: TFAIL,FAILID
       INTEGER, ALLOCATABLE, DIMENSION(:)   :: IMAT,ILAW
       TYPE(BUF_LAY_)     , POINTER :: BUFLY
@@ -193,7 +194,15 @@ c
         IBOLTP  = IPARG(72,NG)  ! Bolt preloading flag
         IPINCH    = IPARG(90,NG)  ! Batoz shell pinching flag
         IDRAPE    = IPARG(92,NG)  ! Drape group shell flag
-        NINTLAY = 0                                            
+        IDAMP_FREQ_RANGE = IPARG(93,NG)  ! Damping frequency range group flag
+        LDAMP_FREQ_RANGE = 6*MIN(1,IDAMP_FREQ_RANGE)
+        IF (NPT == 0) THEN
+          NVAR_DAMP_FREQ_RANGE = (28+16)*MIN(1,IDAMP_FREQ_RANGE)
+        ELSE  
+          NVAR_DAMP_FREQ_RANGE = 21*MIN(1,IDAMP_FREQ_RANGE)
+        ENDIF  
+        NINTLAY = 0
+        NPT0 = NPT
 cc        NXEL    = 0
 c----
         NPAR_TAB  = 10 ! number of integer parameters at top structure level
@@ -399,7 +408,7 @@ c       no non-local structure allocation if not needed
 c--------------------------------------------------------
           IF (INLOC == 0) THEN 
             ALLOCATE(ELBUF_TAB(NG)%NLOCTS(0,0))
-          ENDIF                     
+          ENDIF                  
 c-------------------------------------------------
           CALL ZEROVARS_AUTO(ELBUF_TAB(NG))
 c-------------------------------------------------
@@ -426,7 +435,7 @@ c
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT  = NUVAR
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_EOS  = NUVAREOS
               ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP   = NVARTMP
-              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMAT(IL))%VISC%NUVAR
+              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMAT(IL))%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
               DO J = 1, NFAIL                                            
                 IRUPT  = MAT_PARAM(IMAT(IL))%FAIL(J)%IRUPT   ! modele de rupture
                 IDFAIL = MAT_PARAM(IMAT(IL))%FAIL(J)%FAIL_ID
@@ -500,7 +509,7 @@ c---
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT  = NUVAR
               ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP   = NVARTMP
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_EOS  = NUVAREOS              
-              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMAT(IL))%VISC%NUVAR
+              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMAT(IL))%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
               ELBUF_TAB(NG)%BUFLY(IL)%IPORO= 0  
               ELBUF_TAB(NG)%BUFLY(IL)%NFAIL = NFAIL                          
               DO J = 1,NFAIL                                              
@@ -528,7 +537,7 @@ c---
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT= NUVAR
               ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP = NVARTMP
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_EOS= 0
-              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC=MAT_PARAM(IMID)%VISC%NUVAR
+              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC=MAT_PARAM(IMID)%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
               ELBUF_TAB(NG)%BUFLY(IL)%IPORO= 0  
               ELBUF_TAB(NG)%BUFLY(IL)%NFAIL = NFAIL                          
               DO J = 1,NFAIL                                              
@@ -587,7 +596,7 @@ c---
             ELBUF_TAB(NG)%BUFLY(1)%NVARTMP = NVARTMP
             ELBUF_TAB(NG)%BUFLY(1)%NVAR_EOS= NUVAREOS
             ELBUF_TAB(NG)%BUFLY(1)%IVISC   = MAT_PARAM(IMID)%VISC%ILAW                                  
-            ELBUF_TAB(NG)%BUFLY(1)%NVAR_VISC = MAT_PARAM(IMID)%VISC%NUVAR
+            ELBUF_TAB(NG)%BUFLY(1)%NVAR_VISC = MAT_PARAM(IMID)%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
             ELBUF_TAB(NG)%BUFLY(1)%IPORO= 0                                           
             ELBUF_TAB(NG)%BUFLY(1)%NFAIL = NFAIL                                     
             DO J = 1,NFAIL                                                             
@@ -601,7 +610,7 @@ c---
 c---      User Mat Buffer, Fail buffer, Visc buffer :  alloc + init
           DO IL = 1, NLAY
            MX      = ELBUF_TAB(NG)%BUFLY(IL)%IMAT
-           NUVARV  = MAT_PARAM(MX)%VISC%NUVAR
+           NUVARV  = MAT_PARAM(MX)%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
            ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = NUVARV
            NUVARM  = ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT
            NVARTMP = ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP
@@ -763,8 +772,8 @@ c
      .                 BUFLY%L_STRA = 6                      
             IF (GBUF%G_GAMA > 0 .AND. NLAY > 1) BUFLY%L_GAMA = GBUF%G_GAMA
             IF (JTHE /= 0) BUFLY%L_TEMP = 1
-            IF (ISVIS > 0) BUFLY%L_SIGV = 6                      
-            IF (IVISC > 0) BUFLY%L_VISC = 6
+            IF (ISVIS > 0 ..OR. BUFLY%IVISC == 1 .OR. BUFLY%IVISC == 3 ) BUFLY%L_SIGV = 6 ! for th outp of viscous stress                      
+            IF ((IVISC > 0).OR.(IDAMP_FREQ_RANGE > 0)) BUFLY%L_VISC = 6
 c           Allocate thermal stress and Thermal internal energy
             IF(IEXPAN > 0) THEN
                BUFLY%L_FORTH = 1
@@ -807,7 +816,8 @@ c         GBUF%NVAR_GLOB ! number of element variables in GBUF
 c         BUFLY%NVAR_LAY ! number of element variables in BUFLY
 c         BUFLY%NVAR_LOC ! number of element variables in LBUF (defined on layer level)
 c
-          BUFLEN = NPAR_TAB + LMAT  + LFAIL + LVISC + LPORO + LEOS + LIMAT + LIFAIL + LNLOCTS
+          BUFLEN = NPAR_TAB + LMAT + LFAIL + LVISC + LPORO + LEOS + LIMAT + LIFAIL + LNLOCTS
+
           LGLOB = 0                                 
           LGLOB = LGLOB + GBUF%G_NOFF  
           LGLOB = LGLOB + GBUF%G_IERR  
@@ -865,6 +875,7 @@ C
             LGLOB = LGLOB + GBUF%G_EPSD  
             LGLOB = LGLOB + GBUF%G_EPSQ
             LGLOB = LGLOB + GBUF%G_PLA   
+            LGLOB = LGLOB + GBUF%G_WPLA              
             LGLOB = LGLOB + GBUF%G_TEMP  
             LGLOB = LGLOB + GBUF%G_TB    
             LGLOB = LGLOB + GBUF%G_RK    
@@ -986,6 +997,7 @@ c           ! tags for local variables : NVAR_LOC = 51
             LLOC = LLOC + BUFLY%L_EPSQ   
             LLOC = LLOC + BUFLY%L_EPSF   
             LLOC = LLOC + BUFLY%L_PLA    
+            LLOC = LLOC + BUFLY%L_WPLA  
             LLOC = LLOC + BUFLY%L_TEMP       
             LLOC = LLOC + BUFLY%L_TB     
             LLOC = LLOC + BUFLY%L_RK     
@@ -1296,7 +1308,7 @@ c-----------------------------------------------
               ELBUF_TAB(NG)%BUFLY(IL)%IVISC = MAT_PARAM(IMAT(IL))%VISC%ILAW
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT  = MLAW_TAG(IMAT(IL))%NUVAR
               ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP   = MLAW_TAG(IMAT(IL))%NVARTMP
-              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMAT(IL))%VISC%NUVAR
+              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMAT(IL))%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_EOS = NUVAREOS              
               ELBUF_TAB(NG)%BUFLY(IL)%IPORO = 0        
               ELBUF_TAB(NG)%BUFLY(IL)%NFAIL = NFAIL  
@@ -1318,7 +1330,7 @@ c---      Layer variables
 c---      User Mat Buffer, Fail buffer, Visc buffer :  alloc + init
           DO IL = 1, NLAY
            MX      = ELBUF_TAB(NG)%BUFLY(IL)%IMAT
-           NUVARV  = MAT_PARAM(MX)%VISC%NUVAR
+           NUVARV  = MAT_PARAM(MX)%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
            ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = NUVARV
            NUVARM = ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT
            NVARTMP= ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP
@@ -1501,6 +1513,10 @@ C------------- 3 is sufficient !!!!
           ENDIF
           IF (ITY == 3 .OR. ITY == 7) THEN
             IF (DEFAULTS%SHELL%IOFFSET ==1) ELBUF_TAB(NG)%GBUF%G_SH_IOFFSET = 1
+            IF (NPT0 == 0) THEN 
+                GBUF%G_FOR_G = 5 ! avoid mem damping error
+                IF (NPG > 1) GBUF%G_FORPG_G = 5*NPG 
+            END IF
           ENDIF
 c---------for accumulate WXY
           IF (ISMSTR == 10 )THEN
@@ -1531,8 +1547,8 @@ c         local material variables
               BUFLY%LY_DIRB = 2
             ENDIF
             IF (JTHE /= 0) BUFLY%L_TEMP = 1
-            IF (ISVIS > 0) BUFLY%L_SIGV = 5                      
-            IF (BUFLY%IVISC > 0) BUFLY%L_VISC = 5
+            IF (ISVIS > 0 .OR. BUFLY%IVISC == 1 .OR. BUFLY%IVISC == 3) BUFLY%L_SIGV = 5                      
+            IF ((BUFLY%IVISC > 0).OR.(IDAMP_FREQ_RANGE > 0)) BUFLY%L_VISC = 5
             IF (BUFLY%IVISC > 0 .and. MLW == 25) BUFLY%L_SIGD = 6
             IF (MLW == 27) BUFLY%L_DMG  = 2
             IF (MLW == 2)  BUFLY%L_SIGB  = 3
@@ -1644,6 +1660,7 @@ C-------G_THK_I =  G_THK
           LGLOB = LGLOB + GBUF%G_THK_I
           LGLOB = LGLOB + GBUF%G_MAXFRAC
           LGLOB = LGLOB + GBUF%G_MAXEPS    
+          LGLOB = LGLOB + GBUF%G_FOR_G
           IF (NPG > 1) THEN
             LGLOB = LGLOB + GBUF%G_FORPG
             LGLOB = LGLOB + GBUF%G_MOMPG
@@ -1657,6 +1674,7 @@ C
             LGLOB = LGLOB + GBUF%G_STRPG
             LGLOB = LGLOB + GBUF%G_STRWPG
             LGLOB = LGLOB + GBUF%G_TEMPG
+            LGLOB = LGLOB + GBUF%G_FORPG_G
           ELSEIF (GBUF%G_STRPG > GBUF%G_STRA) THEN
             LGLOB = LGLOB + GBUF%G_STRPG
           ENDIF
@@ -1678,6 +1696,7 @@ C
             LGLOB = LGLOB + GBUF%G_EPSD  
             LGLOB = LGLOB + GBUF%G_EPSQ  
             LGLOB = LGLOB + GBUF%G_PLA   
+            LGLOB = LGLOB + GBUF%G_WPLA             
             LGLOB = LGLOB + GBUF%G_TEMP  
             LGLOB = LGLOB + GBUF%G_TB    
             LGLOB = LGLOB + GBUF%G_RK    
@@ -1832,6 +1851,7 @@ c
             LLOC = LLOC + BUFLY%L_EPSQ   
             LLOC = LLOC + BUFLY%L_EPSF   
             LLOC = LLOC + BUFLY%L_PLA    
+            LLOC = LLOC + BUFLY%L_WPLA    
             LLOC = LLOC + BUFLY%L_TEMP 
             LLOC = LLOC + BUFLY%L_TB     
             LLOC = LLOC + BUFLY%L_RK     
@@ -2009,7 +2029,7 @@ c
               ELBUF_TAB(NG)%BUFLY(IL)%IVISC = MAT_PARAM(IMID)%VISC%ILAW                              
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_MAT  = MLAW_TAG(IMAT(IL))%NUVAR
               ELBUF_TAB(NG)%BUFLY(IL)%NVARTMP   = MLAW_TAG(IMAT(IL))%NVARTMP
-              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMID)%VISC%NUVAR  
+              ELBUF_TAB(NG)%BUFLY(IL)%NVAR_VISC = MAT_PARAM(IMID)%VISC%NUVAR + NVAR_DAMP_FREQ_RANGE
               ELBUF_TAB(NG)%BUFLY(IL)%NVAR_EOS  = NUVAREOS           
               ELBUF_TAB(NG)%BUFLY(IL)%IPORO = 0
               ELBUF_TAB(NG)%BUFLY(IL)%NFAIL = NFAIL
@@ -2179,6 +2199,7 @@ C
           LGLOB = LGLOB + GBUF%G_EPSD  
           LGLOB = LGLOB + GBUF%G_EPSQ  
           LGLOB = LGLOB + GBUF%G_PLA   
+          LGLOB = LGLOB + GBUF%G_WPLA 
           LGLOB = LGLOB + GBUF%G_TEMP  
           LGLOB = LGLOB + GBUF%G_TB    
           LGLOB = LGLOB + GBUF%G_RK    
@@ -2192,6 +2213,9 @@ C
 C
           LGLOB = LGLOB + GBUF%G_FILL
 C
+          IF (IGTYP == 3) THEN 
+            LGLOB = LGLOB + GBUF%G_DMGSCL 
+          ENDIF 
           LGLOB = LGLOB + GBUF%G_AREA
           LGLOB = LGLOB + GBUF%G_SKEW
           LGLOB = LGLOB + GBUF%G_LENGTH
@@ -2308,7 +2332,7 @@ C
           BUFLEN = BUFLEN  + LLAY
 C
 c---------  local variables 
-          DO IL=1,NLAY  ! NLAY = 1 for INTGRATED BEAM
+          DO IL=1,NLAY  ! NLAY = 1 for INTEGRATED BEAM
             BUFLY => ELBUF_TAB(NG)%BUFLY(IL)
             NIP_LAY = BUFLY%NPTT
 c
@@ -2333,6 +2357,7 @@ c
             LLOC = LLOC + BUFLY%L_EPSQ   
             LLOC = LLOC + BUFLY%L_EPSF   
             LLOC = LLOC + BUFLY%L_PLA    
+            LLOC = LLOC + BUFLY%L_WPLA    
             LLOC = LLOC + BUFLY%L_TEMP 
             LLOC = LLOC + BUFLY%L_TB     
             LLOC = LLOC + BUFLY%L_RK     
@@ -2400,6 +2425,18 @@ c------------------------------------------------------
           ALLOCATE(ELBUF_TAB(NG)%BUFLY(0))
 c------------------------------------------------------
         ENDIF   ! ITY = 1,2,51,101 (solid group)
+
+c--------------------------------------------------------
+c       damping structure for damping frequency range
+c--------------------------------------------------------
+        IF (IDAMP_FREQ_RANGE > 0) THEN
+          ALLOCATE(ELBUF_TAB(NG)%DAMP_RANGE%ALPHA(3))
+          ALLOCATE(ELBUF_TAB(NG)%DAMP_RANGE%TAU(3))
+          BUFLEN = IPARG(66,NG) + LDAMP_FREQ_RANGE
+          IPARG(66,NG) = BUFLEN 
+c        ELSE  
+c            ALLOCATE(ELBUF_TAB(NG)%DAMP_RANGE(0))
+        ENDIF  
 
          IF (DEBUG_PRINT == 1) THEN
            print*,' elbuf_ini : NG,ITY,IGTYP,buflen=',NG,ITY,IGTYP,buflen

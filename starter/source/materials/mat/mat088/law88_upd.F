@@ -88,13 +88,12 @@ C----------------------------
               STRETCH(JJ) = PLD(II) + ONE                     
               STRESS(JJ)  = PLD(II + 1)   
                 IF(PLD(II) <=  - ONE) THEN
-                  CALL ANCMSG(MSGID=1175,
-     .                         MSGTYPE=MSGERROR,
+                  CALL ANCMSG(MSGID=3085,
+     .                         MSGTYPE=MSGWARNING,
      .                         ANMODE=ANINFO,
      .                         I1=MAT_ID,
      .                         C1=TITR,
      .                         I2=FUNC_ID(K)) ! Id_function
-                     CALL ARRET(2)
               ENDIF
               !! check if the curve don't have (0,0) point.
               IF( PLD(II) == ZERO .AND. PLD(II + 1) == ZERO )ICHECK = 1
@@ -125,13 +124,13 @@ C  check if the curve is monotonic
           DEALLOCATE( STRETCH,STRESS)   
         ENDDO ! NFUNC   
 c
-c       Intersection - quasistatic curve and unloading curve
+c       Intersection - quasistatic curve and unloading curve but is not used 
 c
         NL = INT(UPARAM(4))
         IUNL_FOR = NINT(UPARAM(5))
         ITENS    = NINT(UPARAM(8))
         ICASE    = NINT(UPARAM(9))
-        NV = 11 + 2*NL
+        NV = 9 + 2*NFUNC
 c
         XINC = ZERO
         YINC = ZERO
@@ -162,16 +161,6 @@ C intersection pt of compression if existing
                       UPARAM(NV + 1) = 2  ! tension & compression
                    ENDIF
                ENDIF
-               IF(UPARAM(NV + 1) /= 2 .AND. ITENS == -2) THEN
-                     CALL ANCMSG(MSGID=2040,                        
-     .                     MSGTYPE=MSGERROR,                             
-     .                     ANMODE=ANINFO,                                
-     .                     I1=MAT_ID,                                    
-     .                     C1=TITR,                                      
-     .                     I2=FUNC_ID(FUNC),   ! Id function             
-     .                     I3=FUNC_ID(FUND) ) ! Id_function              
-                    CALL ARRET(2)
-               ENDIF
            ENDIF  
         ENDIF 
         WRITE(IOUT,1000)
@@ -193,7 +182,7 @@ C-----check E_MAX
           E0 = TWO*GS*(ONE + NU)
           EC_MAX = MAX(E0,EMAX)
           PM(24) = EC_MAX
-          WRITE(IOUT,1003) EC_MAX       
+          WRITE(IOUT,1003) EC_MAX    
 c----- ------
  1000 FORMAT
      & (5X,'TABULATED OGDEN LAW',/,

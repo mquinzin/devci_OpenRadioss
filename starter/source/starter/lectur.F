@@ -834,6 +834,10 @@ c tab IBUFSSG_IO specific inlet/outlet
 
       INTEGER, DIMENSION(:), ALLOCATABLE :: IXR_KJ,R_SKEW
 C
+C  intial direction for beams   
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IBEAM_VECTOR   
+      my_real, DIMENSION(:,:), ALLOCATABLE :: RBEAM_VECTOR 
+C
 C Sol2sph
       INTEGER, DIMENSION(:), ALLOCATABLE :: SOL2SPH_TYP
 c tab /BCS/CYCLIC
@@ -1182,8 +1186,10 @@ C
       INTEGER , DIMENSION(:), ALLOCATABLE :: INDXSH  
       INTEGER :: NUMBER_LOAD_CYL
       INTEGER :: S_NOD2ELS,S_NOD2ELTG,S_NOD2EL1D
-C SEATBELTS      
+C DAMPING   
       INTEGER :: NDAMP_VREL_RBY
+      INTEGER :: NDAMP_FREQ_RANGE
+      INTEGER , DIMENSION(:), ALLOCATABLE :: DAMP_RANGE_PART  
 
       TYPE(INTER_CAND_) :: INTER_CAND
       TYPE (FAIL_FRACTAL_)  :: FAIL_FRACTAL
@@ -1194,6 +1200,7 @@ C SEATBELTS
 c=======================================================================
       IREAC = 0 
       PYTHON%NB_FUNCTS = 0
+      PYTHON%NB_SENSORS = 0
 !     domain decomposition statistic
       DDSTAT(1:50,1:PARASIZ)=0
       I22LEN_L = 0 
@@ -1224,6 +1231,8 @@ c=======================================================================
       NXLAYMAX = 0   ! max layer nb in parts xfem
 C     /DAMP/VREL + RBY      
       NDAMP_VREL_RBY = 0
+C     /DAMP/FREQUENCY_RANGE      
+      NDAMP_FREQ_RANGE = 0
 C ply xfem
       IPLYXFEM  = 0
       NPLYXFE = 0
@@ -1477,6 +1486,8 @@ C--------------------------------------------
       IF(NDAMP > 0) THEN
         SDAMPR = NRDAMP*NDAMP
         SDAMP  = 3*(1+MAX(IRODDL,IRODDL0))*NUMNOD
+        CALL HM_OPTION_COUNT('/DAMP/FREQUENCY_RANGE',NDAMP_FREQ_RANGE)
+        IF (NDAMP == NDAMP_FREQ_RANGE) SDAMP = 0
         ALLOCATE(DAMPR(SDAMPR+SDAMP)     ,STAT=stat)
         IF(STAT /= 0) CALL ANCMSG(MSGID=268,ANMODE=ANINFO,
      .                             MSGTYPE=MSGERROR,
@@ -1495,6 +1506,11 @@ C--------------------------------------------
      .                             MSGTYPE=MSGERROR,
      .                         C1='DAMP')
       ENDIF
+      ALLOCATE(DAMP_RANGE_PART(NPART),STAT=stat)        
+      IF(STAT /= 0) CALL ANCMSG(MSGID=268,ANMODE=ANINFO,
+     .                             MSGTYPE=MSGERROR,
+     .                         C1='DAMP_RANGE_PART')      
+      DAMP_RANGE_PART = 0
       ALLOCATE(X(SX)       ,STAT=stat)
       IF(STAT /= 0) CALL ANCMSG(MSGID=268,ANMODE=ANINFO,
      .                           MSGTYPE=MSGERROR,
@@ -1717,6 +1733,15 @@ C---  Allocations
      .                           MSGTYPE=MSGERROR,
      .                           C1='R_SKEW')
 C
+      ALLOCATE(IBEAM_VECTOR(NUMELP) ,STAT=stat)
+      IF(STAT /= 0) CALL ANCMSG(MSGID=268,ANMODE=ANINFO,
+     .                          MSGTYPE=MSGERROR,
+     .                          C1='IBEAM_VECTOR') 
+      ALLOCATE(RBEAM_VECTOR(3,NUMELP) ,STAT=stat)
+      IF(STAT /= 0) CALL ANCMSG(MSGID=268,ANMODE=ANINFO,
+     .                          MSGTYPE=MSGERROR,
+     .                          C1='RBEAM_VECTOR')     
+C
       IF(ABS(ISIGI)==3.OR.ABS(ISIGI)== 4.OR.ABS(ISIGI)==5)THEN
          ALLOCATE (PTSHEL(NUMELC)   ,STAT=stat) 
          PTSHEL = 0
@@ -1742,6 +1767,8 @@ C --- Initialisations
       IF(NUMELR > 0) IXR_KJ = 0
       IF(NUMELC+NUMELTG > 0) IWORKSH = 0
       IF(NUMELR > 0) R_SKEW = 0
+      IF(NUMELP > 0) IBEAM_VECTOR(1:NUMELP) = ZERO
+      IF(NUMELP > 0) RBEAM_VECTOR(1:3,1:NUMELP) = ZERO
 C
 C---  Pointeurs : sous-tableaux
       IF(SISKWN-SIFRAME<SISKWN) THEN
@@ -2098,9 +2125,9 @@ c------------------------------------
 c---------------------------------------------------------------
       CALL READ_MATERIAL_MODELS(
      .     MAT_ELEM    ,MLAW_TAG ,FAIL_TAG ,EOS_TAG    ,
-     .     RWORK       ,SBUFMAT  ,IPM      ,PM         ,UNITAB    ,
+     .     RWORK       ,SRWORK   ,IPM      ,PM         ,UNITAB    ,
      .     MULTI_FVM   ,FAILWAVE ,NLOC_DMG ,LSUBMODEL  ,TABLE     ,
-     .     LTITR       ,MAT20_DISCRETE_FILL,USERL_AVAIL,MAT_NUMBER,
+     .     LTITR       ,USERL_AVAIL,MAT_NUMBER,
      .     NPC         ,TF       ,SNPC     ,NPTS       ,SBUFMAT   )
 c---------------------------------------------------------------
       ALLOCATE(BUFMAT(SBUFMAT)    ,STAT=stat)
@@ -2332,7 +2359,7 @@ C-----------------------------------------------------
      .                           MSGTYPE=MSGERROR,
      .                         C1='IWORK')
       IWORK = 0
-      ALLOCATE(THK_PART(NPART)    ,STAT=stat)
+      ALLOCATE(THK_PART(NPART)    ,STAT=stat)   
 C
       CALL HM_READ_PART(IPART  ,PM      ,GEO       ,IPM     ,IGEO ,IWORK ,THK_PART,
      .                  UNITAB,LSUBMODEL,MULTI_FVM ,MLAW_TAG,MAT_ELEM%MAT_PARAM,GLOB_THERM)
@@ -2448,6 +2475,7 @@ C
       POIN_PART_SOL(1:2,1:NPART,1:7) = 0
 
       ALLOCATE(POIN_UMP(NUMMAT), STAT=stat)
+      POIN_UMP(1:NUMMAT) = 0
       ALLOCATE(TAB_UMP_LOC(5,NPART), STAT=stat)
       TAB_UMP_LOC(1:5,1:NPART) = 0
 C
@@ -2509,7 +2537,7 @@ C--------------------------------------------
       IF(NUMELP/=0)THEN
        WRITE(ISTDO,'(A)')TITRE(19)
        CALL HM_READ_BEAM(IXP    ,ITAB   ,ITABM1 ,IPART  ,IPARTP  ,
-     .             IPM    ,IGEO    ,LSUBMODEL)
+     .                   IPM    ,IGEO   ,LSUBMODEL,IBEAM_VECTOR,RBEAM_VECTOR)
       ENDIF
 C--------------------------------------------
 C     LECTURE DES RESSORTS
@@ -3669,18 +3697,19 @@ C--------------------------------------------
         WRITE(ISTDO,'(A)')' .. SET'
         ERR_CATEGORY='SET'
 
-        CALL HM_SET(SET      ,LSUBMODEL ,INV_GROUP ,MAP_TABLES,IPART     ,
-     *              IGRSURF  ,IGRNOD    ,IGRSLIN   ,IGRPART  ,IGRBRIC   ,
-     *              IGRQUAD  ,IGRSH4N   ,IGRSH3N   ,IGRTRUSS ,IGRBEAM   ,
-     *              IGRSPRING,IXS       ,IXS10     ,IXC      ,IXTG      ,
-     *              KNOD2ELS ,NOD2ELS   ,KNOD2ELC  ,NOD2ELC  ,KNOD2ELTG ,
-     *              NOD2ELTG ,IPARTC    ,IPARTG    ,IPARTS   ,SH4TREE   ,
-     *              SH3TREE  ,IXQ  ,KNOD2ELQ  ,NOD2ELQ  ,X   ,
-     *              IXT      ,IXP       ,IXR       ,IXX      ,KXX       ,
-     *              KXSP     ,IXS20     ,IXS16     ,GEO      ,ITABM1    ,
-     *              IBOX     ,SKEW      ,IPARTQ    ,IPARTT   ,IPARTP    ,
-     *              IPARTR   ,SUBSETS   ,RBY_MSN   ,ISKWN    ,RTRANS    ,
-     *              UNITAB   ,RWORK     ,SBUFSF    ,SISKWN   ,SSKEW     )
+        CALL HM_SET(SET      ,LSUBMODEL ,INV_GROUP   ,MAP_TABLES ,IPART     ,
+     *              IGRSURF  ,IGRNOD    ,IGRSLIN     ,IGRPART    ,IGRBRIC   ,
+     *              IGRQUAD  ,IGRSH4N   ,IGRSH3N     ,IGRTRUSS   ,IGRBEAM   ,
+     *              IGRSPRING,IXS       ,IXS10       ,IXC        ,IXTG      ,
+     *              KNOD2ELS ,NOD2ELS   ,KNOD2ELC    ,NOD2ELC    ,KNOD2ELTG ,
+     *              NOD2ELTG ,IPARTC    ,IPARTG      ,IPARTS     ,SH4TREE   ,
+     *              SH3TREE  ,IXQ       ,KNOD2ELQ    ,NOD2ELQ    ,X         ,
+     *              IXT      ,IXP       ,IXR         ,IXX        ,KXX       ,
+     *              KXSP     ,IXS20     ,IXS16       ,GEO        ,ITABM1    ,
+     *              IBOX     ,SKEW      ,IPARTQ      ,IPARTT     ,IPARTP    ,
+     *              IPARTR   ,SUBSETS   ,RBY_MSN     ,ISKWN      ,RTRANS    ,
+     *              UNITAB   ,RWORK     ,SBUFSF      ,SISKWN     ,SSKEW     ,
+     *              ROOTNAM  ,ROOTLEN   ,INFILE_NAME ,INFILE_NAME_LEN   )
      
      
 C        IF(ALLOCATED(RBY_MSN)) DEALLOCATE(RBY_MSN)
@@ -4362,6 +4391,17 @@ C--------------------------------------------
      3           D       ,UNITAB  ,IKINE1LAG,NOM_OPT(LNOPT1*INOM_OPT(18)+1),LSUBMODEL)
       CALL TRACE_OUT1()
 C--------------------------------------------
+C     READER FOR DETONATOR OPTIONS (/DFS/DET*)
+C--------------------------------------------
+      ERR_MSG='DETONATORS'
+      ERR_CATEGORY='DETONATORS'
+      CALL TRACE_IN1(ERR_MSG,LEN_TRIM(ERR_MSG))
+      !new Reader
+      CALL READ_DETONATORS(ITABM1   ,ITAB      ,IGRNOD  ,
+     .                     PM       ,IPM       ,X       ,UNITAB ,
+     .                     LSUBMODEL,DETONATORS)
+      CALL TRACE_OUT1()
+C--------------------------------------------
 C     A.L.E.
 C     TABLEAUX DE VOISINS (OU FACETTES) DES ELEMENTS
 C     TABLEAUX DES NOEUDS VOISINS
@@ -4386,12 +4426,12 @@ C--------------------------------------------
         ALLOCATE(LINALE(0))
       ENDIF
       ERR_MSG='ALE NEIGHBOURS'
-      IF(IALE+IEULER+IALELAG/=0)THEN
+      IF(IALE+IEULER+IALELAG /= 0)THEN
        WRITE(ISTDO,'(A)')TITRE(30)
        CALL ALELEC(
      1     ICODE    ,IXS      ,IXQ       ,IXC               ,IXT     ,
      2     IXTG     ,PM       ,IGEO      ,ITAB              ,GEO     ,
-     3     NALE_R2R ,NSUBDOM  ,MULTI_FVM ,ALE_CONNECTIVITY,GLOB_THERM%ITHERM)
+     3     NALE_R2R ,NSUBDOM  ,MULTI_FVM ,ALE_CONNECTIVITY,GLOB_THERM%ITHERM,DETONATORS%IS_SHADOWING_REQUIRED)
 C     ---------------------------------------------------------------
 C     Unplug neighbor elements in case of direct lagrangian coupling
 C     ---------------------------------------------------------------
@@ -4858,17 +4898,6 @@ C
 C
       CALL TRACE_OUT1()
 C--------------------------------------------
-C     LECTURE DES POINTS DE DETONATION
-C--------------------------------------------
-      ERR_MSG='DETONATORS'
-      ERR_CATEGORY='DETONATORS'
-      CALL TRACE_IN1(ERR_MSG,LEN_TRIM(ERR_MSG))
-      !new Reader
-      CALL READ_DETONATORS(ITABM1   ,ITAB   ,IGRNOD  ,
-     .                     IPM      ,X      ,UNITAB  ,
-     .                     LSUBMODEL,DETONATORS)
-      CALL TRACE_OUT1()
-C--------------------------------------------
       IF(ISIGI==2 .OR. ISIGI==4) THEN
         SFZERO = 3*NUMNOD
       ELSEIF(IABS(ISIGI)==5) THEN
@@ -4950,6 +4979,7 @@ c
       CALL SENSOR_USER_INIT(SENSOR_USER_STRUCT)
       ! -------------
 c
+      PYTHON%NB_SENSORS = 0
       CALL HM_READ_SENSORS(PYTHON,
      .     SENSORS   ,LACCELM  ,ITABM1    ,IPART     ,LGAUGE    ,
      .     SUBSETS   ,NSETS    ,IGRSURF   ,IGRNOD    ,BUFSF     ,
@@ -5474,7 +5504,8 @@ C------------------------------------------------------------------------
      .            IBCSLAG  ,IGEO     ,IPM      ,
      .            IBFTEMP  ,IBCV     ,IBFV      ,
      .            IBCR     ,TABLE    ,NPC1     ,NPC       ,TF                 ,
-     .            NOM_OPT(LNOPT1*INOM_OPT(3)+1),IBFFLUX   ,GLOB_THERM)
+     .            NOM_OPT(LNOPT1*INOM_OPT(3)+1),IBFFLUX   ,GLOB_THERM,NIMPVEL,NIMPDISP,
+     .            NIMPACC)
 C
 c------------------------------------------------------------------------
 c     Update & check parameters of material laws
@@ -5545,6 +5576,20 @@ C
      .                       ISKWN   ,TF      ,NPC)
         CALL TRACE_OUT1()
       ENDIF
+C      
+C------------------------------------------------------------------
+C     RAYLEIGH DAMPING
+C--------------------------------------------
+      IF (NDAMP > 0) THEN
+        IF(IDDLEVEL==0)THEN
+          ERR_MSG='DAMPING'
+          ERR_CATEGORY='DAMPING'
+          CALL TRACE_IN1(ERR_MSG,LEN_TRIM(ERR_MSG))             
+          IF(NDAMP > 0) CALL HM_READ_DAMP(DAMPR,IGRNOD,ISKWN,LSUBMODEL,UNITAB,
+     .                                    SNPC1,NPC1,NDAMP_VREL_RBY,IGRPART,DAMP_RANGE_PART)
+          CALL TRACE_OUT1()
+        ENDIF     
+      ENDIF      
 C
 c-----------------------------------------------------------------------
 C
@@ -5880,8 +5925,8 @@ C---------------------------
       NUMELIG3DK8  =    NUMELIG3D
       NUMSPHK8     =    NUMSPH
 ! working int8 to avoid integer overflow for large models
-      EMAX = MAX(23*NUMELCK8,24*NUMELTGK8+1,29*NUMELSK8+1,19*NUMELRK8,
-     .           18*NUMELPK8+1,17*NUMELTK8,19*NUMELQK8,
+      EMAX = MAX(24*NUMELCK8,25*NUMELTGK8+1,30*NUMELSK8+1,19*NUMELRK8,
+     .           19*NUMELPK8+1,17*NUMELTK8,19*NUMELQK8,
      .           15*NUMELXK8+1,24*NUMELIG3DK8+1,NUMSPHK8) + 1
 
       ALLOCATE(IPARGTMP(NPARG,NUMEL)    ,STAT=stat)
@@ -5913,7 +5958,7 @@ C---------------------------------
         K2 = K1 + NUMELS
         K3 = K2 + NUMELS+1
         K4 = K3 + NUMELS*2
-        K5 = K4 + NUMELS*7
+        K5 = K4 + NUMELS*8
         !K5B= K4 + NUMELS
         K6 = K5 + NUMELS
         !warning: please also update any index change
@@ -5935,7 +5980,8 @@ C
      5       IGEO   ,IPM    ,NOD2ELS,ISOLOFF ,
      6       TAGPRT_SMS,SPH2SOL,SOL2SPH,MAT_ELEM%MAT_PARAM,
      7       SOL2SPH_TYP    ,IFLAG_BPRELOAD, CLUSTERS ,
-     8       RNOISE(1,MIN(SRNOISE2,NUMELC+NUMELTG+1)))
+     8       RNOISE(1,MIN(SRNOISE2,NUMELC+NUMELTG+1)),
+     9       DAMP_RANGE_PART)
 C---------------------------------
 C-  GROUPAGE SPMD
 C---------------------------------
@@ -5952,7 +5998,7 @@ C test non depassement de LDD_IAD
           END DO
           DEALLOCATE(DD_TMP2)
         END IF
-C
+C 
         GRSOL_ID1 = NGROUP
         CALL SGRTAILS(
      1       IXS      ,PM       ,IPARGTMP ,GEO      ,
@@ -5963,7 +6009,7 @@ C
      6       IPM      ,NOD2ELS  ,ISOLOFF  ,ISOLNOD  ,
      7       TAGPRT_SMS,INIVOL  ,SPH2SOL  ,SOL2SPH  ,SOL2SPH_TYP,
      8       IFLAG_BPRELOAD, CLUSTERS ,MAT_ELEM%MAT_PARAM ,RNOISE(1,MIN(SRNOISE2,NUMELC+NUMELTG+1)),
-     9       IPRI)
+     9       IPRI     ,DAMP_RANGE_PART)
         GRSOL_ID2 = NGROUP
         NGR_SOL   = GRSOL_ID2 - GRSOL_ID1
 C
@@ -6042,9 +6088,9 @@ C---------------------------------
        K2 = 11*NUMELC
        K3 = 12*NUMELC+1
        K4 = 14*NUMELC+1
-       K5 = 21*NUMELC+1
-       K6 = 22*NUMELC+1
-       K7 = 23*NUMELC+1
+       K5 = 22*NUMELC+1
+       K6 = 23*NUMELC+1
+       K7 = 24*NUMELC+1
        !warning: please also update any index change
        !         for MODIF option (MODIF_SPMD.F)
        IWORK  = 0
@@ -6065,7 +6111,8 @@ C
      4   CEP(OFF),XEP     ,IGEO    ,IPM     ,
      5   IPART   ,SH4TREE ,NOD2ELC ,ISHEOFF ,SH4TRIM ,
      6   TAGPRT_SMS,LGAUGE,IWORKSH ,MAT_ELEM%MAT_PARAM,
-     7   STACK   ,DRAPE   ,RNOISE  ,SH4ANG,DRAPEG, PTSHEL)
+     7   STACK   ,DRAPE   ,RNOISE  ,SH4ANG,DRAPEG, PTSHEL,
+     8   DAMP_RANGE_PART)
 C---------------------------------
 C-  GROUPAGE SPMD
 C---------------------------------
@@ -6094,7 +6141,7 @@ C
      6        IPART    ,SH4TREE  ,NOD2ELC  ,ISHEOFF ,
      7        SH4TRIM  ,TAGPRT_SMS, LGAUGE,IWORKSH    ,
      8        STACK    ,DRAPE   ,RNOISE  ,MAT_ELEM%MAT_PARAM,
-     9        SH4ANG, IDDLEVEL , DRAPEG,IPRI, PTSHEL)
+     9        SH4ANG, IDDLEVEL , DRAPEG,IPRI, PTSHEL,DAMP_RANGE_PART)
 
          OFF = OFF + NUMELC
 
@@ -6158,12 +6205,12 @@ C
 C
 C-----
       IF(NUMELP > 0) THEN
-       K1 = 8*NUMELP
-       K2 = 9*NUMELP
-       K3 = 10*NUMELP+1
-       K4 = 12*NUMELP+1
-       K5 = 17*NUMELP+1
-       K6 = 18*NUMELP+1
+       K1 = 9*NUMELP
+       K2 = 10*NUMELP
+       K3 = 11*NUMELP+1
+       K4 = 13*NUMELP+1
+       K5 = 18*NUMELP+1
+       K6 = 19*NUMELP+1
       !warning: please also update any index change
       !         for MODIF option (MODIF_SPMD.F)
        IWORK  = 0
@@ -6173,12 +6220,16 @@ C-----
        INDEX1 => IWORK(K3+1:K4)
        ITRI1  => IWORK(K4+1:K5)
        XEP    => IWORK(K5+1:K6)
+C      
+        ALLOCATE(XNUM(3*NUMELP) ,STAT=stat)
+        XNUM(1:3*NUMELP) = ZERO
+C
        CALL PGRHEAD(
      1   IXP      ,PM       ,GEO      ,INUM     ,
      2   ITR1     ,EADD     ,INDEX1   ,ITRI1    ,IPARTP   ,
      3   ND       ,IGRSURF  ,IGRBEAM  ,CEP(OFF) ,
      4   XEP      ,IGEO     ,IPOUOFF  ,TAGPRT_SMS , IPM   ,
-     5   ITAGPRLD_BEAM)
+     5   ITAGPRLD_BEAM,IBEAM_VECTOR,RBEAM_VECTOR,XNUM)
 C---------------------------------
 C-  GROUPAGE SPMD
 C---------------------------------
@@ -6203,8 +6254,11 @@ C
      4      ITR1   ,IGRSURF ,IGRBEAM    ,IGEO    ,
      5      IPM    ,IPOUOFF ,TAGPRT_SMS,
      6      NOD2EL1D, IPRI  ,ITAGPRLD_BEAM,PRELOAD_A,
-     7      NPRELOAD_A)
+     7      NPRELOAD_A,IBEAM_VECTOR,RBEAM_VECTOR,XNUM)
+C    
           OFF = OFF + NUMELP
+C          
+          DEALLOCATE(XNUM)
         ENDIF
 C
 C-----
@@ -6267,10 +6321,10 @@ C---------------------------------
        K2 = 12*NUMELTG
        K3 = 13*NUMELTG+1
        K4 = 15*NUMELTG+1
-       K5 = 22*NUMELTG+1
-       K6 = 23*NUMELTG+1
-       K7 = 24*NUMELTG+1
-       K8 = 25*NUMELTG+1
+       K5 = 23*NUMELTG+1
+       K6 = 24*NUMELTG+1
+       K7 = 25*NUMELTG+1
+       K8 = 26*NUMELTG+1
        !warning: please also update any index change
        !         for MODIF option (MODIF_SPMD.F)
        IWORK  = 0
@@ -6296,7 +6350,8 @@ C---------------------------------
      5     IGEO    ,IPM     ,IPART    ,SH3TREE ,NOD2ELTG,
      6     ITRIOFF ,SH3TRIM ,TAGPRT_SMS,
      7     IWORKSH , STACK  ,DRAPE  ,RNOISE(1,MIN(SRNOISE2,NUMELC+1)),
-     8     MULTI_FVM , SH3ANG,DRAPEG,PTSH3N,MAT_ELEM%MAT_PARAM)
+     8     MULTI_FVM , SH3ANG,DRAPEG,PTSH3N,MAT_ELEM%MAT_PARAM,
+     9     DAMP_RANGE_PART)
        ELSE
          CALL T3GRHEAD(
      1     IXTG    ,PM      ,GEO      ,INUM    ,BID13   ,
@@ -6335,7 +6390,7 @@ C
      6          IPART    ,SH3TREE  ,NOD2ELTG ,ITRIOFF  ,
      7          SH3TRIM  ,TAGPRT_SMS,IWORKSH ,STACK      ,
      8          DRAPE   ,RNOISE(1,MIN(SRNOISE2,NUMELC+1)) ,
-     9          MAT_ELEM%MAT_PARAM,SH3ANG,DRAPEG,IPRI ,PTSH3N)
+     9          MAT_ELEM%MAT_PARAM,SH3ANG,DRAPEG,IPRI ,PTSH3N,DAMP_RANGE_PART)
          ELSE
            CALL T3GRTAILS(
      1          IXTG     ,PM       ,IPARGTMP ,GEO      ,
@@ -7267,7 +7322,7 @@ C--------------------------------------------
       ENDIF
       CALL ALE_CONNECTIVITY%ALE_COMPUTE_EE_CONNECTIVITY(PM,IGEO,
      .     NPROPGI,NUMGEO, NPROPM, NUMMAT , NUMNOD, NUMELQ, NUMELTG, NUMELS, N2D,
-     .     IALE  , IEULER, GLOB_THERM%ITHERM, IALELAG,
+     .     IALE  , IEULER, GLOB_THERM%ITHERM, IALELAG,DETONATORS%IS_SHADOWING_REQUIRED,
      .     NIXQ  , NIXTG , NIXS  , ITAB   ,
      .     IXQ   , IXTG  , IXS   )
 C--------------------------------------------
@@ -7457,7 +7512,7 @@ C
      .             NOD2ELTG ,INTBUF_TAB,KNOD2ELS ,NOD2ELS                      ,IXS10  ,
      .             IXS16    ,IXS20     ,NIGE     ,RIGE                         ,XIGE   ,
      .             VIGE     ,IGRBRIC   ,MULTI_FVM,ALE_CONNECTIVITY%NALE        ,IGEO   ,
-     .             INTERFACES)
+     .             INTERFACES,S_NOD2ELS,S_NOD2ELTG)
 C
 cc     DEALLOCATE(XFILTR)
 cc     DEALLOCATE(STFAC)
@@ -7813,19 +7868,6 @@ C--------------------------------------------
      .                             ITAB    ,ITABM1  ,D       ,IKINE1LAG,NOM_OPT)
       ENDIF
       CALL TRACE_OUT1()
-C------------------------------------------------------------------
-C     RAYLEIGH DAMPING
-C--------------------------------------------
-      IF (NDAMP > 0) THEN
-        IF(IDDLEVEL==0)THEN
-          ERR_MSG='DAMPING'
-          ERR_CATEGORY='DAMPING'
-          CALL TRACE_IN1(ERR_MSG,LEN_TRIM(ERR_MSG))
-          IF(NDAMP > 0) CALL HM_READ_DAMP(DAMPR,IGRNOD,ISKWN,LSUBMODEL,UNITAB,NPBY,
-     .                                    SNPC1,NPC1,NDAMP_VREL_RBY)
-          CALL TRACE_OUT1()
-        ENDIF     
-      ENDIF
 C--------------------------------------------
       IF(NINTER > 0) THEN
 C--------------------------------------------
@@ -8607,10 +8649,10 @@ C
      &            IGRNOD     , IGRSURF        , BUFSF            , VR                 ,
      &            BUFMAT     , XLAS           , ILAS             , DTELEM             , MSS      ,
      &            MSQ        , MSC            , MSTR             , MSP                , MSR      ,
-     &            MSTG       , PTG            , INC              , 
+     &            MSTG       , PTG            , INC              , NOD2ELTG           , KNOD2ELTG,
      &            INP        , INR            , INTG             , INDEX              ,
      &            ITRI       , KXX            , IXX              , XELEMWA            ,
-     &            IWA        ,
+     &            IWA        , NOD2ELQ        , KNOD2ELQ         , NOD2ELS            , KNOD2ELS ,
      &            KXSP       , IXSP           , NOD2SP           , ISPCOND            , ICODE    ,
      &            ISKEW      , ISKWN          , ISPSYM           , XFRAME             , ISPTAG   ,
      &            SPBUF      , MSSX           , NSIGI            ,
@@ -8654,7 +8696,8 @@ C
      &            KNOD2EL1D  , NOD2EL1D       , EBCS_TAB         , RBY_INIAXIS        , ALEA     ,
      &            KNOD2ELC   , NOD2ELC        , DR               , SLRBODY            , DRAPEG   ,
      &            IPARI      , INTBUF_TAB     , INTERFACES       , MAT_ELEM%MAT_PARAM ,
-     &            NPRELOAD_A , PRELOAD_A      , FAIL_FRACTAL     ,FAIL_BROKMANN       ,DEFAULTS  )
+     &            NPRELOAD_A , PRELOAD_A      , FAIL_FRACTAL     ,FAIL_BROKMANN       ,DEFAULTS  ,
+     &            NDAMP_FREQ_RANGE,DAMPR      , IBEAM_VECTOR     , RBEAM_VECTOR)
 
 
       IF(NINTER>0.AND.NUMELIG3D>0) THEN
@@ -8828,8 +8871,10 @@ C
 C
 C  NFRBYM = 28 (
 C  NIRBYM = 2
-         ALLOCATE(RBYM(NFRBYM*NRBYM),IRBYM(NRBYM*NIRBYM),
-     .                                         LNRBYM(NGSLNRBYM))
+         ALLOCATE(RBYM(NFRBYM*NRBYM),IRBYM(NRBYM*NIRBYM),LNRBYM(NGSLNRBYM))
+         RBYM = 0
+         IRBYM = 0
+         LNRBYM = 0
 C
          CALL RIGID_MAT(NRBYM   ,NGSLNRBYM ,SLNRBM, NSLNRBM ,RMSTIFN,
      .                  RMSTIFR ,X     ,V       ,MS      , IN       ,
@@ -10555,7 +10600,8 @@ C----------------------------------------------
      K        SIGI        ,NSIGBEAM   ,SIGBEAM         ,NSIGTRUSS     ,SIGTRUSS         ,
      L        NSIGRS      ,SIGRS      ,MERGE_NODE_TAB  ,MERGE_NODE_TOL,
      M        IMERGE      ,NMERGE_TOT ,IEXLNK ,DRAPEG  ,USER_WINDOWS  ,OUTPUT           ,
-     N        DEFAULTS    ,GLOB_THERM ,PBLAST)
+     N        DEFAULTS    ,GLOB_THERM ,PBLAST          ,IBEAM_VECTOR  ,RBEAM_VECTOR     ,
+     O        DAMP_RANGE_PART)
 !
       DEALLOCATE(SIGI)
       DEALLOCATE(SIGSH)
@@ -10563,6 +10609,8 @@ C----------------------------------------------
       DEALLOCATE(SIGRS)
       DEALLOCATE(SIGBEAM)
       DEALLOCATE(SIGTRUSS)
+      DEALLOCATE(IBEAM_VECTOR)
+      DEALLOCATE(RBEAM_VECTOR)
 C--------------------------------------------
 C     DELETE HM_MODEL IN MEMORY
 C--------------------------------------------
@@ -10880,7 +10928,7 @@ c
      1         P            ,CEP         ,CEL            ,IGEO        ,MAT_ELEM   ,
      2         IPM          ,ICODE       ,ISKEW          ,ISKWN       ,BID13      ,
      3         IBCSLAG      ,IPART       ,IPARTS         ,IPARTQ      ,IPARTC     ,
-     4         IPARTT       ,IPARTP      ,IPARTR         ,IPARTG     ,
+     4         IPARTT       ,IPARTP      ,IPARTR         ,IPARTG      ,DETONATORS ,
      5         IPARTX       ,NPC         ,IXTG           ,GROUP_PARAM_TAB,
      6         IXTG1        ,IXS         ,IXS10          ,IXS20       ,IXS16      ,
      7         IXQ          ,IXC         ,IXT            ,IXP         ,IXR        ,
@@ -11241,6 +11289,7 @@ C
       IF(ALLOCATED(IRAND)) DEALLOCATE(IRAND)
       IF(ALLOCATED(SENSORS%SENSOR_TAB)) DEALLOCATE(SENSORS%SENSOR_TAB )
       IF(ALLOCATED(SENSORS%LOGICAL_SENSORS_LIST)) DEALLOCATE(SENSORS%LOGICAL_SENSORS_LIST)
+      IF(ALLOCATED(DAMP_RANGE_PART)) DEALLOCATE(DAMP_RANGE_PART)
 C
       CALL EBCS_TAB%destroy()
       IF(NINIMAP1D > 0 .AND. .NOT. MULTI_FVM%IS_USED) THEN
