@@ -465,12 +465,6 @@ jobs:
           merge-multiple: true
           path: "${{ env.WORKDIR }}/exec_tmp"
 
-      # - name: Download extlib artifact
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: extlib.zip
-      #     path: ${{ env.WORKDIR }}
-
       - name: Check files in exec
         working-directory: ${{ env.WORKDIR }}
         run: |
@@ -481,20 +475,19 @@ jobs:
         run: |
           echo "List exec_tmp : "
           find exec_tmp -type f
-          mv exec_tmp/extlib.zip/extlib.zip ../
+
+          mv exec_tmp/extlib.zip ../
 
           # for os in linux64 win64 
-          # do
-          #   mkdir -p exec/${os}
-          #   for file in `find exec_tmp/*${os}*/ -type f`
-          #   do
-          #     cp -p $file exec/${os}/
-          #   done
-          #   chmod 755 exec/${os}/*
-          # done
+          for os in linux64
+          do
+            mkdir -p exec/${os}
+            cp -p exec_tmp/*${os}* exec/${os}/
+            chmod 755 exec/${os}/*
+          done
 
-          # echo "List exec : "
-          # find exec -type f
+          echo "List exec : "
+          find exec -type f
 
       - name: Unzip extlib
         working-directory: ${{ env.WORKDIR }}
