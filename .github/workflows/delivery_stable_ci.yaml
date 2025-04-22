@@ -458,17 +458,18 @@ jobs:
           path: "${{ env.WORKDIR }}/TOOLS"
           token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
-      # Download ALL artifacts
+      # Download ALL artifacts (including extlib.zip)
       - name: Download ALL artifacts for packaging
         uses: actions/download-artifact@v4
         with:
+          merge-multiple: true
           path: "${{ env.WORKDIR }}/exec_tmp"
 
-      - name: Download extlib artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: extlib.zip
-          path: ${{ env.WORKDIR }}
+      # - name: Download extlib artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: extlib.zip
+      #     path: ${{ env.WORKDIR }}
 
       - name: Check files in exec
         working-directory: ${{ env.WORKDIR }}
@@ -480,6 +481,7 @@ jobs:
         run: |
           echo "List exec_tmp : "
           find exec_tmp -type f
+          mv exec_tmp/extlib.zip/extlib.zip ../
 
           # for os in linux64 win64 
           # do
@@ -587,31 +589,31 @@ jobs:
       #         --action update_values
 
 
-      # The action creates the release with an already existing tag (latest-xxxxx) so we use option skip_tag_creation: true
-      # We do this because we have already checkouted the wanted commit before
-      # Prerequisite: create the tag with command : git tag latest-YYYMMDD <commit id>; git push origin latest-YYYMMDD
-      - name: Release the new binaries
-        uses: docker://ghcr.io/mini-bomba/create-github-release:v1.2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release: "${{ env.LAST_STABLE_TAG_NAME }}"
-          tag: "${{ env.LAST_STABLE_TAG_NAME }}"
-          name: "Last stable build on ${{ env.DATEOFTHETAG }}"            
-          body: |
-            This automatic release is built from commit ${{ env.LAST_STABLE_COMMIT }} and authored by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
-            [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      # # The action creates the release with an already existing tag (latest-xxxxx) so we use option skip_tag_creation: true
+      # # We do this because we have already checkouted the wanted commit before
+      # # Prerequisite: create the tag with command : git tag latest-YYYMMDD <commit id>; git push origin latest-YYYMMDD
+      # - name: Release the new binaries
+      #   uses: docker://ghcr.io/mini-bomba/create-github-release:v1.2.0
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     release: "${{ env.LAST_STABLE_TAG_NAME }}"
+      #     tag: "${{ env.LAST_STABLE_TAG_NAME }}"
+      #     name: "Last stable build on ${{ env.DATEOFTHETAG }}"            
+      #     body: |
+      #       This automatic release is built from commit ${{ env.LAST_STABLE_COMMIT }} and authored by @${{ fromJson(steps.get_commit_author.outputs.data).author.login }}
+      #       [Github Actions workflow run that built this release](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-            Commit message:
-            ${{ env.LAST_STABLE_COMMIT_MESSAGE }}
+      #       Commit message:
+      #       ${{ env.LAST_STABLE_COMMIT_MESSAGE }}
 
-            Thank you for downloading OpenRadioss! We'd love to hear about your experience.  
-            👉 [Share your feedback here](https://app.sli.do/event/uxEN5N2jZqeUHnqZEyqrcx)
+      #       Thank you for downloading OpenRadioss! We'd love to hear about your experience.  
+      #       👉 [Share your feedback here](https://app.sli.do/event/uxEN5N2jZqeUHnqZEyqrcx)
 
-          files: |
-            ${{ env.WORKDIR }}/todeliver/*
-          clear_attachments: true    
-          skip_tag_creation: true 
-          target_commit: ${{ env.LAST_STABLE_COMMIT }}
+      #     files: |
+      #       ${{ env.WORKDIR }}/todeliver/*
+      #     clear_attachments: true    
+      #     skip_tag_creation: true 
+      #     target_commit: ${{ env.LAST_STABLE_COMMIT }}
 
       # - name: Counter Download - Update/Add entries
       #   working-directory: ${{ env.WORKDIR }}
