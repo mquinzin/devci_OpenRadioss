@@ -28,7 +28,7 @@ jobs:
   build_linux:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
-    runs-on: ["${{ matrix.build }}","prmerge_ci"]
+    runs-on: ["${{ matrix.build }}","delivery_stable_ci"]
 
     env:
       BUILD_NB_THREAD: 2
