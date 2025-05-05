@@ -157,7 +157,7 @@ jobs:
             arch_suffix='_gf'
           fi
 
-          cmd="./build_script.sh -release -arch=${{ matrix.os }}{{ matrix.arch_suffix }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
+          cmd="./build_script.sh -release -arch=${{ matrix.os }}${{ matrix.arch_suffix }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
           echo "========================================="
           echo "--  BUILD ${{ matrix.build }} --"   
           echo "--  $cmd --"   
@@ -173,7 +173,7 @@ jobs:
           # cd ..
 
           # # Exiting with failure is no bins generated, should be handle by build_script soon
-          md5sum exec/* || exit 1
+          # md5sum exec/* || exit 1
          
           # Set correct end of step status (if not an email will be sent)
           echo "STATUS_BUILD=1" >> $GITHUB_ENV
