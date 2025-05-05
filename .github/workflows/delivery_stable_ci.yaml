@@ -51,24 +51,29 @@ jobs:
             precision: sp
             os: linux64
             binary: starter
+            image_name: build-linux64_gf:cos8-ompi411-devts11
           - build: engine_linux64_gf_ompi
             precision: dp
             os: linux64
             binary: engine
             mpi: ompi
+            image_name: build-linux64_gf:cos8-ompi411-devts11
           - build: engine_linux64_gf_ompi_sp
             precision: sp
             os: linux64
             binary: engine
             mpi: ompi
+            image_name: build-linux64_gf:cos8-ompi411-devts11
           - build: engine_linux64_gf
             precision: dp
             os: linux64
             binary: engine
+            image_name: build-linux64_gf:cos8-ompi411-devts11
           - build: engine_linux64_gf_sp
             precision: sp
             os: linux64 
             binary: engine
+            image_name: build-linux64_gf:cos8-ompi411-devts11
           ### LINUXA64 ###
           - build: starter_linuxa64
             binary: starter
