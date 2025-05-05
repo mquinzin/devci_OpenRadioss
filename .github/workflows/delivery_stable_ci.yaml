@@ -152,12 +152,21 @@ jobs:
           fi
 
           arch_suffix=''
+          extra_opts=''
           if [ "${{ matrix.os }}" = "linux64" ]
           then
+            echo "Running BUILD for linux GF"
             arch_suffix='_gf'
+            extra_opts='-static-link'
+          else
+            echo "Running BUILD for arm"
+            export MODULEPATH=$MODULEPATH:/opt/arm/modulefiles
+            source /etc/profile.d/modules.sh
+            module load binutils/13.2.0 gnu/13.2.0 acfl/24.04
+            export LD_LIBRARY_PATH=/opt/openmpi/lib:$LD_LIBRARY_PATH           
           fi
 
-          cmd="./build_script.sh -release -arch=${{ matrix.os }}$arch_suffix -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
+          cmd="./build_script.sh -release -arch=${{ matrix.os }}$arch_suffix -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} $extra_opts $mpi_opts"
           echo "========================================="
           echo "--  BUILD ${{ matrix.build }} --"   
           echo "--  $cmd --"   
