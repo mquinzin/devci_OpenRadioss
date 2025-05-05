@@ -29,13 +29,6 @@ jobs:
     if: ${{ github.repository_owner == 'OpenRadioss' }}
     # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
     runs-on: ["${{ matrix.build }}","prmerge_ci"]
-    container: 
-      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
-      credentials: 
-        username: ${{secrets.DOCKER_REGISTRY_USER}}
-        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      volumes: 
-        - /etc/localtime:/etc/localtime:ro
 
     env:
       BUILD_NB_THREAD: 2
@@ -52,6 +45,7 @@ jobs:
             precision: dp
             os: linux64
             binary: starter
+            image: build-linux64_gf:cos8-ompi411-devts11
           # - build: starter_linux64_gf_sp
           #   precision: sp
           #   os: linux64
@@ -75,6 +69,14 @@ jobs:
           #   os: linux64 
           #   binary: engine
 
+    container: 
+      image: fr-qafactorydev.europe.altair.com/${{ matrix.image }}
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
+
     steps:
 
       # Set the working dir suffixed with branch name
@@ -86,7 +88,7 @@ jobs:
         run: |
           uname -a
           cat /etc/os-release
-
+          pwd
         
       # - name: Create branch oriented WS directory & integration WS
       #   run: |
