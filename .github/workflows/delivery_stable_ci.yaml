@@ -164,6 +164,7 @@ jobs:
             echo "Running BUILD for linux GF"
             arch_suffix='_gf'
             extra_opts='-static-link'
+            source /home/adminqa/.bashrc
           else
             echo "Running BUILD for arm"
             export MODULEPATH=$MODULEPATH:/opt/arm/modulefiles
@@ -177,7 +178,6 @@ jobs:
           echo "--  BUILD ${{ matrix.build }} --"   
           echo "--  $cmd --"   
           echo "========================================="
-          source /home/adminqa/.bashrc
           chmod 755 Compiling_tools/script/*
           chmod 755 ${{ matrix.binary }}/build_script.sh 
 
