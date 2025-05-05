@@ -45,7 +45,7 @@ jobs:
             precision: dp
             os: linux64
             binary: starter
-            image: build-linux64_gf:cos8-ompi411-devts11
+            image_name: build-linux64_gf:cos8-ompi411-devts11
           # - build: starter_linux64_gf_sp
           #   precision: sp
           #   os: linux64
@@ -68,9 +68,42 @@ jobs:
           #   precision: sp
           #   os: linux64 
           #   binary: engine
+          ### LINUXA64 ###
+          - build: starter_linuxa64
+            binary: starter
+            precision: dp
+            os: linuxa64
+            image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: starter_linuxa64_sp
+          #   binary: starter
+          #   precision: sp
+          #   os: linuxa64
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64
+          #   binary: engine
+          #   precision: dp
+          #   os: linuxa64
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64_sp
+          #   binary: engine
+          #   precision: sp
+          #   os: linuxa64
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64_ompi
+          #   binary: engine
+          #   precision: dp
+          #   os: linuxa64
+          #   mpi: ompi
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64_ompi_sp
+          #   binary: engine
+          #   precision: sp
+          #   os: linuxa64
+          #   mpi: ompi
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
 
     container: 
-      image: fr-qafactorydev.europe.altair.com/${{ matrix.image }}
+      image: fr-qafactorydev.europe.altair.com/${{ matrix.image_name }}
       credentials: 
         username: ${{secrets.DOCKER_REGISTRY_USER}}
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
@@ -90,136 +123,142 @@ jobs:
           cat /etc/os-release
           pwd
         
-      # - name: Create branch oriented WS directory & integration WS
-      #   run: |
-      #     mkdir -p ${{ env.WORKDIR }}
+      - name: Create branch oriented WS directory & integration WS
+        run: |
+          mkdir -p ${{ env.WORKDIR }}
 
-      # - name: Clean local exe dir
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     rm -rf exec
-      #     md5sum exec/* || echo "Nothing in exec/" 
+      - name: Clean local exe dir
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          rm -rf exec
+          md5sum exec/* || echo "Nothing in exec/" 
 
-      # # Get last git modifications, don't clean before (way to keep persistent obj files)
-      # - name: Checkout git sources
-      #   uses: actions/checkout@v4
-      #   with:
-      #     path: ${{ env.WORKDIR }}
-      #     clean: 'false'
-      #     lfs: 'true'
-      #     ref: ${{ env.LAST_STABLE_TAG_NAME }}
+      # Get last git modifications, don't clean before (way to keep persistent obj files)
+      - name: Checkout git sources
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.WORKDIR }}
+          clean: 'false'
+          lfs: 'true'
+          ref: ${{ env.LAST_STABLE_TAG_NAME }}
 
-      # - name: Running build
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     mpi_opts=''
-      #     if [ ! -z ${{ matrix.mpi }} ]
-      #     then
-      #       mpi_opts="-mpi=${{ matrix.mpi }}"
-      #     fi
+      - name: Running build
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          mpi_opts=''
+          if [ ! -z ${{ matrix.mpi }} ]
+          then
+            mpi_opts="-mpi=${{ matrix.mpi }}"
+          fi
 
-      #     cmd="./build_script.sh -release -arch=${{ matrix.os }}_gf -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
-      #     echo "========================================="
-      #     echo "--  BUILD ${{ matrix.build }} --"   
-      #     echo "--  $cmd --"   
-      #     echo "========================================="
-      #     source /home/adminqa/.bashrc
-      #     chmod 755 Compiling_tools/script/*
-      #     chmod 755 ${{ matrix.binary }}/build_script.sh 
+          arch_suffix=''
+          if [ "${{ matrix.os }}" = "linux64" ]
+          then
+            arch_suffix='_gf'
+          fi
 
-      #     md5sum exec/* || echo "Nothing in exec/" 
-      #     mkdir exec
-      #     cd ${{ matrix.binary }}
-      #     eval $cmd
-      #     cd ..
+          cmd="./build_script.sh -release -arch=${{ matrix.os }}{{ matrix.arch_suffix }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
+          echo "========================================="
+          echo "--  BUILD ${{ matrix.build }} --"   
+          echo "--  $cmd --"   
+          echo "========================================="
+          # source /home/adminqa/.bashrc
+          # chmod 755 Compiling_tools/script/*
+          # chmod 755 ${{ matrix.binary }}/build_script.sh 
 
-      #     # Exiting with failure is no bins generated, should be handle by build_script soon
-      #     md5sum exec/* || exit 1
+          # md5sum exec/* || echo "Nothing in exec/" 
+          # mkdir exec
+          # cd ${{ matrix.binary }}
+          # eval $cmd
+          # cd ..
+
+          # # Exiting with failure is no bins generated, should be handle by build_script soon
+          md5sum exec/* || exit 1
          
-      #     # Set correct end of step status (if not an email will be sent)
-      #     echo "STATUS_BUILD=1" >> $GITHUB_ENV
+          # Set correct end of step status (if not an email will be sent)
+          echo "STATUS_BUILD=1" >> $GITHUB_ENV
 
-      # - name: Managing step execution
-      #   if: ${{ always() }}
-      #   run: |
+      - name: Managing step execution
+        if: ${{ always() }}
+        run: |
 
-      #     MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
-      #     echo -e "\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###"
-      #     if [ "$STATUS_BUILD" = 0 ]
-      #     then
-      #       echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
-      #       MAILMSG+="The build ${{ matrix.build }} has failed \n"
+          MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
+          echo -e "\n#### STATUS_STEP_BUILD ${{ matrix.build }} ###"
+          if [ "$STATUS_BUILD" = 0 ]
+          then
+            echo -e "Status\t[ \033[31;2;1mFAILED\033[0m ]" 
+            MAILMSG+="The build ${{ matrix.build }} has failed \n"
 
-      #       # Send email 
-      #       # Close the branch 
-      #       echo "CLOSE_BRANCH=1" >> $GITHUB_ENV
+            # Send email 
+            # Close the branch 
+            echo "CLOSE_BRANCH=1" >> $GITHUB_ENV
 
-      #       # Setting SMTP server (docker host)
-      #       DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
-      #       echo "set smtp=smtp://${DOCKER_HOST}:25" >> /etc/mail.rc 
+            # Setting SMTP server (docker host)
+            DOCKER_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+            echo "set smtp=smtp://${DOCKER_HOST}:25" >> /etc/mail.rc 
 
-      #       # Print message in log 
-      #       echo -e $MAILMSG
+            # Print message in log 
+            echo -e $MAILMSG
 
-      #       # Send email
-      #       echo -e "$MAILMSG\nThe branch is closed" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }}))" $TO_EMAIL
+            # Send email
+            echo -e "$MAILMSG\nThe branch is closed" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }}))" $TO_EMAIL
 
-      #       # Exit fail to see it as a failure
-      #       exit 1
+            # Exit fail to see it as a failure
+            exit 1
 
-      #     else
-      #       echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
-      #     fi
+          else
+            echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
+          fi
 
-      # # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
-      # - name: Upload built artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
-      #     path: ${{ env.WORKDIR }}/exec
-      #   if: ${{ env.CLOSE_BRANCH == 0 }} 
+      # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
+          path: ${{ env.WORKDIR }}/exec
+        if: ${{ env.CLOSE_BRANCH == 0 }} 
 
-      # # We upload extlib only once, arbitrary choice
-      # - name: Upload extlib artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: extlib.zip
-      #     path: ${{ env.WORKDIR }}/extlib.zip
-      #   if: ${{ matrix.build == 'starter_linux64_gf' && env.CLOSE_BRANCH == 0 }}
+      # We upload extlib only once, arbitrary choice
+      - name: Upload extlib artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extlib.zip
+          path: ${{ env.WORKDIR }}/extlib.zip
+        if: ${{ matrix.build == 'starter_linux64_gf' && env.CLOSE_BRANCH == 0 }}
 
-      # # Close the branch (= restrict push to team devopsadmins) if needed
-      # # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-      # - uses: octokit/request-action@v2.x
-      #   id: close_branch_build
-      #   env:
-      #     GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-      #     REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
-      #   with:
-      #     route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
-      #     data: ${{ env.REQUEST_BODY }}
-      #   if: ${{ always() && env.CLOSE_BRANCH == 1 }} 
+      # Close the branch (= restrict push to team devopsadmins) if needed
+      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+      - uses: octokit/request-action@v2.x
+        id: close_branch_build
+        env:
+          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
+        with:
+          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+          data: ${{ env.REQUEST_BODY }}
+        if: ${{ always() && env.CLOSE_BRANCH == 1 }} 
 
-      # # It the closing went wrong we send an email
-      # - name: "Check result of closing branch and warn if it fails"
-      #   run: |
-      #     # No need to configure SMTP server, already done in previous steps
+      # It the closing went wrong we send an email
+      - name: "Check result of closing branch and warn if it fails"
+        run: |
+          # No need to configure SMTP server, already done in previous steps
 
-      #     MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
-      #     MAILMSG+="A branch closing is needed but has failed\n\n"
-      #     MAILMSG+="Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n"
-      #     MAILMSG+="Check more detailed datas in CI logs\n"
+          MAILMSG="Some error(s) has(ve) been raised during workflow execution:\n\n"
+          MAILMSG+="A branch closing is needed but has failed\n\n"
+          MAILMSG+="Return status API is : ${{ steps.close_branch_build.outputs.status }}\n\n"
+          MAILMSG+="Check more detailed datas in CI logs\n"
 
-      #     # Print message in log 
-      #     echo -e $MAILMSG
-      #     echo -e "\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}"
+          # Print message in log 
+          echo -e $MAILMSG
+          echo -e "\nClose return data API is : ${{ steps.close_branch_build.outputs.data }}"
 
-      #     # Send email
-      #     echo -e "$MAILMSG" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})) on closing branch" $TO_EMAIL
+          # Send email
+          echo -e "$MAILMSG" | Mail -r $FROM_EMAIL -s "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})) on closing branch" $TO_EMAIL
 
-      #     # Exit fail to see it as a failure
-      #     exit 1
+          # Exit fail to see it as a failure
+          exit 1
 
-      #   if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
+        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
 
   # build_windows_no_container:
