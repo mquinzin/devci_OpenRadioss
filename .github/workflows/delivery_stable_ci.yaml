@@ -157,7 +157,7 @@ jobs:
             arch_suffix='_gf'
           fi
 
-          cmd="./build_script.sh -release -arch=${{ matrix.os }}${{ matrix.arch_suffix }} -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
+          cmd="./build_script.sh -release -arch=${{ matrix.os }}$arch_suffix -prec=${{ matrix.precision }} -nt=${{ env.BUILD_NB_THREAD }} -static-link $mpi_opts"
           echo "========================================="
           echo "--  BUILD ${{ matrix.build }} --"   
           echo "--  $cmd --"   
