@@ -277,173 +277,173 @@ jobs:
         if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
 
-  # build_windows_no_container:
-  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
-  #   # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
-  #   runs-on: ["${{ matrix.build }}","prmerge_ci"]
+  build_windows_no_container:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # DEV ONLY # runs-on: ["${{ matrix.build }}","dev_pmci"]
+    runs-on: ["${{ matrix.build }}","prmerge_ci"]
  
-  #   env:
-  #     BUILD_NB_THREAD: 2
-  #     STATUS_BUILD: 0
-  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-  #     CLOSE_BRANCH: 0
+    env:
+      BUILD_NB_THREAD: 2
+      STATUS_BUILD: 0
+      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+      CLOSE_BRANCH: 0
 
-  #   strategy:
-  #     # If one job fails others are canceled
-  #     fail-fast: true
-  #     matrix:
-  #       include:
-  #         - build: starter_win64
-  #           precision: dp
-  #           os: win64
-  #           binary: starter
+    strategy:
+      # If one job fails others are canceled
+      fail-fast: true
+      matrix:
+        include:
+          - build: starter_win64
+            precision: dp
+            os: win64
+            binary: starter
 
-  #         - build: starter_win64_sp
-  #           precision: sp
-  #           os: win64
-  #           binary: starter
+          # - build: starter_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: starter
 
-  #         - build: engine_win64_impi
-  #           precision: dp
-  #           os: win64
-  #           binary: engine
-  #           mpi: impi
+          # - build: engine_win64_impi
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
 
-  #         - build: engine_win64_impi_sp
-  #           precision: sp
-  #           os: win64
-  #           binary: engine
-  #           mpi: impi
+          # - build: engine_win64_impi_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
+          #   mpi: impi
 
-  #         - build: engine_win64
-  #           precision: dp
-  #           os: win64
-  #           binary: engine
+          # - build: engine_win64
+          #   precision: dp
+          #   os: win64
+          #   binary: engine
 
-  #         - build: engine_win64_sp
-  #           precision: sp
-  #           os: win64
-  #           binary: engine
+          # - build: engine_win64_sp
+          #   precision: sp
+          #   os: win64
+          #   binary: engine
 
-  #   steps:
+    steps:
 
-  #     # Set the working dir suffixed with branch name
-  #     - name: Set workdir 
-  #       run: |
-  #         Add-Content -Path $env:GITHUB_ENV -Value "WORKDIR=lastest"
+      # Set the working dir suffixed with branch name
+      - name: Set workdir 
+        run: |
+          Add-Content -Path $env:GITHUB_ENV -Value "WORKDIR=lastest"
 
-  #     - name: Create branch oriented WS directory & integration WS (WIN64)
-  #       run: |
-  #         $dir2create = "$env:WORKDIR"
-  #         if (-not (Test-Path -Path $dir2create)) {
-  #           New-Item -Path $dir2create -ItemType "Directory"
-  #         }
+      - name: Create branch oriented WS directory & integration WS (WIN64)
+        run: |
+          $dir2create = "$env:WORKDIR"
+          if (-not (Test-Path -Path $dir2create)) {
+            New-Item -Path $dir2create -ItemType "Directory"
+          }
 
-  #     - name: Clean local exe dir
-  #       working-directory: ${{ env.WORKDIR }}
-  #       run: |
-  #         $dir2remove = "exec"
-  #         if (Test-Path -Path $dir2remove) {
-  #           Remove-Item -Path $dir2remove -Recurse -Force
-  #         }
+      - name: Clean local exe dir
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          $dir2remove = "exec"
+          if (Test-Path -Path $dir2remove) {
+            Remove-Item -Path $dir2remove -Recurse -Force
+          }
 
-  #     # Get last git modifications, don't clean before (way to keep persistent obj files)
-  #     - name: Checkout git sources
-  #       uses: actions/checkout@v4
-  #       with:
-  #         path: ${{ env.WORKDIR }}
-  #         clean: 'false'
-  #         lfs: 'true'
-  #         ref: ${{ env.LAST_STABLE_TAG_NAME }}
+      # Get last git modifications, don't clean before (way to keep persistent obj files)
+      - name: Checkout git sources
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.WORKDIR }}
+          clean: 'false'
+          lfs: 'true'
+          ref: ${{ env.LAST_STABLE_TAG_NAME }}
 
 
-  #     - name: Running builds
-  #       working-directory: ${{ env.WORKDIR }}
-  #       run: |
-  #         cd ${{ matrix.binary }}
-  #         @"
-  #         @echo off
-  #         call 'C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\env\vars.bat'
-  #         call 'C:\Program Files (x86)\Intel\oneAPI\mkl\2025.0\env\vars.bat'
-  #         call 'C:\Program Files (x86)\Intel\oneAPI\mpi\2021.10.0\env\vars.bat'
-  #         cmake --version
-  #         ninja --version
-  #         if not '${{ matrix.mpi }}'=='' (
-  #           set mpi_opts=-mpi=${{ matrix.mpi }}
-  #         )   
-  #         echo =========================================
-  #         echo --  BUILD ${{ matrix.build }} --
-  #         echo =========================================
-  #         .\build_windows.bat -release -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
-  #         "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
-  #         cmd /c .\myrun.bat    
-  #         cd ..
-  #         $directoryPath = "exec"
-  #         if (Test-Path -Path $directoryPath) {
-  #             $files = Get-ChildItem -Path $directoryPath
-  #             if ($files.Count -eq 0) {
-  #                 Write-Output "The directory is empty."
-  #                 exit 1
-  #             } else {
-  #                 # Display the contents of the directory
-  #                 $files | ForEach-Object { Write-Output $_.FullName }
-  #             }
-  #         } else {
-  #             Write-Output "The directory does not exist."
-  #             exit 1
-  #         }
-  #         Add-Content -Path $env:GITHUB_ENV -Value "STATUS_BUILD=1"
+      - name: Running builds
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          cd ${{ matrix.binary }}
+          @"
+          @echo off
+          call 'C:\Program Files (x86)\Intel\oneAPI\compiler\2025.0\env\vars.bat'
+          call 'C:\Program Files (x86)\Intel\oneAPI\mkl\2025.0\env\vars.bat'
+          call 'C:\Program Files (x86)\Intel\oneAPI\mpi\2021.10.0\env\vars.bat'
+          cmake --version
+          ninja --version
+          if not '${{ matrix.mpi }}'=='' (
+            set mpi_opts=-mpi=${{ matrix.mpi }}
+          )   
+          echo =========================================
+          echo --  BUILD ${{ matrix.build }} --
+          echo =========================================
+          .\build_windows.bat -release -arch=${{ matrix.os }} -prec=${{ matrix.precision }} -nt=$env:BUILD_NB_THREAD %mpi_opts%
+          "@ -replace "'", '"' | Out-File -FilePath myrun.bat -Encoding ASCII
+          cmd /c .\myrun.bat    
+          cd ..
+          $directoryPath = "exec"
+          if (Test-Path -Path $directoryPath) {
+              $files = Get-ChildItem -Path $directoryPath
+              if ($files.Count -eq 0) {
+                  Write-Output "The directory is empty."
+                  exit 1
+              } else {
+                  # Display the contents of the directory
+                  $files | ForEach-Object { Write-Output $_.FullName }
+              }
+          } else {
+              Write-Output "The directory does not exist."
+              exit 1
+          }
+          Add-Content -Path $env:GITHUB_ENV -Value "STATUS_BUILD=1"
 
-  #     - name: Managing step execution
-  #       if: ${{ always() }}
-  #       run: |
-  #         $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:`r`n`r`n"
-  #         Write-Output "`r`n#### STATUS_STEP_BUILD ${{ matrix.build }} ($env:STATUS_BUILD) ###"
-  #         if ($env:STATUS_BUILD -eq 0) {
-  #           Write-Output "Status`t[ $([char]27)[31;2;1mFAILED$([char]27)[0m ]"
-  #           $MAILMSG += "The build ${{ matrix.build }} has failed `r`n"
-  #           Add-Content -Path $env:GITHUB_ENV -Value "CLOSE_BRANCH=1"
-  #           $ALL_RECIPIENTS = $env:TO_EMAIL -split ","
-  #           Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $ALL_RECIPIENTS -Subject "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }}))" -Body $MAILMSG -Port 25
-  #           exit 1
-  #         }
-  #         else {
-  #           Write-Output "Status`t[ $([char]27)[32;2;1mOK$([char]27)[0m ]"
-  #         }
+      - name: Managing step execution
+        if: ${{ always() }}
+        run: |
+          $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:`r`n`r`n"
+          Write-Output "`r`n#### STATUS_STEP_BUILD ${{ matrix.build }} ($env:STATUS_BUILD) ###"
+          if ($env:STATUS_BUILD -eq 0) {
+            Write-Output "Status`t[ $([char]27)[31;2;1mFAILED$([char]27)[0m ]"
+            $MAILMSG += "The build ${{ matrix.build }} has failed `r`n"
+            Add-Content -Path $env:GITHUB_ENV -Value "CLOSE_BRANCH=1"
+            $ALL_RECIPIENTS = $env:TO_EMAIL -split ","
+            Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $ALL_RECIPIENTS -Subject "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }}))" -Body $MAILMSG -Port 25
+            exit 1
+          }
+          else {
+            Write-Output "Status`t[ $([char]27)[32;2;1mOK$([char]27)[0m ]"
+          }
 
-  #     # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
-  #     - name: Upload built artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
-  #         path: ${{ env.WORKDIR }}/exec
-  #       if: ${{ env.CLOSE_BRANCH == 0 }}             
+      # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
+          path: ${{ env.WORKDIR }}/exec
+        if: ${{ env.CLOSE_BRANCH == 0 }}             
 
-  #     # Close the branch (= restrict push to team devopsadmins) if needed
-  #     # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
-  #     - name: Close the branch if errors
-  #       uses: octokit/request-action@v2.x
-  #       id: close_branch_build
-  #       env:
-  #         GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
-  #         REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
-  #       with:
-  #         route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
-  #         data: ${{ env.REQUEST_BODY }}
-  #       if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
+      # Close the branch (= restrict push to team devopsadmins) if needed
+      # Owner is not mandatory here ... PAT is sufficient ??? seems that as servbot has permissions on this repo so his PAT is sufficient ...
+      - name: Close the branch if errors
+        uses: octokit/request-action@v2.x
+        id: close_branch_build
+        env:
+          GITHUB_TOKEN: ${{ env.SERVBOT_PAT }}
+          REQUEST_BODY: "['${{ env.TEAM_RESTRICTIVE_CLOSED_BRANCH}}']"
+        with:
+          route: PUT /repos/${{ github.repository }}/branches/main/protection/restrictions/teams
+          data: ${{ env.REQUEST_BODY }}
+        if: ${{ always() && env.CLOSE_BRANCH == 1 }}         
 
-  #     # If the closing went wrong we send an email
-  #     - name: "Check result of closing branch and warn if it fails"
-  #       run: |
-  #         $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:`r`n`r`n"
-  #         $MAILMSG += "A branch closing is needed but has failed`r`n`r`n"
-  #         $MAILMSG += "Return status API is : ${{ steps.close_branch_build.outputs.status }}`r`n`r`n"
-  #         $MAILMSG += "Check more detailed datas in CI logs`r`n"
-  #         Write-Output "`r`nClose return API is : ${{ steps.close_branch_build.outputs.status }} / ${{ steps.close_branch_build.outputs.data }}";
-  #         $ALL_RECIPIENTS = $env:TO_EMAIL -split ","
-  #         Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $ALL_RECIPIENTS -Subject "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})) on closing branch" -Body $MAILMSG -Port 25
-  #         exit 1
-  #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
+      # If the closing went wrong we send an email
+      - name: "Check result of closing branch and warn if it fails"
+        run: |
+          $MAILMSG = "Some error(s) has(ve) been raised during workflow execution:`r`n`r`n"
+          $MAILMSG += "A branch closing is needed but has failed`r`n`r`n"
+          $MAILMSG += "Return status API is : ${{ steps.close_branch_build.outputs.status }}`r`n`r`n"
+          $MAILMSG += "Check more detailed datas in CI logs`r`n"
+          Write-Output "`r`nClose return API is : ${{ steps.close_branch_build.outputs.status }} / ${{ steps.close_branch_build.outputs.data }}";
+          $ALL_RECIPIENTS = $env:TO_EMAIL -split ","
+          Send-MailMessage -SmtpServer $env:MAIL_RELAY -From $env:FROM_EMAIL -To $ALL_RECIPIENTS -Subject "Error in Github CI repo ${{ github.repository }} ($(git rev-list -n 1 ${{ env.LAST_STABLE_TAG_NAME }})) on closing branch" -Body $MAILMSG -Port 25
+          exit 1
+        if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
   # delivery:
   #   # needs: [build_linux,build_windows_no_container]
