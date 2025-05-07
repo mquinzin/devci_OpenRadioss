@@ -690,42 +690,42 @@ jobs:
           skip_tag_creation: true 
           target_commit: ${{ env.LAST_STABLE_COMMIT }}
 
-      # - name: Counter Download - Update/Add entries
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #       cd /github_download_counter
-      #       github_download_count.py \
-      #         --git_api_url ${{ github.api_url }} \
-      #         --git_repo ${{ github.repository }} \
-      #         --git_user $SERVBOT_USER \
-      #         --git_token $SERVBOT_PAT \
-      #         --action update \
-      #         --tag_date ${{ env.DATEOFTHETAG }}
+      - name: Counter Download - Update/Add entries
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+            cd /github_download_counter
+            github_download_count.py \
+              --git_api_url ${{ github.api_url }} \
+              --git_repo ${{ github.repository }} \
+              --git_user $SERVBOT_USER \
+              --git_token $SERVBOT_PAT \
+              --action update \
+              --tag_date ${{ env.DATEOFTHETAG }}
 
 
-      # - name: Clean old github release/tag if needed + clean Counter Download
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #       clean_github_release.py \
-      #         --git_api_url ${{ github.api_url }} \
-      #         --git_repo ${{ github.repository }} \
-      #         --git_user $SERVBOT_USER \
-      #         --git_token $SERVBOT_PAT \
-      #         --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
-      #         --counter_file_dir /github_download_counter \
-      #         --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} 
+      - name: Clean old github release/tag if needed + clean Counter Download
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+            clean_github_release.py \
+              --git_api_url ${{ github.api_url }} \
+              --git_repo ${{ github.repository }} \
+              --git_user $SERVBOT_USER \
+              --git_token $SERVBOT_PAT \
+              --nb_releases_to_keep ${{ env.DELIVERY_NB_RELEASES_TO_KEEP }} \
+              --counter_file_dir /github_download_counter \
+              --tag_prefix ${{ env.DELIVERY_TAG_PREFIX }} 
 
-      # - name: Create a new GitHub Discussion Annoucement
-      #   id: create-discussion
-      #   uses: abirismyname/create-discussion@v1.x
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
-      #   with:
-      #     title: OpenRadioss Stable Update (${{ env.LAST_STABLE_TAG_NAME }})
-      #     body: |
-      #       We're excited to announce a new **stable release of OpenRadioss!**  
-      #       This version, based on **tag ${{ env.LAST_STABLE_TAG_NAME }}**, brings improved stability and performance based on community feedback.
-      #       🔹 [Get it now](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }})
-      #       Please, try it out and share your appreciated feedback, thanks!
-      #     repository-id: ${{ secrets.DISCUSSION_REPO_ID }}
-      #     category-id: ${{ secrets.DISCUSSION_CAT_ID }}  
+      - name: Create a new GitHub Discussion Annoucement
+        id: create-discussion
+        uses: abirismyname/create-discussion@v1.x
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+        with:
+          title: OpenRadioss Stable Update (${{ env.LAST_STABLE_TAG_NAME }})
+          body: |
+            We're excited to announce a new **stable release of OpenRadioss!**  
+            This version, based on **tag ${{ env.LAST_STABLE_TAG_NAME }}**, brings improved stability and performance based on community feedback.
+            🔹 [Get it now](https://github.com/${{ github.repository }}/releases/tag/${{ env.DELIVERY_TAG_PREFIX }}${{ env.DATEOFTHETAG }})
+            Please, try it out and share your appreciated feedback, thanks!
+          repository-id: ${{ secrets.DISCUSSION_REPO_ID }}
+          category-id: ${{ secrets.DISCUSSION_CAT_ID }}  
