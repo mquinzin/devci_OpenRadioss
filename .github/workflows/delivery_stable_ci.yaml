@@ -226,13 +226,13 @@ jobs:
             echo -e "Status\t[ \033[32;2;1mOK\033[0m ]"
           fi
 
-      # # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
-      # - name: Upload built artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
-      #     path: ${{ env.WORKDIR }}/exec
-      #   if: ${{ env.CLOSE_BRANCH == 0 }} 
+      # Upload artifact (since V4 we can't upload artifact using the same name, each one must be unique)
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bins-${{ matrix.os }}-${{ matrix.precision }}-${{ matrix.build }}
+          path: ${{ env.WORKDIR }}/exec
+        if: ${{ env.CLOSE_BRANCH == 0 }} 
 
       # We upload extlib only once, arbitrary choice
       - name: Upload extlib artifacts
@@ -445,190 +445,190 @@ jobs:
   #         exit 1
   #       if: ${{ always() && env.CLOSE_BRANCH == 1 && steps.close_branch_build.outputs.status != 200 }} 
 
-  delivery:
-    # needs: [build_linux,build_windows_no_container]
-    needs: [build_linux]
-    # DEV ONLY # runs-on: dev_delivery
-    runs-on: delivery    
-    container: 
-      image: fr-qafactorydev.europe.altair.com/common-linux64
-      credentials: 
-        username: ${{secrets.DOCKER_REGISTRY_USER}}
-        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      volumes: 
-         - /etc/localtime:/etc/localtime:ro
-         # DEV ONLY # - /github_download_counter_dev:/github_download_counter
-         - /github_download_counter:/github_download_counter
+  # delivery:
+  #   # needs: [build_linux,build_windows_no_container]
+  #   needs: [build_linux]
+  #   # DEV ONLY # runs-on: dev_delivery
+  #   runs-on: delivery    
+  #   container: 
+  #     image: fr-qafactorydev.europe.altair.com/common-linux64
+  #     credentials: 
+  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
+  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+  #     volumes: 
+  #        - /etc/localtime:/etc/localtime:ro
+  #        # DEV ONLY # - /github_download_counter_dev:/github_download_counter
+  #        - /github_download_counter:/github_download_counter
 
-    env:
-      SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
-      SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
-      DELIVERY_NB_RELEASES_TO_KEEP: 3
-      DELIVERY_TAG_PREFIX: 'latest-'
-      OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
-      OPENRADIOSS_GUI: 'openradioss_gui'
-      TOOLS_OPENRADIOSS_GUI: 'TOOLS/openradioss_gui'
-      TOOLS_INP2RAD: 'TOOLS/input_converters/inp2rad/inp2rad/inp2rad.py'
-      CI: 'true'  # if true, disables interactive prompts and progress bar  
-      JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
-      JFROG_CLI_LOG_LEVEL: "ERROR"
-      JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
-      JF_TOOLS_OUTPUT_CONVERTERS: "${{ secrets.JFROG_DELIVERY_RADIOSS_REPO }}/OpenRadioss_Tools/output_converters"
+  #   env:
+  #     SERVBOT_USER: ${{ secrets.SERVBOT_USER }}
+  #     SERVBOT_PAT: ${{ secrets.SERVBOT_PAT }}
+  #     DELIVERY_NB_RELEASES_TO_KEEP: 3
+  #     DELIVERY_TAG_PREFIX: 'latest-'
+  #     OPENRADIOSS_MAINDIR_NAME: 'OpenRadioss'
+  #     OPENRADIOSS_GUI: 'openradioss_gui'
+  #     TOOLS_OPENRADIOSS_GUI: 'TOOLS/openradioss_gui'
+  #     TOOLS_INP2RAD: 'TOOLS/input_converters/inp2rad/inp2rad/inp2rad.py'
+  #     CI: 'true'  # if true, disables interactive prompts and progress bar  
+  #     JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+  #     JFROG_CLI_LOG_LEVEL: "ERROR"
+  #     JF_OPTIONS: "--url=${{ secrets.JFROG_DELIVERY_URL }} --user=${{ secrets.JFROG_DELIVERY_USER }} --password=${{ secrets.JFROG_DELIVERY_TOKEN }}"
+  #     JF_TOOLS_OUTPUT_CONVERTERS: "${{ secrets.JFROG_DELIVERY_RADIOSS_REPO }}/OpenRadioss_Tools/output_converters"
 
-    steps:
+  #   steps:
 
-      # Set the working dir suffixed with deliv_stable
-      - name: Set workdir 
-        run: |
-          echo "WORKDIR=deliv_stable" >> $GITHUB_ENV
+  #     # Set the working dir suffixed with deliv_stable
+  #     - name: Set workdir 
+  #       run: |
+  #         echo "WORKDIR=deliv_stable" >> $GITHUB_ENV
 
-      - name: Create branch oriented WS directory & integration WS
-        run: |
-          mkdir -p ${{ env.WORKDIR }}
+  #     - name: Create branch oriented WS directory & integration WS
+  #       run: |
+  #         mkdir -p ${{ env.WORKDIR }}
 
-      - name: Set the release name & clean previous exec
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          echo "DATEOFTHETAG=${LAST_STABLE_TAG_NAME#latest-}" >> $GITHUB_ENV
-          rm -rf exec todeliver exec_tmp
+  #     - name: Set the release name & clean previous exec
+  #       working-directory: ${{ env.WORKDIR }}
+  #       run: |
+  #         echo "DATEOFTHETAG=${LAST_STABLE_TAG_NAME#latest-}" >> $GITHUB_ENV
+  #         rm -rf exec todeliver exec_tmp
 
-      # Get last git modifications, don't clean before (way to go faster)
-      - name: Checkout git sources
-        uses: actions/checkout@v4
-        with:
-          path: ${{ env.WORKDIR }}
-          lfs: 'true'
-          ref: ${{ env.LAST_STABLE_TAG_NAME }}
+  #     # Get last git modifications, don't clean before (way to go faster)
+  #     - name: Checkout git sources
+  #       uses: actions/checkout@v4
+  #       with:
+  #         path: ${{ env.WORKDIR }}
+  #         lfs: 'true'
+  #         ref: ${{ env.LAST_STABLE_TAG_NAME }}
 
-      # Get OpenRadioss extras from dedicated repository
-      - name: Checkout git EXTRA sources
-        uses: actions/checkout@v4
-        with:
-          lfs: 'true'
-          clean: 'false'
-          repository: '${{ secrets.EXTRA_REPOSITORY }}'
-          path: "${{ env.WORKDIR }}/EXTRA"
-          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
+  #     # Get OpenRadioss extras from dedicated repository
+  #     - name: Checkout git EXTRA sources
+  #       uses: actions/checkout@v4
+  #       with:
+  #         lfs: 'true'
+  #         clean: 'false'
+  #         repository: '${{ secrets.EXTRA_REPOSITORY }}'
+  #         path: "${{ env.WORKDIR }}/EXTRA"
+  #         token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
-      # Get OpenRadioss gui in Tools repository
-      - name: Checkout git Tools sources
-        uses: actions/checkout@v4
-        with:
-          lfs: 'true'
-          clean: 'false'
-          repository: '${{ secrets.TOOLS_REPOSITORY }}'
-          path: "${{ env.WORKDIR }}/TOOLS"
-          token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
+  #     # Get OpenRadioss gui in Tools repository
+  #     - name: Checkout git Tools sources
+  #       uses: actions/checkout@v4
+  #       with:
+  #         lfs: 'true'
+  #         clean: 'false'
+  #         repository: '${{ secrets.TOOLS_REPOSITORY }}'
+  #         path: "${{ env.WORKDIR }}/TOOLS"
+  #         token: '${{ secrets.EXTRA_REPOSITORY_PAT }}'
 
-      # Download ALL artifacts (including extlib.zip)
-      - name: Download ALL artifacts for packaging
-        uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-          path: "${{ env.WORKDIR }}/exec_tmp"
+  #     # Download ALL artifacts (including extlib.zip)
+  #     - name: Download ALL artifacts for packaging
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         merge-multiple: true
+  #         path: "${{ env.WORKDIR }}/exec_tmp"
 
-      - name: Check files in exec
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          # DEV ONLY #
-          mkdir -p exec_tmp
-          touch exec_tmp/starter_linux64_gf
-          touch exec_tmp/starter_linux64_gf_sp 
-          touch exec_tmp/engine_linux64_gf_ompi
-          touch exec_tmp/engine_linux64_gf
-          touch exec_tmp/engine_linux64_gf_ompi_sp
-          touch exec_tmp/engine_linux64_gf_sp
-          touch exec_tmp/starter_linuxa64
-          touch exec_tmp/starter_linuxa64_sp
-          touch exec_tmp/engine_linuxa64
-          touch exec_tmp/engine_linuxa64_sp
-          touch exec_tmp/engine_linuxa64_ompi
-          touch exec_tmp/engine_linuxa64_ompi_sp
-          touch exec_tmp/starter_win64
-          touch exec_tmp/starter_win64_sp
-          touch exec_tmp/engine_win64_impi
-          touch exec_tmp/engine_win64_impi_sp
-          touch exec_tmp/engine_win64
-          touch exec_tmp/engine_win64_sp
-          cd exec_tmp/
-          cd ..
-          ls -l exec_tmp/
+  #     - name: Check files in exec
+  #       working-directory: ${{ env.WORKDIR }}
+  #       run: |
+  #         # DEV ONLY #
+  #         mkdir -p exec_tmp
+  #         touch exec_tmp/starter_linux64_gf
+  #         touch exec_tmp/starter_linux64_gf_sp 
+  #         touch exec_tmp/engine_linux64_gf_ompi
+  #         touch exec_tmp/engine_linux64_gf
+  #         touch exec_tmp/engine_linux64_gf_ompi_sp
+  #         touch exec_tmp/engine_linux64_gf_sp
+  #         touch exec_tmp/starter_linuxa64
+  #         touch exec_tmp/starter_linuxa64_sp
+  #         touch exec_tmp/engine_linuxa64
+  #         touch exec_tmp/engine_linuxa64_sp
+  #         touch exec_tmp/engine_linuxa64_ompi
+  #         touch exec_tmp/engine_linuxa64_ompi_sp
+  #         touch exec_tmp/starter_win64
+  #         touch exec_tmp/starter_win64_sp
+  #         touch exec_tmp/engine_win64_impi
+  #         touch exec_tmp/engine_win64_impi_sp
+  #         touch exec_tmp/engine_win64
+  #         touch exec_tmp/engine_win64_sp
+  #         cd exec_tmp/
+  #         cd ..
+  #         ls -l exec_tmp/
 
-      - name: Copy all artifact complex structure into flat files in exec
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          echo "List exec_tmp : "
-          find exec_tmp -type f
+  #     - name: Copy all artifact complex structure into flat files in exec
+  #       working-directory: ${{ env.WORKDIR }}
+  #       run: |
+  #         echo "List exec_tmp : "
+  #         find exec_tmp -type f
 
-          # mv exec_tmp/extlib.zip ./
+  #         # mv exec_tmp/extlib.zip ./
 
-          for os in linux64 linuxa64 win64 
-          do
-            mkdir -p exec/${os}
-            cp -p exec_tmp/*${os}* exec/${os}/
-            chmod 755 exec/${os}/*
-          done
+  #         for os in linux64 linuxa64 win64 
+  #         do
+  #           mkdir -p exec/${os}
+  #           cp -p exec_tmp/*${os}* exec/${os}/
+  #           chmod 755 exec/${os}/*
+  #         done
 
-          echo "List exec : "
-          find exec -type f
+  #         echo "List exec : "
+  #         find exec -type f
 
-      # - name: Unzip extlib
-      #   working-directory: ${{ env.WORKDIR }}
-      #   run: |
-      #     unzip extlib.zip
+  #     # - name: Unzip extlib
+  #     #   working-directory: ${{ env.WORKDIR }}
+  #     #   run: |
+  #     #     unzip extlib.zip
 
-      - name: Provide ALL binaries
-        working-directory: ${{ env.WORKDIR }}
-        run: |          
-          # Removed lfs hook (not supported in next action, not neeeded)
-          rm -f .git/hooks/pre-push
+  #     - name: Provide ALL binaries
+  #       working-directory: ${{ env.WORKDIR }}
+  #       run: |          
+  #         # Removed lfs hook (not supported in next action, not neeeded)
+  #         rm -f .git/hooks/pre-push
 
-          # Prepare tree architecture
-          rm -rf todeliver
+  #         # Prepare tree architecture
+  #         rm -rf todeliver
 
-          for os in linux64 linuxa64 win64 
-          do      
-            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
-            # cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
-            # cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+  #         for os in linux64 linuxa64 win64 
+  #         do      
+  #           mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
+  #           # cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
+  #           # cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
-            # Get Intel runtime and some other extras from a dedicated repository
-            if test -d EXTRA/${os}
-            then
-              cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-            fi
+  #           # Get Intel runtime and some other extras from a dedicated repository
+  #           if test -d EXTRA/${os}
+  #           then
+  #             cp -a EXTRA/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+  #           fi
 
-            # Get OpenRadioss gui from Tools repository and inp2rad
-            if test -d ${{ env.TOOLS_OPENRADIOSS_GUI}}
-            then
-              cp -a ${{ env.TOOLS_OPENRADIOSS_GUI}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
-              if test -f ${{ env.TOOLS_INP2RAD}}
-              then
-                cp -a ${{ env.TOOLS_INP2RAD}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/${{ env.OPENRADIOSS_GUI }}/
-              fi            
-            fi
+  #           # Get OpenRadioss gui from Tools repository and inp2rad
+  #           if test -d ${{ env.TOOLS_OPENRADIOSS_GUI}}
+  #           then
+  #             cp -a ${{ env.TOOLS_OPENRADIOSS_GUI}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+  #             if test -f ${{ env.TOOLS_INP2RAD}}
+  #             then
+  #               cp -a ${{ env.TOOLS_INP2RAD}} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/${{ env.OPENRADIOSS_GUI }}/
+  #             fi            
+  #           fi
 
-            # Get some output converters from Tools repository
-            jf rt download ${JF_OPTIONS} "${JF_TOOLS_OUTPUT_CONVERTERS}/${os}/*" todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/ --flat=true
-            chmod 755 todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/*
+  #           # Get some output converters from Tools repository
+  #           jf rt download ${JF_OPTIONS} "${JF_TOOLS_OUTPUT_CONVERTERS}/${os}/*" todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/ --flat=true
+  #           chmod 755 todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/*
 
-            cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+  #           cp -a hm_cfg_files todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-            cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
+  #           cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
 
-            mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-            # cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
+  #           mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
+  #           # cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
 
-            cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
+  #           cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
-            export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
+  #           export OPENRADIOSS_BIN_ARCHIVE="${{ env.OPENRADIOSS_MAINDIR_NAME }}_${os}.zip"
 
-            cd todeliver/${os}
-            # zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
-            cd ..
-            rm -rf ${os}
-            cd ..
-          done 
+  #           cd todeliver/${os}
+  #           # zip -r ../$OPENRADIOSS_BIN_ARCHIVE ${{ env.OPENRADIOSS_MAINDIR_NAME }}
+  #           cd ..
+  #           rm -rf ${os}
+  #           cd ..
+  #         done 
 
       # - name: Set some variables
       #   working-directory: ${{ env.WORKDIR }}
