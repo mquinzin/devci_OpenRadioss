@@ -550,7 +550,6 @@ jobs:
           touch exec_tmp/engine_win64
           touch exec_tmp/engine_win64_sp
           cd exec_tmp/
-          zip extlib.zip engine_linux64_gf engine_linux64_gf_ompi_sp
           cd ..
           ls -l exec_tmp/
 
@@ -560,7 +559,7 @@ jobs:
           echo "List exec_tmp : "
           find exec_tmp -type f
 
-          mv exec_tmp/extlib.zip ./
+          # mv exec_tmp/extlib.zip ./
 
           for os in linux64 linuxa64 win64 
           do
@@ -572,10 +571,10 @@ jobs:
           echo "List exec : "
           find exec -type f
 
-      - name: Unzip extlib
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          unzip extlib.zip
+      # - name: Unzip extlib
+      #   working-directory: ${{ env.WORKDIR }}
+      #   run: |
+      #     unzip extlib.zip
 
       - name: Provide ALL binaries
         working-directory: ${{ env.WORKDIR }}
@@ -589,8 +588,8 @@ jobs:
           for os in linux64 linuxa64 win64 
           do      
             mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec
-            cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
-            cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
+            # cp -a extlib/h3d/lib/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/h3d/lib/${os}/
+            # cp -a extlib/hm_reader/${os} todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/extlib/hm_reader/
 
             # Get Intel runtime and some other extras from a dedicated repository
             if test -d EXTRA/${os}
@@ -617,7 +616,7 @@ jobs:
             cp -a exec/${os}/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/exec/
 
             mkdir -p todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses
-            cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
+            # cp -a extlib/license/* todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/licenses/
 
             cp -a COPYRIGHT.md todeliver/${os}/${{ env.OPENRADIOSS_MAINDIR_NAME }}/
 
