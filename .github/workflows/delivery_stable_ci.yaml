@@ -43,71 +43,71 @@ jobs:
       matrix:
         include:
           ### LINUX64 ###
-          - build: starter_linux64_gf
-            precision: dp
-            os: linux64
-            binary: starter
-            image_name: build-linux64_gf:cos8-ompi411-devts11
-          - build: starter_linux64_gf_sp
-            precision: sp
-            os: linux64
-            binary: starter
-            image_name: build-linux64_gf:cos8-ompi411-devts11
-          - build: engine_linux64_gf_ompi
-            precision: dp
-            os: linux64
-            binary: engine
-            mpi: ompi
-            image_name: build-linux64_gf:cos8-ompi411-devts11
-          - build: engine_linux64_gf_ompi_sp
-            precision: sp
-            os: linux64
-            binary: engine
-            mpi: ompi
-            image_name: build-linux64_gf:cos8-ompi411-devts11
-          - build: engine_linux64_gf
-            precision: dp
-            os: linux64
-            binary: engine
-            image_name: build-linux64_gf:cos8-ompi411-devts11
-          - build: engine_linux64_gf_sp
-            precision: sp
-            os: linux64 
-            binary: engine
-            image_name: build-linux64_gf:cos8-ompi411-devts11
+          # - build: starter_linux64_gf
+          #   precision: dp
+          #   os: linux64
+          #   binary: starter
+          #   image_name: build-linux64_gf:cos8-ompi411-devts11
+          # - build: starter_linux64_gf_sp
+          #   precision: sp
+          #   os: linux64
+          #   binary: starter
+          #   image_name: build-linux64_gf:cos8-ompi411-devts11
+          # - build: engine_linux64_gf_ompi
+          #   precision: dp
+          #   os: linux64
+          #   binary: engine
+          #   mpi: ompi
+          #   image_name: build-linux64_gf:cos8-ompi411-devts11
+          # - build: engine_linux64_gf_ompi_sp
+          #   precision: sp
+          #   os: linux64
+          #   binary: engine
+          #   mpi: ompi
+          #   image_name: build-linux64_gf:cos8-ompi411-devts11
+          # - build: engine_linux64_gf
+          #   precision: dp
+          #   os: linux64
+          #   binary: engine
+          #   image_name: build-linux64_gf:cos8-ompi411-devts11
+          # - build: engine_linux64_gf_sp
+          #   precision: sp
+          #   os: linux64 
+          #   binary: engine
+          #   image_name: build-linux64_gf:cos8-ompi411-devts11
           ### LINUXA64 ###
           - build: starter_linuxa64
             binary: starter
             precision: dp
             os: linuxa64
             image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
-          - build: starter_linuxa64_sp
-            binary: starter
-            precision: sp
-            os: linuxa64
-            image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
-          - build: engine_linuxa64
-            binary: engine
-            precision: dp
-            os: linuxa64
-            image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
-          - build: engine_linuxa64_sp
-            binary: engine
-            precision: sp
-            os: linuxa64
-            image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
-          - build: engine_linuxa64_ompi
-            binary: engine
-            precision: dp
-            os: linuxa64
-            mpi: ompi
-            image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
-          - build: engine_linuxa64_ompi_sp
-            binary: engine
-            precision: sp
-            os: linuxa64
-            mpi: ompi
-            image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: starter_linuxa64_sp
+          #   binary: starter
+          #   precision: sp
+          #   os: linuxa64
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64
+          #   binary: engine
+          #   precision: dp
+          #   os: linuxa64
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64_sp
+          #   binary: engine
+          #   precision: sp
+          #   os: linuxa64
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64_ompi
+          #   binary: engine
+          #   precision: dp
+          #   os: linuxa64
+          #   mpi: ompi
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
+          # - build: engine_linuxa64_ompi_sp
+          #   binary: engine
+          #   precision: sp
+          #   os: linuxa64
+          #   mpi: ompi
+          #   image_name: linuxa64-rl8.9-bld:armfl24.04-ompi4.1.2-ts11
 
     container: 
       image: fr-qafactorydev.europe.altair.com/${{ matrix.image_name }}
