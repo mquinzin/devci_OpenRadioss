@@ -20,69 +20,69 @@ env:
 jobs:
 
 
-  # build:
-  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
-  #   # concurrency: 
-  #   #   group: ${{ github.ref_name }}
-  #   #   cancel-in-progress: true
+  build:
+    if: ${{ github.repository_owner == 'OpenRadioss' }}
+    # concurrency: 
+    #   group: ${{ github.ref_name }}
+    #   cancel-in-progress: true
 
-  #   # DEV ONLY # runs-on: ["build","dev_devci"]
-  #   # runs-on: ["build","developer_ci"]
-  #   runs-on: ["build","dev_devci"]
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
+    # DEV ONLY # runs-on: ["build","dev_devci"]
+    # runs-on: ["build","developer_ci"]
+    runs-on: ["build","dev_devci"]
+    container: 
+      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
 
-  #   env:
-  #     BUILD_NB_THREAD: 2
+    env:
+      BUILD_NB_THREAD: 2
 
-  #   strategy:
-  #     # If one job fails othere are canceled
-  #     fail-fast: true
-  #     matrix:
-  #       include:
-  #         - build: starter_linux64_gf
-  #           precision: dp
-  #           os: linux64
-  #           binary: starter
+    strategy:
+      # If one job fails othere are canceled
+      fail-fast: true
+      matrix:
+        include:
+          - build: starter_linux64_gf
+            precision: dp
+            os: linux64
+            binary: starter
 
-  #         # - build: starter_linux64_gf_sp 
-  #         #   precision: sp
-  #         #   os: linux64
-  #         #   binary: starter
+          - build: starter_linux64_gf_sp 
+            precision: sp
+            os: linux64
+            binary: starter
 
-  #         # - build: engine_linux64_gf_ompi
-  #         #   precision: dp
-  #         #   os: linux64
-  #         #   binary: engine
-  #         #   mpi: ompi
+          - build: engine_linux64_gf_ompi
+            precision: dp
+            os: linux64
+            binary: engine
+            mpi: ompi
 
-  #         # - build: engine_linux64_gf_ompi_sp
-  #         #   precision: sp
-  #         #   os: linux64 
-  #         #   binary: engine
-  #         #   mpi: ompi
+          - build: engine_linux64_gf_ompi_sp
+            precision: sp
+            os: linux64 
+            binary: engine
+            mpi: ompi
 
-  #         # - build: engine_linux64_gf
-  #         #   precision: dp
-  #         #   os: linux64
-  #         #   binary: engine
+          - build: engine_linux64_gf
+            precision: dp
+            os: linux64
+            binary: engine
 
-  #         # - build: engine_linux64_gf_sp
-  #         #   precision: sp
-  #         #   os: linux64 
-  #         #   binary: engine
+          - build: engine_linux64_gf_sp
+            precision: sp
+            os: linux64 
+            binary: engine
 
-  #   steps:
+    steps:
 
-  #     - name: Clean local exe dir
-  #       run: |
-  #         rm -rf exec
-  #         md5sum exec/* || echo "Nothing in exec/" 
+      - name: Clean local exe dir
+        run: |
+          rm -rf exec
+          md5sum exec/* || echo "Nothing in exec/" 
 
   #     # # Get last git modifications, WS is not persistent here
   #     # - uses: actions/checkout@v4
@@ -216,48 +216,48 @@ jobs:
 
           eval $cmd
 
-  # qa:
-  #   needs: build
-  #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev_devci"]
-  #   # runs-on: ["qa_${{ matrix.os }}","developer_ci"]
-  #   runs-on: ["qa_${{ matrix.os }}","dev_devci"]
+  qa:
+    needs: build
+    # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev_devci"]
+    # runs-on: ["qa_${{ matrix.os }}","developer_ci"]
+    runs-on: ["qa_${{ matrix.os }}","dev_devci"]
 
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:cos8-ompi411
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
+    container: 
+      image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:cos8-ompi411
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
 
-  #   env:
-  #     hm_reader_extlib: ../../extlib/hm_reader
-  #     hm_reader_cfgfiles: ../../hm_cfg_files
-  #     homeuser: /home/adminqa
-  #     mpi: ompi
-  #     # DEV ONLY # QA_NB_PROC: 2
-  #     QA_NB_PROC: 4
-  #     QA_NB_THREAD: 2
+    env:
+      hm_reader_extlib: ../../extlib/hm_reader
+      hm_reader_cfgfiles: ../../hm_cfg_files
+      homeuser: /home/adminqa
+      mpi: ompi
+      # DEV ONLY # QA_NB_PROC: 2
+      QA_NB_PROC: 4
+      QA_NB_THREAD: 2
       
-  #   strategy:
-  #     # If one job fails othere are canceled
-  #     fail-fast: false
-  #     matrix:
-  #       os: [linux64]
-  #       # precision: [dp,sp]
-  #       precision: [dp]
+    strategy:
+      # If one job fails othere are canceled
+      fail-fast: false
+      matrix:
+        os: [linux64]
+        # precision: [dp,sp]
+        precision: [dp]
 
-  #   steps:
+    steps:
 
-  #     # Get git related to the commit
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         lfs: 'true'
-  #         ref: refs/pull/${{ github.event.number }}/merge
+      # Get git related to the commit
+      - uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+          ref: refs/pull/${{ github.event.number }}/merge
 
-  #     - name: Clean local exe dir
-  #       run: |
-  #         rm -rf exec
+      - name: Clean local exe dir
+        run: |
+          rm -rf exec
 
       # # Download artifacts (since V4 we must download all needed artifacts, we could do it using wildcard but it doesn't work ... see https://github.com/actions/download-artifact/issues/337)
       # # Using hard name waiting for this issue to be fixed
