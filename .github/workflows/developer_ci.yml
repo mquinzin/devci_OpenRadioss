@@ -184,7 +184,7 @@ jobs:
           echo "========================================="
           cat /home/adminqa/.bashrc
           echo "========================================="
-        
+          gcc -v
           cd scripts/gcc_plugin
           sh build.sh
           ls -l
