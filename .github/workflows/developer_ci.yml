@@ -187,6 +187,8 @@ jobs:
           echo "========================================="
           cat /home/adminqa/.bashrc
           echo "========================================="
+          cd scripts/gcc_plugin
+          sh build.sh          
           cd -
 
       # - name: Running build
