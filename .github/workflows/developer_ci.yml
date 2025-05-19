@@ -135,7 +135,7 @@ jobs:
 
   code-analysis:
     # We execute after all builds (in // with QA)
-    needs: build
+    # needs: build
     if: ${{ github.repository_owner == 'OpenRadioss' }}
 
     # DEV ONLY # runs-on: ["build","dev_devci"]
