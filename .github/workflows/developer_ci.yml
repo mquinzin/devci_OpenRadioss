@@ -180,6 +180,11 @@ jobs:
 
       - name: Generate Fortran Signatures
         run: |
+          source /home/adminqa/.bashrc
+          echo "========================================="
+          cat /home/adminqa/.bashrc
+          echo "========================================="
+        
           cd scripts/gcc_plugin
           sh build.sh
           ls -l
