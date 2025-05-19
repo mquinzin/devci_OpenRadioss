@@ -146,6 +146,7 @@ jobs:
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       volumes: 
         - /etc/localtime:/etc/localtime:ro
+      options: --pull always
 
     env:
       BUILD_NB_THREAD: 2
