@@ -134,6 +134,8 @@ jobs:
       #   if: ${{ matrix.build == 'starter_linux64_gf' }}
 
   code-analysis:
+    # We execute after all builds (in // with QA)
+    needs: build
     if: ${{ github.repository_owner == 'OpenRadioss' }}
 
     # DEV ONLY # runs-on: ["build","dev_devci"]
@@ -146,7 +148,7 @@ jobs:
         password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
       volumes: 
         - /etc/localtime:/etc/localtime:ro
-      options: --pull always
+      # options: --pull always
 
     env:
       BUILD_NB_THREAD: 2
@@ -185,10 +187,6 @@ jobs:
           echo "========================================="
           cat /home/adminqa/.bashrc
           echo "========================================="
-          gcc -v
-          cd scripts/gcc_plugin
-          sh build.sh
-          ls -l
           cd -
 
       # - name: Running build
