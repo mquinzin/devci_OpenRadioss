@@ -1,0 +1,25 @@
+# Copyright (C) 2025 Altair Engineering Inc. ("Holder")
+# Model is licensed by Holder under CC BY-NC 4.0
+# (https://creativecommons.org/licenses/by-nc/4.0/legalcode).
+# Copyright (C) 2024 Altair Engineering Inc. ("Holder")
+# Model is licensed by Holder under CC BY-NC 4.0
+# (https://creativecommons.org/licenses/by-nc/4.0/legalcode).
+# Copyright (C) 2022 Altair Engineering Inc. ("Holder")
+# Model is licensed by Holder under CC BY-NC 4.0
+# (https://creativecommons.org/licenses/by-nc/4.0/legalcode).
+/VERS/100
+/TITLE
+TEST DE DETENTE
+/RUN/EOSPUFFDET3DCU/1
+1200.
+/DTIX
+ .5   .5
+/ANIM/ELEM/P
+/ANIM/ELEM/DENS
+/ANIM/ELEM/ENER
+/ANIM/DT
+0. 5000.
+/TFILE
+.5
+/PRINT/-10
+/MON/ON

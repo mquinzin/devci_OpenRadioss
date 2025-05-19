@@ -1,0 +1,345 @@
+ HYPE_SUB_0001.out
+************************************************************************
+**                                                                    **
+**                                                                    **
+**                         OpenRadioss Engine                         **
+**                                                                    **
+**            Non-linear Finite Element Analysis Software             **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+**                    Linux 64 bits, GNU compiler                     **
+**                      Double Precision Version                      **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+************************************************************************
+** OpenRadioss Software                                               **
+** COPYRIGHT (C) 1986-2025 Altair Engineering, Inc.                   **
+** Licensed under GNU Affero General Public License.                  **
+** See License file.                                                  **
+************************************************************************
+ 
+ NUMBER OF SPMD DOMAINS           1
+ NUMBER OF THREADS PER DOMAIN     1
+ NUMBER OF HMPP PROCESSES         1
+  
+ COMPUTATION HARDWARE DESCRIPTION
+  
+ HOSTNAME     CPU TYPE, FREQUENCY AND MEMORY
+ fr-lap281-1.europe.altair.com   Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (x86_64), 2592 MHz,  16016 MB RAM,      0 MB swap
+  
+ STACKSIZE  . . . . . . . . . . . . . . . . . . . . 16 MB
+ THREAD STACKSIZE . . . . . . . . . . . . . . . . . 400 mB
+ 
+************************************************************************
+
+
+ HYPE_SUBD01HYP2V21  SPHERE IMPACT V=2500 M/S                                    
+
+
+ FINAL TIME . . . . . . . . . . . . . . . . . . .   1.001000    
+
+ TIME INTERVAL FOR TIME HISTORY PLOTS . . . . . .  0.1000000    
+
+ TIME STEP SCALE FACTOR . . . . . . . . . . . . .  0.6700000    
+
+ MINIMUM TIME STEP  . . . . . . . . . . . . . . .   0.000000    
+
+
+ NODAL TIME STEP SCALE FACTOR,  . . . . . . . . .  0.6700000    
+ NODAL MINIMUM TIME STEP. . . . . . . . . . . . .  0.2000000E-03
+ MIN. TIME FLAG . . . . . . . . . . . . . . . . .     8
+    1:STOP. . . . . . . . . . . . . . . . . . . . 
+    3:INCREASE MASS, ORIGINAL FORMULATION . . . . 
+    8:INCREASE MASS, IMPROVED FORMULATION . . . . 
+
+
+ BRICK TIME STEP SCALE FACTOR . . . . . . . . . .  0.6700000    
+ BRICK MINIMUM TIME STEP. . . . . . . . . . . . .   0.000000    
+ MIN. TIME STEP FLAG (1:STOP RUN, 2:DELETE BRICK)     0
+
+ QUAD TIME STEP SCALE FACTOR. . . . . . . . . . .  0.6700000    
+ QUAD MINIMUM TIME STEP . . . . . . . . . . . . .   0.000000    
+ MIN. TIME STEP FLAG (1:STOP RUN, 2:DELETE QUAD).     0
+
+ SHELL TIME STEP SCALE FACTOR . . . . . . . . . .  0.6700000    
+ SHELL MINIMUM TIME STEP. . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE, 3:SMALL STRAIN)    0
+
+ TRUSS TIME STEP SCALE FACTOR . . . . . . . . . .  0.6700000    
+ TRUSS MINIMUM TIME STEP. . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE). . . . . . . .     0
+
+ BEAM TIME STEP SCALE FACTOR. . . . . . . . . . .  0.6700000    
+ BEAM MINIMUM TIME STEP . . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE). . . . . . . .     0
+
+ SPRING TIME STEP SCALE FACTOR. . . . . . . . . .  0.6700000    
+ SPRING MINIMUM TIME STEP . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE). . . . . . . .     0
+
+ AIRBAG TIME STEP SCALE FACTOR. . . . . . . . . .  0.6700000    
+ AIRBAG MINIMUM TIME STEP . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP). . . . . . . . . . . . .     0
+
+ CONTACT TIME STEP SCALE FACTOR . . . . . . . . .  0.6700000    
+ CONTACT MINIMUM TIME STEP. . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG(1:STOP, 2:REMOVE NODE FROM INTERF)    0
+
+ PRINTOUT CYCLE FREQUENCY . . . . . . . . . . . .    -1
+
+ RESTART CYCLE FREQUENCY. . . . . . . . . . . . .   10000000
+
+ MAXIMUM RESTART WRITE BEFORE OVERWRITE . . . . .     0
+
+ INVERS: INPUT DECK VERSION . . . . . . . . . . .   100
+ ITTYP : FLAG FOR TYPE OF T-FILE. . . . . . . . .     4
+
+
+ TIME FOR FIRST ANIMATION-FILE PLOT . . . . . . .   0.000000    
+ TIME INTERVAL FOR ANIMATION-FILE PLOTS . . . . .  0.2000000    
+ TIME TO STOP ANIMATION-FILE PLOTS. . . . . . . .  0.1000000E+21
+ SENSOR FOR ANIMATION-FILE PLOTS. . . . . . . . .          0
+ TIME INTERVAL FOR SENSOR ANIMATION-FILE PLOTS. .   0.000000    
+
+ VARIABLE SAVED ON ANIMATION FILES (1: YES) :
+      PLASTIC STRAIN. . . . . .     1
+      DENSITY     (SOLID ONLY).     0
+      SPECIFIC ENERGY . . . . .     1
+      HOURGLASS ENERGY. . . . .     1
+      TEMPERATURE (SOLID ONLY).     0
+      THICKNESS   (SHELL ONLY).     0
+      PRESSURE    (SOLID ONLY).     0
+      VON MISES . . . . . . . .     1
+      TURBULENT ENERGY (FLUID).     0
+      TURBULENT VISCOSITY(FLUID)    0
+      VORTICITY (FLUID) . . . .     0
+ NODAL VALUES SAVED ON ANIMATION FILES (1: YES) :
+      PRESSURE. . . . . . . . .     0
+      DENSITY . . . . . . . . .     0
+      TEMPERATURE . . . . . . .     0
+ VECTOR SAVED ON ANIMATION FILES (1: YES) :
+      VELOCITY VECTOR . . . . .     1
+      DISPLACEMENT VECTOR . . .     0
+      ACCELERATION VECTOR . . .     0
+      CONTACT FORCES. . . . . .     1
+      INTERNAL FORCES . . . . .     0
+      EXTERNAL FORCES . . . . .     0
+      SECTION RBY RWALL FORCES.     1
+      ROTATIONAL VELOCITY VECTOR    0
+      CONTACT PRESSURE (VECTORS)    0
+ SHELL TENSOR SAVED ON ANIMATION FILES (1: YES) :
+      MEMBRANE STRESS . . . . .     0
+      BENDING STRESS(MOMENT/T^2)    0
+      UPPER LAYER STRESS. . . .     0
+      LOWER LAYER STRESS. . . .     0
+      MEMBRANE STRAIN . . . . .     0
+      CURVATURE . . . . . . . .     0
+      UPPER LAYER STRAIN. . . .     0
+      LOWER LAYER STRAIN. . . .     0
+ NODAL MASS SAVED ON ANIMATION FILES (1: YES) :    1
+ KEEP DELETED ELEMENT (1: YES) :    0
+
+
+ INITIAL TIME STEP. . . . . . . . . . . . . . . .   0.000000    
+ MAXIMUM TIME STEP. . . . . . . . . . . . . . . .  0.1000000E+31
+
+ PARALLEL ARITHMETIC ON
+ NUMBER OF INTERFACES TO BE ELIMINATED. . . . . .        0
+
+ NUMBER OF SOLID  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF QUAD   ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF SHELL  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF TRUSS  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF BEAM   ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF SPRING ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF SH_3N  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF  SPH PARTICLES BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF RIGID LINKS. . . . . . . . . . . . . .        0
+
+ NUMBER OF NEW BOUNDARY CONDITIONS. . . . . . . .        0
+
+ REMOVE INTER.7 SEGMENT AFTER SHELL FAILURE(1 YES)   -1
+
+ 18/04/2025
+   CYCLE    TIME      TIME-STEP  ELEMENT          ERROR  I-ENERGY    K-ENERGY T  K-ENERGY R  EXT-WORK     MAS.ERR     TOTAL MASS  MASS ADDED
+       0   0.000      0.2939E-01 NODE         208   0.0%   0.000      0.2787       0.000       0.000       0.000       51.21       0.000    
+     ANIMATION FILE: HYPE_SUBA001 WRITTEN
+     OUTPUT FILE: HYPE_SUB_0001.sty WRITTEN
+       1  0.2939E-01  0.2939E-01 NODE         208  -0.0%  0.2453E-30  0.2786       0.000       0.000       0.000       51.21       0.000    
+       2  0.5878E-01  0.1994E-01 NODE           1  -0.0%  0.1302E-04  0.2786       0.000       0.000       0.000       51.21       0.000    
+       3  0.7872E-01  0.1651E-01 NODE           1  -0.1%  0.4737E-04  0.2785       0.000       0.000       0.000       51.21       0.000    
+       4  0.9523E-01  0.1660E-01 NODE           1  -0.1%  0.8023E-04  0.2784       0.000       0.000       0.000       51.21       0.000    
+       5  0.1118      0.1641E-01 NODE           1  -0.1%  0.1231E-03  0.2783       0.000       0.000       0.000       51.21       0.000    
+       6  0.1282      0.1662E-01 NODE           1  -0.1%  0.1772E-03  0.2781       0.000       0.000       0.000       51.21       0.000    
+       7  0.1449      0.1694E-01 NODE           2  -0.2%  0.2434E-03  0.2780       0.000       0.000       0.000       51.21       0.000    
+       8  0.1618      0.1682E-01 NODE           2  -0.2%  0.3228E-03  0.2779       0.000       0.000       0.000       51.21       0.000    
+       9  0.1786      0.1686E-01 NODE          15  -0.2%  0.4141E-03  0.2777       0.000       0.000       0.000       51.21       0.000    
+      10  0.1955      0.1656E-01 NODE          15  -0.2%  0.5173E-03  0.2776       0.000       0.000       0.000       51.21       0.000    
+      11  0.2120      0.1648E-01 NODE          15  -0.2%  0.6302E-03  0.2774       0.000       0.000       0.000       51.21       0.000    
+     ANIMATION FILE: HYPE_SUBA002 WRITTEN
+     OUTPUT FILE: HYPE_SUB_0002.sty WRITTEN
+      12  0.2285      0.1641E-01 NODE           1  -0.3%  0.7544E-03  0.2772       0.000       0.000       0.000       51.21       0.000    
+      13  0.2449      0.1633E-01 NODE           1  -0.3%  0.8876E-03  0.2770       0.000       0.000       0.000       51.21       0.000    
+      14  0.2613      0.1586E-01 NODE          22  -0.3%  0.1027E-02  0.2768       0.000       0.000       0.000       51.21       0.000    
+      15  0.2771      0.1559E-01 NODE          22  -0.3%  0.1167E-02  0.2767       0.000       0.000       0.000       51.21       0.000    
+      16  0.2927      0.1546E-01 NODE          22  -0.3%  0.1306E-02  0.2765       0.000       0.000       0.000       51.21       0.000    
+      17  0.3082      0.1541E-01 NODE          22  -0.3%  0.1442E-02  0.2763       0.000       0.000       0.000       51.21       0.000    
+      18  0.3236      0.1519E-01 NODE          22  -0.3%  0.1570E-02  0.2762       0.000       0.000       0.000       51.21       0.000    
+      19  0.3388      0.1496E-01 NODE          22  -0.4%  0.1687E-02  0.2760       0.000       0.000       0.000       51.21       0.000    
+      20  0.3537      0.1480E-01 NODE          22  -0.4%  0.1789E-02  0.2758       0.000       0.000       0.000       51.21       0.000    
+      21  0.3685      0.1463E-01 NODE          22  -0.4%  0.1879E-02  0.2757       0.000       0.000       0.000       51.21       0.000    
+      22  0.3832      0.1441E-01 NODE          22  -0.4%  0.1961E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      23  0.3976      0.1416E-01 NODE          22  -0.4%  0.2037E-02  0.2755       0.000       0.000       0.000       51.21       0.000    
+      24  0.4117      0.1385E-01 NODE          22  -0.4%  0.2107E-02  0.2754       0.000       0.000       0.000       51.21       0.000    
+     ANIMATION FILE: HYPE_SUBA003 WRITTEN
+     OUTPUT FILE: HYPE_SUB_0003.sty WRITTEN
+      25  0.4256      0.1347E-01 NODE          22  -0.4%  0.2172E-02  0.2753       0.000       0.000       0.000       51.21       0.000    
+      26  0.4390      0.1318E-01 NODE          22  -0.4%  0.2231E-02  0.2752       0.000       0.000       0.000       51.21       0.000    
+      27  0.4522      0.1303E-01 NODE          22  -0.5%  0.2281E-02  0.2751       0.000       0.000       0.000       51.21       0.000    
+      28  0.4653      0.1297E-01 NODE          22  -0.5%  0.2323E-02  0.2750       0.000       0.000       0.000       51.21       0.000    
+      29  0.4782      0.1296E-01 NODE          22  -0.5%  0.2359E-02  0.2750       0.000       0.000       0.000       51.21       0.000    
+ SENSOR (TIME) NUMBER          2 ACTIVATED AT TIME  5.00000E-01
+ SENSOR (TIME) NUMBER          5 ACTIVATED AT TIME  5.00000E-01
+ SENSOR NUMBER          3 ACTIVATED AT TIME  5.00000E-01
+      30  0.4912      0.1293E-01 NODE          22  -0.5%  0.2393E-02  0.2749       0.000       0.000       0.000       51.21       0.000    
+ QUAD DEACTIVATION:       904 AT TIME:  0.50411    
+ QUAD DEACTIVATION:       909 AT TIME:  0.50411    
+ QUAD DEACTIVATION:       914 AT TIME:  0.50411    
+      31  0.5041      0.1263E-01 NODE          29  -0.6%  0.2263E-02  0.2748       0.000       0.000       0.000       51.21       0.000    
+      32  0.5167      0.1245E-01 NODE          29  -0.6%  0.2284E-02  0.2747       0.000       0.000       0.000       51.21       0.000    
+      33  0.5292      0.1240E-01 NODE          29  -0.6%  0.2302E-02  0.2746       0.000       0.000       0.000       51.21       0.000    
+      34  0.5416      0.1244E-01 NODE          29  -0.7%  0.2313E-02  0.2745       0.000       0.000       0.000       51.21       0.000    
+      35  0.5540      0.1239E-01 NODE          29  -0.7%  0.2313E-02  0.2745       0.000       0.000       0.000       51.21       0.000    
+      36  0.5664      0.1235E-01 NODE          29  -0.7%  0.2296E-02  0.2744       0.000       0.000       0.000       51.21       0.000    
+      37  0.5788      0.1229E-01 NODE          29  -0.7%  0.2263E-02  0.2744       0.000       0.000       0.000       51.21       0.000    
+      38  0.5911      0.1210E-01 NODE          22  -0.7%  0.2216E-02  0.2745       0.000       0.000       0.000       51.21       0.000    
+      39  0.6032      0.1194E-01 NODE          22  -0.7%  0.2163E-02  0.2745       0.000       0.000       0.000       51.21       0.000    
+     ANIMATION FILE: HYPE_SUBA004 WRITTEN
+     OUTPUT FILE: HYPE_SUB_0004.sty WRITTEN
+      40  0.6151      0.1188E-01 NODE          22  -0.7%  0.2112E-02  0.2745       0.000       0.000       0.000       51.21       0.000    
+      41  0.6270      0.1184E-01 NODE          29  -0.7%  0.2071E-02  0.2746       0.000       0.000       0.000       51.21       0.000    
+      42  0.6388      0.1172E-01 NODE          29  -0.7%  0.2038E-02  0.2746       0.000       0.000       0.000       51.21       0.000    
+      43  0.6505      0.1156E-01 NODE          29  -0.7%  0.2013E-02  0.2747       0.000       0.000       0.000       51.21       0.000    
+      44  0.6621      0.1140E-01 NODE          29  -0.7%  0.1989E-02  0.2747       0.000       0.000       0.000       51.21       0.000    
+      45  0.6735      0.1130E-01 NODE          29  -0.7%  0.1966E-02  0.2748       0.000       0.000       0.000       51.21       0.000    
+      46  0.6848      0.1128E-01 NODE          29  -0.7%  0.1943E-02  0.2749       0.000       0.000       0.000       51.21       0.000    
+      47  0.6961      0.1086E-01 NODE          43  -0.7%  0.1920E-02  0.2749       0.000       0.000       0.000       51.21       0.000    
+      48  0.7069      0.1059E-01 NODE          43  -0.6%  0.1892E-02  0.2750       0.000       0.000       0.000       51.21       0.000    
+      49  0.7175      0.1033E-01 NODE          43  -0.6%  0.1861E-02  0.2751       0.000       0.000       0.000       51.21       0.000    
+      50  0.7279      0.1001E-01 NODE          43  -0.6%  0.1828E-02  0.2752       0.000       0.000       0.000       51.21       0.000    
+      51  0.7379      0.9987E-02 NODE          43  -0.6%  0.1796E-02  0.2752       0.000       0.000       0.000       51.21       0.000    
+      52  0.7479      0.1021E-01 NODE          43  -0.6%  0.1769E-02  0.2753       0.000       0.000       0.000       51.21       0.000    
+      53  0.7581      0.1047E-01 NODE          36  -0.6%  0.1747E-02  0.2753       0.000       0.000       0.000       51.21       0.000    
+      54  0.7685      0.1046E-01 NODE          36  -0.6%  0.1727E-02  0.2753       0.000       0.000       0.000       51.21       0.000    
+   CYCLE    TIME      TIME-STEP  ELEMENT          ERROR  I-ENERGY    K-ENERGY T  K-ENERGY R  EXT-WORK     MAS.ERR     TOTAL MASS  MASS ADDED
+      55  0.7790      0.1052E-01 NODE          36  -0.6%  0.1708E-02  0.2754       0.000       0.000       0.000       51.21       0.000    
+      56  0.7895      0.1056E-01 NODE          36  -0.6%  0.1689E-02  0.2754       0.000       0.000       0.000       51.21       0.000    
+      57  0.8001      0.1051E-01 NODE          36  -0.6%  0.1669E-02  0.2754       0.000       0.000       0.000       51.21       0.000    
+     ANIMATION FILE: HYPE_SUBA005 WRITTEN
+     OUTPUT FILE: HYPE_SUB_0005.sty WRITTEN
+      58  0.8106      0.9849E-02 NODE          43  -0.6%  0.1652E-02  0.2755       0.000       0.000       0.000       51.21       0.000    
+      59  0.8204      0.9340E-02 NODE          43  -0.6%  0.1640E-02  0.2755       0.000       0.000       0.000       51.21       0.000    
+      60  0.8298      0.8763E-02 NODE          43  -0.5%  0.1632E-02  0.2755       0.000       0.000       0.000       51.21       0.000    
+      61  0.8385      0.8399E-02 NODE          43  -0.5%  0.1626E-02  0.2755       0.000       0.000       0.000       51.21       0.000    
+      62  0.8469      0.8259E-02 NODE          43  -0.5%  0.1621E-02  0.2755       0.000       0.000       0.000       51.21       0.000    
+      63  0.8552      0.8276E-02 NODE          43  -0.5%  0.1615E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      64  0.8635      0.8341E-02 NODE          43  -0.5%  0.1605E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      65  0.8718      0.8334E-02 NODE          43  -0.5%  0.1594E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      66  0.8802      0.8328E-02 NODE          43  -0.5%  0.1582E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      67  0.8885      0.8383E-02 NODE          43  -0.5%  0.1571E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      68  0.8969      0.8474E-02 NODE          43  -0.5%  0.1562E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      69  0.9053      0.8563E-02 NODE          43  -0.5%  0.1555E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      70  0.9139      0.8607E-02 NODE          43  -0.5%  0.1550E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      71  0.9225      0.8567E-02 NODE          43  -0.5%  0.1547E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      72  0.9311      0.8409E-02 NODE          43  -0.5%  0.1545E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      73  0.9395      0.7699E-02 NODE          43  -0.5%  0.1545E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      74  0.9472      0.7165E-02 NODE          43  -0.5%  0.1549E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      75  0.9543      0.6875E-02 NODE          43  -0.5%  0.1556E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      76  0.9612      0.6768E-02 NODE          43  -0.5%  0.1563E-02  0.2756       0.000       0.000       0.000       51.21       0.000    
+      77  0.9680      0.6798E-02 NODE          43  -0.5%  0.1570E-02  0.2757       0.000       0.000       0.000       51.21       0.000    
+      78  0.9748      0.6900E-02 NODE          43  -0.5%  0.1576E-02  0.2757       0.000       0.000       0.000       51.21       0.000    
+      79  0.9817      0.6991E-02 NODE          43  -0.5%  0.1581E-02  0.2757       0.000       0.000       0.000       51.21       0.000    
+      80  0.9887      0.6986E-02 NODE          43  -0.5%  0.1583E-02  0.2757       0.000       0.000       0.000       51.21       0.000    
+      81  0.9957      0.7027E-02 NODE          43  -0.5%  0.1585E-02  0.2757       0.000       0.000       0.000       51.21       0.000    
+
+     RESTART FILES: HYPE_SUB_0001_[0001-0001].rst WRITTEN
+     -------------
+
+  
+                           ** CPU USER TIME **
+  
+  
+                        ** SUMMARY **
+  
+ #PROC  CONTSORT  CONTFOR   ELEMENT   KINCOND   INTEG     IO        T0        ASM       RESOL    
+   1   .2682E-02 .2361E-03 .2209E-01 .9410E-03 .1344E-02 .4994E-01 .9600E-03 .3242E-02 .8666E-01
+  
+ 
+                   ** CUMULATIVE CPU TIME SUMMARY **
+  
+ CONTACT SORTING.............: .2682E-02     3.09 % 
+ CONTACT FORCES..............: .2361E-03     0.27 % 
+ ELEMENT FORCES..............: .2209E-01    25.49 % 
+ KINEMATIC COND..............: .9410E-03     1.09 % 
+ INTEGRATION.................: .1344E-02     1.55 % 
+ ASSEMBLING..................: .3242E-02     3.74 % 
+ OTHERS (including I/O)......: .5612E-01    64.76 % 
+ TOTAL.......................: .8666E-01   100.00 % 
+  
+  
+                           ** ELAPSED TIME **
+  
+  
+                        ** SUMMARY **
+  
+ #PROC  CONTSORT  CONTFOR   ELEMENT   KINCOND   INTEG     IO        T0        ASM       RESOL    
+   1   .3664E-02 .3965E-03 .2690E-01 .1247E-02 .1821E-02 .6178E-01 .1279E-02 .3928E-02 .1080E+00
+  
+                   ** MEMORY USAGE STATISTICS **
+  
+ TOTAL MEMORY USED .........................:       37 MB
+ MAXIMUM MEMORY PER PROCESSOR...............:       37 MB
+ MINIMUM MEMORY PER PROCESSOR...............:       37 MB
+ AVERAGE MEMORY PER PROCESSOR...............:       37 MB
+  
+                   ** DISK USAGE STATISTICS **
+  
+ TOTAL DISK SPACE USED .....................:          0 MB
+ ANIMATION/H3D/TH/OUTP SIZE ................:          0 MB
+ RESTART FILE SIZE .........................:          0 MB
+  
+                   ** COMPUTE TIME INFORMATION **
+                        ** CURRENT ENGINE **
+  
+ EXECUTION STARTED .........................:      2025/04/18  11:53:06
+ EXECUTION COMPLETED .......................:      2025/04/18  11:53:06
+  
+ ELAPSED TIME     =          0.13 s
+                          0:00:00
+
+
+
+     NORMAL TERMINATION      
+
+
+
+     TOTAL NUMBER OF CYCLES  :      82
+
+  
+                   ** COMPUTE RUNTIME INFORMATION SUMMARY **
+  
+        STARTER RUNTIME =          0.58s (00:00:00)
+ # 001   ENGINE RUNTIME =          0.13s (00:00:00)
+ ------------------------------ 
+ STARTER+ENGINE RUNTIME =          0.71s (00:00:00)
+  
