@@ -81,7 +81,13 @@ jobs:
           echo "GITHUB_REF_NAME=${{ github.ref_name }}"
           echo "GITHUB_BASE_REF=${{ github.base_ref }}"
           echo "GITHUB_SHA=${{ github.sha }}"
-          echo "GITHUB_HEAD_SHA=${{ github.event.pull_request.head.sha }}"
+          if [ -n "${{ github.event.pull_request.head.sha }}" ]
+          then
+            GITHUB_HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            GITHUB_HEAD_SHA="${{ github.sha }}"
+          fi
+          echo "GITHUB_HEAD_SHA=${GITHUB_HEAD_SHA}" 
 
       # Set the working dir suffixed with branch name
       - name: Set workdir 
