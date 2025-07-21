@@ -74,6 +74,14 @@ jobs:
 
     steps:
 
+      - name: Test
+        run: |
+          echo "WORKDIR=${{ env.WORKDIR }}"
+          echo "GITHUB_REF_NAME=${{ github.ref_name }}"
+          echo "GITHUB_BASE_REF=${{ github.base_ref }}"
+          echo "GITHUB_SHA=${{ github.sha }}"
+          echo "GITHUB_HEAD_SHA=${{ github.event.pull_request.head.sha }}"
+
       # Set the working dir suffixed with branch name
       - name: Set workdir 
         run: |
@@ -84,14 +92,6 @@ jobs:
             echo "WORKDIR=${{github.base_ref}}" >> $GITHUB_ENV
           fi
 
-
-      - name: Test
-        run: |
-          echo "WORKDIR=${{ env.WORKDIR }}"
-          echo "GITHUB_REF_NAME=${{ github.ref_name }}"
-          echo "GITHUB_BASE_REF=${{ github.base_ref }}"
-          echo "GITHUB_SHA=${{ github.sha }}"
-          echo "GITHUB_HEAD_SHA=${{ github.event.pull_request.head.sha }}"
 
   #     - name: Create branch oriented WS directory & integration WS
   #       run: |
