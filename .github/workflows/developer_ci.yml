@@ -239,6 +239,7 @@ jobs:
 
       - name: Test executors presence
         run: |
+          echo "Testing environment"
           hostname
           ip a
           ping -c 3 google.com || echo "No internet"

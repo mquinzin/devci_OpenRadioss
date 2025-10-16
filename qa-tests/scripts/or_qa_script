@@ -31,7 +31,7 @@ $debug = 0 ;
 $prog_name = $0 ;
 $prog_name =~ s/.*\/// ;
 
-
+print "This is my modif\n";
 # open(my $trace_fh,">>/tmp/mytrace.log");
 # print $trace_fh "\n\n\n#####################################################################\n";
 # print $trace_fh "       STARTING at ".localtime."\n";
