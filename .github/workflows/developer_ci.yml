@@ -13,92 +13,78 @@ on:
 env:
   QA_TIMEOUT_PER_TEST: 150
   # The commit of the PR to embed it in the build tag
-  GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  RADIOSS_SHA_HEADER: ${{ github.event.pull_request.head.sha }}
 
 jobs:
-  build:
-    if: ${{ github.repository_owner == 'OpenRadioss' }}
-    # concurrency: 
-    #   group: ${{ github.ref_name }}
-    #   cancel-in-progress: true
 
-    # DEV ONLY # runs-on: ["build","dev_devci"]
-    runs-on: ["build","dev_devci"]
-    # runs-on: ["build","developer_ci"]
-    container: 
-      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
-      options: --user 10000:10050
-      credentials: 
-        username: ${{secrets.DOCKER_REGISTRY_USER}}
-        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-      volumes: 
-        - /etc/localtime:/etc/localtime:ro
+  # build:
+  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
+  #   # concurrency: 
+  #   #   group: ${{ github.ref_name }}
+  #   #   cancel-in-progress: true
 
-    env:
-      BUILD_NB_THREAD: 2
+  #   # DEV ONLY # runs-on: ["build","dev_devci"]
+  #   runs-on: ["build","developer_ci"]
+  #   container: 
+  #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
+  #     credentials: 
+  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
+  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+  #     volumes: 
+  #       - /etc/localtime:/etc/localtime:ro
 
-    strategy:
-      # If one job fails othere are canceled
-      fail-fast: true
-      matrix:
-        include:
-          - build: starter_linux64_gf
-            precision: dp
-            os: linux64
-            binary: starter
+  #   env:
+  #     BUILD_NB_THREAD: 2
 
-          # - build: starter_linux64_gf_sp 
-          #   precision: sp
-          #   os: linux64
-          #   binary: starter
+  #   strategy:
+  #     # If one job fails othere are canceled
+  #     fail-fast: true
+  #     matrix:
+  #       include:
+  #         - build: starter_linux64_gf
+  #           precision: dp
+  #           os: linux64
+  #           binary: starter
 
-          # - build: engine_linux64_gf_ompi
-          #   precision: dp
-          #   os: linux64
-          #   binary: engine
-          #   mpi: ompi
+  #         - build: starter_linux64_gf_sp 
+  #           precision: sp
+  #           os: linux64
+  #           binary: starter
 
-          # - build: engine_linux64_gf_ompi_sp
-          #   precision: sp
-          #   os: linux64 
-          #   binary: engine
-          #   mpi: ompi
+  #         - build: engine_linux64_gf_ompi
+  #           precision: dp
+  #           os: linux64
+  #           binary: engine
+  #           mpi: ompi
 
-          # - build: engine_linux64_gf
-          #   precision: dp
-          #   os: linux64
-          #   binary: engine
+  #         - build: engine_linux64_gf_ompi_sp
+  #           precision: sp
+  #           os: linux64 
+  #           binary: engine
+  #           mpi: ompi
 
-          # - build: engine_linux64_gf_sp
-          #   precision: sp
-          #   os: linux64 
-          #   binary: engine
+  #         - build: engine_linux64_gf
+  #           precision: dp
+  #           os: linux64
+  #           binary: engine
 
-    steps:
+  #         - build: engine_linux64_gf_sp
+  #           precision: sp
+  #           os: linux64 
+  #           binary: engine
 
-
+  #   steps:
 
   #     - name: Clean local exe dir
   #       run: |
   #         rm -rf exec
   #         md5sum exec/* || echo "Nothing in exec/" 
 
-      # Get last git modifications, WS is not persistent here
-      - uses: actions/checkout@v4
-        with:
-          lfs: 'true'
-          ref: refs/pull/${{ github.event.number }}/merge
-
-      - name: Test
-        run: |
-          echo "GITHUB_REF_NAME=${{ github.ref_name }}"
-          echo "GITHUB_BASE_REF=${{ github.base_ref }}"
-          echo "GITHUB_SHA=${{ github.sha }}"
-          echo "GITHUB_HEAD_SHA=$GITHUB_HEAD_SHA"
-          cd Compiling_tools/script/
-          python or_build_info.py
-          grep CommitID build_info.inc
-
+  #     # Get last git modifications, WS is not persistent here
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         lfs: 'true'
+  #         ref: refs/pull/${{ github.event.number }}/merge
 
   #     - name: Running build
   #       run: |
@@ -220,122 +206,128 @@ jobs:
 
   #         eval $cmd
 
-  # qa:
-  #   needs: build
-  #   # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
-  #   runs-on: ["qa_${{ matrix.os }}","developer_ci"]
-  #   container: 
-  #     image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:cos8-ompi411
-  #     credentials: 
-  #       username: ${{secrets.DOCKER_REGISTRY_USER}}
-  #       password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
-  #     volumes: 
-  #       - /etc/localtime:/etc/localtime:ro
+  qa:
+    # needs: build
+    # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
+    runs-on: ["qa_${{ matrix.os }}","developer_ci"]
+    container: 
+      image: fr-qafactorydev.europe.altair.com/qa-linux64_gf:cos8-ompi411
+      credentials: 
+        username: ${{secrets.DOCKER_REGISTRY_USER}}
+        password: ${{secrets.DOCKER_REGISTRY_PASSWD}}
+      volumes: 
+        - /etc/localtime:/etc/localtime:ro
 
-  #   env:
-  #     hm_reader_extlib: ../../extlib/hm_reader
-  #     hm_reader_cfgfiles: ../../hm_cfg_files
-  #     homeuser: /home/adminqa
-  #     mpi: ompi
-  #     # DEV ONLY # QA_NB_PROC: 2
-  #     QA_NB_PROC: 4
-  #     QA_NB_THREAD: 2
+    env:
+      hm_reader_extlib: ../../extlib/hm_reader
+      hm_reader_cfgfiles: ../../hm_cfg_files
+      homeuser: /home/adminqa
+      mpi: ompi
+      # DEV ONLY # QA_NB_PROC: 2
+      QA_NB_PROC: 4
+      QA_NB_THREAD: 2
       
-  #   strategy:
-  #     # If one job fails othere are canceled
-  #     fail-fast: false
-  #     matrix:
-  #       os: [linux64]
-  #       # precision: [dp,sp]
-  #       precision: [dp]
+    strategy:
+      # If one job fails othere are canceled
+      fail-fast: false
+      matrix:
+        os: [linux64]
+        # precision: [dp,sp]
+        precision: [dp]
 
-  #   steps:
+    steps:
 
-  #     # Get git related to the commit
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         lfs: 'true'
-  #         ref: refs/pull/${{ github.event.number }}/merge
+      - name: Test executors presence
+        run: |
+          hostname
+          ip a
+          ping -c 3 google.com || echo "No internet"
 
-  #     - name: Clean local exe dir
-  #       run: |
-  #         rm -rf exec
+      # # Get git related to the commit
+      # - uses: actions/checkout@v4
+      #   with:
+      #     lfs: 'true'
+      #     ref: refs/pull/${{ github.event.number }}/merge
 
-  #     # Download artifacts (since V4 we must download all needed artifacts, we could do it using wildcard but it doesn't work ... see https://github.com/actions/download-artifact/issues/337)
-  #     # Using hard name waiting for this issue to be fixed
-  #     # - name: Download artifacts
-  #     #   uses: actions/download-artifact@v4
-  #     #   with:
-  #     #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-*
-  #     #     path: exec
-  #     #     merge-multiple: true
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}-starter_linux64_gf
-  #         path: exec
-  #         merge-multiple: true
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: bins-${{ matrix.os }}-${{ matrix.precision }}-engine_linux64_gf_ompi
-  #         path: exec
-  #         merge-multiple: true
-  #     - name: Download extlib artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: extlib.zip
+      # - name: Clean local exe dir
+      #   run: |
+      #     rm -rf exec
 
-  #     - name: Unzip extlib
-  #       run: |
-  #         unzip extlib.zip
+      # # Download artifacts (since V4 we must download all needed artifacts, we could do it using wildcard but it doesn't work ... see https://github.com/actions/download-artifact/issues/337)
+      # # Using hard name waiting for this issue to be fixed
+      # # - name: Download artifacts
+      # #   uses: actions/download-artifact@v4
+      # #   with:
+      # #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-*
+      # #     path: exec
+      # #     merge-multiple: true
+      # - name: Download artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-starter_linux64_gf
+      #     path: exec
+      #     merge-multiple: true
+      # - name: Download artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: bins-${{ matrix.os }}-${{ matrix.precision }}-engine_linux64_gf_ompi
+      #     path: exec
+      #     merge-multiple: true
+      # - name: Download extlib artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: extlib.zip
 
-  #     - name: Running qa
-  #       run: |
-  #         md5sum exec/* || echo "Nothing in exec/" 
-  #         if [ "${{ matrix.precision }}" = "dp" ]
-  #         then
-  #           precision_ext=""
-  #         else
-  #           precision_ext="_${{ matrix.precision }}"
-  #         fi
+      # - name: Unzip extlib
+      #   run: |
+      #     unzip extlib.zip
 
-  #         chmod 755 exec/*
-  #         cd qa-tests/scripts
-  #         chmod 755 or_qa_script or_radioss.pl 
-  #         rm -f QA.summary
+      # - name: Running qa
+      #   run: |
+      #     md5sum exec/* || echo "Nothing in exec/" 
+      #     if [ "${{ matrix.precision }}" = "dp" ]
+      #     then
+      #       precision_ext=""
+      #     else
+      #       precision_ext="_${{ matrix.precision }}"
+      #     fi
 
-  #         source ${{ env.homeuser }}/.bashrc
-  #         export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
+      #     chmod 755 exec/*
+      #     cd qa-tests/scripts
+      #     chmod 755 or_qa_script or_radioss.pl 
+      #     rm -f QA.summary
+
+      #     source ${{ env.homeuser }}/.bashrc
+      #     export LD_LIBRARY_PATH=${{ env.hm_reader_extlib }}/${{ matrix.os }}:$LD_LIBRARY_PATH
 
 
-  #         # cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext}_db 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --env:ASAN_OPTIONS='new_delete_type_mismatch=0:detect_leaks=0' --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
-  #         cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}' "
-  #         echo "========================================="
-  #         echo "--  QA ${{ matrix.os }}_${{ matrix.precision }} --"   
-  #         echo "--  $cmd --"   
-  #         echo "========================================="
-  #         eval $cmd 
-  #         res=$? 
+      #     # cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext}_db 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --env:ASAN_OPTIONS='new_delete_type_mismatch=0:detect_leaks=0' --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}'"
+      #     cmd="./or_qa_script ../../exec/engine_${{ matrix.os }}_gf_${{ env.mpi }}${precision_ext} 1.0 --env:RAD_CFG_PATH=${{ env.hm_reader_cfgfiles }} --system_run --env:OMP_STACKSIZE=400m --exec_script_args='mpiexec -np ${{ env.QA_NB_PROC }}' --env:OMP_NUM_THREADS=${{ env.QA_NB_THREAD }} --output_failures_stdout --xtra_args='--timeoutscript=${{ env.QA_TIMEOUT_PER_TEST }}' "
+      #     echo "========================================="
+      #     echo "--  QA ${{ matrix.os }}_${{ matrix.precision }} --"   
+      #     echo "--  $cmd --"   
+      #     echo "========================================="
+      #     eval $cmd 
+      #     res=$? 
 
-  #         # Getting failed test
-  #         nbtestsfailed=$(grep "# Runs Failed\s*:" QA.summary | tail -n 1 | awk -F' ' '{print $5}')
-  #         # Checking if no test has run at all (maybe exec errors)
-  #         nbtestsok=$(grep "# Runs Successful\s*:" QA.summary | tail -n 1 | awk -F' ' '{print $5}')
+      #     # Getting failed test
+      #     nbtestsfailed=$(grep "# Runs Failed\s*:" QA.summary | tail -n 1 | awk -F' ' '{print $5}')
+      #     # Checking if no test has run at all (maybe exec errors)
+      #     nbtestsok=$(grep "# Runs Successful\s*:" QA.summary | tail -n 1 | awk -F' ' '{print $5}')
 
-  #         if [ $res -gt 0 ] || [ $nbtestsfailed -gt 0 ] || [ $nbtestsok = 0 ]
-  #         then 
-  #           # If at least one test is failed we mark the CI as failed
-  #           echo "All tests are not OK, CI is failed"
-  #           exit 1
-  #         fi 
+      #     if [ $res -gt 0 ] || [ $nbtestsfailed -gt 0 ] || [ $nbtestsok = 0 ]
+      #     then 
+      #       # If at least one test is failed we mark the CI as failed
+      #       echo "All tests are not OK, CI is failed"
+      #       exit 1
+      #     fi 
 
-  #     # DEV ONLY #
-  #     # Delete the artifacts
-  #     # In private repo we are limited to 2Gb so we decided not to keep developer ci artifacts for the moment
-  #     # - uses: geekyeggo/delete-artifact@v2
-  #     #   with:
-  #     #     name: |
-  #     #       bins-${{ matrix.os }}-${{ matrix.precision }}   
-  #     #       bins-${{ matrix.os }}-sp
+      # # DEV ONLY #
+      # # Delete the artifacts
+      # # In private repo we are limited to 2Gb so we decided not to keep developer ci artifacts for the moment
+      # # - uses: geekyeggo/delete-artifact@v2
+      # #   with:
+      # #     name: |
+      # #       bins-${{ matrix.os }}-${{ matrix.precision }}   
+      # #       bins-${{ matrix.os }}-sp
 
