@@ -27,7 +27,7 @@ use File::Basename;
 use Data::Dumper;
 
 $debug = 0 ;
-
+print "Test1\n" if ( $debug > 1 ) ;
 $prog_name = $0 ;
 $prog_name =~ s/.*\/// ;
 
