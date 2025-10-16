@@ -31,7 +31,7 @@ $debug = 0 ;
 $prog_name = $0 ;
 $prog_name =~ s/.*\/// ;
 
-print "Test 2\n";
+print "Test 3\n";
 
 # open(my $trace_fh,">>/tmp/mytrace.log");
 # print $trace_fh "\n\n\n#####################################################################\n";
