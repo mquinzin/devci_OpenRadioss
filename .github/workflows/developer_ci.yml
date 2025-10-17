@@ -36,6 +36,7 @@ jobs:
           fi
 
   # build:
+  # needs: guard
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
   #   # concurrency: 
   #   #   group: ${{ github.ref_name }}
@@ -148,6 +149,7 @@ jobs:
   #       if: ${{ matrix.build == 'starter_linux64_gf' }}
 
   # code-analysis:
+  # needs: guard
   #   # We execute after all builds (in // with QA)
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
 
@@ -226,6 +228,7 @@ jobs:
 
   qa:
     # needs: build
+    needs: guard
     # DEV ONLY # runs-on: ["qa_${{ matrix.os }}","dev"]
     runs-on: ["qa_${{ matrix.os }}","developer_ci"]
     container: 
