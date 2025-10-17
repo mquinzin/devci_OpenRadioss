@@ -3,12 +3,9 @@ name: Developer CI
 on:
   
   pull_request:
-  #   paths:    
-  #     - '.github/workflows/*.yml'
-
-  # pull_request_target:
-  #   paths-ignore:    
-  #     - '.github/workflows/*.yml'    
+    # CI is disbabled if ONLY workflow files are changed
+    paths-ignore:
+      - '.github/workflows/**'
 
 env:
   QA_TIMEOUT_PER_TEST: 150
@@ -16,6 +13,27 @@ env:
   RADIOSS_SHA_HEADER: ${{ github.event.pull_request.head.sha }}
 
 jobs:
+
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect workflow changes
+        run: |
+          # fetch base branch
+          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          
+          # list changed files in the PR
+          changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }})
+          echo "Files changed in this PR:"
+          echo "$changed"
+          echo "-----"
+
+          # check if workflow or other sensitive dirs were modified
+          if echo "$changed" | grep -E '^\.github/workflows/'; then
+            echo "::error::Workflow files modified — stopping CI for safety."
+            exit 1
+          fi
 
   # build:
   #   if: ${{ github.repository_owner == 'OpenRadioss' }}
@@ -236,6 +254,7 @@ jobs:
 
       - name: Test executors presence
         run: |
+          echo "Test 5"
           hostname
           ip a
           ping -c 3 google.com || echo "No internet"
