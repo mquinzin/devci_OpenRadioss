@@ -31,7 +31,7 @@ jobs:
 
           # check if workflow or other sensitive dirs were modified
           if echo "$changed" | grep -E '^\.github/workflows/'; then
-            echo "::error::Workflow files modified — stopping CI for safety."
+            echo "::error::Workflow files modified — stopping CI for safety.XXXXXXXXX"
             exit 1
           fi
 
