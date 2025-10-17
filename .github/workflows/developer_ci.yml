@@ -2,10 +2,10 @@ name: Developer CI
 
 on:
   
-  pull_request_target:
+  pull_request:
     # CI is disbabled if ONLY workflow files are changed
-    paths-ignore:
-      - '.github/workflows/**'
+    # paths-ignore:
+    #   - '.github/workflows/**'
 
 env:
   QA_TIMEOUT_PER_TEST: 150
@@ -14,53 +14,56 @@ env:
 
 jobs:
 
-  # guard:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Detect workflow changes
-  #       run: |
-  #         # fetch base branch
-  #         git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
-          
-  #         # list changed files in the PR
-  #         changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }})
-  #         echo "Files changed in this PR:"
-  #         echo "$changed"
-  #         echo "-----"
-
-  #         # check if workflow or other sensitive dirs were modified
-  #         if echo "$changed" | grep -E '^\.github/workflows/'; then
-  #           echo "::error::Workflow files modified — stopping CI for safety."
-  #           exit 1
-  #         fi
-
-  build:
-    # needs: guard
-    if: ${{ github.repository_owner == 'OpenRadioss' }}
-    # concurrency: 
-    #   group: ${{ github.ref_name }}
-    #   cancel-in-progress: true
-
-    # DEV ONLY # runs-on: ["build","dev_devci"]
-    runs-on: ["build","developer_ci"]
+  guard:
+    runs-on: developer_ci   
     container: 
-      image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
-      volumes: 
-        - /etc/localtime:/etc/localtime:ro
+      image: fr-qafactorydev.europe.altair.com/common-linux64
 
-    env:
-      BUILD_NB_THREAD: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect workflow changes
+        run: |
+          # fetch base branch
+          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          
+          # list changed files in the PR
+          changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }})
+          echo "Files changed in this PR:"
+          echo "$changed"
+          echo "-----"
 
-    strategy:
-      # If one job fails othere are canceled
-      fail-fast: true
-      matrix:
-        include:
-          - build: starter_linux64_gf
-            precision: dp
-            os: linux64
-            binary: starter
+          # check if workflow or other sensitive dirs were modified
+          if echo "$changed" | grep -E '^\.github/workflows/'; then
+            echo "::error::Workflow files modified — stopping CI for safety."
+            exit 1
+          fi
+
+  # build:
+  #   # needs: guard
+  #   if: ${{ github.repository_owner == 'OpenRadioss' }}
+  #   # concurrency: 
+  #   #   group: ${{ github.ref_name }}
+  #   #   cancel-in-progress: true
+
+  #   # DEV ONLY # runs-on: ["build","dev_devci"]
+  #   runs-on: ["build","developer_ci"]
+  #   container: 
+  #     image: fr-qafactorydev.europe.altair.com/build-linux64_gf:cos8-ompi411-devts11
+  #     volumes: 
+  #       - /etc/localtime:/etc/localtime:ro
+
+  #   env:
+  #     BUILD_NB_THREAD: 2
+
+  #   strategy:
+  #     # If one job fails othere are canceled
+  #     fail-fast: true
+  #     matrix:
+  #       include:
+  #         - build: starter_linux64_gf
+  #           precision: dp
+  #           os: linux64
+  #           binary: starter
 
           # - build: starter_linux64_gf_sp 
           #   precision: sp
@@ -89,10 +92,6 @@ jobs:
           #   os: linux64 
           #   binary: engine
 
-    steps:
-      - name: My exec
-        run: |
-          echo "Tada !!" 
 
   #     - name: Clean local exe dir
   #       run: |
